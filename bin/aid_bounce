@@ -1,6 +1,6 @@
 #!/usr/bin/perl -w
 
-# $Id: aid_bounce,v 5.3 1999/06/02 16:46:20 mradwin Exp mradwin $
+# $Id: aid_bounce,v 5.4 1999/06/07 18:32:25 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -167,7 +167,7 @@ sub bounce_args
 	    }
 	} else {
 	    $_ = "\L$_\E";
-	    if (defined $DB{$_}) {
+	    if (defined $DB{$_} && $DB{$_} ne '') {
 		$_ = unpack("n*", $DB{$_});
 		%rec = &aid_db_unpack_rec($_,$DB{$_});
 	    } else {

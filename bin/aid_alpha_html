@@ -2,7 +2,7 @@
 
 #
 # does the html version of the alphabetical address list
-# $Id: aid_alpha_html,v 5.2 1999/06/07 18:32:25 mradwin Exp mradwin $
+# $Id: aid_alpha_html,v 5.3 1999/06/28 23:36:24 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -47,11 +47,13 @@ $ARGV[0] =~ s/\.db$//;
 die "can't open $ARGV[0].db\n" unless -r "$ARGV[0].db";
 dbmopen(%DB,$ARGV[0],0444);
 
-die "no _alpha key!" unless defined $DB{'_alpha'};
+die "corrupt/missing _alpha key!"
+    unless defined $DB{'_alpha'} && $DB{'_alpha'} ne '';
 
 open(FMTOUT,">$ARGV[1]") || die "Can't open $ARGV[1]: $!\n";
 
 if (!$opt_t) {
+    die "corrupt/missing _t key!" unless defined $DB{'_t'} && $DB{'_t'} ne '';
     print FMTOUT &aid_common_html_hdr(1,'Alumni Listed by Last Name',1,
 				  unpack("N",$DB{'_t'}));
     print FMTOUT &aid_common_intro_para(1);

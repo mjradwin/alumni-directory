@@ -2,7 +2,7 @@
 #     FILE: aid_util.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: perl library routines for the Alumni Internet Directory
-#      $Id: aid_util.pl,v 5.27 1999/06/28 19:16:47 mradwin Exp mradwin $
+#      $Id: aid_util.pl,v 5.28 1999/06/28 23:36:24 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -847,7 +847,13 @@ sub aid_build_yearlist {
     local($[) = 0;
     local(*years,$year) = @_;
 
-    if ($years[$#years] ne $year && $years[$#years] ne 'other') {
+    if (!defined @years)
+    {
+	@years = ();
+	push(@years, ($year =~ /^\d+$/) ? $year : 'other');
+    }
+    elsif ($years[$#years] ne $year && $years[$#years] ne 'other')
+    {
 	push(@years, ($year =~ /^\d+$/) ? $year : 'other');
     }
 
@@ -1037,7 +1043,7 @@ sub aid_db_pack_rec
 	 (($rec{'v'} ? 1 : 0) |
 	  (($rec{'r'} ? 1 : 0) << 1)),
 	 $rec{'q'},
-	 $rec{'s'},
+	 0,
 	 $rec{'b'},
 	 $rec{'c'},
 	 $rec{'u'},
@@ -1066,7 +1072,7 @@ sub aid_db_unpack_rec
     package aid_util;
 
     local($key,$val) = @_;
-    local(*rec,$masked);
+    local(*rec,$masked,$ignored);
 
     %rec = ();
     $rec{'id'} = $key;
@@ -1074,7 +1080,7 @@ sub aid_db_unpack_rec
     (
      $masked,
      $rec{'q'},
-     $rec{'s'},
+     $ignored,
      $rec{'b'},
      $rec{'c'},
      $rec{'u'},

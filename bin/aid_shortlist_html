@@ -4,7 +4,7 @@
 # does a short list, either compact or verbose, sorted by graduating
 # class with a jump bar
 #
-# $Id: aid_shortlist_html,v 5.3 1999/06/08 19:29:01 mradwin Exp mradwin $
+# $Id: aid_shortlist_html,v 5.4 1999/06/28 23:36:24 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -60,12 +60,14 @@ $ARGV[0] =~ s/\.db$//;
 die "can't open $ARGV[0].db\n" unless -r "$ARGV[0].db";
 dbmopen(%DB,$ARGV[0],0444);
 
-die "no _class key!" unless defined $DB{'_class'};
+die "corrupt/missing _class key!"
+    unless defined $DB{'_class'} && $DB{'_class'} ne '';
 
 open(FMTOUT,">$ARGV[1]") || die "Can't open $ARGV[1]: $!\n";
 
 @ids = ();
 @class = unpack("n*", $DB{'_class'});
+@years = ();
 for (@class)
 {
     %rec = &aid_db_unpack_rec($_,$DB{$_});
@@ -93,12 +95,18 @@ else
 #$subtitle = "<strong><font color=\"#000000\">$subtitle</font></strong>";
 
 if (!$opt_t) {
-    if ($opt_w) {
+    if ($opt_w)
+    {
+	die "corrupt/missing _t_www key!"
+	    unless defined $DB{'_t_www'} && $DB{'_t_www'} ne '';
 	$time = unpack("N",$DB{'_t_www'});
 	print FMTOUT &aid_common_html_hdr(4,'Alumni with Web Pages',1,$time,$subtitle);
 	print FMTOUT &aid_common_intro_para(1);
-
-    } elsif ($opt_m) {
+    }
+    elsif ($opt_m)
+    {
+	die "corrupt/missing _t key!"
+	    unless defined $DB{'_t'} && $DB{'_t'} ne '';
 	$opt_M = 'month' unless defined $opt_M;
 	$time = unpack("N",$DB{'_t'});
 	print FMTOUT &aid_common_html_hdr(5,'Recent Additions and Updates',1,$time,$subtitle);

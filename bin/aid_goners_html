@@ -2,7 +2,7 @@
 
 #
 # does the html version of the invalid address list
-# $Id: aid_goners_html,v 5.4 1999/06/18 03:11:12 mradwin Exp mradwin $
+# $Id: aid_goners_html,v 5.5 1999/06/28 23:36:24 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -52,7 +52,10 @@ $ARGV[0] =~ s/\.db$//;
 die "can't open $ARGV[0].db\n" unless -r "$ARGV[0].db";
 dbmopen(%DB,$ARGV[0],0444);
 
-die "no _alpha key!" unless defined $DB{'_alpha'};
+die "corrupt/missing _alpha key!"
+    unless defined $DB{'_alpha'} && $DB{'_alpha'} ne '';
+die "corrupt/missing _t_goner key!"
+    unless defined $DB{'_t_goner'} && $DB{'_t_goner'} ne '';
 
 open(FMTOUT,">$ARGV[1]") || die "Can't open $ARGV[1]: $!\n";
 

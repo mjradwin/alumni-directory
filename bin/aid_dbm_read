@@ -1,6 +1,6 @@
 #!/usr/bin/perl -w
 
-# $Id: aid_dbm_read,v 5.6 1999/06/18 03:20:57 mradwin Exp mradwin $
+# $Id: aid_dbm_read,v 5.7 1999/06/25 00:25:56 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -76,7 +76,8 @@ if ($opt_u)
 }
 elsif ($opt_d)
 {
-    die "no _$opt_d key in $ARGV[0].db\n" unless defined $DB{"_$opt_d"};
+    die "corrupt/missing _$opt_d key in $ARGV[0].db\n"
+	unless defined $DB{"_$opt_d"} && $DB{"_$opt_d"} ne '';
     @ids = unpack("n*", $DB{"_$opt_d"});
     for (@ids)
     {
@@ -92,7 +93,8 @@ elsif (defined $ARGV[1])
 }
 elsif ($opt_o)
 {
-    die "no _class key in $ARGV[0].db\n" unless defined $DB{'_class'};
+    die "corrupt/missing _class key in $ARGV[0].db\n"
+	unless defined $DB{'_class'} && $DB{'_class'} ne '';
     @ids = unpack("n*", $DB{'_class'});
     for (@ids)
     {
@@ -106,7 +108,8 @@ elsif ($opt_o)
 }
 elsif ($opt_f)
 {
-    die "no _class key in $ARGV[0].db\n" unless defined $DB{'_class'};
+    die "corrupt/missing _class key in $ARGV[0].db\n"
+	unless defined $DB{'_class'} && $DB{'_class'} ne '';
     @ids = unpack("n*", $DB{'_class'});
     for (@ids)
     {
@@ -120,7 +123,8 @@ elsif ($opt_f)
 }
 elsif ($opt_a)
 {
-    die "no _alpha key in $ARGV[0].db\n" unless defined $DB{'_alpha'};
+    die "corrupt/missing _alpha key in $ARGV[0].db\n"
+	unless defined $DB{'_alpha'} && $DB{'_alpha'} ne '';
     @ids = unpack("n*", $DB{'_alpha'});
     for (@ids)
     {
@@ -132,7 +136,8 @@ elsif ($opt_a)
 }
 elsif ($opt_c)
 {
-    die "no _class key in $ARGV[0].db\n" unless defined $DB{'_class'};
+    die "corrupt/missing _class key in $ARGV[0].db\n"
+	unless defined $DB{'_class'} && $DB{'_class'} ne '';
     @ids = unpack("n*", $DB{'_class'});
     for (@ids)
     {

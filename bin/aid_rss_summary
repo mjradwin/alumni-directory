@@ -4,7 +4,7 @@
 #     FILE: aid_rss_summary.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: creates an RDF Site Summary for the Directory
-#      $Id: aid_rss_summary,v 1.1 1999/06/28 23:17:56 mradwin Exp mradwin $
+#      $Id: aid_rss_summary,v 1.2 1999/06/28 23:36:24 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -46,10 +46,11 @@ $ARGV[0] =~ s/\.db$//;
 die "can't open $ARGV[0].db\n" unless -r "$ARGV[0].db";
 dbmopen(%DB,$ARGV[0],0444);
 
-die "no _t key!" unless defined $DB{'_t'};
+die "corrupt/missing _t key!" unless defined $DB{'_t'} && $DB{'_t'} ne '';
 $time = unpack("N",$DB{'_t'});
 
-die "no _class key!" unless defined $DB{'_class'};
+die "corrupt/missing _class key!"
+    unless defined $DB{'_class'} && $DB{'_class'} ne '';
 @class = unpack("n*", $DB{'_class'});
 
 $found = 0;

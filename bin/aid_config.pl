@@ -2,7 +2,7 @@
 #     FILE: aid_config.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: configuration variables for Alumni Internet Directory
-#      $Id: aid_config.pl,v 5.9 1999/06/22 19:10:48 mradwin Exp mradwin $
+#      $Id: aid_config.pl,v 5.10 1999/06/28 23:36:24 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -108,7 +108,6 @@ $aid_util'EPOCH       = 815130000; #'# Tue Oct 31 09:00:00 GMT 1995
     'c',	'[unix time - record creation]',
     'u',	'[unix time - last update]',
     'f',	'[unix time - last successful verification]',
-    's',	'[OBSOLETE - High School]',
     'yr',	'Graduation Year or Affiliation',
     'e',	'E-mail Address',
     'w',	'Personal Web Page',
@@ -127,7 +126,7 @@ $aid_util'EPOCH       = 815130000; #'# Tue Oct 31 09:00:00 GMT 1995
      'sn', 'gn', 'mi', 'mn',
      'e', 'a',
      'w', 'l',
-     's', 'yr',
+     'yr',
      'v', 'q', 'r',
      'c', 'u', 'f', 'b',
      'eu', 'eo',

@@ -1,6 +1,6 @@
 #!/usr/bin/perl -w
 
-# $Id: aid_edit_entry,v 5.5 1999/06/01 17:00:37 mradwin Exp mradwin $
+# $Id: aid_edit_entry,v 5.6 1999/06/07 18:32:25 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -50,16 +50,19 @@ dbmopen(%DB,$dbmfile,$mode) || die "$0: ${dbmfile}.db: $!\n";
 $id = shift;
 if ($id =~ /^\d+$/)
 {
-    die "$0: no key $id in ${dbmfile}.db\n" unless defined $DB{$id};
+    die "$0: no key $id in ${dbmfile}.db\n"
+	unless defined $DB{$id} && $DB{$id} ne '';
     %rec = &aid_db_unpack_rec($id,$DB{$id});
 }
 elsif ($id =~ /\@/)
 {
     $email = "\L$id\E";
-    die "$0: no key \L$id\E in ${dbmfile}.db\n" unless defined $DB{$email};
+    die "$0: no key \L$id\E in ${dbmfile}.db\n"
+	unless defined $DB{$email} && $DB{$email} ne '';
 
     $id = unpack("n*", $DB{$email});
-    die "$0: no key $id in ${dbmfile}.db\n" unless defined $DB{$id};
+    die "$0: no key $id in ${dbmfile}.db\n"
+	unless defined $DB{$id} && $DB{$id} ne '';
 
     %rec = &aid_db_unpack_rec($id,$DB{$id});
 }
@@ -80,7 +83,7 @@ $note_end_str = &aid_config('note_end_str');
 $tmpfile = '/tmp/aid_edit_entry.' . $$;
 
 open(TMPFILE,">$tmpfile") || die "$tmpfile: $!\n";
-print TMPFILE '# $Id: aid_edit_entry,v 5.5 1999/06/01 17:00:37 mradwin Exp mradwin $', "\n"; #'#
+print TMPFILE '# $Id: aid_edit_entry,v 5.6 1999/06/07 18:32:25 mradwin Exp mradwin $', "\n"; #'#
 print TMPFILE "# record last touched: ",
  (($rec{'f'} > $rec{'b'}) ? &ctime($rec{'f'}) : &ctime($rec{'b'}));
 

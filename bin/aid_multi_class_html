@@ -2,7 +2,7 @@
 
 #
 # does the html multi_class pages
-# $Id: aid_multi_class_html,v 5.9 1999/06/28 18:39:31 mradwin Exp mradwin $
+# $Id: aid_multi_class_html,v 5.10 1999/06/28 23:36:24 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -45,10 +45,11 @@ $ARGV[0] =~ s/\.db$//;
 die "can't open $ARGV[0].db\n" unless -r "$ARGV[0].db";
 dbmopen(%DB,$ARGV[0],0444);
 
-die "no _years key!" unless defined $DB{'_years'};
+die "corrupt/missing _years key!"
+    unless defined $DB{'_years'} && $DB{'_years'} ne '';
 
 @years = unpack("n*",$DB{'_years'});
-push(@years, 'other') if defined $DB{'_other'};
+push(@years, 'other') if defined $DB{'_other'} && $DB{'_other'} ne '';
 
 %class_prev = ();
 %class_next = ();
@@ -77,14 +78,16 @@ foreach $year (@years)
 	print STDOUT ".";
     }
 
-    die "no $key key!" unless defined $DB{$key};
+    die "corrupt/missing $key key!"
+	unless defined $DB{$key} && $DB{$key} ne '';
     $time = unpack("N",$DB{$key});
-    $title = ($year =~ /^\d+$/) ? "Class of $year" : "Faculty and Staff";
 
     $key = "_${year}";
-    die "no $key key!" unless defined $DB{$key};
+    die "corrupt/missing $key key!"
+	unless defined $DB{$key} && $DB{$key} ne '';
     @ids = unpack("n*",$DB{$key});
 
+    $title = ($year =~ /^\d+$/) ? "Class of $year" : "Faculty and Staff";
     $outFile = &aid_config('wwwdir') . "class/${year}.html";
     open(FMTOUT,">$outFile") || die "Can't open $outFile: $!\n";
 
@@ -100,10 +103,15 @@ foreach $year (@years)
     $extra_meta  = "\n<link rel=\"contents\" href=\"./\" title=\"Graduating Classes\">";
     $extra_meta .= "\n<link rel=\"prev\" href=\"$class_prev{$year}.html\" title=\"Class of $class_prev{$year}\">"
 	if defined $class_prev{$year};
-    $link_title = ($class_next{$year} =~ /^\d+$/) ? 
-	"Class of $class_next{$year}" : "Faculty and Staff";
-    $extra_meta .= "\n<link rel=\"next\" href=\"$class_next{$year}.html\" title=\"$link_title\">"
-	if defined $class_next{$year};
+
+    if (defined $class_next{$year})
+    {
+	$extra_meta .=
+	    "\n<link rel=\"next\" href=\"$class_next{$year}.html\" title=\"";
+	$extra_meta .= (($class_next{$year} =~ /^\d+$/) ? 
+			"Class of $class_next{$year}" : "Faculty and Staff");
+	$extra_meta .= "\">";
+    }
 
     print FMTOUT &aid_common_html_hdr(2,$title,1,$time,$subtitle,$extra_meta);
     print FMTOUT &aid_common_intro_para(0);
@@ -137,6 +145,7 @@ foreach $year (@years)
     utime $time, $time, $outFile;
 }
 
+die "corrupt/missing _t key!" unless defined $DB{'_t'} && $DB{'_t'} ne '';
 $time = unpack("N",$DB{'_t'});
 dbmclose(%DB);
 print STDOUT "\n";

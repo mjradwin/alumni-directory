@@ -1,6 +1,6 @@
 #!/usr/bin/perl -w
 
-# $Id: aid_delete_entry,v 1.2 1999/06/07 18:33:10 mradwin Exp mradwin $
+# $Id: aid_delete_entry,v 1.3 1999/06/23 17:20:50 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -49,22 +49,25 @@ dbmopen(%DB,$dbmfile,0644) || die "$0: ${dbmfile}.db: $!\n";
 $id = shift;
 if ($id =~ /^\d+$/)
 {
-    die "$0: no key $id in ${dbmfile}.db\n" unless defined $DB{$id};
+    die "$0: no key $id in ${dbmfile}.db\n"
+	unless defined $DB{$id} && $DB{$id} ne '';
     %rec = &aid_db_unpack_rec($id,$DB{$id});
 }
 elsif ($id =~ /\@/)
 {
     $email = "\L$id\E";
-    die "$0: no key \L$id\E in ${dbmfile}.db\n" unless defined $DB{$email};
+    die "$0: no key \L$id\E in ${dbmfile}.db\n"
+	unless defined $DB{$email} && $DB{$email} ne '';
 
     $id = unpack("n*", $DB{$email});
-    die "$0: no key $id in ${dbmfile}.db\n" unless defined $DB{$id};
+    die "$0: no key $id in ${dbmfile}.db\n"
+	unless defined $DB{$id} && $DB{$id} ne '';
 
     %rec = &aid_db_unpack_rec($id,$DB{$id});
 }
 else
 {
-    die "$0: no key $id in ${dbmfile}.db\n";
+    die "$0: invalid key $id isn't userid or e-mail in ${dbmfile}.db\n";
 }
 
 delete $DB{$id};
