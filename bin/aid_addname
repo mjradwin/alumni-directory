@@ -1,6 +1,6 @@
 #!/usr/bin/perl -w
 
-# $Id: aid_addname,v 5.6 1999/06/02 16:52:13 mradwin Exp mradwin $
+# $Id: aid_addname,v 5.7 1999/06/07 18:32:25 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -124,7 +124,7 @@ sub readspool
 	$rec{'s'} = '';		# temporary hack
 
 	&addname(*rec) || die "$0: can't add $rec{'id'} $rec{'e'}!\n";
-	print STDOUT $note if $newsp;
+#	print STDOUT $note if $newsp;
 
 	if ($rec{'browser'} !~ /^\s*$/)
 	{
