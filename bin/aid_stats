@@ -1,6 +1,6 @@
 #!/usr/bin/perl -w
 
-# $Id: aid_stats,v 1.13 1999/03/26 19:41:22 mradwin Exp mradwin $
+# $Id: aid_stats,v 1.14 1999/03/26 22:07:17 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -91,7 +91,7 @@ while (($key,$val) = each %DB)
     $join_time_sum += $rec{'created'};
     push(@join_times, $rec{'created'});
 
-    $num_never_updated++ if $rec{'time'} eq $rec{'created'};
+    $num_never_updated++ if $rec{'time'} == $rec{'created'};
 }
 
 $nlegit = $nvalid + $ndubious;
