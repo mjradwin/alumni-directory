@@ -1,0 +1,41 @@
+#!/usr/bin/perl -w
+
+# $Id$
+
+require 'aid_util.pl';
+
+%bouncers = ();
+&readspool(($ARGV[0]) ? $ARGV[0] : &aid_config('spoolfile'));
+foreach(sort keys %bouncers)
+{
+    print $_, " ";
+}
+print "\n";
+
+sub readspool {
+    local($spoolFile) = @_;
+    local($_,*SPOOL);
+
+    open(SPOOL, $spoolFile) || die "can't open $spoolFile: $!\n";
+    print "reading spool...\n";
+    while(<SPOOL>) {
+	if (/^\s*----- The following addresses had permanent fatal errors -----\s*$/)
+	{
+
+	    $_ = <SPOOL>;
+	    
+	    s/^\s*//;
+	    s/\s*$//;
+	    s/^<//;
+	    s/>$//;
+
+	    $bouncers{$_} = 1;
+	}
+	elsif (/^Email              : /)
+	{
+	    s/^Email              : //;
+	    s/\s*$//;
+	    $bouncers{$_} = 1;
+	}
+    }
+}
