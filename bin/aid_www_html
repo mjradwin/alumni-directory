@@ -25,6 +25,13 @@ $cgi = &mv_config('cgi_path');
 print FMTOUT &common_html_hdr(4);
 print FMTOUT "<br>";
 print FMTOUT &tableheader("Alumni with Web Pages", 1, 'ffff99', 1);
+print FMTOUT '
+<p>Any entries marked with <img src="new.gif" alt="[new]" width="28"
+height="11"> have been added to the Directory within the last month.
+The <img src="info.gif" height=12 width=12 hspace=4 border=0
+alt="[i]"> icon lets you get more detailed information about an
+alumnus.</p>
+';
 print FMTOUT "<pre>";
 print FMTOUT "Name and Graduation Year$blank_gif                  Email\n";
 print FMTOUT "---------------------------------------------------------------------------\n";
