@@ -4,7 +4,7 @@
 #     FILE: aid_rss_summary.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: creates an RDF Site Summary for the Directory
-#      $Id: aid_rss_summary,v 1.10 2001/09/16 16:57:51 mradwin Exp mradwin $
+#      $Id: aid_rss_summary,v 1.11 2002/03/07 23:29:39 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -92,6 +92,33 @@ foreach (reverse sort keys %upd)
 $outfile = shift;
 open(FMTOUT,">$outfile") || die "Can't open $outfile: $!\n";
 
+# find out the next reunion
+my $reunion_yr = 'x';
+my $reunion_t = 2147483648; 
+
+if ($ARGV[0])
+{
+    my(%RDB);
+    my $r_dbmfile = shift;
+    tie(%RDB, 'DB_File', $r_dbmfile, O_RDONLY, 0444, $DB_File::DB_HASH)
+	or die "$r_dbmfile: $!\n";
+
+    my $now = time;
+    while (my($key,$val) = each(%RDB))
+    {
+	next if $key =~ /^_/;
+	my($date,$html) = split(/\0/, $val, 2);
+	my($yr,$mon,$mday) = split(/\//, $date, 3);
+	my $t = &Time::Local::timelocal(59,59,23,$mday,$mon-1,$yr-1900,0,0,0);
+	if ($t > $now && $t < $reunion_t)
+	{
+	    $reunion_t = $t;
+	    $reunion_yr = $key;
+	}
+    }
+    untie(%RDB);
+}
+
 print FMTOUT
 "<?xml version=\"1.0\"?>
 <!DOCTYPE rss PUBLIC \"-//Netscape Communications//DTD RSS 0.91//EN\"
@@ -115,9 +142,13 @@ if ($found)
     &aid_html_entify_str(&aid_inorder_fullname(*rec)) . "</title>
 <link>http://" . &aid_config('master_srv') .
     &aid_about_path(*rec,0) . "</link>
-</item>
+<description>Class of " . &aid_html_entify_str($rec{'yr'}), ".";
 
-";
+    if ($rec{'n'}) {
+	print FMTOUT " ", &aid_html_entify_str($rec{'n'});
+    }
+
+    print FMTOUT "</description>\n</item>\n\n";
 }
 
 print FMTOUT
@@ -126,24 +157,47 @@ print FMTOUT
     &aid_html_entify_str(&aid_inorder_fullname(*newest)) . "</title>
 <link>http://" . &aid_config('master_srv') .
     &aid_about_path(*newest,0) . "</link>
-</item>
+<description>Class of " . &aid_html_entify_str($newest{'yr'}), ".";
 
+if ($newest{'n'}) {
+    print FMTOUT " ", &aid_html_entify_str($newest{'n'});
+}
+
+print FMTOUT "</description>\n</item>\n\n";
+
+if ($reunion_yr ne 'x')
+{
+    my($refname,$title);
+    if ($reunion_yr =~ /^\d+$/)
+    {
+	$refname = "r$key";
+	$title = "Class of $key";
+    }
+    else
+    {
+	$refname = lc($reunion_yr);
+	$refname =~ s/[^\w]/_/g;
+	$refname =~ s/_+/_/g;
+	$refname =~ s/^_//;
+	$refname =~ s/_$//;
+
+	$title = &aid_html_entify_str($reunion_yr);
+    }
+
+    my $long_date = &POSIX::strftime("%A, %B %e, %Y", localtime($reunion_t));
+
+    print FMTOUT
+"<item>
+<title>Reunion: $title</title>
+<link>http://" . &aid_config('master_srv') . &aid_config('master_path') . 
+    "etc/reunions.html#$refname</link>
+<description>$long_date</description>
+</item>
 ";
+}
 
 print FMTOUT
-"<item>
-<title>Graduating Classes</title>
-<link>http://" . &aid_config('master_srv') . &aid_config('master_path') . 
-    "class/</link>
-</item>
-
-<item>
-<title>Reunions</title>
-<link>http://" . &aid_config('master_srv') . &aid_config('master_path') .
-    "etc/reunions.html</link>
-</item>
-
-</channel>
+"</channel>
 </rss>
 ";
 
