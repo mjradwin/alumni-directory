@@ -2,7 +2,7 @@
 #     FILE: aid_util.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: perl library routines for the Alumni Internet Directory
-#      $Id: aid_util.pl,v 5.22 1999/06/18 03:13:36 mradwin Exp mradwin $
+#      $Id: aid_util.pl,v 5.23 1999/06/22 19:15:08 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -857,32 +857,39 @@ sub aid_class_jump_bar {
     package aid_util;
 
     local($href_begin,$href_end,*years,$do_paragraph,$hilite) = @_;
-    local($first) = 1;
     local($retval) = $do_paragraph ? '<p>' : '';
-    local($year);
+    local($i);
 
-    foreach $year (@years) {
-	if ($first) {
-	    $retval .= "[ <a name=\"top\" id=\"top\"";
-	    $retval .= ">" if defined $hilite && $year eq $hilite;
-	} else {
+    if (defined $years[0])
+    {
+	$retval .= "[ <a name=\"top\" id=\"top\"";
+	if (defined $hilite && $years[0] eq $hilite)
+	{
+	    $retval .= ">";
+	}
+	else
+	{
+	    $retval .= " href=\"${href_begin}$years[0]${href_end}\">";
+	}
+	$retval .= ($years[0] eq 'other') ? "Faculty/Staff" :
+	    sprintf("%02d", $years[0] % 100);
+	$retval .= "</a>";
+
+	foreach $i (1 .. $#years)
+	{
 	    $retval .= " |\n";
-	    $retval .= "<a" unless defined $hilite && $year eq $hilite;
+	    $retval .= "<a href=\"${href_begin}$years[$i]${href_end}\">"
+		unless defined $hilite && $years[$i] eq $hilite;
+	    $retval .= ($years[$i] eq 'other') ? "Faculty/Staff" :
+		sprintf("%02d", $years[$i] % 100);
+	    $retval .= "</a>"
+		unless defined $hilite && $years[$i] eq $hilite;
 	}
 
-	$retval .= " href=\"${href_begin}${year}${href_end}\">"
-	    unless defined $hilite && $year eq $hilite;
-	$retval .= ($year eq 'other') ? "Faculty/Staff" :
-	    sprintf("%02d", $year % 100);
-	$retval .= "</a>"
-	    unless defined $hilite && $year eq $hilite && !$first;
-
-	$first = 0;
+	$retval .= ' ]';
+	$retval .= '</p>' if $do_paragraph;
+	$retval .= "\n\n";
     }
-
-    $retval .= ' ]';
-    $retval .= '</p>' if $do_paragraph;
-    $retval .= "\n\n";
 
     $retval;
 }
