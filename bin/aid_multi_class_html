@@ -1,0 +1,105 @@
+#!/usr/local/bin/perl
+
+# does the html verbose pages
+
+require 'mv_util.pl';
+require 'tableheader.pl';
+require 'getopts.pl';
+
+$usage = 'usage: mv_verbose_html [-h] infile.adr
+    -h        Display usage information.
+';
+
+&Getopts('h') || die "$usage\n";
+$opt_h && die "$usage\n";
+$ARGV[0] || die "$usage\n";
+
+$new_gif = "<img src=\"" . &mv_config('master_path') . "new.gif\" " .
+    "width=28 height=11 alt=\"[new]\">";
+$info_gif = "<img src=\"" . &mv_config('master_path') . "info.gif\" " .
+    "height=12 width=12 hspace=4 border=0 alt=\"[i]\">";
+
+open(DATA,$ARGV[0]) || die "Can't open $ARGV[0]: $!\n";
+
+# first-time only
+$_ = <DATA>;
+chop;
+($time,$id,$req,$last,$first,$married,
+ $school,$year,$email,$alias,$homepage,$location) = &mv_parse($_);
+
+# main loop
+for(;;) {
+    $currentYear = $year;
+    $outFile = &mv_config('wwwdir') . "class/" .
+	(($year =~ /^\d+$/) ? $year : "other") . ".html";
+    print "working on $outFile\n";
+
+    open(FMTOUT,">$outFile") || die "Can't open $outFile: $!\n";
+
+    print FMTOUT &common_html_hdr(18,1);
+    print FMTOUT "<br>";
+    $title  = ($year =~ /^\d+$/) ? "Class of $year" : "Faculty and Staff";
+    print FMTOUT &tableheader($title, 1, 'ffff99', '000000', 1);
+    print FMTOUT "<p>Any entries marked with\n$new_gif\n";
+    print FMTOUT "have been added to the Directory within the last month.  ";
+    print FMTOUT "The\n$info_gif\nicon lets you get more detailed ";
+    print FMTOUT "information about an alumnus.</p>\n\n";
+
+    &write_entry(*FMTOUT,$_);
+    while(<DATA>) {
+	chop;
+	($time,$id,$req,$last,$first,$married,
+	 $school,$year,$email,$alias,$homepage,$location) = &mv_parse($_);
+	
+	last if (($year ne $currentYear) && ($currentYear =~ /^\d+$/));
+	&write_entry(*FMTOUT,$_);
+    }
+    print FMTOUT &common_html_ftr(18);
+    close(FMTOUT);
+
+    last if eof(DATA);
+}
+exit(0);
+
+sub write_entry {
+    local(*FMTOUT,$record) = @_;
+    local($[) = 0;
+    local($_);
+    local($fullname,$message);
+    local($time,$id,$req,$last,$first,$married,$school,
+	  $year,$email,$alias,$homepage,$location) = &mv_parse($record);
+
+    $fullname = &inorder_fullname($first,$last,$married);
+
+    print FMTOUT "<dl compact>\n";
+
+    print FMTOUT "<dt><font size=\"+1\">";
+    print FMTOUT "<a href=\"" . &mv_config('cgi_path') . "/vcard/${id}.vcf\">";
+    print FMTOUT "<img src=\"" . &mv_config('master_path') . "vcard.gif\" ";
+    print FMTOUT "height=32 width=32 border=0 align=right ";
+    print FMTOUT "alt=\"[vCard]\"></a>";
+    print FMTOUT "<strong>$fullname</strong>";
+    print FMTOUT " <img alt=\"[new]\" width=28 height=11 src=\"" . &mv_config('master_path') . "new.gif\">" if &is_new($time);
+    print FMTOUT "</font>\n";
+
+    print FMTOUT "<dt>School: <strong>$school</strong>\n" 
+	if $school ne 'MVHS';
+    print FMTOUT "<dt>Affiliation:  <strong>$year</strong>\n" 
+	unless ($year =~ /^\d+$/);
+    print FMTOUT "<dt>Email: <strong><a href=\"mailto:$email\">$email</a></strong>\n";
+    print FMTOUT "<dt>Web Page: <strong><a href=\"$homepage\">$homepage</a></strong>\n"
+	if $homepage ne '';
+    print FMTOUT "<dt>Location: <strong>$location</strong>\n"
+	if $location ne '';
+    print FMTOUT "<dt>Updated: ";
+    print FMTOUT "<a href=\"" . &mv_config('cgi_path') . 
+	"?about=$id\">$info_gif</a>\n";
+    print FMTOUT "<strong>" . &today($time) . "</strong>\n";
+
+    $message = &mv_get_usertext($id);
+    if ($message ne '') {
+	print FMTOUT "<dt>What's New? (beta):\n";
+	print FMTOUT "<dd>$message\n";
+    }
+    print FMTOUT "</dl>\n\n";
+}
