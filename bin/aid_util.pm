@@ -2,11 +2,12 @@
 #     FILE: aid_util.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: perl library routines for the Alumni Internet Directory
-#      $Id: aid_util.pl,v 4.4 1999/01/29 20:14:18 mradwin Exp mradwin $
+#      $Id: aid_util.pl,v 4.5 1999/02/01 23:42:12 mradwin Exp mradwin $
 #
 
 $aid_util'rcsid =
- '$Id: aid_util.pl,v 4.4 1999/01/29 20:14:18 mradwin Exp mradwin $';
+ '$Id: aid_util.pl,v 4.5 1999/02/01 23:42:12 mradwin Exp mradwin $';
+$aid_util'caldate = &aid_caldate(time); #'#
 
 # ----------------------------------------------------------------------
 # CONFIGURATION
@@ -16,32 +17,7 @@ $aid_util'rcsid =
 # subroutines submit_body() and affiliate()
 # ----------------------------------------------------------------------
 
-# radwin.org (FreeBSD 2.2.2) configuration
-%aid_util'config =   #'#
-    ('admin_name',   'Michael John Radwin',
-     'admin_email',  "mvhs-alumni\@radwin.org",
-     'school',       'Mountain View High School',
-     'short_school', 'MVHS',
-     'admin_school', "Mountain View High School, Class of '93",
-     'admin_phone',  '408-536-2554',
-     'admin_url',    'http://www.radwin.org/michael/',
-     'master_srv',   'www.radwin.org',
-     'master_path',  '/mvhs-alumni/',
-     'image_path',   '/images/',
-     'cgi_path',     '/cgi-bin/mvhsaid',
-     'index_page',   'index.html',
-     'wwwdir',       '/home/web/radwin.org/docs/mvhs-alumni/',
-     'aiddir',       '/home/users/mradwin/mvhs/',
-     'sendmail',     '/usr/sbin/sendmail',
-     'mailprog',     '/usr/bin/mail',
-     'cat',          '/bin/cat',
-     'cp',           '/bin/cp',
-     'make',         '/usr/bin/make',
-     'mailto',       "mvhs-submissions\@radwin.org",
-     'mailsubj',     'MVHSAID',
-     'spoolfile',    '/var/mail/mradwin',
-     'rcsid',        "$aid_util'rcsid",
-     );
+require 'aid_config.pl';
 
 @aid_util'req_descr_long =   #'#
     (
@@ -87,8 +63,6 @@ $aid_util'rcsid =
     ('Jan','Feb','Mar','Apr','May','Jun',
      'Jul','Aug','Sep','Oct','Nov','Dec');
 
-$aid_util'caldate = &aid_caldate(time); #'#
-
 $aid_util'pics_label = #'#
 "  <meta http-equiv=\"PICS-Label\" content='(PICS-1.1 " . 
 "\"http://www.rsac.org/ratingsv01.html\" l gen true " . 
@@ -101,18 +75,8 @@ $aid_util'config{'admin_email'} .
 $aid_util'config{'admin_email'} .
 "\" r (SS~~000 1 SS~~100 1))'>"; #"#
 
-$aid_util'site_tags = #'#
-"  <meta name=\"keywords\"    content=\"Mountain View High School, Alumni, MVHS, Awalt High School, Mountain View, Los Altos, California, reunion, Radwin\">\n  <meta name=\"description\" content=\"Alumni e-mail and web page directory for Mountain View High School (MVHS) and Awalt High School in Mountain View, CA. Updated $aid_util'caldate.\">\n  <meta name=\"author\"  content=\"$aid_util'config{'admin_name'}\">\n  <link rev=\"made\"     href=\"mailto:" . $aid_util'config{'admin_email'} . "\">\n  <link rel=\"contents\" href=\"http://" . $aid_util'config{'master_srv'} . $aid_util'config{'master_path'} . "\" title=\"Home page for MVHS Alumni Internet Directory\">";
-
 $aid_util'noindex = "  <meta name=\"robots\"  content=\"noindex\">"; #'#
 %aid_util'aid_aliases = ();   #'# global alias hash repository 
-
-$aid_util'disclaimer = #'#
-"<a name=\"disclaimer\">Acceptable use:</a> the Alumni Internet
-Directory is provided solely for the information of the Mountain View
-High School and Awalt High School communities.  Any redistribution
-outside of this community, or solicitation of business or contributions
-from individuals listed in this publication is forbidden.";
 
 $aid_util'header_bg  = 'ffff99'; #'#
 $aid_util'header_fg  = '000000'; #'#
@@ -142,7 +106,7 @@ $aid_util'ID_INDEX    = 0;     #'# position that the ID key is in datafile
     'created',			# date of record creation
     'time',			# date of last update
     'fresh',			# date of last successful verification
-    'school',			# high school (MVHS or Awalt)
+    'school',			# high school (primary or Awalt)
     'year',			# 4-digit grad year or affiliation
     'email',			# email address
     'www',			# personal web page
@@ -592,7 +556,7 @@ sub submit_body {
     local($star) = "<font color=\"#$star_fg\">*</font>";
     local(*rec_arg,$blank_entries) = @_;
     local(%rec) = &main'rec_html_entify(*rec_arg); #'#
-    local($mvhs_checked,$awalt_checked,$other_checked) = ('', '', '');
+    local($primary_checked,$awalt_checked,$other_checked) = ('', '', '');
     local(@reqchk,$i,$reunion_chk,@blankies);
 
     $rec{'www'} = 'http://' if $rec{'www'} eq '';
@@ -604,7 +568,7 @@ sub submit_body {
 
     if ($rec{'school'} eq $config{'short_school'} || 
 	$rec{'school'} eq '') {
-	$mvhs_checked = ' checked';
+	$primary_checked = ' checked';
 	$rec{'school'} = '';
     } elsif ($rec{'school'} eq 'Awalt') {
 	$awalt_checked = ' checked';
@@ -691,7 +655,7 @@ are required.  All other fields are optional.</p>\n\n";
   <td valign=top><font color=\"#$cell_fg\">High School</font></td>
   <td>$star</td>
   <td valign=top><input type=radio name=\"school\" id=\"school_$config{'short_school'}\"
-  value=\"$config{'short_school'}\"$mvhs_checked><font color=\"#$cell_fg\"><label
+  value=\"$config{'short_school'}\"$primary_checked><font color=\"#$cell_fg\"><label
   for=\"school_$config{'short_school'}\">&nbsp;$config{'short_school'}</label>&nbsp;&nbsp;&nbsp;&nbsp;<input id=\"school_Awalt\"
   type=radio name=\"school\" value=\"Awalt\"$awalt_checked><label
   for=\"school_Awalt\">&nbsp;Awalt</label></font></td>
@@ -797,13 +761,12 @@ sub sendmail {
     local(*F);
     local($toline,$header);
 
-    $to =~ s/\s*\([^\)]*\)\s*//;
+    $to =~ s/\s*\([^\)]*\)\s*//g;
     $toline = join(', ', split(/[ \t]+/, $to));
     $header =
 "From: $from <$return_path>\
 To: $toline\
 X-Sender: $ENV{'USER'}\@$ENV{'HOST'}\
-X-Mailer: $config{'short_school'} Alumni mailer\
 Organization: $config{'school'} Alumni Internet Directory\
 Content-Type: text/plain; charset=ISO-8859-1\
 Content-Transfer-Encoding: 8bit\
@@ -1359,7 +1322,7 @@ sub aid_book_write_entry {
 	    print BOOK "\"$rec{'location'}\",\"\",";
 	}
 
-	print BOOK "\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"MVHS Alumni\",\"\",\"$rec{'email'}\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"$rec{'www'}\"\r\n";
+	print BOOK "\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"$config{'short_school'} Alumni\",\"\",\"$rec{'email'}\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"$rec{'www'}\"\r\n";
     }
 }
 
