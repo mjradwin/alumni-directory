@@ -2,7 +2,7 @@
 
 #
 # does the html version of just home pages
-# $Id: aid_home_html,v 3.13 1998/11/26 00:54:31 mradwin Exp mradwin $
+# $Id: aid_home_html,v 3.14 1998/11/26 03:12:05 mradwin Exp mradwin $
 #
 
 require 'aid_util.pl';
@@ -59,8 +59,10 @@ if ($opt_s) {
 	next unless $rec{'valid'};
 	&aid_build_yearlist(*years,$rec{'year'});
     }
-    print OUTFILE "<p>Download nickname files and address books for your
-favorite email program.</p>
+    print OUTFILE "<p>Before downloading nickname files and address books
+for your email program, please read the
+<a href=\"", &aid_config('master_path'), "etc/copyright.html\">Acceptable
+Use Policy</a>.</p>
 
 <p>You may need to use the \"import\" feature on your mailreader to
 merge the address book with your own.  Aliases (also called nicknames)
@@ -82,7 +84,8 @@ are of the form <code><strong>flllllll</strong></code> where
     {
 	print OUTFILE "<option";
 	print OUTFILE " selected" if $_ eq '1993';
-	print OUTFILE ">$_\n";
+	print OUTFILE ">$_\n" unless $_ eq 'other';
+	print OUTFILE " value=\"other\">Faculty/Staff\n" if $_ eq 'other';
     }
     print OUTFILE "</select>\n";
 
