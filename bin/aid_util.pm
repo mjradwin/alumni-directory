@@ -2,7 +2,7 @@
 #     FILE: mv_util.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: perl library routines for the MVHS Alumni Internet Directory
-#      $Id: mv_util.pl,v 1.39 1997/09/29 18:36:58 mjr Exp mjr $
+#      $Id: mv_util.pl,v 1.40 1997/10/07 23:53:23 mjr Exp mjr $
 #
 
 CONFIG: {
@@ -267,7 +267,8 @@ All other fields are optional.";
     
     return "<br>\n" . $tableh . "
 <form method=post action=\"" . $config{'cgi_path'} . "\"> 
-<table border=0 cellspacing=7>
+<table border=0>
+<tr><td bgcolor=\"#ffffcc\"><table border=0 cellspacing=7>
 <tr>
   <td valign=top>First Name</td>
   <td>$star</td>
@@ -336,14 +337,14 @@ All other fields are optional.";
   &nbsp;&nbsp;&nbsp;&nbsp;<input type=radio name=\"request\"
   value=\"0\"$reqchk[0]>&nbsp;No, please do not send me copies
   of the Directory.
+  <p>
+  <input type=\"submit\" value=\"Submit entry\">
+  <input type=\"reset\" value=\"Reset form\">
+  <input type=\"hidden\" name=\"id\" value=\"$id\">
   </td>
 </tr>
-<input type=\"hidden\" name=\"id\" value=\"$id\">
 </table>
-
-<P>
-<input type=\"submit\" value=\"Submit entry\">
-<input type=\"reset\" value=\"Reset form\">
+</td></tr></table>
 </form>
 
 ";
