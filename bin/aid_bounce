@@ -1,6 +1,6 @@
 #!/usr/bin/perl -w
 
-# $Id$
+# $Id: aid_bounce,v 1.1 1998/05/17 04:48:48 mradwin Exp mradwin $
 
 require 'getopts.pl';
 require 'aid_util.pl';
@@ -16,24 +16,29 @@ command line.
 $opt_h && die "$usage\n";
 $opt_h = $opt_h;                # avoid warning
 
+exit(0) unless (@ARGV);
+
 $cp   = &aid_config('cp');
 -x $cp   || die "$cp   is not executable!";
 
 $dbFile = &aid_config('aiddir') . "data/master.adr";
+
 @db = &aid_create_db($dbFile);
 
 for (@db) {
+    next unless defined($_) && $_ ne '';
     %rec = &aid_split($_);
     $addrs{"\L$rec{'email'}\E"} = $rec{'id'};
 }
 
 for (@ARGV) {
-    print "Bumping bounce for $_\n";
     if (/^\d+$/) {
 	if (defined @db[$_]) {
 	    %rec = &aid_split(@db[$_]);
-	    $rec{'bounce'}++;
-	    @db[$_] = &aid_join(*rec);
+	    print "$rec{$_} ($_) was $rec{'bounces'}, now ";
+	    $rec{'bounces'}++;
+	    print "$rec{'bounces'}\n";
+	    $db[$_] = &aid_join(*rec);
 	} else {
 	    warn "can't find id $_\n";
 	    next;
@@ -41,8 +46,10 @@ for (@ARGV) {
     } else {
 	if (defined $addrs{$_}) {
 	    %rec = &aid_split(@db[$addrs{$_}]);
-	    $rec{'bounce'}++;
-	    @db[$addrs{$_}] = &aid_join(*rec);
+	    print "$_ ($addrs{$_}) was $rec{'bounces'}, now ";
+	    $rec{'bounces'}++;
+	    print "$rec{'bounces'}\n";
+	    $db[$addrs{$_}] = &aid_join(*rec);
 	} else {
 	    warn "can't find email addr $_\n";
 	    next;
@@ -61,5 +68,3 @@ close(TMP);
 system "$cp -f $tmpFile $dbFile"
     || die "failed to $cp -f $tmpFile $dbFile: $!\n";
 unlink($tmpFile) || die "couldn't unlink $tmpFile: $!\n";
-
-
