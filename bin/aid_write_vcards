@@ -1,6 +1,6 @@
 #!/usr/bin/perl -w
 
-# $Id$
+# $Id: aid_write_vcards,v 1.1 1999/03/04 17:52:03 mradwin Exp mradwin $
 
 require 'aid_util.pl';
 require 'getopts.pl';
@@ -39,4 +39,11 @@ while (($key,$val) = each %DB)
 print STDERR "\n";
 
 dbmclose(DB);
+
+# touch timestamp
+$now = time;
+$ts = "$ARGV[1]/.created";
+open(TS,">$ts") && close(TS);
+utime $now, $now, $ts;
+
 exit 0;
