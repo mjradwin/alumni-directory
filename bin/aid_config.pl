@@ -2,7 +2,7 @@
 #     FILE: aid_config.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: configuration variables for Alumni Internet Directory
-#      $Id: aid_config.pl,v 5.14 2000/04/25 01:31:38 mradwin Exp mradwin $
+#      $Id: aid_config.pl,v 5.15 2000/04/25 18:22:58 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -40,28 +40,6 @@
      );
 
 die "NO CONFIG DEFINED!!" unless defined %aid_util::config;
-
-@aid_util::page_idx =
-(
- "Home,"             . $aid_util::config{'master_path'},
- "Alpha,"            . $aid_util::config{'master_path'} . "alpha/a-index.html",
- "Class,"            . $aid_util::config{'master_path'} . "class/",
- "MVHS,"             . "/mvhs-alumni/",
- "Web&nbsp;Pages,"   . $aid_util::config{'master_path'} . "pages.html",
- "Recent,"           . $aid_util::config{'master_path'} . "recent.html",
- "Search,"           . $aid_util::config{'search_cgi'},
-);
-
-@aid_util::second_idx =
-(
- "Add/Update," . $aid_util::config{'master_path'} . "add/",
- "Reunions,"   . $aid_util::config{'master_path'} . "etc/reunions.html",
- "Links,"      . $aid_util::config{'master_path'} . "etc/links.html",   
- "Download,"   . $aid_util::config{'master_path'} . "download/",       
- "FAQ,"        . $aid_util::config{'master_path'} . "etc/faq.html",    
- "Stats,"      . $aid_util::config{'master_path'} . "etc/stats.html",   
- "Privacy,"    . $aid_util::config{'master_path'} . "etc/privacy.html",
-);
 
 %aid_util::parent_page_name =
 (
@@ -198,8 +176,6 @@ if ($^W && 0)
     &aid_image_tag('');
     &aid_config('');
     $aid_util::copyright_path = '';
-    @aid_util::second_idx = (); # line 150.
-    @aid_util::page_idx = (); # line 139.
     @aid_util::req_descr_long = (); # line 121.
     $aid_util::pics_label = ''; # line 161.
     $aid_util::pack_len = ''; # line 227.

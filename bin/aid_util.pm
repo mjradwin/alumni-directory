@@ -2,7 +2,7 @@
 #     FILE: aid_util.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: perl library routines for the Alumni Internet Directory
-#      $Id: aid_util.pl,v 5.70 2000/06/05 17:02:32 mradwin Exp mradwin $
+#      $Id: aid_util.pl,v 5.71 2000/06/06 20:40:41 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -611,45 +611,6 @@ sub aid_common_intro_para
     "e-mail addresses</a> page.\n</small>\n\n";
 }
 
-sub aid_common_link_table
-{
-    package aid_util;
-
-    local($[) = 0;
-    local($page,$nopara,$nosmall) = @_;
-    local($html,$name,$url,$idx);
-
-    $html  = '';
-    $html .= '<p align="center">' unless $nopara;
-    $html .= '<small>' unless $nosmall;
-
-    foreach $idx (0 .. $#page_idx) {
-	($name, $url) = split(/,/, $page_idx[$idx]);
-        if ($idx == $page) {
-	    $html .= "\n<strong>$name</strong>";
-        } else {
-            $html .= "<a\nhref=\"$url\">$name</a>";
-        }
-	$html .= ' - ' unless $idx == $#page_idx;
-    }
-    $html .= "\n<br>";
-    foreach $idx (0 .. $#second_idx) {
-	($name, $url) = split(/,/, $second_idx[$idx]);
-        if ($idx == ($page - 10)) {
-	    $html .= "\n<strong>$name</strong>";
-        } else {
-            $html .= "<a\nhref=\"$url\">$name</a>";
-        }
-	$html .= ' - ' unless $idx == $#second_idx;
-    }
-
-    $html .= '</small>' unless $nosmall;
-    $html .= '</p>' unless $nopara;
-    
-    $html;
-}
-
-
 sub aid_common_html_ftr
 {
     require 'ctime.pl';
@@ -777,12 +738,7 @@ bgcolor=\"#$header_bg\">";
 	$hdr .= "</font></b>";
     }
 
-    $hdr .= "</td></tr></table>\n\n";
-
-#    $hdr .= "<div class=\"about\">";
-#    $hdr .= &main::aid_common_link_table($page); 
-#    $hdr .="</div>\n";
-    $hdr .="<!--BAD-DOG-->\n";
+    $hdr .= "</td></tr></table>\n<!--BAD-DOG-->\n";
 
     $hdr;
 }
@@ -1396,7 +1352,6 @@ if ($^W && 0)
     &aid_url_escape();
     &aid_rebuild_secondary_keys();
     &aid_generate_alias();
-    &aid_common_link_table();
 
     $aid_util::header_bg = '';
     $aid_util::pack_len = '';
