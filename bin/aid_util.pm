@@ -2,11 +2,11 @@
 #     FILE: aid_util.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: perl library routines for the Alumni Internet Directory
-#      $Id: aid_util.pl,v 4.60 1999/03/16 01:11:03 mradwin Exp mradwin $
+#      $Id: aid_util.pl,v 4.61 1999/03/16 02:01:32 mradwin Exp mradwin $
 #
 
 $aid_util'rcsid =
- '$Id: aid_util.pl,v 4.60 1999/03/16 01:11:03 mradwin Exp mradwin $';
+ '$Id: aid_util.pl,v 4.61 1999/03/16 02:01:32 mradwin Exp mradwin $';
 
 # ----------------------------------------------------------------------
 # CONFIGURATION
@@ -562,16 +562,16 @@ sub aid_yahoo_abook_path {
     }
     $url .= '&hco=&mb=&op=&e1=&c1=';
 
-    $url .= '&.done=';
-    if (defined $ENV{'HTTP_REFERRER'} && $ENV{'HTTP_REFERRER'} =~ m,^http://,)
-    {
-	$url .= &url_escape($ENV{'HTTP_REFERRER'});
-    }
-    else
-    {
-	$url .= &url_escape('http://' .
-			    $config{'master_srv'} . $config{'master_path'});
-    }
+#    $url .= '&.done=';
+#    if (defined $ENV{'HTTP_REFERRER'} && $ENV{'HTTP_REFERRER'} =~ m,^http://,)
+#    {
+#	$url .= &url_escape($ENV{'HTTP_REFERRER'});
+#    }
+#    else
+#    {
+#	$url .= &url_escape('http://' .
+#			    $config{'master_srv'} . $config{'master_path'});
+#    }
 
     $url;
 }
