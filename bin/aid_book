@@ -2,7 +2,7 @@
 
 #
 # generates address books in several formats
-# $Id: aid_book,v 1.18 1997/12/22 22:31:42 mjr Exp mjr $
+# $Id: aid_book,v 1.20 1998/01/02 20:14:18 mradwin Exp $
 #
 
 require 'aid_util.pl';
@@ -54,40 +54,42 @@ $opt_v && &write_prefix(*BOOKv,'v');
 
 while(<DATA>) {
     chop;
-    ($time,$id,$req,$last,$first,$married,
-     $school,$year,$email,$alias,$homepage,$location) = &aid_parse($_);
+    ($alias,
+     $time,$id,$req,$last,$first,$married,
+     $school,$year,$email,$homepage,$location) = &aid_parse($_);
     
-    if ($aliases{$alias} > 0) {
-	$aliases{$alias} = $aliases{$alias} + 1;
-	$alias = substr($alias, 0, 7) . $aliases{$alias};
-    } else {
-	$aliases{$alias} = 1;
-    }
-
     $opt_p && &write_entry(*BOOKp,'p',
+			   $alias,
 			   $time,$id,$req,$last,$first,$married,
-			   $school,$year,$email,$alias,$homepage,$location);
+			   $school,$year,$email,$homepage,$location);
     $opt_e && &write_entry(*BOOKe,'e',
-                           $time,$id,$req,$last,$first,$married,
-                           $school,$year,$email,$alias,$homepage,$location);
+                           $alias,
+			   $time,$id,$req,$last,$first,$married,
+                           $school,$year,$email,$homepage,$location);
     $opt_b && &write_entry(*BOOKb,'b',
-                           $time,$id,$req,$last,$first,$married,
-                           $school,$year,$email,$alias,$homepage,$location);
+                           $alias,
+			   $time,$id,$req,$last,$first,$married,
+                           $school,$year,$email,$homepage,$location);
     $opt_w && &write_entry(*BOOKw,'w',
-                           $time,$id,$req,$last,$first,$married,
-                           $school,$year,$email,$alias,$homepage,$location);
+                           $alias,
+			   $time,$id,$req,$last,$first,$married,
+                           $school,$year,$email,$homepage,$location);
     $opt_m && &write_entry(*BOOKm,'m',
-                           $time,$id,$req,$last,$first,$married,
-                           $school,$year,$email,$alias,$homepage,$location);
+                           $alias,
+			   $time,$id,$req,$last,$first,$married,
+                           $school,$year,$email,$homepage,$location);
     $opt_n && &write_entry(*BOOKn,'n',
-                           $time,$id,$req,$last,$first,$married,
-                           $school,$year,$email,$alias,$homepage,$location);
+                           $alias,
+			   $time,$id,$req,$last,$first,$married,
+                           $school,$year,$email,$homepage,$location);
     $opt_l && &write_entry(*BOOKl,'l',
-                           $time,$id,$req,$last,$first,$married,
-                           $school,$year,$email,$alias,$homepage,$location);
+                           $alias,
+			   $time,$id,$req,$last,$first,$married,
+                           $school,$year,$email,$homepage,$location);
     $opt_v && &write_entry(*BOOKv,'v',
-                           $time,$id,$req,$last,$first,$married,
-                           $school,$year,$email,$alias,$homepage,$location);
+                           $alias,
+			   $time,$id,$req,$last,$first,$married,
+                           $school,$year,$email,$homepage,$location);
 }
 
 close(DATA);
@@ -130,8 +132,9 @@ Do Not Edit! -->
 
 sub write_entry {
     local(*BOOK,$option,
+	  $alias,
 	  $time,$id,$req,$last,$first,$married,
-	  $school,$year,$email,$alias,$homepage,$location) = @_;
+	  $school,$year,$email,$homepage,$location) = @_;
     
     $last = "$last $married" if $married ne '';
 

@@ -2,11 +2,10 @@
 
 #
 # does the html version of the grad-date address list
-# $Id: aid_class_html,v 1.32 1997/12/22 22:41:57 mjr Exp mjr $
+# $Id: aid_class_html,v 1.34 1998/01/02 20:14:18 mradwin Exp $
 #
 
 require 'aid_util.pl';
-require 'tableheader.pl';
 require 'getopts.pl';
 
 $usage = 'usage: aid_class_html [-hta] infile.adr outfile
@@ -20,8 +19,9 @@ $opt_h && die "$usage\n";
 $ARGV[0] || die "$usage\n";
 $ARGV[1] || die "$usage\n";
 
-$info_gif = "<img src=\"" . &aid_config('master_path') . "info.gif\" " .
-    "height=12 width=12 hspace=4 border=0 alt=\"[i]\">";
+$info_gif = &aid_image_tag('info');
+$blank_gif = ($opt_t) ? "" : &aid_image_tag('blank');
+$cgi = &aid_config('cgi_path');
 
 open(DATAPRE,$ARGV[0]) || die "Can't open $ARGV[0]: $!\n";
 open(FMTOUT,">$ARGV[1]") || die "Can't open $ARGV[1]: $!\n";
@@ -31,11 +31,8 @@ if (!$opt_t) {
     print FMTOUT "<br>";
     $title  = $opt_a ? 'Awalt ' : '';
     $title .= "Alumni Listed by Graduating Class";
-    print FMTOUT &tableheader($title, 1, 'ffff99', '000000', 1);
-    print FMTOUT "<p>Any entries marked with\n" . &new_gif(0) .
-"\nhave been added to the Directory within the last month.  The
-$info_gif
-icon lets you get more detailed information about an alumnus.</p>\n\n";
+    print FMTOUT &aid_tableheader($title);
+    print FMTOUT &common_intro_para(1);
     print FMTOUT "<p><a name=\"top\">Index</a>: <tt>";
 
     $lastYear = '1900';
@@ -43,8 +40,9 @@ icon lets you get more detailed information about an alumnus.</p>\n\n";
     while(<DATAPRE>) {
 	chop;
 
-	($time,$id,$req,$last,$first,$married,
-	 $school,$year,$email,$alias,$homepage,$location) = &aid_parse($_);
+	($alias,
+	 $time,$id,$req,$last,$first,$married,
+	 $school,$year,$email,$homepage,$location) = &aid_parse($_);
 
 	if ($lastYear ne $year) {
 	    $lastYear = $year;
@@ -63,10 +61,6 @@ icon lets you get more detailed information about an alumnus.</p>\n\n";
     print FMTOUT "</tt></p>\n\n<pre>";
 }
 
-$blank_gif = ($opt_t) ? "" :
-    "<img src=\"blank.gif\" height=12 width=12 hspace=4 border=0 alt=\"\">";
-$cgi = &aid_config('cgi_path');
-
 print FMTOUT "Name$blank_gif                                     Email\n";
 print FMTOUT "---------------------------------------------------------------------------";
 
@@ -75,8 +69,9 @@ $lastYear = '1900';
 $first_fac_staff = 0;
 while(<DATA>) {
     chop;
-    ($time,$id,$req,$last,$first,$married,
-     $school,$year,$email,$alias,$homepage,$location) = &aid_parse($_);
+    ($alias,
+     $time,$id,$req,$last,$first,$married,
+     $school,$year,$email,$homepage,$location) = &aid_parse($_);
 
     if ($lastYear ne $year) {
 	$lastYear = $year;
@@ -123,7 +118,7 @@ while(<DATA>) {
     $opt_t || print FMTOUT "<a href=\"mailto:", $email, "\">";
     print FMTOUT $email;
     $opt_t || print FMTOUT "</a>";
-    $opt_t || print FMTOUT " " . &new_gif(1) if &is_new($time);
+    $opt_t || print FMTOUT " " . &aid_image_tag('new_anchored') if &is_new($time);
     print FMTOUT "\n";
 }
 

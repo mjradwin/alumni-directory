@@ -1,14 +1,26 @@
 #
 #     FILE: aid_util.pl
 #   AUTHOR: Michael J. Radwin
-#    DESCR: perl library routines for the MVHS Alumni Internet Directory
-#      $Id: aid_util.pl,v 1.78 1997/12/31 21:31:39 mjr Exp mjr $
+#    DESCR: perl library routines for the Alumni Internet Directory
+#      $Id: aid_util.pl,v 1.80 1998/01/02 20:13:21 mradwin Exp $
 #
+
+$aid_util'rcsid =
+ '$Id: aid_util.pl,v 1.80 1998/01/02 20:13:21 mradwin Exp $';
+
+# ----------------------------------------------------------------------
+# CONFIGURATION
+#
+# to revise the AID for another school, you should edit the 
+# *aid_util'variables in this configuration section, and the
+# subroutines submit_body() and affiliate()
+# ----------------------------------------------------------------------
 
 # divcom.umop-ap.com configuration
 %aid_util'config =  #'font-lock
     ('admin_name',   'Michael John Radwin',
      'admin_email',  "mjr\@acm.org",
+     'school',       'Mountain View High School',
      'admin_school', "Mountain View High School, Class of '93",
      'admin_phone',  '408-536-2554',
      'admin_url',    'http://slimy.com/~mjr/',
@@ -18,13 +30,13 @@
      'index_page',   'index.html',
      'wwwdir',       '/home/divcom/mjr/public_html/mvhs/',
      'newsdir',      '/home/divcom/mjr/public_html/mvhs/whatsnew/',
-     'mvhsdir',      '/home/divcom/mjr/mvhs/',
+     'aiddir',       '/home/divcom/mjr/mvhs/',
      'sendmail',     '/usr/lib/sendmail',
      'mailprog',     '/usr/ucb/mail',
      'mailto',       "mjr\@divcom",
      'mailsubj',     'MVHSAID',
      'spoolfile',    '/var/spool/mail/mjr',
-     'rcsid',        '$Id: aid_util.pl,v 1.78 1997/12/31 21:31:39 mjr Exp mjr $',
+     'rcsid',        "$aid_util'rcsid",
      );
 
 # foo.metamorphosis.net configuration
@@ -39,7 +51,7 @@
 #     'cgi_path',     "/~mjr/cgi-bin/mvhsaid.cgi",
 #     'index_page',   "index.html",
 #     'wwwdir',       "/home/mjr/public_html/mvhs/",
-#     'mvhsdir',      "/home/mjr/mvhs/",
+#     'aiddir',       "/home/mjr/mvhs/",
 #     'sendmail',     "/usr/sbin/sendmail",
 #     'mailprog',     "/usr/bin/mail",
 #     'mailto',       "mjr\@foo",
@@ -47,29 +59,29 @@
 #     );
 
 @aid_util'page_idx = #'font-lock
-    ("Home,"                  . $aid_util'config{'master_path'},
-     "Alphabetically,"        . $aid_util'config{'master_path'} . "all.html",
-     "Grad.&nbsp;Class,"      . $aid_util'config{'master_path'} . "class/",
-     "Awalt&nbsp;Alumni,"     . $aid_util'config{'master_path'} . "awalt.html",
-     "Recent&nbsp;Additions," . $aid_util'config{'master_path'} . "recent.html",
-     "Web&nbsp;Pages,"        . $aid_util'config{'master_path'} . "pages.html",
-     "Get&nbsp;Listed!,"      . $aid_util'config{'master_path'} . "add.html",
+    ("Home,"                  . $aid_util'config{'master_path'},                 #'
+     "Alphabetically,"        . $aid_util'config{'master_path'} . "all.html",    #'
+     "Grad.&nbsp;Class,"      . $aid_util'config{'master_path'} . "class/",      #'
+     "Awalt&nbsp;Alumni,"     . $aid_util'config{'master_path'} . "awalt.html",  #'
+     "Recent&nbsp;Additions," . $aid_util'config{'master_path'} . "recent.html", #'
+     "Web&nbsp;Pages,"        . $aid_util'config{'master_path'} . "pages.html",  #'
+     "Get&nbsp;Listed!,"      . $aid_util'config{'master_path'} . "add.html",    #'
      );
 
-@aid_util'second_idx =  #'font-lock
-    ("Listings,"            . $aid_util'config{'master_path'} . "listings.html",
-     "Reunions,"            . $aid_util'config{'master_path'} . "reunions.html",
-     "Links,"               . $aid_util'config{'master_path'} . "links.html",
-     "Nicknames,"           . $aid_util'config{'master_path'} . "books/",
-     "Tech&nbsp;Notes,"     . $aid_util'config{'master_path'} . "tech.html",
+@aid_util'second_idx = #'font-lock
+    ("Listings,"            . $aid_util'config{'master_path'} . "listings.html", #'
+     "Reunions,"            . $aid_util'config{'master_path'} . "reunions.html", #'
+     "Links,"               . $aid_util'config{'master_path'} . "links.html",    #'
+     "Nicknames,"           . $aid_util'config{'master_path'} . "books/",        #'
+     "Tech&nbsp;Notes,"     . $aid_util'config{'master_path'} . "tech.html",     #'
      "Acceptable&nbsp;Use," . "#disclaimer",
      );
 
-$aid_util'pics_label =
+$aid_util'pics_label = #'font-lock
 "<meta http-equiv=\"PICS-Label\" content='(PICS-1.1 \"http://www.rsac.org/ratingsv01.html\" l gen true comment \"RSACi North America Server\" by \"" . 
 $aid_util'config{'admin_email'} . "\" for \"http://" .
-$aid_util'config{'master_srv'} . $aid_util'config{'master_path'} . 
-"\" on \"1996.04.04T08:15-0500\" r (n 0 s 0 v 0 l 0))'>"; #"font-lock;
+$aid_util'config{'master_srv'} . $aid_util'config{'master_path'} . #'font-lock
+"\" on \"1996.04.04T08:15-0500\" r (n 0 s 0 v 0 l 0))'>";
 
 $aid_util'site_tags = #'font-lock
 "<meta name=\"keywords\" content=\"Mountain View High School, Alumni, MVHS, Awalt High School, Mountain View, Los Altos, California, reunion, Radwin\">\n<meta name=\"description\" content=\"email/web page listing of alumni, students, faculty and staff from Mountain View High School in Mountain View, California.  Also catalogues alumni from Chester F. Awalt High School, which was merged with MVHS in the early 80's.\">";
@@ -77,12 +89,90 @@ $aid_util'site_tags = #'font-lock
 $aid_util'noindex = "<meta name=\"robots\" content=\"noindex\">"; #'font-lock
 %aid_util'aid_aliases = ();   #' global alias hash repository 
 
+$aid_util'disclaimer = #'font-lock
+"<blockquote><a name=\"disclaimer\">Acceptable use</a>: this directory
+is provided solely for the information of alumni of Mountain View High
+School and Awalt High School.  Any solicitation of business,
+information, contributions or other response from individuals listed in
+this publication is forbidden.</blockquote>";
+
+$aid_util'header_bg  = 'ffff99'; #'font-lock
+$aid_util'header_fg  = '000000'; #'font-lock
+
+$aid_util'cell_bg    = 'ffffcc'; #'font-lock
+$aid_util'cell_fg    = '000000'; #'font-lock
+
+$aid_util'star_fg    = 'ff0000'; #'font-lock
+
+$aid_util'body_bg    = 'ffffff'; #'font-lock
+$aid_util'body_fg    = '000000'; #'font-lock
+$aid_util'body_link  = '0000cc'; #'font-lock
+$aid_util'body_vlink = '990099'; #'font-lock
+
+%aid_util'image_tag = #'font-lock
+    (
+     'new',
+     "<img src=\"" . $aid_util'config{'master_path'} . #'fnt
+     "new.gif\" border=0 width=28 height=11 " .
+     "alt=\"[new]\">",
+     
+     'new_anchored',
+     "<a href=\"" . $aid_util'config{'master_path'} . "recent.html\">" .
+     "<img src=\"" . $aid_util'config{'master_path'} .
+     "new.gif\" border=0 width=28 height=11 " .
+     "alt=\"[new]\"></a>",
+
+     'title',
+     "<img src=\"" . $aid_util'config{'master_path'} . #'fnt
+     "title.gif\"\nborder=0 align=bottom width=398 height=48\n" .
+     "alt=\"Mountain View High School Alumni Internet Directory\">",
+
+     'vcard',
+     "<img src=\"" . $aid_util'config{'master_path'} . #'fnt
+     "vcard.gif\" border=0 align=top width=32 height=32 " .
+     "alt=\"[vCard]\">",
+
+     'info',
+     "<img src=\"" . $aid_util'config{'master_path'} . #'fnt
+     "info.gif\" border=0 hspace=4 width=12 height=12 " .
+     "alt=\"[i]\">",
+
+     'blank',
+     "<img src=\"" . $aid_util'config{'master_path'} . #'fnt
+     "blank.gif\" border=0 hspace=4 width=12 height=12 " .
+     "alt=\"\">",
+     );
+
+# ======================================================================
+
+
 # give 'em back the configuration variable they need
 sub aid_config {
     package aid_util;
 
+    local($[) = 0;
+
     die "NO CONFIG $_[0]!\n" if !defined($config{$_[0]});
     return $config{$_[0]};
+}
+
+# give 'em back the image_tag they need
+sub aid_image_tag {
+    package aid_util;
+
+    local($[) = 0;
+
+    die "NO IMAGE_TAG $_[0]!\n" if !defined($image_tag{$_[0]});
+    return $image_tag{$_[0]};
+}
+
+sub aid_tableheader {
+    require 'tableheader.pl';
+    package aid_util;
+
+    local($text) = @_;
+    
+    return &main'tableheader($text,1,$header_bg,$header_fg,1); #'fnt
 }
 
 # is the GMT less than one month ago?
@@ -90,20 +180,9 @@ sub aid_config {
 sub is_new {
     package aid_util;
 
+    local($[) = 0;
+
     return ((time - $_[0]) < 2678400) ? 1 : 0;
-}
-
-
-# &new_gif(1) for anchored, &new_gif(0) for just plain img
-sub new_gif {
-    package aid_util;
-
-    local($tag) = "<img src=\"" . $config{'master_path'} . 
-	"new.gif\" border=0 width=28 height=11 alt=\"[new]\">";
-
-    return (($_[0] ?
-	     "<a href=\"" . $config{'master_path'} . "recent.html\">" :
-	     "") . $tag . ($_[0] ? "</a>" : ""));
 }
 
 
@@ -197,13 +276,35 @@ sub mangle {
 }
 
 
+sub aid_split {
+    package aid_util;
+
+    local($_) = @_;
+    local($time,$id,$req,$last,$first,$married,
+	  $school,$year,$email,$homepage,$location) = split(/;/);
+
+    return ($time,$id,$req,$last,$first,$married,
+	    $school,$year,$email,$homepage,$location);
+}
+
+
+sub aid_join {
+    package aid_util;
+
+    local($time,$id,$req,$last,$first,$married,
+	  $school,$year,$email,$homepage,$location) = @_;
+
+    return join(';', ($time,$id,$req,$last,$first,$married,
+		      $school,$year,$email,$homepage,$location));
+}
+
+
 sub aid_parse {
     package aid_util;
 
-    local($[) = 0;
     local($_) = @_;
-    local($time,$id,$req,$last,$first,$married,$school,
-	  $year,$email,$homepage,$location) = split(/;/);
+    local($time,$id,$req,$last,$first,$married,
+	  $school,$year,$email,$homepage,$location) = &aid_split($_);
     local($mangledLast,$mangledFirst,$alias);
 
     $mangledLast = &main'mangle($last);   #' font-lock
@@ -219,8 +320,9 @@ sub aid_parse {
         $aid_aliases{$alias} = 1;
     }
 
-    return ($time,$id,$req,$last,$first,$married,
-	    $school,$year,$email,$alias,$homepage,$location);
+    return ($alias,
+	    $time,$id,$req,$last,$first,$married,
+	    $school,$year,$email,$homepage,$location);
 }
 
 
@@ -230,7 +332,7 @@ sub aid_create_db {
     local($filename) = @_;
     local($[) = 0;
     local($_);
-    local(@db, @result, *INFILE);
+    local(@db,*INFILE);
 
     open(INFILE,$filename) || die "Can't open $filename: $!\n";
     while(<INFILE>) {
@@ -243,11 +345,34 @@ sub aid_create_db {
 }
 
 
+sub aid_util'bydatakeys { $datakeys[$a] cmp $datakeys[$b] } #'fnt
+sub aid_alpha_db {
+    package aid_util;
+
+    local($filename) = @_;
+    local(@db) = &main'aid_create_db($filename);  #'fnt
+    local($time,$id,$req,$last,$first,$married,
+	  $school,$year,$email,$homepage,$location);
+    local($[) = 0;
+    local($_);
+
+    @alpha = ();
+    @datakeys = ();
+
+    foreach (@db) {
+	($time,$id,$req,$last,$first,$married,
+	 $school,$year,$email,$homepage,$location) = &aid_split($_);
+	push(@datakeys, "$last;$first");
+    }
+
+    @alpha = @db[sort bydatakeys $[..$#db];
+    return @alpha;
+}
+
 sub aid_get_usertext {
     package aid_util;
 
     local($id) = @_;
-    local($[) = 0;
     local($_);
     local($text,$inFile,*TEXTFILE);
 
@@ -264,18 +389,24 @@ sub aid_get_usertext {
 }
 
 
+sub blank_rawdata {
+    package aid_util;
+
+    return &main'aid_join(0,-1,2,'','','',
+			  'MVHS','','','',''); #'fnt
+}
+
 sub submit_body {
-    require 'tableheader.pl';
     package aid_util;
 
     local($[) = 0;
     local($_);
     local($tableh);
-    local($star) = "<font color=\"#ff0000\">*</font>";
-    local($rawdata,$message,$interactivep,$blank) = @_;
+    local($star) = "<font color=\"#$star_fg\">*</font>";
+    local($rawdata,$message,$blankp) = @_;
     local($mvhs_checked,$awalt_checked,$other_checked) = ('', '', '');
     local($time,$id,$req,$last,$first,$married,
-	  $school,$year,$email,$homepage,$location) = split(/;/, $rawdata);
+	  $school,$year,$email,$homepage,$location) = &aid_split($rawdata);
     local(@reqchk,$i);
 
     $homepage = 'http://' if $homepage eq '';
@@ -296,19 +427,16 @@ sub submit_body {
     }
 
     if ($id != -1) {
-	$tableh = 
-	    &main'tableheader("Update Your Directory Listing", 
-                              1, "ffff99", "000000", 1);
-	$tableh .= "\n<p>Please update the following information";
-	$tableh .= " and hit the <strong>Next&nbsp;&gt;</strong> button.</p>\n\n";
-	$tableh .= "<p>Fields marked with a <font color=\"#ff0000\">*</font>";
-	$tableh .= " are required.  All other fields are optional.</p>\n\n";
+	$tableh = &main'aid_tableheader('Update Your Directory Listing'); #'f
+	$tableh .= "
+<p>Please update the following information and hit the
+<strong>Next&nbsp;&gt;</strong> button.</p>
+
+<p>Fields marked with a $star
+are required.  All other fields are optional.</p>\n\n";
 
     } else {
-	$tableh =
-	    &main'tableheader("Add a Listing to the Directory",
-                              1, "ffff99", "000000", 1);
-
+	$tableh = &main'aid_tableheader('Add a Listing to the Directory'); #'f
 	$tableh .= "
 <p>If you'd like to update your existing entry, please see the 
 <a href=\"" . $config{'cgi_path'} . "?update\">update page</a>.  
@@ -321,8 +449,8 @@ the <strong>Next&nbsp;&gt;</strong> button. Fields marked with a $star
 are required.  All other fields are optional.</p>\n\n";
     }
 
-    if ($interactivep && $blank) {
-	$tableh .= "<p><font color=\"#ff0000\"><strong>You left one or more ";
+    if ($blankp) {
+	$tableh .= "<p><font color=\"#$star_fg\"><strong>You left one or more ";
 	$tableh .= "required fields blank.\nPlease fill them in below ";
 	$tableh .= "and resubmit.</strong></font></p>\n\n";
     }
@@ -332,75 +460,74 @@ are required.  All other fields are optional.</p>\n\n";
 <table border=0>
 <tr><td>
 <table border=0 width=\"100%\">
-<tr><td bgcolor=\"#ffffcc\"><table border=0 cellspacing=7>
+<tr><td bgcolor=\"#$cell_bg\"><table border=0 cellspacing=7>
 <tr>
-  <td valign=top><font color=\"#000000\">First Name</font></td>
+  <td valign=top><font color=\"#$cell_fg\">First Name</font></td>
   <td>$star</td>
   <td valign=top><input type=text name=\"first\" size=35 
   value=\"$first\"></td>
 </tr>
 <tr>
-  <td valign=top><font color=\"#000000\">Last/Maiden Name</font></td>
+  <td valign=top><font color=\"#$cell_fg\">Last/Maiden Name</font></td>
   <td>$star</td>
   <td valign=top><input type=text name=\"last\" size=35
   value=\"$last\"></td>
 </tr>
 <tr>
-  <td colspan=2 valign=top><font color=\"#000000\">Married Name</font><br>
-  <font color=\"#000000\" size=\"-1\">(if different from Maiden Name)</font></td>
+  <td colspan=2 valign=top><font color=\"#$cell_fg\">Married Name</font><br>
+  <font color=\"#$cell_fg\" size=\"-1\">(if different from Maiden Name)</font></td>
   <td valign=top><input type=text name=\"married\" size=35
   value=\"$married\"></td>
 </tr>
 <tr>
-  <td valign=top><font color=\"#000000\">High School</font></td>
+  <td valign=top><font color=\"#$cell_fg\">High School</font></td>
   <td>$star</td>
   <td valign=top><input type=radio name=\"school\"
-  value=\"MVHS\"$mvhs_checked><font color=\"#000000\">&nbsp;MVHS&nbsp;&nbsp;&nbsp;&nbsp;<input
+  value=\"MVHS\"$mvhs_checked><font color=\"#$cell_fg\">&nbsp;MVHS&nbsp;&nbsp;&nbsp;&nbsp;<input
   type=radio name=\"school\" value=\"Awalt\"$awalt_checked>&nbsp;Awalt</font></td>
 </tr>
 <tr>
   <td valign=top>&nbsp;</td>
   <td valign=top>&nbsp;</td>
   <td valign=top><input type=radio name=\"school\" 
-  value=\"Other\"$other_checked><font color=\"#000000\">&nbsp;Other:&nbsp;</font><input type=text
+  value=\"Other\"$other_checked><font color=\"#$cell_fg\">&nbsp;Other:&nbsp;</font><input type=text
   name=\"sch_other\" size=27 value=\"$school\"></td>
 </tr>
 <tr>
-  <td valign=top><font color=\"#000000\">Graduation year or affiliation</font><br>
-  <font color=\"#000000\" size=\"-1\">(such as 1993, 2001, or Teacher)</font></td>
+  <td valign=top><font color=\"#$cell_fg\">Graduation year or affiliation</font><br>
+  <font color=\"#$cell_fg\" size=\"-1\">(such as 1993, 2001, or Teacher)</font></td>
   <td>$star</td>
   <td valign=top><input type=text name=\"grad\" size=35
   value=\"$year\"></td>
 </tr>
 <tr>
-  <td valign=top><font color=\"#000000\">E-mail address</font><br>
-  <font color=\"#000000\" size=\"-1\">(such as albert\@aol.com)</font></td>
+  <td valign=top><font color=\"#$cell_fg\">E-mail address</font><br>
+  <font color=\"#$cell_fg\" size=\"-1\">(such as albert\@aol.com)</font></td>
   <td>$star</td>
   <td valign=top><input type=text name=\"mail\" size=35
   value=\"$email\"></td>
 </tr>
 <tr>
-  <td colspan=2 valign=top><font color=\"#000000\">Web Page</font></td>
+  <td colspan=2 valign=top><font color=\"#$cell_fg\">Web Page</font></td>
   <td valign=top><input type=text name=\"homepage\" size=35
   value=\"$homepage\"></td>
 </tr>
 <tr>
-  <td colspan=2 valign=top><font color=\"#000000\">Location</font><br>
-  <font color=\"#000000\" size=\"-1\">(city, school, or company)</font></td>
+  <td colspan=2 valign=top><font color=\"#$cell_fg\">Location</font><br>
+  <font color=\"#$cell_fg\" size=\"-1\">(city, school, or company)</font></td>
   <td valign=top><input type=text name=\"location\" size=35
   value=\"$location\"></td>
 </tr>
 <tr>
-  <td colspan=3><font color=\"#000000\">
+  <td colspan=3><font color=\"#$cell_fg\">
   <br><strong>What's New?</strong> (Beta) Tell us, in 100 words or less, what
   you've been up to recently.</font>
-  <img src=\"" . $config{'master_path'} .
-  "new.gif\" alt=\"[new]\" width=\"28\" height=\"11\"><br>
+  $image_tag{'new'}<br>
   <textarea name=\"message\" rows=10 cols=55 wrap>$message</textarea>
   </td>
 </tr>
 <tr>
-  <td colspan=3><font color=\"#000000\"><br>Please 
+  <td colspan=3><font color=\"#$cell_fg\"><br>Please 
   <a href=\"" . $config{'master_path'} . "tech.html#mailings\">send 
   an updated copy</a> of the Directory to my email address every 3-4 
   months:<br>
@@ -469,11 +596,11 @@ sub about_text {
     local($retval) = '';
     local($rawdata,$message,$show_req_p,$do_html_p,$do_vcard_p) = @_;
     local($time,$id,$req,$last,$first,$married,
-	  $school,$year,$email,$homepage,$location) = split(/;/, $rawdata);
+	  $school,$year,$email,$homepage,$location) = &aid_split($rawdata);
 
     $do_vcard_p = 0 unless defined($do_vcard_p);
 
-    $retval .= "<table border=0 cellpadding=6><tr><td bgcolor=\"#ffffcc\"><font color=\"#000000\"><pre>\n\n" if $do_html_p;
+    $retval .= "<table border=0 cellpadding=6><tr><td bgcolor=\"#$cell_bg\"><font color=\"#$cell_fg\"><pre>\n\n" if $do_html_p;
     $retval .= "First Name         : ";
     $retval .= ($first eq '') ? "\n" : 
 	((($do_html_p) ? "<strong>" : "") .
@@ -531,9 +658,8 @@ sub about_text {
     if ($do_vcard_p && $do_html_p) {
 	$retval .= "vCard              : ";
 	$retval .= "<a href=\"$config{'cgi_path'}/vcard/${id}.vcf\">";
-	$retval .= "<img src=\"$config{'master_path'}vcard.gif\" ";
-	$retval .= "height=32 width=32 border=0 align=top ";
-	$retval .= "alt=\"[vCard]\"></a>\n";
+	$retval .= $image_tag{'vcard'};
+	$retval .= "</a>\n";
     }
 
     if ($show_req_p) {
@@ -594,20 +720,28 @@ don't abuse it and force us to install a password door.<p>
 ";
 }
 
+sub common_intro_para {
+    package aid_util;
+
+    local($[) = 0;
+    local($new) = "<p>Any entries marked with\n" . $image_tag{'new'} .
+	"have been added to the Directory within the last month.\n";
+    local($info) = "The " . $image_tag{'info'} .
+	"icon lets you get more detailed information about an alumnus.";
+    local($end) = "</p>\n\n";
+
+    return $new . ($_[0] ? $info : '') . $end;
+}
 
 sub common_html_ftr {
     package aid_util;
 
     local($page) = @_;
-    local($rcsid) = "<!-- " . $config{'rcsid'} . " -->";
+    local($rcstag) = "<!-- " . $config{'rcsid'} . " -->";
     local($ftr);
 
-    $ftr = "
-<!-- begin common_html_ftr -->
-$rcsid
-
-<hr noshade size=1>
-<p align=center><font size=\"-1\">";
+    $ftr  = "\n<!-- begin common_html_ftr -->\n$rcstag\n\n";
+    $ftr .= "<hr noshade size=1>\n<p align=center><font size=\"-1\">";
 
     foreach $idx (0 .. $#page_idx) {
 	($name, $url) = split(/,/, $page_idx[$idx]);
@@ -630,25 +764,11 @@ $rcsid
     }
     $ftr .= "\n</font></p>\n";
     
-    $ftr .= "
-<blockquote><a name=\"disclaimer\">Acceptable use</a>: this directory is
-provided solely for the information of alumni of Mountain View High
-School and Awalt High School.  Any solicitation of business,
-information, contributions or other response from individuals listed in
-this publication is forbidden.</blockquote>
-
-<hr noshade size=1>
-
-<p><a href=\"" . $config{'admin_url'} .
-"\"><em>" . $config{'admin_name'} . "</em></a><em>,</em> <a 
-href=\"mailto:" . $config{'admin_email'} . 
-"\"><tt>" . $config{'admin_email'} . "</tt></a></p>
-
-<!-- end common_html_ftr -->
-
-</body>
-</html>
-";
+    $ftr .= "\n$disclaimer\n\n<hr noshade size=1>\n<p><a href=\"" .
+	$config{'admin_url'} . "\"><em>" . $config{'admin_name'} .
+	"</em></a><em>,</em> <a\nhref=\"mailto:" . $config{'admin_email'} . 
+	"\"><tt>" . $config{'admin_email'} . "</tt></a></p>\n\n" .
+	"<!-- end common_html_ftr -->\n\n</body>\n</html>\n";
 
     return $ftr;
 }
@@ -659,25 +779,27 @@ sub common_html_hdr {
     package aid_util;
 
     local($page,$norobots) = @_;
-    local($h1, $h2, $h3, $h4, $html_head);
-    local($name, $url);
+    local($h1,$h2,$h3,$html_head);
+    local($name,$url);
     local($timestamp);
-    local($rcsid) = "<!-- " . $config{'rcsid'} . " -->";
+    local($rcstag) = "<!-- " . $config{'rcsid'} . " -->";
+    local($date) = &main'ctime(time);  #'font-lock
 
-    $timestamp = ($page == 0) ? 'Last update to Directory: ' :
-	'Last update to this page: ';
+    chop($date);
+    $timestamp = (($page == 0) ? 'Last update to Directory: ' :
+		  'Last update to this page: ') . $date;
 
-    $h1 = "<body bgcolor=\"#ffffff\" link=\"#0000cc\" text=\"#000000\" vlink=\"#990099\">
+    $h1 = "<body bgcolor=\"#$body_bg\" text=\"#$body_fg\" link=\"#$body_link\" vlink=\"#$body_vlink\">
 <hr noshade size=1>
 <table border=0 cellpadding=5 cellspacing=0 width=\"100%\">
 <tr>
-  <td bgcolor=\"#ffffcc\" valign=top align=left rowspan=2><font size=\"-1\">";
+  <td bgcolor=\"#$cell_bg\" valign=top align=left rowspan=2><font size=\"-1\">";
 
     $h2 = "";
     foreach $idx (0 .. $#page_idx) {
 	($name, $url) = split(/,/, $page_idx[$idx]);
         if ($idx == $page) {
-	    $h2 .= "\n  <font color=\"#000000\"><strong>$name</strong></font>";
+	    $h2 .= "\n  <font color=\"#$cell_fg\"><strong>$name</strong></font>";
         } else {
             $h2 .= "<a\n  href=\"$url\">$name</a>";
         }
@@ -685,11 +807,11 @@ sub common_html_hdr {
     }
     $h2 .= "</font></td>\n";
 
-    $h2 .= "  <td bgcolor=\"#ffffcc\" valign=top align=left rowspan=2><font size=\"-1\"><br>";
+    $h2 .= "  <td bgcolor=\"#$cell_bg\" valign=top align=left rowspan=2><font size=\"-1\"><br>";
     foreach $idx (0 .. $#second_idx) {
 	($name, $url) = split(/,/, $second_idx[$idx]);
         if ($idx == ($page - 10)) {
-	    $h2 .= "\n  <font color=\"#000000\"><strong>$name</strong></font>";
+	    $h2 .= "\n  <font color=\"#$cell_fg\"><strong>$name</strong></font>";
         } else {
             $h2 .= "<a\n  href=\"$url\">$name</a>";
         }
@@ -697,31 +819,31 @@ sub common_html_hdr {
     }
     $h2 .= "</font></td>\n";
 
-    $h3 = "  <td align=right valign=top bgcolor=\"#ffffcc\">&nbsp;<a href=\""
-  . $config{'master_path'} . "\"><img
-  src=\"" . $config{'master_path'} . "title.gif\"
-  alt=\"Mountain View High School Alumni Internet Directory\"
-  align=bottom width=398 height=48 border=0></a></td>
+    $h3 = "  <td align=right valign=top bgcolor=\"#$cell_bg\">&nbsp;<a href=\"" .
+	$config{'master_path'} . "\">" . $image_tag{'title'} .
+"</a></td>
 </tr>
 <tr>
-  <td align=right valign=bottom bgcolor=\"#ffffcc\"><font size=\"-1\"
-  color=\"#000000\"><i>$timestamp" . &main'ctime(time) . "</i></font>
+  <td align=right valign=bottom bgcolor=\"#$cell_bg\"><font size=\"-1\"
+  color=\"#$cell_fg\"><i>$timestamp</i></font>
   </td>
 </tr>
 </table>
 <hr noshade size=1>
-<!-- discourage www.roverbot.com --><!--BAD-DOG-->
+
+<!-- discourage www.roverbot.com -->
+<!--BAD-DOG-->
 
 ";
 
     $html_head = "<html>\n<head>\n" .
-	"<title>Mountain View High School Alumni Internet Directory" .
+	"<title>" . $config{'school'} . " Alumni Internet Directory" .
 	"</title>\n" . $site_tags . "\n" . $pics_label . "\n";
     $html_head .= "$noindex\n" if $norobots;
     $html_head .= "</head>\n\n";
     
     return $html_head .
-	"<!-- begin common_html_hdr -->\n$rcsid\n" .
+	"<!-- begin common_html_hdr -->\n$rcstag\n" .
         $h1 . $h2 . $h3 .
         "<!-- end common_html_hdr -->\n";
 }

@@ -2,11 +2,10 @@
 
 #
 # does the html version of the alphabetical address list
-# $Id: aid_alpha_html,v 1.27 1997/12/22 22:31:42 mjr Exp mjr $
+# $Id: aid_alpha_html,v 1.29 1998/01/02 20:14:18 mradwin Exp $
 #
 
 require 'aid_util.pl';
-require 'tableheader.pl';
 require 'getopts.pl';
 
 $htmlname = "all.html";
@@ -21,8 +20,9 @@ $opt_h && die "$usage\n";
 $ARGV[0] || die "$usage\n";
 $ARGV[1] || die "$usage\n";
 
-$info_gif = "<img src=\"" . &aid_config('master_path') . "info.gif\" " .
-    "height=12 width=12 hspace=4 border=0 alt=\"[i]\">";
+$info_gif = &aid_image_tag('info');
+$blank_gif = ($opt_t) ? "" : &aid_image_tag('blank');
+$cgi = &aid_config('cgi_path');
 
 open(DATA,$ARGV[0]) || die "Can't open $ARGV[0]: $!\n";
 open(FMTOUT,">$ARGV[1]") || die "Can't open $ARGV[1]: $!\n";
@@ -30,12 +30,8 @@ open(FMTOUT,">$ARGV[1]") || die "Can't open $ARGV[1]: $!\n";
 if (!$opt_t) {
     print FMTOUT &common_html_hdr(1,1);
     print FMTOUT "<br>";
-    print FMTOUT &tableheader("Alumni Listed by Last Name", 1, 'ffff99',
-'000000', 1);
-    print FMTOUT "<p>Any entries marked with\n" . &new_gif(0) .
-"\nhave been added to the Directory within the last month.  The
-$info_gif
-icon lets you get more detailed information about an alumnus.</p>\n\n";
+    print FMTOUT &aid_tableheader('Alumni Listed by Last Name');
+    print FMTOUT &common_intro_para(1);
     print FMTOUT "<p><a name=\"top\">Index</a>: <tt>";
     # do the funky quick-jump bar
     $lastInitial = 'A';
@@ -47,18 +43,15 @@ icon lets you get more detailed information about an alumnus.</p>\n\n";
     print FMTOUT "\n<p>\n<pre>";
 }
 
-$blank_gif = ($opt_t) ? "" : 
-	"<img src=\"blank.gif\" height=12 width=12 hspace=4 border=0 alt=\"\">";
-$cgi = &aid_config('cgi_path');
-
 print FMTOUT "Name and Graduation Year$blank_gif                 Email\n";
 print FMTOUT "---------------------------------------------------------------------------";
 
 $lastInitial = "Z";
 while(<DATA>) {
     chop;
-    ($time,$id,$req,$last,$first,$married,
-     $school,$year,$email,$alias,$homepage,$location) = &aid_parse($_);
+    ($alias,
+     $time,$id,$req,$last,$first,$married,
+     $school,$year,$email,$homepage,$location) = &aid_parse($_);
 
     if ($lastInitial ne substr($last, 0, 1)) {
 	$lastInitial = substr($last, 0, 1);
@@ -84,7 +77,7 @@ while(<DATA>) {
     $opt_t || print FMTOUT "<a href=\"mailto:", $email, "\">";
     print FMTOUT $email;
     $opt_t || print FMTOUT "</a>";
-    $opt_t || print FMTOUT " " . &new_gif(1) if &is_new($time);
+    $opt_t || print FMTOUT " " . &aid_image_tag('new_anchored') if &is_new($time);
     print FMTOUT "\n";
 }
 

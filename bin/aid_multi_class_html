@@ -2,11 +2,10 @@
 
 #
 # does the html verbose pages
-# $Id: aid_verbose_html,v 1.10 1998/01/01 00:21:47 mjr Exp mjr $
+# $Id: aid_verbose_html,v 1.12 1998/01/02 20:14:18 mradwin Exp $
 #
 
 require 'aid_util.pl';
-require 'tableheader.pl';
 require 'getopts.pl';
 require 'ctime.pl';
 
@@ -24,7 +23,7 @@ open(DATA,$ARGV[0]) || die "Can't open $ARGV[0]: $!\n";
 $_ = <DATA>;
 chop;
 ($time,$id,$req,$last,$first,$married,
- $school,$year,$email,$alias,$homepage,$location) = &aid_parse($_);
+ $school,$year,$email,$homepage,$location) = &aid_split($_);
 
 @years = ();
 
@@ -39,16 +38,14 @@ for(;;) {
     print FMTOUT &common_html_hdr(-1,1);
     print FMTOUT "<br>";
     $title  = ($year =~ /^\d+$/) ? "Class of $year" : "Faculty and Staff";
-    print FMTOUT &tableheader($title, 1, 'ffff99', '000000', 1);
-    print FMTOUT "<p>Any entries marked with\n" . &new_gif(0) . "\n";
-    print FMTOUT "have been added to the Directory within the last month.";
-    print FMTOUT "</p>\n\n";
+    print FMTOUT &aid_tableheader($title);
+    print FMTOUT &common_intro_para(0);
 
     &write_entry(*FMTOUT,$_);
     while(<DATA>) {
 	chop;
 	($time,$id,$req,$last,$first,$married,
-	 $school,$year,$email,$alias,$homepage,$location) = &aid_parse($_);
+	 $school,$year,$email,$homepage,$location) = &aid_split($_);
 	
 	last if (($year ne $currentYear) && ($currentYear =~ /^\d+$/));
 	&write_entry(*FMTOUT,$_);
@@ -64,8 +61,7 @@ open(FMTOUT,">$outFile") || die "Can't open $outFile: $!\n";
 
 print FMTOUT &common_html_hdr(2,0);
 print FMTOUT "<br>";
-print FMTOUT &tableheader('Alumni Listed by Graduating Class',
-			  1, 'ffff99', '000000', 1);
+print FMTOUT &aid_tableheader('Alumni Listed by Graduating Class');
 print FMTOUT "<p><center><font size=\"+1\">";
 print FMTOUT "Compact&nbsp;Form:<br>\n";
 print FMTOUT "<a href=\"" . &aid_config('master_path') . "class.html\">";
@@ -94,8 +90,8 @@ sub write_entry {
     local($[) = 0;
     local($_);
     local($fullname,$message);
-    local($time,$id,$req,$last,$first,$married,$school,
-	  $year,$email,$alias,$homepage,$location) = &aid_parse($record);
+    local($time,$id,$req,$last,$first,$married,
+	  $school,$year,$email,$homepage,$location) = &aid_split($record);
 
     $fullname = &inorder_fullname($first,$last,$married);
 
@@ -113,7 +109,7 @@ sub write_entry {
     print FMTOUT "vCard</a>";
     print FMTOUT "]</font>\n";
 
-    print FMTOUT &new_gif(1) if &is_new($time);
+    print FMTOUT &aid_image_tag('new_anchored') if &is_new($time);
 
     print FMTOUT "<dt>School: <strong>$school</strong>\n" 
 	if $school ne 'MVHS';

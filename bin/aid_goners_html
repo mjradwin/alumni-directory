@@ -2,11 +2,10 @@
 
 #
 # does the html version of the invalid address list
-# $Id: aid_goners_html,v 1.24 1997/12/23 18:04:06 mjr Exp mjr $
+# $Id: aid_goners_html,v 1.26 1998/01/02 20:14:18 mradwin Exp $
 #
 
 require 'aid_util.pl';
-require 'tableheader.pl';
 
 die "Usage: aid_goners_html infile.adr outfile.html\n" if !$ARGV[0] || !$ARGV[1];
 open(DATA,$ARGV[0]) || die "Can't open $ARGV[0]: $!\n";
@@ -14,8 +13,7 @@ open(FMTOUT,">$ARGV[1]") || die "Can't open $ARGV[1]: $!\n";
 
 print FMTOUT &common_html_hdr(-1,1);
 print FMTOUT "<br>";
-print FMTOUT &tableheader("Alumni with Invalid Addresses", 1, 'ffff99',
-'000000', 1);
+print FMTOUT &aid_tableheader('Alumni with Invalid Addresses');
 print FMTOUT "
 <p>The following addresses are invalid because either email to them
 bounces, or the address is being used by a new owner.  If you know a
@@ -28,7 +26,7 @@ print FMTOUT "------------------------------------------------------------------
 while(<DATA>) {
     chop;
     ($time,$id,$req,$last,$first,$married,
-     $school,$year,$email,$alias,$homepage,$location) = &aid_parse($_);
+     $school,$year,$email,$homepage,$location) = &aid_split($_);
 
     $fullname = &fullname($first,$last,$married);
     ($affil,$len) = &affiliate($year,$school,0);

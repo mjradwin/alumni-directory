@@ -4,7 +4,6 @@
 
 require 'getopts.pl';
 require 'aid_util.pl';
-require 'tableheader.pl';
 
 $usage = 'usage: aid_www_html [-h] infile.adr outfile
     -h        Display usage information.
@@ -15,29 +14,26 @@ $opt_h && die "$usage\n";
 $ARGV[0] || die "$usage\n";
 $ARGV[1] || die "$usage\n";
 
+$info_gif = &aid_image_tag('info');
+$blank_gif = &aid_image_tag('blank');
+$cgi = &aid_config('cgi_path');
+
 open(DATA,$ARGV[0]) || die "Can't open $ARGV[0]: $!\n";
 open(FMTOUT,">$ARGV[1]") || die "Can't open $ARGV[1]: $!\n";
 
-$info_gif = "<img src=\"info.gif\" height=12 width=12 hspace=4 border=0 alt=\"[i]\">";
-$blank_gif = "<img src=\"blank.gif\" height=12 width=12 hspace=4 border=0 alt=\"\">";
-$cgi = &aid_config('cgi_path');
-
 print FMTOUT &common_html_hdr(5,1);
 print FMTOUT "<br>";
-print FMTOUT &tableheader("Alumni with Web Pages", 1, 'ffff99',
-'000000', 1);
-print FMTOUT "<p>Any entries marked with\n" . &new_gif(0) .
-"\nhave been added to the Directory within the last month.  The
-$info_gif
-icon lets you get more detailed information about an alumnus.</p>\n\n";
+print FMTOUT &aid_tableheader('Alumni with Web Pages');
+print FMTOUT &common_intro_para(1);
 print FMTOUT "<pre>";
 print FMTOUT "Name and Graduation Year$blank_gif                  Email\n";
 print FMTOUT "---------------------------------------------------------------------------\n";
 
 while(<DATA>) {
     chop;
-    ($time,$id,$req,$last,$first,$married,
-     $school,$year,$email,$alias,$homepage,$location) = &aid_parse($_);
+    ($alias,
+     $time,$id,$req,$last,$first,$married,
+     $school,$year,$email,$homepage,$location) = &aid_parse($_);
     next if $homepage eq '';
 
     $fullname = &fullname($first,$last,$married);
@@ -53,7 +49,7 @@ while(<DATA>) {
     print FMTOUT $affil;
     print FMTOUT ' ', ' ' x (41 - (length($fullname) + $len));
     print FMTOUT "<a href=\"mailto:", $email, "\">", $email, "</a>";
-    print FMTOUT " " . &new_gif(1) if &is_new($time);
+    print FMTOUT " " . &aid_image_tag('new_anchored') if &is_new($time);
     print FMTOUT "\n";
 }
 

@@ -2,7 +2,7 @@
 
 #
 # mails a welcome or update note to everyone in targets.adr
-# $Id: aid_welcome,v 1.23 1997/12/31 20:37:35 mjr Exp mjr $
+# $Id: aid_welcome,v 1.25 1998/01/02 20:14:18 mradwin Exp $
 #
 
 require 'aid_util.pl';
@@ -20,7 +20,7 @@ $opt_h && die "$usage\n";
 ($opt_c && $opt_u) && die "$usage\n";
 $ARGV[0] || die "$usage\n";
 
-$logfile = &aid_config('mvhsdir') . "logs/welcome.log";
+$logfile = &aid_config('aiddir') . "logs/welcome.log";
 $subject = ($opt_c) ? 'Confirming your MVHS Alumni Internet Directory entry' :
     ($opt_u) ? 'Your MVHS Alumni Internet Directory entry is updated' : 
     'Welcome to the MVHS Alumni Internet Directory';
@@ -34,7 +34,7 @@ select(LOG); $| = 1; select(STDOUT);
 while(<TARGET>) {
     chop;
     ($time,$id,$req,$last,$first,$married,
-     $school,$year,$email,$homepage,$location) = split(/;/);
+     $school,$year,$email,$homepage,$location) = &aid_split($_);
     next unless $email;
     next if $opt_c && !$req;
 
@@ -49,7 +49,7 @@ exit(0);
 
 sub message_body {
     local($time,$id,$req,$last,$first,$married,
-	  $school,$year,$email,$homepage,$location) = split(/;/, $_[0]);
+	  $school,$year,$email,$homepage,$location) = &aid_split($_[0]);
     local($denied) = ($req) ? '' :
 	"\nSince you asked not to receive the Alumni Internet Directory via email,\nthis is the only notice you will receive.\n";
 

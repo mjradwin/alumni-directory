@@ -4,7 +4,7 @@
 #     FILE: mvhsaid.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: MVHS Alumni Internet Directory CGI interface
-#      $Id: mvhsaid,v 1.54 1998/01/01 00:21:47 mjr Exp mjr $
+#      $Id: mvhsaid,v 1.56 1998/01/02 20:14:18 mradwin Exp $
 #
 
 require 'aid_util.pl';
@@ -12,70 +12,74 @@ require 'cgi-lib.pl';
 
 # configuration
 $mailprog = &aid_config('mailprog');
-$dbfile = &aid_config('wwwdir') . "mvhs.adr";
+$dbfile = &aid_config('wwwdir') . "master.adr";
 
 @required_headers = ('id', 'last', 'first', 'school', 'grad', 'mail');
 
-&ReadParse;
+&ReadParse();
 
-# debugging: what version is installed?
-if (defined($in{'version'})) {
-    select(STDOUT);  $| = 1;
-    print "Content-type: text/plain\n\n";
-    print '$Id: mvhsaid,v 1.54 1998/01/01 00:21:47 mjr Exp mjr $', "\n"; #'fnt
-    exit(0);
-}
-
-# dynamic form here if they set the update flag
-if (defined($in{'update'})) {
-    if ($in{'update'} =~ /^\d+$/) {
-	@db = &aid_create_db($dbfile);
-	if (defined($db[$in{'update'}])) {
-	    &send_upd_real($db[$in{'update'}],
-			   &aid_get_usertext($in{'update'}),1,0);
-	} else {
-	    &send_blank_submit;
-	}
-    } else {
-	&send_upd_list;
-    }
-    exit(0);
-}
-
-if ($ENV{'PATH_INFO'} =~ m,^/vcard/,) { #' font-lock
+# convert "cgi-bin/mvhsaid/vcard/123.vcf" to "cgi-bin/mvhsaid?vcard=123"
+if ($ENV{'PATH_INFO'} =~ m,^/vcard/,) {
     $in{'vcard'} = $ENV{'PATH_INFO'};
     $in{'vcard'} =~ s,^/vcard/(\d+).*$,$1,;
 }
 
-# the now-documented "vcard" feature
-if ($in{'vcard'} =~ /^\d+$/) {
-    @db = &aid_create_db($dbfile);
-    if (defined($db[$in{'vcard'}])) {
-	&send_vcard($db[$in{'vcard'}]);
+$rcsid = '$Id: mvhsaid,v 1.56 1998/01/02 20:14:18 mradwin Exp $'; #'fnt
+
+# special flags: version, update, vcard, about
+#
+# if any of these flags is set, we're sending back a dynamic page
+# instead of processing a form request.
+if (defined($in{'version'})) {
+    select(STDOUT);  $| = 1;
+    print "Content-type: text/plain\n\n$rcsid\n";
+    print &aid_config('rcsid'), "\n";
+    exit(0);
+
+} elsif (defined($in{'update'})) {
+    if ($in{'update'} =~ /^\d+$/) {
+	@db = &aid_create_db($dbfile);
+	if (defined($db[$in{'update'}])) {
+	    &send_upd_real($db[$in{'update'}],
+			   &aid_get_usertext($in{'update'}),0);
+	} else {
+	    &send_upd_real(&blank_rawdata(),'',0);
+	}
     } else {
-	&send_blank_submit;
+	&send_upd_list();
     }
     exit(0);
-}
 
+} elsif (defined($in{'vcard'})) {
+    if ($in{'vcard'} =~ /^\d+$/) {
+	@db = &aid_create_db($dbfile);
+	if (defined($db[$in{'vcard'}])) {
+	    &send_vcard($db[$in{'vcard'}]);
+	} else {
+	    &send_upd_real(&blank_rawdata(),'',0);
+	}
+    } else {
+	&send_upd_real(&blank_rawdata(),'',0);
+    }
+    exit(0);
 
-# the documented "about" feature
-if ($in{'about'} =~ /^\d+$/) {
+} elsif ($in{'about'} =~ /^\d+$/) {
     @db = &aid_create_db($dbfile);
     if (defined($db[$in{'about'}])) {
 	&send_about($db[$in{'about'}]);
     } else {
-	&send_blank_submit;
+	&send_upd_real(&blank_rawdata(),'',0);
     }
     exit(0);
 }
 
 
-# no update flag; did they access this with the right form?
+# no special flags, so this should be a submission-processing request.
+# did they access this with the right form?
 foreach (@required_headers) {
     if (!defined($in{$_})) {
 	# wrong form
-	&send_blank_submit;
+	&send_upd_real(&blank_rawdata(),'',0);
 	exit(0);
     }
 }
@@ -150,31 +154,43 @@ $in{'message'} =~ s/>/&gt;/g;
 $in{'message'} =~ s/\"/\'/g;
 #$in{'message'} =~ s/\s+/ /g;           # make multiple spaces a single space
 
-# did they have the required fields?
+# did they check the "other" box for school, but not fill in any text?
 if ($in{'school'} eq 'Other') {
-    &send_upd_real(";$in{'id'};$in{'request'};$in{'last'};$in{'first'};$in{'married'};$in{'school'};$in{'grad'};$in{'mail'};$in{'homepage'};$in{'location'}",$in{'message'},1,1);
+    &send_upd_real(&make_rawdata(%in),$in{'message'},1);
     exit(0);
 }
 
+# did they have non-blank entries for all the required fields?
 foreach (@required_headers) {
     if ($in{$_} =~ /^\s*$/) {
-	&send_upd_real(";$in{'id'};$in{'request'};$in{'last'};$in{'first'};$in{'married'};$in{'school'};$in{'grad'};$in{'mail'};$in{'homepage'};$in{'location'}",$in{'message'},1,1);
+	&send_upd_real(&make_rawdata(%in),$in{'message'},1);
 	exit(0);
     }
 }
 
+# now that the input is cleaned up, decide whether we're going to enter
+# the confirmation phase or the queueing phase.
+
 if (defined($in{'revise'})) {
-    &send_upd_real(";$in{'id'};$in{'request'};$in{'last'};$in{'first'};$in{'married'};$in{'school'};$in{'grad'};$in{'mail'};$in{'homepage'};$in{'location'}",$in{'message'},1,0);
+    &send_upd_real(&make_rawdata(%in),$in{'message'},0);
 } elsif (defined($in{'confirmed'})) {
-    &queue_submission;
+    &queue_submission();
 } else {
-    &confirm_submission;
+    &confirm_submission();
 }
 
 exit(0);
 
+sub make_rawdata {
+    local(%in) = @_;
+
+    return &aid_join(0,$in{'id'},$in{'request'},
+		     $in{'last'},$in{'first'},$in{'married'},
+		     $in{'school'},$in{'grad'},$in{'mail'},
+		     $in{'homepage'},$in{'location'});
+}
+
 sub confirm_submission {
-    require 'tableheader.pl';
     local($cgi_path) = &aid_config('cgi_path');
 
     # a little more cleanup and then update the db.
@@ -185,8 +201,7 @@ sub confirm_submission {
     print &common_html_hdr(-1,1);
 
     print "<br>\n";
-    print &tableheader("Please confirm your submission", 1, "ffff99",
-'000000', 1);
+    print &aid_tableheader('Please confirm your submission');
     print "
 
 <p>Please confirm that all of the below information is correct.  If you
@@ -212,7 +227,6 @@ to edit your entry.  If everything is correct, please hit the
 }
 
 sub queue_submission {
-    require 'tableheader.pl';
     require 'ctime.pl';
 
     # a little more cleanup and then update the db.
@@ -226,14 +240,14 @@ sub queue_submission {
     $message_top = 
 "Dear $mailname,
 
-This was submitted to the MVHS address database:
+This was submitted to the Alumni Internet Directory:
 
 $time;$in{'id'};$in{'request'};$in{'last'};$in{'first'};$in{'married'};$in{'school'};$in{'grad'};$in{'mail'};$in{'homepage'};$in{'location'}
 ";
 
     $message_mid =
 	(($in{'message'} eq '') ? '' :
-	 "_MVHSAID_BEGIN_MESSAGE_\n$in{'message'}\n_MVHSAID_END_MESSAGE_\n");
+	 "_AID_BEGIN_MESSAGE_\n$in{'message'}\n_AID_END_MESSAGE_\n");
     
     $message_bot =
 "The kind soul who submitted it was using the web from $ENV{'REMOTE_HOST'}
@@ -255,8 +269,7 @@ EOM
     print &common_html_hdr(-1,1);
 
     print "<br>\n";
-    print &tableheader("Your submission is confirmed and queued", 1,
-"ffff99", '000000', 1);
+    print &aid_tableheader('Your submission is confirmed and queued');
     $fullname = &inorder_fullname($in{'first'},$in{'last'},$in{'married'});
     print "<p>The entry for <strong>$fullname</strong> has been\n";
     print "added to the submission queue.\n";
@@ -271,53 +284,28 @@ EOM
 }
 
 
-sub bydatakeys { $datakeys[$a] cmp $datakeys[$b] }
-sub aid_alpha_db {
-    local(@db) = &aid_create_db($_[0]);
-    local(@alpha, @fields);
-    local($_);
-
-    @datakeys = ();
-
-    foreach (@db) {
-	@fields = split(/;/);
-	push(@datakeys, "$fields[3];$fields[4]");
-    }
-
-    @alpha = @db[sort bydatakeys $[..$#db];
-    return @alpha;
-}
-
-sub send_blank_submit {
-    &send_upd_real(";-1;2;;;;MVHS;;;",'',0,0);
-}
-
 sub send_upd_real {
-    local($[) = 0;
-    local($rawdata,$message,$interactivep,$blank) = @_;
+    local($rawdata,$message,$blankp) = @_;
 
     select(STDOUT);  $| = 1;
     print "Content-type: text/html\n\n";
 
     print &common_html_hdr(-1,1);
-    print &submit_body($rawdata,$message,$interactivep,$blank);
+    print &submit_body($rawdata,$message,$blankp);
     print &common_html_ftr(-1);
 }
 
 sub send_about {
-    require 'tableheader.pl';
-     
-    local($[) = 0;
-    local($_);
+    local($rawdata) = @_;
     local($time,$id,$req,$last,$first,$married,
-	  $school,$year,$email,$homepage,$location) = split(/;/, $_[0]);
+	  $school,$year,$email,$homepage,$location) = &aid_split($rawdata);
     local($fullname) = &inorder_fullname($first,$last,$married);
 
     select(STDOUT);  $| = 1;
     print "Content-type: text/html\n\n";
     print &common_html_hdr(-1,1);
     print "<br>\n";
-    print &tableheader($fullname, 1, "ffff99", '000000', 1);
+    print &aid_tableheader($fullname);
     print "<p>Here is more detailed information about $fullname.  To see\n";
     print "<a href=\"" . &aid_config('cgi_path') . "/vcard/${id}.vcf\">";
     print "${first}'s vCard</a>,\n";
@@ -327,15 +315,14 @@ sub send_about {
     print "plugin installed.  To learn more about vCard, check out the\n";
     print "<a href=\"http://www.imc.org/pdi/\">Internet Mail Consortium</a>'s";
     print " website.\n\n";
-    print &about_text($_[0],'',0,1,1), "\n";
+    print &about_text($rawdata,'',0,1,1), "\n";
     print &common_html_ftr(-1);
 }
 
 sub send_vcard {
-    local($[) = 0;
-    local($_);
+    local($rawdata) = @_;
     local($time,$id,$req,$last,$first,$married,
-	  $school,$year,$email,$homepage,$location) = split(/;/, $_[0]);
+	  $school,$year,$email,$homepage,$location) = &aid_split($rawdata);
 
     $long_last  = $last;
     $long_last .= " $married" if $married ne '';
@@ -359,27 +346,21 @@ sub send_vcard {
 
 
 sub send_upd_list {
-    require 'tableheader.pl';
-     
-    local($[) = 0;
     local($_);
     local(@db) = &aid_alpha_db($dbfile);
     local($fullname,$affil,$len);
     local($time,$req,$id,$last,$first,$married,
 	  $school,$year,$email,$homepage,$location);
 
-    local($info_gif) =
-	"<img src=\"" . &aid_config('master_path') . "info.gif\" height=12 width=12 hspace=4 border=0 alt=\"[i]\">";
-    local($blank_gif) =
-	"<img src=\"" . &aid_config('master_path') . "blank.gif\" height=12 width=12 hspace=4 border=0 alt=\"\">";
+    local($info_gif) = &aid_image_tag('info');
+    local($blank_gif) = &aid_image_tag('blank');
     local($cgi) = &aid_config('cgi_path');
 
     select(STDOUT);  $| = 1;
     print "Content-type: text/html\n\n";
     print &common_html_hdr(-1,1);
     print "<br>\n";
-    print &tableheader("Update Your Directory Listing", 1, "ffff99",
-'000000', 1);
+    print &aid_tableheader('Update Your Directory Listing');
     print "\n";
     print "<p>Please select an entry to update from the list below.<p>\n";
     print "<pre>";
@@ -389,7 +370,7 @@ sub send_upd_list {
     foreach (@db) {
 	next if $_ eq '';
 	($time,$id,$req,$last,$first,$married,
-	 $school,$year,$email,$homepage,$location) = split(/;/);
+	 $school,$year,$email,$homepage,$location) = &aid_split($_);
 
 	$fullname = &fullname($first,$last,$married);
 	($affil,$len) = &affiliate($year,$school,0);
@@ -408,6 +389,8 @@ sub send_upd_list {
 }
 
 sub panic {
+    local($[) = 0;
+
     select(STDOUT);  $| = 1;
     print "Content-type: text/plain\n\n";
     print $_[0], "\n";

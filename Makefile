@@ -1,8 +1,8 @@
 #
 #     FILE: Makefile
 #   AUTHOR: Michael J. Radwin
-#    DESCR: Makefile for building the MVHS Alumni Internet Directory
-#      $Id: Makefile,v 1.46 1998/01/01 00:40:37 mjr Exp mjr $
+#    DESCR: Makefile for building the Alumni Internet Directory
+#      $Id: Makefile,v 1.48 1998/01/02 20:13:21 mradwin Exp $
 #
 
 HOMEDIR=/home/divcom/mjr
@@ -18,10 +18,10 @@ all:	adrfile home submit listings reunions links nicknames tech \
 	recent alpha class awalt goners pages \
 	verbose books
 
-ADRFILE=$(WWWDIR)/mvhs.adr
+ADRFILE=$(WWWDIR)/master.adr
 adrfile:	$(ADRFILE)
-$(ADRFILE):	data/mvhs.adr
-	cp data/mvhs.adr $(WWWDIR)
+$(ADRFILE):	data/master.adr
+	cp data/master.adr $(WWWDIR)
 
 ALPHA=$(WWWDIR)/all.html
 alpha:	$(ALPHA)
@@ -61,7 +61,7 @@ $(VERBOSE):	data/class.adr bin/aid_verbose_html
 
 HOME=$(WWWDIR)/index.html
 home:	$(HOME)
-$(HOME):	data/index.include bin/aid_home_html aid_util.pl data/mvhs.adr
+$(HOME):	data/index.include bin/aid_home_html aid_util.pl data/master.adr
 	bin/aid_home_html -p0 -i data/index.include \
 		-t 'Welcome to the MVHS Alumni Internet Directory!' \
 		$(HOME)
@@ -125,20 +125,20 @@ $(BOOKS):	data/alpha.adr bin/aid_book
 data/gsort.adr:	data/goners.adr
 	sort -t\; +3 -6 data/goners.adr > data/gsort.adr
 
-data/alpha.adr:	data/mvhs.adr
-	sort -t\; +3 -6 data/mvhs.adr > data/alpha.adr
+data/alpha.adr:	data/master.adr
+	sort -t\; +3 -6 data/master.adr > data/alpha.adr
 
-data/class.adr:	data/mvhs.adr
-	sort -t\; +7 -8 +3 -6 data/mvhs.adr > data/class.adr
+data/class.adr:	data/master.adr
+	sort -t\; +7 -8 +3 -6 data/master.adr > data/class.adr
 
 data/awalt.adr:	data/class.adr
 	grep -i awalt data/class.adr > data/awalt.adr
 
-data/date.adr:	data/mvhs.adr
-	sort data/mvhs.adr > data/date.adr
+data/date.adr:	data/master.adr
+	sort data/master.adr > data/date.adr
 
-mvhs.txt:	data/alpha.adr bin/aid_alpha_html
-	bin/aid_alpha_html -t data/alpha.adr mvhs.txt
+alpha.txt:	data/alpha.adr bin/aid_alpha_html
+	bin/aid_alpha_html -t data/alpha.adr alpha.txt
 
 class.txt:	data/class.adr bin/aid_class_html
 	bin/aid_class_html -t data/class.adr class.txt
@@ -155,5 +155,5 @@ chmod:
 	( cd $(WWWDIR) ; chmod -R a+rX * )
 
 clean:
-	$(RM) TAGS class.txt mvhs.txt data/class.adr data/alpha.adr
+	$(RM) TAGS class.txt alpha.txt data/class.adr data/alpha.adr
 	$(RM) data/gsort.adr data/date.adr data/awalt.adr
