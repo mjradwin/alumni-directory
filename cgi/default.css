@@ -33,7 +33,7 @@ strong.i {
   border: none;
   width: 100%;
   color: black;
-  background: #eeeeee;
+  background: #ffffcb;
   text-align: center;
 }
 
@@ -54,14 +54,14 @@ div.about {
   border: none;
   color: black;
   width: 100%;
-  background: #eeeeee;
+  background: #ffffcb;
 }
 
 pre.about {
   color: black;
   margin-left: 1em;
   margin-right: 1em;
-  background: #eeeeee;
+  background: #ffffcb;
 }
 
 .alert {
