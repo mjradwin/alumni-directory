@@ -5,43 +5,46 @@
 require 'mv_util.pl';
 require 'getopts.pl';
 
-$usage = 'usage: mv_home_html [-h] [-p <pg>] {-s | -i <infile> | -o <outfile> <infile>}
+$usage = 'usage: mv_home_html [-hs] [-p <pg>] [-t <text>] [-i <infile>] <outfile>
  -h            Display usage information.
- -p <pg>       Use page number <pg> for generating content.
- -i <infile>   Create the index page from html code in <infile>.
+ -p <pg>       Use page number <pg> for generating content.  REQUIRED.
  -s            Create the submit page.
- -o <outfile>  Create an "other" page from html code in <infile>
-    <infile>   and write to outfile.
+ -t <text>     Put a tableheader with "text".
+ -i <infile>   Create an "other" page from html code in <infile>.
+
+ <outfile>     Write results to <outfile>.
 ';
 
-&Getopts('hsio:p:') || die "$usage\n";
+&Getopts('hst:i:p:') || die "$usage\n";
 $opt_h && die "$usage\n";
 
-$numopts = ($opt_o?1:0) + $opt_i + $opt_s;
-die "$usage\n" unless $numopts == 1;
-die "$usage\n" if !$opt_s && !$ARGV[0];
+die "$usage\n" unless $ARGV[0];
+die "$usage\n" unless ($opt_s || $opt_i);
+die "$usage\n" unless defined($opt_p);
 
-$pageno = $opt_p ? $opt_p : ($opt_o ? -1 : ($opt_s ? 5 : 0));
-$infile = $ARGV[0];
+$infile = $opt_i;
+$outfile = $ARGV[0];
 
-$fmtout = $opt_o ? $opt_o : 
-    ($opt_i) ? &mv_config('wwwdir') . &mv_config('index_page') :
-    &mv_config('wwwdir') . "add.html";
-
-if ($opt_i || $opt_o) {
+if ($opt_i) {
     open(INFILE,$infile) || die "Can't open $infile: $!\n";
     @lines = <INFILE>;
     close(INFILE);
 }
 
-open(FMTOUT,">$fmtout") || die "Can't open $fmtout: $!\n";
+open(OUTFILE,">$outfile") || die "Can't open $outfile: $!\n";
 
-print FMTOUT &common_html_hdr($pageno);
-if ($opt_s) {
-    print FMTOUT &submit_body(";-1;2;;;;MVHS;;;",0,0);
-} else {
-    print FMTOUT @lines;
+print OUTFILE &common_html_hdr($opt_p);
+if ($opt_t) {
+    require 'tableheader.pl';
+    print OUTFILE "<br>\n";
+    print OUTFILE &tableheader($opt_t, 1, "ffff99", "000000", 1);
 }
-print FMTOUT &common_html_ftr($pageno);
+
+if ($opt_s) {
+    print OUTFILE &submit_body(";-1;2;;;;MVHS;;;",0,0);
+} else {
+    print OUTFILE @lines;
+}
+print OUTFILE &common_html_ftr($opt_p);
 
 exit(0);
