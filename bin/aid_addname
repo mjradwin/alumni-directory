@@ -1,6 +1,6 @@
 #!/usr/local/bin/perl5 -w
 
-# $Id: aid_addname,v 5.28 2001/01/08 17:10:59 mradwin Exp mradwin $
+# $Id: aid_addname,v 5.29 2001/01/08 17:27:27 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -85,19 +85,25 @@ sub readspool
     my(@vals) = ();
     if (defined $DBS{'_verified'})
     {
-	@key8s = split(/\0/, $DBS{'_verified'});
+	my(@key8s) = split(/\0/, $DBS{'_verified'});
 
 	foreach $key8 (@key8s)
 	{
-	    if (defined $DBS{$key8} && $DBS{$key8} =~ /^(-?\d+)\0(.+)$/)
+	    print STDOUT "checking key8 $key8\n"
+		unless $opt_q;
+
+	    if (defined $DBS{$key8} && $DBS{$key8} =~ /^-?\d+\0/)
 	    {
-		my($id) = $1;
-		my($packed) = $2;
+		my($id,$packed) = split(/\0/, $DBS{$key8}, 2);
 
 		push(@vals, $DBS{$key8});
 		$DBS{$key8} = "p\0";
 
 		%rec = &aid_db_unpack_rec($id,$packed);
+
+		print STDOUT "OK key8 $key8 - ",
+		&aid_inorder_fullname(*rec), "\n"
+		    unless $opt_q;
 
 		if ($id != -1 && defined $DBS{$id})
 		{
@@ -107,6 +113,12 @@ sub readspool
 		{
 		    delete $DBS{"\L$rec{'e'}\E"};
 		}
+
+		undef(%rec);
+	    }
+	    else
+	    {
+		warn "key8 $key8 was _verified, but invalid in staging.db\n";
 	    }
 	}
 
@@ -125,6 +137,9 @@ sub readspool
 	my($id,$packed) = split(/\0/, $val, 2);
 	%rec = &aid_db_unpack_rec($id,$packed);
 	$rec{'f'} = $rec{'u'} = time;
+
+	print STDOUT "addname - ", &aid_inorder_fullname(*rec), "\n"
+	    unless $opt_q;
 
 	&addname(*rec) || die "$0: can't add $rec{'id'} $rec{'e'}!\n";
 	$success = 1;
