@@ -4,7 +4,7 @@
 #     FILE: about.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: Alumni Internet Directory CGI "About" page generation
-#      $Id: about,v 5.14 2000/04/25 01:14:03 mradwin Exp mradwin $
+#      $Id: about,v 5.15 2000/05/30 17:26:41 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -95,7 +95,7 @@ sub send_about
     local($fullname) = &aid_inorder_fullname(*rec);
     local($html_name) = &aid_html_entify_str($fullname);
 
-    print "Last-Modified: ", &aid_http_date($rec{'u'}), "\015\012";
+#    print "Last-Modified: ", &aid_http_date($rec{'u'}), "\015\012";
     print "Content-Type: text/html\015\012\015\012";
 
     print &aid_common_html_hdr(20,$fullname,1,$rec{'u'});
