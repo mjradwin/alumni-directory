@@ -2,78 +2,78 @@
 #     FILE: mv_util.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: perl library routines for the MVHS Alumni Internet Directory
-#      $Id: mv_util.pl,v 1.74 1997/12/31 18:59:57 mjr Exp mjr $
+#      $Id: mv_util.pl,v 1.75 1997/12/31 19:29:31 mjr Exp mjr $
 #
 
-CONFIG: {
-    package mv_util;
+# divcom.umop-ap.com configuration
+%mv_util'config =  #'font-lock
+    ('admin_name',   "Michael John Radwin",
+     'admin_email',  "mjr\@acm.org",
+     'admin_school', "Mountain View High School, Class of '93",
+     'admin_phone',  "408-536-2554",
+     'admin_url',    "http://slimy.com/~mjr/",
+     'master_srv',   "umop-ap.com",
+     'master_path',  "/~mjr/mvhs/",
+     'cgi_path',     "/cgi-bin/cgiwrap/mjr/mvhsaid",
+     'index_page',   "index.html",
+     'wwwdir',       "/home/divcom/mjr/public_html/mvhs/",
+     'newsdir',      "/home/divcom/mjr/public_html/mvhs/whatsnew/",
+     'mvhsdir',      "/home/divcom/mjr/mvhs/",
+     'sendmail',     "/usr/lib/sendmail",
+     'mailprog',     "/usr/ucb/mail",
+     'mailto',       "mjr\@divcom",
+     'mailsubj',     "MVHSAID",
+     );
 
-    # divcom.umop-ap.com configuration
-    %config =
-	('admin_name',   "Michael John Radwin",
-	 'admin_email',  "mjr\@acm.org",
-	 'admin_school', "Mountain View High School, Class of '93",
-	 'admin_phone',  "408-536-2554",
-	 'admin_url',    "http://slimy.com/~mjr/",
-	 'master_srv',   "umop-ap.com",
-	 'master_path',  "/~mjr/mvhs/",
-	 'cgi_path',     "/cgi-bin/cgiwrap/mjr/mvhsaid",
-	 'index_page',	 "index.html",
-	 'wwwdir',       "/home/divcom/mjr/public_html/mvhs/",
-	 'newsdir',      "/home/divcom/mjr/public_html/mvhs/whatsnew/",
-	 'mvhsdir',      "/home/divcom/mjr/mvhs/",
-	 'sendmail',     "/usr/lib/sendmail",
-	 'mailprog',     "/usr/ucb/mail",
-	 'mailto',       "mjr\@divcom",
-	 'mailsubj',	 "MVHSAID"
-	  );
+# foo.metamorphosis.net configuration
+#%mv_util'config =   #'font-lock
+#    ('admin_name',   "Michael John Radwin",
+#     'admin_email',  "mjr\@acm.org",
+#     'admin_school', "Mountain View High School, Class of '93",
+#     'admin_phone',  "408-536-2554",
+#     'admin_url',    "http://umop-ap.com/~mjr/",
+#     'master_srv',   "metamorphosis.net",
+#     'master_path',  "/~mjr/mvhs/",
+#     'cgi_path',     "/~mjr/cgi-bin/mvhsaid.cgi",
+#     'index_page',   "index.html",
+#     'wwwdir',       "/home/mjr/public_html/mvhs/",
+#     'mvhsdir',      "/home/mjr/mvhs/",
+#     'sendmail',     "/usr/sbin/sendmail",
+#     'mailprog',     "/usr/bin/mail",
+#     'mailto',       "mjr\@foo",
+#     'mailsubj',     "MVHSAID",
+#     );
 
-    # foo.metamorphosis.net configuration
-#    %config =
-#        ('admin_name',   "Michael John Radwin",
-#         'admin_email',  "mjr\@acm.org",
-#         'admin_school', "Mountain View High School, Class of '93",
-#         'admin_phone',  "408-536-2554",
-#         'admin_url',    "http://umop-ap.com/~mjr/",
-#	 'master_srv',   "metamorphosis.net",
-#	 'master_path',  "/~mjr/mvhs/",
-#         'cgi_path',     "/~mjr/cgi-bin/mvhsaid.cgi",
-#         'index_page',   "index.html",
-#         'wwwdir',       "/home/mjr/public_html/mvhs/",
-#         'mvhsdir',      "/home/mjr/mvhs/",
-#         'sendmail',     "/usr/sbin/sendmail",
-#         'mailprog',     "/usr/bin/mail",
-#         'mailto',       "mjr\@foo",
-#         'mailsubj',     "MVHSAID"
-#	 );
+@mv_util'page_idx = #'font-lock
+    ("Home,"                  . $mv_util'config{'master_path'},
+     "Alphabetically,"        . $mv_util'config{'master_path'} . "all.html",
+     "Grad.&nbsp;Class,"      . $mv_util'config{'master_path'} . "class/",
+     "Awalt&nbsp;Alumni,"     . $mv_util'config{'master_path'} . "awalt.html",
+     "Recent&nbsp;Additions," . $mv_util'config{'master_path'} . "recent.html",
+     "Web&nbsp;Pages,"        . $mv_util'config{'master_path'} . "pages.html",
+     "Get&nbsp;Listed!,"      . $mv_util'config{'master_path'} . "add.html",
+     );
 
-    @page_idx = 
-	("Home,"                  . $config{'master_path'},
-	 "Alphabetically,"        . $config{'master_path'} . "all.html",
-	 "Grad.&nbsp;Class,"      . $config{'master_path'} . "class/",
-	 "Awalt&nbsp;Alumni,"     . $config{'master_path'} . "awalt.html",
-	 "Recent&nbsp;Additions," . $config{'master_path'} . "recent.html",
-	 "Web&nbsp;Pages,"        . $config{'master_path'} . "pages.html",
-	 "Get&nbsp;Listed!,"      . $config{'master_path'} . "add.html");
+@mv_util'second_idx =  #'font-lock
+    ("Listings,"            . $mv_util'config{'master_path'} . "listings.html",
+     "Reunions,"            . $mv_util'config{'master_path'} . "reunions.html",
+     "Links,"               . $mv_util'config{'master_path'} . "links.html",
+     "Nicknames,"           . $mv_util'config{'master_path'} . "books/",
+     "Tech&nbsp;Notes,"     . $mv_util'config{'master_path'} . "tech.html",
+     "Acceptable&nbsp;Use," . "#disclaimer",
+     );
 
-    @second_idx = 
-	("Listings,"              . $config{'master_path'} . "listings.html",
-	 "Reunions,"              . $config{'master_path'} . "reunions.html",
-	 "Links,"                 . $config{'master_path'} . "links.html",
-	 "Nicknames,"             . $config{'master_path'} . "books/",
-	 "Tech&nbsp;Notes,"       . $config{'master_path'} . "tech.html",
-	 "Acceptable&nbsp;Use,#disclaimer");
+$mv_util'pics_label =
+"<meta http-equiv=\"PICS-Label\" content='(PICS-1.1 \"http://www.rsac.org/ratingsv01.html\" l gen true comment \"RSACi North America Server\" by \"" . 
+$mv_util'config{'admin_email'} . "\" for \"http://" .
+$mv_util'config{'master_srv'} . $mv_util'config{'master_path'} . 
+"\" on \"1996.04.04T08:15-0500\" r (n 0 s 0 v 0 l 0))'>"; #"font-lock;
 
-    $pics_label = "<meta http-equiv=\"PICS-Label\" content='(PICS-1.1 \"http://www.rsac.org/ratingsv01.html\" l gen true comment \"RSACi North America Server\" by \"" . $config{'admin_email'} . "\" for \"http://" . $config{'master_srv'} . $config{'master_path'} . "\" on \"1996.04.04T08:15-0500\" r (n 0 s 0 v 0 l 0))'>";
+$mv_util'site_tags = #'font-lock
+"<meta name=\"keywords\" content=\"Mountain View High School, Alumni, MVHS, Awalt High School, Mountain View, Los Altos, California, reunion, Radwin\">\n<meta name=\"description\" content=\"email/web page listing of alumni, students, faculty and staff from Mountain View High School in Mountain View, California.  Also catalogues alumni from Chester F. Awalt High School, which was merged with MVHS in the early 80's.\">";
 
-    $site_tags = "<meta name=\"keywords\" content=\"Mountain View High School, Alumni, MVHS, Awalt High School, Mountain View, Los Altos, California, reunion, Radwin\">\n<meta name=\"description\" content=\"email/web page listing of alumni, students, faculty and staff from Mountain View High School in Mountain View, California.  Also catalogues alumni from Chester F. Awalt High School, which was merged with MVHS in the early 80's.\">";
-
-    $noindex = "<meta name=\"robots\" content=\"noindex\">";
-
-    %mv_aliases = ();   # global alias hash repository
-
-    1;
-}
+$mv_util'noindex = "<meta name=\"robots\" content=\"noindex\">"; #'font-lock
+%mv_util'mv_aliases = ();   #' global alias hash repository 
 
 # give 'em back the configuration variable they need
 sub mv_config {
@@ -142,6 +142,7 @@ sub inorder_fullname {
 
 sub affiliate {
     package mv_util;
+
     local($year, $school,$do_html_p) = @_;
     local($affil,$len);
 
@@ -181,6 +182,7 @@ sub affiliate {
 # remove punctuation, hyphens, parentheses, and quotes.
 sub mangle {
     package mv_util;
+
     local($name) = @_;
 
     $name =~ s/\.//g;
@@ -195,14 +197,16 @@ sub mangle {
 
 
 sub mv_parse {
+    package mv_util;
+
     local($[) = 0;
     local($_) = @_;
     local($time,$id,$req,$last,$first,$married,$school,
 	  $year,$email,$homepage,$location) = split(/;/);
     local($mangledLast,$mangledFirst,$alias);
 
-    $mangledLast = &'mangle($last);   #' font-lock
-    $mangledFirst = &'mangle($first); #' font-lock
+    $mangledLast = &main'mangle($last);   #' font-lock
+    $mangledFirst = &main'mangle($first); #' font-lock
 
     $alias = substr($mangledFirst, 0, 1) . substr($mangledLast, 0, 7);
     $alias = "\L$alias\E";
@@ -549,10 +553,10 @@ sub about_text {
     if ($time ne '') {
 	$retval .= "\n";
 	$retval .= "Last Updated       : ";
-	$retval .= do ctime($time);
+	$retval .= &ctime($time);
     }
 
-    $message = &'mv_get_usertext($id) if $message eq '';  #' fnt
+    $message = &main'mv_get_usertext($id) if $message eq '';  #' fnt
     if ($message ne '') {
 	$retval .= "\n";
 	$retval .= "What's New? (beta) :\n";
@@ -567,13 +571,14 @@ sub about_text {
     $retval .= "</font></td></tr></table>\n" if $do_html_p;
 
     if ($do_html_p && $time ne '') {
-	$retval .= &'modify_html($id,&'inorder_fullname($first,$last,$married));
+	$retval .= &main'modify_button($id,
+	    &main'inorder_fullname($first,$last,$married));
     }
 
     return $retval;
 }
 
-sub modify_html {
+sub modify_button {
     package mv_util;
 
     local($id,$name) = @_;
@@ -601,7 +606,7 @@ sub common_html_ftr {
     package mv_util;
 
     local($page) = @_;
-    local($rcsid) = '<!-- $Id: mv_util.pl,v 1.74 1997/12/31 18:59:57 mjr Exp mjr $ -->';
+    local($rcsid) = '<!-- $Id: mv_util.pl,v 1.75 1997/12/31 19:29:31 mjr Exp mjr $ -->';
     local($ftr);
 
     $ftr = "
@@ -664,7 +669,7 @@ sub common_html_hdr {
     local($h1, $h2, $h3, $h4, $html_head);
     local($name, $url);
     local($timestamp);
-    local($rcsid) = '<!-- $Id: mv_util.pl,v 1.74 1997/12/31 18:59:57 mjr Exp mjr $ -->';
+    local($rcsid) = '<!-- $Id: mv_util.pl,v 1.75 1997/12/31 19:29:31 mjr Exp mjr $ -->';
 
     $timestamp = ($page == 0) ? 'Last update to Directory: ' :
 	'Last update to this page: ';
