@@ -26,6 +26,9 @@ $subject = ($opt_c) ? 'Confirming your MVHS Alumni Internet Directory entry' :
 $today = &today;
 open(LOG,">>$logfile") || die "Can't open $logfile: $!\n";
 open(TARGET,$ARGV[0]) || die "Can't open $ARGV[0]: $!\n";
+
+select(LOG); $| = 1; select(STDOUT);
+
 while(<TARGET>) {
     chop;
     ($time,$id,$req,$last,$first,$married,
