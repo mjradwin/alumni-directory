@@ -4,7 +4,7 @@
 #     FILE: remove.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: CGI for removal of e-mail address from staging DB
-#      $Id$
+#      $Id: remove,v 1.1 2000/05/30 23:09:04 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-2000  Michael John Radwin
 #
@@ -127,7 +127,7 @@ If you did <b>not</b> request to be added to the Alumni Internet
 Directory, you should remove this entry.</p>
 
 <p><big>Are you are sure you want to <b>permanently remove</b> this
-account?</big></p>
+entry from the Directory?</big></p>
 
 <form method=\"post\" action=\"" . &aid_config('remove_cgi') . "\">
 <input type=\"hidden\" name=\"k\" value=\"$key\">
