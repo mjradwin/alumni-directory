@@ -4,7 +4,7 @@
 #     FILE: mvhsaid.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: MVHS Alumni Internet Directory CGI interface
-#      $Id: mvhsaid,v 3.15 1998/05/26 18:49:37 mradwin Exp mradwin $
+#      $Id: mvhsaid,v 3.16 1998/05/26 18:55:34 mradwin Exp mradwin $
 #
 
 require 'aid_util.pl';
@@ -24,7 +24,7 @@ if (defined($ENV{'PATH_INFO'}) && $ENV{'PATH_INFO'} =~ m,^/vcard/,) {
     $in{'vcard'} =~ s,^/vcard/(\d+).*$,$1,;
 }
 
-$rcsid = '$Id: mvhsaid,v 3.15 1998/05/26 18:49:37 mradwin Exp mradwin $'; #'fnt
+$rcsid = '$Id: mvhsaid,v 3.16 1998/05/26 18:55:34 mradwin Exp mradwin $'; #'fnt
 
 # special flags: version, update, vcard, about
 #
@@ -106,13 +106,12 @@ foreach $key (keys(%in)) {
 $in{'year'} =~ s/^class\s+of\s*//i;
 $in{'year'} =~ s/^\'(\d\d)$/$1/;
 
-# the MS approach to 2-digit year fields: either 35 years in the future,
-# or 65 years in the past.
+# Year 2000 stuff: make 2-digit year fields be 4 digits.
+# either 20 years in the future, or 80 years in the past.
 if ($in{'year'} =~ /^\d\d$/) {
-#    ($sec,$min,$hour,$mday,$mon,$year,$wday,$yday,$isdst) = localtime(time);
     $year = (localtime(time))[5];
     $year += 1900;  # localtime() returns number of years since 1900
-    if ((($year % 100) - $in{'year'}) <= 65) {
+    if ((($year % 100) - $in{'year'}) <= 80) {
 	$year = int($year / 100);
 	$in{'year'} = $year . $in{'year'};
     } else {
