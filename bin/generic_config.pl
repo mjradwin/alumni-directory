@@ -2,7 +2,7 @@
 #     FILE: generic_config.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: configuration variables for Alumni Internet Directory
-#      $Id: generic_config.pl,v 5.1 1999/05/31 21:20:48 mradwin Exp mradwin $
+#      $Id: generic_config.pl,v 5.2 1999/05/31 22:03:24 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -22,40 +22,40 @@
 #
 
 $aid_util'rcsid =
- '$Id: generic_config.pl,v 5.1 1999/05/31 21:20:48 mradwin Exp mradwin $';
+ '$Id: generic_config.pl,v 5.2 1999/05/31 22:03:24 mradwin Exp mradwin $';
 
 # Generic HS on bogus-domain.org (FreeBSD 2.2.2) configuration
 %aid_util'config =   #'#
     (
      'school',       'Generic High School',
-     'short_school', 'GHS',
+     'short_school', 'Generic',
      'admin_name',   'Jane Smith',
-     'admin_email',  "ghs-alumni-admin\@bogus-domain.org",
+     'admin_email',  "generic-alumni-admin\@bogus-domain.org",
      'admin_school', "Generic High School, Class of '93",
      'admin_url',    'http://www.bogus-domain.org/~jsmith/',
      'master_srv',   'www.bogus-domain.org',
-     'master_path',  '/ghs-alumni/',
-     'search_cgi',   '/ghs-alumni/bin/nph-search',
-     'vcard_cgi',    '/ghs-alumni/bin/vcard',
-     'goners_cgi',   '/ghs-alumni/bin/gone',
-     'download_cgi', '/ghs-alumni/bin/alumni.txt',
-     'go_cgi',       '/ghs-alumni/bin/form/go',
-     'about_cgi',    '/ghs-alumni/bin/about',
-     'submit_cgi',   '/ghs-alumni/bin/form/sub',
-     'update_cgi',   '/ghs-alumni/bin/form/upd',
-     'confirm_cgi',  '/ghs-alumni/bin/form/cnf',
-     'yab_cgi',      '/ghs-alumni/bin/yab',
+     'master_path',  '/~jsmith/generic/',
+     'search_cgi',   '/~jsmith/generic/bin/search',
+     'vcard_cgi',    '/~jsmith/generic/bin/vcard',
+     'goners_cgi',   '/~jsmith/generic/bin/form/gone',
+     'download_cgi', '/~jsmith/generic/bin/alumni.txt',
+     'go_cgi',       '/~jsmith/generic/bin/go',
+     'about_cgi',    '/~jsmith/generic/bin/about',
+     'submit_cgi',   '/~jsmith/generic/bin/form/sub',
+     'update_cgi',   '/~jsmith/generic/bin/form/upd',
+     'confirm_cgi',  '/~jsmith/generic/bin/form/cnf',
+     'yab_cgi',      '/~jsmith/generic/bin/yab',
      'index_page',   'index.html',
-     'cgidir',       '/home/jsmith/public_html/ghs-alumni/bin/',
-     'wwwdir',       '/home/jsmith/public_html/ghs-alumni/',
-     'dbmfile',      '/home/jsmith/public_html/ghs-alumni/master.db',
-     'aiddir',       '/home/jsmith/ghs-alumni/',
+     'cgidir',       '/home/jsmith/public_html/generic/bin/',
+     'wwwdir',       '/home/jsmith/public_html/generic/',
+     'dbmfile',      '/home/jsmith/public_html/generic/master.db',
+     'aiddir',       '/home/jsmith/generic/',
      'sendmail',     '/usr/sbin/sendmail',
      'mailprog',     '/usr/bin/mail',
      'cat',          '/bin/cat',
      'cp',           '/bin/cp',
      'make',         '/usr/bin/make',
-     'mailto',       "ghs-submissions\@bogus-domain.org",
+     'mailto',       "generic-submissions\@bogus-domain.org",
      'spoolfile',    '/var/mail/jsmith',
      'rcsid',        "$aid_util'rcsid",
      'sub_beg_str',  '_AID_BEGIN_SUBMISSION_',
