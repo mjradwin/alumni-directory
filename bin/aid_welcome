@@ -2,7 +2,7 @@
 
 #
 # mails a welcome or update note to everyone in targets.adr
-# $Id: aid_welcome,v 3.30 1999/03/09 18:16:12 mradwin Exp mradwin $
+# $Id: aid_welcome,v 3.31 1999/03/09 18:29:38 mradwin Exp mradwin $
 #
 
 require 'aid_util.pl';
@@ -45,8 +45,8 @@ IS REQUIRED ON YOUR PART.\n",
      'subject',  "Welcome to the $directory_name",
      'log',      'welcome',
      'intro',    
-"\nWelcome!  This e-mail confirms that you are now listed
-on-line in the Alumni Internet Directory.\n",
+"\nWelcome!  Your submission has been processed and you
+are now listed on-line in the Alumni Internet Directory.\n",
      'textfile', '',
      'closing',
 "
@@ -75,8 +75,9 @@ you can share as much or as little as you want:
      'subject',  "Your $directory_name entry is updated",
      'log',      'update',
      'intro',
-"\nThis e-mail confirms that your contact information has been
-updated and the changes are now visible on-line.\n",
+"\nYour contact information has been updated and the
+changes are now visible on-line.\n",
+
      'textfile', '',
      'closing',
 "
