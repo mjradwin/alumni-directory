@@ -4,7 +4,7 @@
 #     FILE: alumni.txt.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: Address Book/Nicknames Downloading module
-#      $Id: alumni.txt,v 5.7 2000/04/25 17:30:08 mradwin Exp mradwin $
+#      $Id: alumni.txt,v 5.8 2000/05/30 17:26:41 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -83,18 +83,29 @@ sub send_address_book {
     local(@class_ids,%DB);
     local($_,%rec,$minyr,$maxyr);
     local($subtype) = 'plain';
+    local($filename) = &aid_config('short_school');
+
+    $filename =~ s/[^\w]/_/g;
+    $filename = "\L$filename";
+    $filename .= '_alumni_' . $year;
 
     if ($format eq 'o') {
 	$subtype = 'x-csv';
+	$filename .= '.csv';
     } elsif ($format eq 'v') {
 	$subtype = 'directory';
+	$filename .= '.vcf';
     } elsif ($format eq 'l') {
 	$subtype = 'ldif';
+	$filename .= '.ldif';
     } elsif ($format eq 'n') {
 	$subtype = 'html;charset=ISO-8859-1';
+	$filename .= '.html';
+    } else {
+	$filename .= '.txt';
     }
 
-    if ($plusminus_p) {
+    if ($plusminus_p && $year =~ /^\d{4}$/) {
 	$minyr = $year - 3;
 	$maxyr = $year + 3;
     } else {
@@ -115,14 +126,24 @@ sub send_address_book {
 
     @class_ids = unpack("n*",$DB{'_class'});
     
-    print "Content-Type: text/$subtype\015\012\015\012";
+    print "Content-Disposition: inline; ",
+	"filename=$filename\015\012";
+    print "Content-Type: text/$subtype; ",
+	"filename=\"$filename\"\015\012\015\012";
     &aid_book_write_prefix(*STDOUT,$format);
     foreach (@class_ids)
     {
 	%rec = &aid_db_unpack_rec($_,$DB{$_});
 
 	next unless $rec{'v'};
-	next unless ($rec{'yr'} <= $maxyr && $rec{'yr'} >= $minyr);
+	if ($year =~ /^\d{4}$/)
+	{
+	    next unless ($rec{'yr'} <= $maxyr && $rec{'yr'} >= $minyr);
+	}
+	else
+	{
+	    next if $rec{'yr'} =~ /^\d{4}$/;
+	}
 
 	&aid_book_write_entry(*STDOUT,$format,*rec);
     }
