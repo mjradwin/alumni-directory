@@ -2,7 +2,7 @@
 #     FILE: aid_util.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: perl library routines for the Alumni Internet Directory
-#      $Id: aid_util.pl,v 5.36 1999/07/24 21:22:31 mradwin Exp mradwin $
+#      $Id: aid_util.pl,v 5.37 1999/08/03 16:56:20 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -401,7 +401,7 @@ sub aid_verbose_entry {
     $retval .= &main'aid_is_new_html(*rec) unless $suppress_new; #'#
     $retval .= "</dt>\n";
 
-    if (! $suppress_links)
+    if (! $suppress_links && $rev{'v'})
     {
 	$retval .= "<dt>Tools: <small>";
 	$retval .= "<a href=\"" . &main'aid_vcard_path(*rec_arg) . "\">"; #'#
@@ -432,9 +432,13 @@ sub aid_verbose_entry {
 	$retval .= "</a></strong></dt>\n";
     }
 
-    $retval .= "<dt>E-mail: <code><strong><a href=\"mailto:$rec{'e'}\">";
+    $retval .= "<dt>E-mail: <code><strong>";
+    $retval .= "<a href=\"mailto:$rec{'e'}\">" if $rec{'v'};
     $retval .= $rec{'e'};
-    $retval .= "</a></strong></code></dt>\n";
+    $retval .= "</a>\n" if $rec{'v'};
+    $retval .= " <em>(invalid address)</em>" unless $rec{'v'};
+    $retval .= "</strong></code></dt>\n";
+
     $retval .= "<dt>Web Page: <code><strong><a href=\"$rec{'w'}\">$rec{'w'}</a></strong></code></dt>\n"
 	if $rec{'w'} ne '';
     $retval .= "<dt>Location: <strong>$rec{'l'}</strong></dt>\n"
