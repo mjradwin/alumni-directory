@@ -4,7 +4,7 @@
 #     FILE: mvhsaid.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: MVHS Alumni Internet Directory CGI interface
-#      $Id: mvhsaid,v 3.32 1998/10/26 21:21:51 mradwin Exp mradwin $
+#      $Id: mvhsaid,v 3.33 1998/10/26 21:26:04 mradwin Exp mradwin $
 #
 
 require 'aid_util.pl';
@@ -24,7 +24,7 @@ if (defined($ENV{'PATH_INFO'}) && $ENV{'PATH_INFO'} =~ m,^/vcard/,) {
     $in{'vcard'} =~ s,^/vcard/(\d+).*$,$1,;
 }
 
-$rcsid = '$Id: mvhsaid,v 3.32 1998/10/26 21:21:51 mradwin Exp mradwin $'; #'fnt
+$rcsid = '$Id: mvhsaid,v 3.33 1998/10/26 21:26:04 mradwin Exp mradwin $'; #'fnt
 
 # special flags: version, update, vcard, about
 #
@@ -260,7 +260,7 @@ sub queue_submission {
     $in{'fresh'} = $in{'time'};
     $in{'created'} = $in{'created'} ne '' ? $in{'created'} : $in{'time'};
     $in{'inethost'} = $ENV{'REMOTE_HOST'};
-    $in{'bounces'} = 0;
+    $in{'bounce'} = 0;
     $date = &ctime($in{'time'});
     $mailto = &aid_config('mailto');
     $mailsubj = &aid_config('mailsubj');

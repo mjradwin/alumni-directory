@@ -2,11 +2,11 @@
 #     FILE: aid_util.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: perl library routines for the Alumni Internet Directory
-#      $Id: aid_util.pl,v 3.69 1998/10/28 19:48:44 mradwin Exp mradwin $
+#      $Id: aid_util.pl,v 3.70 1998/11/02 21:53:06 mradwin Exp mradwin $
 #
 
 $aid_util'rcsid =
- '$Id: aid_util.pl,v 3.69 1998/10/28 19:48:44 mradwin Exp mradwin $';
+ '$Id: aid_util.pl,v 3.70 1998/11/02 21:53:06 mradwin Exp mradwin $';
 
 # ----------------------------------------------------------------------
 # CONFIGURATION
@@ -119,7 +119,7 @@ $aid_util'ID_INDEX    = 0;     #'# position that the ID key is in datafile
     'first',			# first name
     'request',			# type of periodic emailing
     'reunion',			# bit for reunion email request
-    'bounces',			# number of bounces since last verif.
+    'bounce',			# date of first bounce (0 if none)
     'created',			# date of record creation
     'time',			# date of last update
     'fresh',			# date of last successful verification
@@ -140,7 +140,7 @@ $aid_util'ID_INDEX    = 0;     #'# position that the ID key is in datafile
     'first',	'First Name',
     'request',	'',
     'reunion',	'',
-    'bounces',	'',
+    'bounce',	'',
     'created',	'',
     'time',	'',
     'fresh',	'',
@@ -163,7 +163,7 @@ $aid_util'blank_entry{'id'}      = -1;      #'#
 $aid_util'blank_entry{'valid'}   = 1;       #'#
 $aid_util'blank_entry{'request'} = 3;       #'#
 $aid_util'blank_entry{'reunion'} = 1;       #'#
-$aid_util'blank_entry{'bounces'} = 0;       #'#
+$aid_util'blank_entry{'bounce'} = 0;       #'#
 $aid_util'blank_entry{'message'} = '';      #'#
 $aid_util'blank_entry{'school'}  = $aid_util'config{'short_school'};
 
