@@ -2,7 +2,7 @@
 
 #
 # mails a welcome or update note to everyone in targets.adr
-# $Id: aid_welcome,v 2.1 1998/03/31 19:55:13 mjr Exp mradwin $
+# $Id: aid_welcome,v 2.2 1998/05/15 20:06:57 mradwin Exp mradwin $
 #
 
 require 'aid_util.pl';
@@ -14,13 +14,69 @@ $usage = "usage: $pname [options] targets.adr
     -h            Display usage information.
     -d <secs>     Sleep for <secs> seconds between sending email
                   (default 15 for -m, 0 for all others).
-    -r <reqtype>  Request type (1 or 2) (only valid with -m).
+    -r <reqtype>  Request type (0, 1 or 2) (only valid with -m and -c).
 
 Mutually exclusive optional message types (instead of 'welcome' email):
     -u            Send 'update' email.
     -c            Send 'confirmation' email.
     -m <textfile> Massmail the contents of <textfile>.
 ";
+
+%confirm_parameters = 
+    (
+     'subject',  'Confirming your MVHS Alumni Internet Directory entry',
+     'log',      'confirm',
+     'intro', 
+"\nYou were sent this address verification message because it has been\n" .
+"at least one year since you last updated your Directory entry.\n" .
+"Please make sure your entry below is still current.  If everything\n" .
+"you see below is correct, NO ACTION IS REQUIRED ON YOUR PART.\n",
+     'textfile', '',
+     'closing',  '',
+     'sleep',    '0',
+     );
+
+%welcome_parameters = 
+    (
+     'subject',  'Welcome to the MVHS Alumni Internet Directory',
+     'log',      'welcome',
+     'intro',    '',
+     'textfile', '',
+     'closing',  "\nIf everything you see above is correct, you're all set.\n",
+     'sleep',    '0',
+     );
+
+%update_parameters = 
+    (
+     'subject',  'Your MVHS Alumni Internet Directory entry is updated',
+     'log',      'update',
+     'intro',    '',
+     'textfile', '',
+     'closing',  "\nIf everything you see above is correct, you're all set.\n",
+     'sleep',    '0',
+     );
+
+%massmail_parameters = 
+    (
+     'subject',  'MVHS Alumni Internet Directory',
+     'log',      'massmail',
+     'intro',    '',
+     'textfile', '',
+     'closing',
+"\nIf you don't want to receive periodic mail like this, change the\n" .
+"periodic mailings option on your update page to \"No email except for\n" .
+"address verification.\"\n\n" .
+"========================================================================\n" .
+"\nAs a service to those alumni who don't have Web access, I've attached\n" .
+"the most recent version of the Alumni Internet Directory below.  Please\n" .
+"read the acceptable use policy before using any email addresses listed\n" .
+"below:\n\n" .
+"   This directory is provided solely for the information of alumni\n" .
+"   of Mountain View High School and Awalt High School. Any solicitation\n" .
+"   of business, information, contributions or other response from\n" .
+"   individuals listed in this publication is forbidden.\n\n",
+     'sleep',    '10',
+     );
 
 &Getopts('hd:r:ucm:') || die "$usage\n";
 $opt_h && die "$usage\n";
@@ -31,46 +87,48 @@ die "$pname: No target file specified\n$usage\n" unless $ARGV[0];
 die "$pname: Option -m requires -r\n$usage\n" 
     if defined($opt_m) && !defined($opt_r);
 
-$opt_d = defined($opt_d) ? $opt_d : defined($opt_m) ? 15 : 0;
+%params = $opt_c ? %confirm_parameters : 
+    $opt_u ? %update_parameters :
+    $opt_m ? %massmail_parameters :
+    %welcome_parameters;
 
-$subject = $opt_c ? 'Confirming your MVHS Alumni Internet Directory entry' :
-    $opt_u ? 'Your MVHS Alumni Internet Directory entry is updated' : 
-    $opt_m ? 'MVHS Alumni Internet Directory' :
-    'Welcome to the MVHS Alumni Internet Directory';
+$logfile = &aid_config('aiddir') . "logs/" . $params{'log'} . '.log';
 
-$today = &ctime(time);
-chop $today;
-$logfile = &aid_config('aiddir') . "logs/" .
-    ($opt_m ? "inform" : $opt_c ? "confirm" : $opt_u ? "update" : "welcome") .
-    ".log";
-
-$textfile = '';
 if ($opt_m) {
-open(TEXTFILE,$opt_m) || die "$pname: Can't open $opt_m: $!\n";
-while(<TEXTFILE>) { $textfile .= $_; }
-close(TEXTFILE);
+    open(TEXTFILE,$opt_m) || die "$pname: Can't open $opt_m: $!\n";
+    while(<TEXTFILE>) { $params{'textfile'} .= $_; }
+    close(TEXTFILE);
 }
+
+$params{'sleep'} = $opt_d if defined $opt_d;
 
 open(LOG,">>$logfile") || die "$pname: Can't open $logfile: $!\n";
 open(TARGET,$ARGV[0]) || die "$pname: Can't open $ARGV[0]: $!\n";
 
 select(LOG); $| = 1; select(STDOUT);
 
+$today = &ctime(time);
+chop $today;
+
 while(<TARGET>) {
     chop;
     %rec = &aid_split($_);
     next unless $rec{'email'};
     next if $opt_m && $rec{'request'} != $opt_r;
-    next if $opt_c && !$rec{'request'};
 
-    $message = &message_body($_) . $textfile . &message_footer;
+    if ($opt_c) {
+	next if defined $opt_r && $rec{'request'} != $opt_r;
+	next unless &is_old($rec{'time'});
+    }
+
+    $message = &message_body($_) . $params{'textfile'} . &message_footer;
 
     &sendmail($rec{'email'},
 	      &aid_config('admin_email'), &aid_config('admin_name'),
-	      $subject, $message);
-    print LOG "$today $rec{'email'}\n";
+	      $params{'subject'}, $message);
+    print LOG "[$today] - $rec{'id'} - $rec{'email'}\n";
  
-    sleep $opt_d if $opt_d > 0;
+    sleep $params{'sleep'} if $params{'sleep'} > 0;
 }
 
 exit(0);
@@ -79,33 +137,9 @@ sub message_body {
     local($[) = 0;
     local(%rec) = &aid_split($_[0]);
     local($denied) = $rec{'request'} == 0 ?
-	"\nSince you asked not to receive the Alumni Internet Directory via email,
-this is the only notice you will receive.\n" : '';
-    local($confirming) = $opt_c ? 
-	"
-Next week, I will email a copy of the most current Directory to you and
-other alumni who requested it.  Please make sure your entry below is
-still current.  If everything you see below is correct, NO ACTION IS
-REQUIRED ON YOUR PART.
-" : '';
-    local($closing) = $opt_m ?
-	"\nIf you don't want to receive periodic mail like this, change the
-periodic mailings option on your update page to \"No, please do not send
-me copies of the Directory.\"
-
-========================================================================
-
-As a service to those alumni who don't have Web access, I've attached
-the most recent version of the Alumni Internet Directory below.  Please
-read the acceptable use policy before using any email addresses listed
-below:
-
-   This directory is provided solely for the information of alumni
-   of Mountain View High School and Awalt High School. Any solicitation
-   of business, information, contributions or other response from
-   individuals listed in this publication is forbidden.\n\n" :
-       $opt_c ? '' :
-       "\nIf everything you see above is correct, you're all set.\n";
+	"\nSince you asked not to receive Directory updates via email, " .
+	"you will\nonly receive yearly address verification messages.\n" :
+	 '';
     local($srv_prefix) = "http://" . &aid_config('master_srv');
     local($about) = &about_text(*rec,1,0,0);
 
@@ -115,7 +149,7 @@ Your email address is listed in the Mountain View High School/Awalt High
 School Alumni Internet Directory, located on the World Wide Web at:\n\n" .
 
 $srv_prefix . &aid_config('master_path') . "
-$confirming
+$params{'intro'}
 The Directory (which produced this form letter) shows the following
 information about you:
 
@@ -129,6 +163,6 @@ $srv_prefix . &aid_config('cgi_path') . "?update=$rec{'id'}
 
 If you don't have web access, just email me corrections and I'll be
 happy to fix your entry.
-$closing";
+$params{'closing'}";
 
 }
