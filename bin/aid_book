@@ -81,7 +81,7 @@ while(<MVHS>) {
         print BOOK "givenname: $first\n";
         print BOOK "objectclass: top\nobjectclass: person\n";
         print BOOK "mail: $email\n";
-        print BOOK "postOfficeBox: $location\n" if $location ne '';
+        print BOOK "locality: $location\n" if $location ne '';
         print BOOK "o: $school $year\n";
         print BOOK "xmozillanickname: $alias\n";
         print BOOK "\n";
