@@ -4,7 +4,7 @@
 #     FILE: alumni.txt.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: Address Book/Nicknames Downloading module
-#      $Id: alumni.txt,v 1.1 1999/05/31 17:40:11 mradwin Exp mradwin $
+#      $Id: alumni.txt,v 1.2 1999/05/31 17:44:30 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #

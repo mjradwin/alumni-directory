@@ -2,7 +2,7 @@
 #     FILE: generic_config.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: configuration variables for Alumni Internet Directory
-#      $Id: generic_config.pl,v 1.2 1999/05/24 18:14:19 mradwin Exp mradwin $
+#      $Id: generic_config.pl,v 1.3 1999/05/24 19:02:19 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -22,7 +22,7 @@
 #
 
 $aid_util'rcsid =
- '$Id: generic_config.pl,v 1.2 1999/05/24 18:14:19 mradwin Exp mradwin $';
+ '$Id: generic_config.pl,v 1.3 1999/05/24 19:02:19 mradwin Exp mradwin $';
 
 # Generic HS on bogus-domain.org (FreeBSD 2.2.2) configuration
 %aid_util'config =   #'#

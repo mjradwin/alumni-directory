@@ -1,6 +1,6 @@
 #!/usr/bin/perl -w
 
-# $Id: aid_dbm_read,v 1.22 1999/05/19 01:36:09 mradwin Exp mradwin $
+# $Id: aid_dbm_read,v 1.23 1999/05/31 19:35:58 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #

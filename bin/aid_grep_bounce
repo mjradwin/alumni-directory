@@ -1,6 +1,6 @@
 #!/usr/bin/perl -w
 
-# $Id: aid_grep_bounce,v 1.6 1999/05/19 01:36:09 mradwin Exp mradwin $
+# $Id: aid_grep_bounce,v 1.7 1999/05/24 18:55:52 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #

@@ -4,7 +4,7 @@
 # does a short list, either compact or verbose, sorted by graduating
 # class with a jump bar
 #
-# $Id: aid_shortlist_html,v 1.21 1999/05/06 16:29:29 mradwin Exp mradwin $
+# $Id: aid_shortlist_html,v 1.22 1999/05/19 01:36:09 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
