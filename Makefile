@@ -2,7 +2,7 @@
 #     FILE: Makefile
 #   AUTHOR: Michael J. Radwin
 #    DESCR: Makefile for building the Alumni Internet Directory
-#      $Id: Makefile,v 3.29 1998/10/17 21:30:47 mradwin Exp mradwin $
+#      $Id: Makefile,v 3.30 1998/10/20 18:56:28 mradwin Exp mradwin $
 #
 
 WWWROOT=/home/web/radwin.org
@@ -42,7 +42,7 @@ SNAPSHOTFILES=mvhs \
 
 all:	adrfile index submit addupdate reunions links faq copyright \
 	recent pages multi_alpha class awalt goners \
-	multi_class books
+	multi_class books nicknames
 
 ADRFILE=$(WWWDIR)/master.adr
 adrfile:	$(ADRFILE)
@@ -94,21 +94,21 @@ $(INDEX):	data/index.include $(BIN_HOME) $(AID_UTIL_PL) $(ADR_MASTER)
 		-t 'Welcome to the MVHS Alumni Internet Directory!' \
 		$(INDEX)
 
-REUNIONS=$(WWWDIR)/reunions.html
+REUNIONS=$(WWWDIR)/etc/reunions.html
 reunions:	$(REUNIONS)
 $(REUNIONS):	data/reunions.include $(BIN_HOME)
 	$(BIN_HOME) -p11 -i data/reunions.include \
 		-t 'Reunions' \
 		$(REUNIONS)
 
-LINKS=$(WWWDIR)/links.html
+LINKS=$(WWWDIR)/etc/links.html
 links:	$(LINKS)
 $(LINKS):	data/links.include $(BIN_HOME)
 	$(BIN_HOME) -p12 -i data/links.include \
 		-t 'Other MVHS and Awalt websites' \
 		$(LINKS)
 
-NICKNAMES=$(WWWDIR)/books/index.html
+NICKNAMES=$(WWWDIR)/books/HEADER.html
 nicknames:	$(NICKNAMES)
 $(NICKNAMES):	data/nicknames.include $(BIN_HOME)
 	mkdir -p $(WWWDIR)/books
@@ -116,28 +116,28 @@ $(NICKNAMES):	data/nicknames.include $(BIN_HOME)
 		-t 'Download Nickname and Address Book files' \
 		$(NICKNAMES)
 
-FAQ=$(WWWDIR)/faq.html
+FAQ=$(WWWDIR)/etc/faq.html
 faq:	$(FAQ)
 $(FAQ):	data/faq.include $(BIN_HOME)
 	$(BIN_HOME) -p14 -i data/faq.include \
 		-t 'Frequently Asked Questions' \
 		$(FAQ)
 
-COPYRIGHT=$(WWWDIR)/copyright.html
+COPYRIGHT=$(WWWDIR)/etc/copyright.html
 copyright:	$(COPYRIGHT)
 $(COPYRIGHT):	data/copyright.include $(BIN_HOME)
 	$(BIN_HOME) -p15 -i data/copyright.include \
 		-t 'Acceptable Use and Copyright' \
 		$(COPYRIGHT)
 
-SUBMIT=$(WWWDIR)/new.html
+SUBMIT=$(WWWDIR)/add/new.html
 submit:	$(SUBMIT)
 $(SUBMIT):	$(BIN_HOME) $(AID_UTIL_PL)
 	$(BIN_HOME) -s -p20 \
 		-t 'Add an Entry to the Directory' \
 		$(SUBMIT)
 
-ADDUPDATE=$(WWWDIR)/add.html
+ADDUPDATE=$(WWWDIR)/add/index.html
 addupdate:	$(ADDUPDATE)
 $(ADDUPDATE):	data/add.include $(BIN_HOME)
 	$(BIN_HOME) -p10 -i data/add.include \
@@ -182,12 +182,12 @@ recent.txt:	$(ADR_CLASS) $(BIN_RECENT)
 	$(BIN_RECENT) -m3 -t $(ADR_CLASS) recent.txt
 
 tar:
-	tar cf $(WWWDIR)/mvhsaid.tar $(TARFILES)
-	gzip -f $(WWWDIR)/mvhsaid.tar
+	tar cf $(WWWDIR)/etc/mvhsaid.tar $(TARFILES)
+	gzip -f $(WWWDIR)/etc/mvhsaid.tar
 
 snapshot:
-	( cd $(HOME) ; tar cf $(WWWDIR)/snapshot.tar $(SNAPSHOTFILES) )
-	gzip -f $(WWWDIR)/snapshot.tar
+	( cd $(HOME) ; tar cf $(WWWDIR)/etc/snapshot.tar $(SNAPSHOTFILES) )
+	gzip -f $(WWWDIR)/etc/snapshot.tar
 
 chmod:
 	( cd $(WWWDIR) ; chmod -R a+rX * )
