@@ -1,6 +1,6 @@
 #!/usr/bin/perl -w
 
-# $Id: aid_dbm_write,v 1.16 1999/03/09 18:10:32 mradwin Exp mradwin $
+# $Id: aid_dbm_write,v 1.17 1999/03/09 20:50:23 mradwin Exp mradwin $
 
 require 'aid_util.pl';
 require 'getopts.pl';
@@ -21,6 +21,7 @@ $opt_h = $opt_h;		# avoid warning
 %class_latest = ();
 %www_class_members = ();
 @alpha_ids = ();
+%alpha_latest = ();
 
 print STDERR "reading text db...";
 @db = &aid_alpha_db($ARGV[0]);
@@ -51,6 +52,11 @@ for (@db)
     if ($rec{'valid'})
     {
 	$latest = $rec{'time'} if $rec{'time'} > $latest;
+
+	$ln_key = substr($rec{'last'},0,1);
+	$ln_key = "\L$ln_key\E";
+	$alpha_latest{$ln_key} = $rec{'time'} if
+	    $rec{'time'} > $alpha_latest{$ln_key};
 
 	$ykey = ($rec{'year'} =~ /^\d+$/) ? $rec{'year'} : 'other';
 	if (defined $class_members{$ykey})
@@ -155,6 +161,11 @@ $DB{'__t_awalt__'} = pack("N", $latest_awalt);
 print STDERR ".";
 $DB{'__t_goner__'} = pack("N", $latest_goner);
 print STDERR ".";
+
+while (($key,$val) = each(%alpha_latest))
+{
+    $DB{"__t_${key}__"} = pack("N", $val);
+}
 
 dbmclose(%DB);
 
