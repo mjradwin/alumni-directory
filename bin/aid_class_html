@@ -2,7 +2,7 @@
 
 #
 # does the html version of the grad-date address list
-# $Id: aid_class_html,v 3.41 1999/05/31 18:43:22 mradwin Exp mradwin $
+# $Id: aid_class_html,v 5.1 1999/05/31 21:20:48 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -44,7 +44,7 @@ $ARGV[1] || die "$usage\n";
 $opt_h = $opt_h;		# avoid warning
 
 $info_gif = &aid_image_tag('info');
-$blank_gif = ($opt_t) ? "" : &aid_image_tag('blank');
+$blank_gif = ($opt_t) ? '' : &aid_image_tag('blank') . ' ';
 
 $ARGV[0] =~ s/\.db$//;
 die "can't open $ARGV[0].db\n" unless -r "$ARGV[0].db";
@@ -80,7 +80,7 @@ if (!$opt_t) {
     print FMTOUT "<pre>";
 }
 
-print FMTOUT "Name$blank_gif                                      E-Mail\n";
+print FMTOUT "Name $blank_gif                                    E-Mail\n";
 print FMTOUT "---------------------------------------------------------------------------";
 
 select(STDOUT); $| = 1;
