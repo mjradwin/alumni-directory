@@ -2,7 +2,7 @@
 #     FILE: Makefile
 #   AUTHOR: Michael J. Radwin
 #    DESCR: Makefile for building the MVHS Alumni Internet Directory
-#      $Id: Makefile,v 1.25 1997/08/22 17:21:50 mjr Exp mjr $
+#      $Id: Makefile,v 1.26 1997/08/22 17:42:40 mjr Exp mjr $
 #
 
 WWWDIR=/home/divcom/mjr/public_html/mvhs
@@ -34,8 +34,8 @@ $(WWWDIR)/class.html:	data/class.adr bin/mv_class_html
 	bin/mv_class_html data/class.adr $(WWWDIR)/class.html
 
 new:	$(WWWDIR)/recent.html
-$(WWWDIR)/recent.html:	data/alpha.adr bin/mv_new_html
-	bin/mv_new_html data/alpha.adr $(WWWDIR)/recent.html
+$(WWWDIR)/recent.html:	data/date.adr bin/mv_new_html
+	bin/mv_new_html data/date.adr $(WWWDIR)/recent.html
 
 goners:	$(WWWDIR)/invalid.html
 $(WWWDIR)/invalid.html:	data/gsort.adr bin/mv_goners_html
@@ -72,6 +72,9 @@ data/alpha.adr:	data/mvhs.adr
 data/class.adr:	data/mvhs.adr
 	sort -t\; +7 -8 +3 -6 data/mvhs.adr > data/class.adr
 
+data/date.adr:	data/mvhs.adr
+	sort data/mvhs.adr > data/date.adr
+
 tar:
 	tar cf $(WWWDIR)/mvhs_db.tar $(TARFILES)
 
@@ -80,4 +83,4 @@ backup:
 
 clean:
 	$(RM) TAGS class.txt mvhs.txt data/class.adr data/alpha.adr
-	$(RM) data/gsort.adr
+	$(RM) data/gsort.adr data/date.adr
