@@ -4,7 +4,7 @@
 #     FILE: msg.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: Alumni Internet Directory update redirector
-#      $Id: msg,v 6.14 2003/10/30 07:28:07 mradwin Exp mradwin $
+#      $Id: msg,v 6.15 2004/02/01 22:55:44 mradwin Exp mradwin $
 #
 #   Copyright (c) 2003  Michael John Radwin
 #
@@ -37,7 +37,6 @@ use Digest::MD5  qw(md5_hex);
 use Email::Valid;
 use CGI qw(-no_xhtml);
 use CGI::Carp qw(fatalsToBrowser);
-use Mail::SpamAssassin;
 use aid_util;
 use strict;
 
@@ -52,9 +51,6 @@ foreach my $key ($q->param())
 
 my $dbmfile = aid_util::config('dbmfile');
 die "$dbmfile: $!\n" unless -r $dbmfile;
-
-my $limit = aid_util::config('limit');
-die "$limit: $!\n" unless -w $limit;
 
 if (defined($in{'to'}) && $in{'to'} =~ /^\d+$/)
 {
@@ -138,45 +134,8 @@ _EOHTML_
 	exit(0);
     }
 
-    my $spam_headers = "From: $from\nSubject: $subject\nTo: " . $rec{'e'} ."\nDate: " .
-      POSIX::strftime("%a, %d %b %Y %H:%M:%S +0000", gmtime(time())) . "\n\n";
-
-    my $spam_test = Mail::SpamAssassin->new({
-	'local_tests_only' => 1,
-	'rules_filename' => '/pub/m/r/mradwin/private/share/spamassassin',
-    });
-
-    # avoid waring "Failed to create default user preference file
-    #               /var/www/.spamassassin/user_prefs"
-    $spam_test->compile_now(0);
-
-    my $spam_status = $spam_test->check_message_text($spam_headers . $message);
-    if ($spam_status->is_spam()) {
-	print "Content-Type: text/html\015\012\015\012";
-	print aid_util::common_html_hdr(9, 'Your message looks like SPAM', 1);
-
-        my $school = aid_util::config('short_school');
-	my $admin = aid_util::config('admin_email');
-
-	print <<_EOHTML_;
-<p><font color=\"red\">Sorry, this message appears to be unsolicited
-commercial email (a.k.a. <a
-href=\"http://spam.abuse.net/overview/\">Spam</a>).</font>
-<br>If you are really a member of the $school alumni community and
-think you are getting this message in error, please contact <a
-href="mailto:$admin">$admin</a></p>
-_EOHTML_
-
-	my $name = email_name(\%rec);
-	my $e = "$name &lt;" . aid_util::protect_email($rec{'e'}) . "&gt;";
-	form($e,$id,$hash,$from,$subject,$message);
-
-	print aid_util::common_html_ftr(9);
-	exit(0);
-    }
-
-    undef $spam_status;
-    undef $spam_test;
+    my $limit = aid_util::config('limit');
+    die "$limit: $!\n" unless -w $limit;
 
     my(%LIMIT);
     tie(%LIMIT, 'DB_File::Lock', $limit, O_RDWR|O_CREAT, 0644, $DB_HASH, 'write')
@@ -208,6 +167,40 @@ _EOHTML_
 	print aid_util::common_html_ftr(9);
 	exit(0);
     }
+
+    if (check_spam($rec{'e'}, $from, $subject, $message)) {
+	print "Content-Type: text/html\015\012\015\012";
+	print aid_util::common_html_hdr(9, 'Your message looks like SPAM', 1);
+
+        my $school = aid_util::config('short_school');
+	my $admin = aid_util::config('admin_email');
+
+	print <<_EOHTML_;
+<p><font color=\"red\">Sorry, this message appears to be unsolicited
+commercial email (a.k.a. <a
+href=\"http://spam.abuse.net/overview/\">Spam</a>).</font>
+<br>If you are really a member of the $school alumni community and
+think you are getting this message in error, please contact <a
+href="mailto:$admin">$admin</a></p>
+_EOHTML_
+
+	my $name = email_name(\%rec);
+	my $e = "$name &lt;" . aid_util::protect_email($rec{'e'}) . "&gt;";
+	form($e,$id,$hash,$from,$subject,$message);
+
+	print aid_util::common_html_ftr(9);
+	exit(0);
+    }
+
+    # message not spam and not over limit
+    tie(%LIMIT, 'DB_File::Lock', $limit, O_RDWR|O_CREAT, 0644, $DB_HASH, 'write')
+	or die "$limit: $!\n";
+    if (defined $LIMIT{$key}) {
+	$LIMIT{$key}++;
+    } else {
+	$LIMIT{$key} = 1;
+    }
+    untie(%LIMIT);
 
     my $name = email_name(\%rec);
     my $school = aid_util::config('short_school');
@@ -242,15 +235,6 @@ Please report abuse to " . aid_util::config('admin_email') . "\n";
 		 "\">" . aid_util::config('admin_email') . "</a>\n");
     }
 
-    tie(%LIMIT, 'DB_File::Lock', $limit, O_RDWR|O_CREAT, 0644, $DB_HASH, 'write')
-	or die "$limit: $!\n";
-    if (defined $LIMIT{$key}) {
-	$LIMIT{$key}++;
-    } else {
-	$LIMIT{$key} = 1;
-    }
-    untie(%LIMIT);
-
     print "Content-Type: text/html\015\012\015\012";
     print aid_util::common_html_hdr(9, 'Message Sent', 1);
     print <<_EOHTML_;
@@ -263,6 +247,31 @@ else
 {
     bail();
 }
+
+sub check_spam
+{
+    my($to,$from,$subject,$message) = @_;
+
+    eval 'use Mail::SpamAssassin;';
+
+    my $spam_headers = "From: $from\nSubject: $subject\nTo: $to\n" .
+	"Date: " . POSIX::strftime("%a, %d %b %Y %H:%M:%S +0000",
+				   gmtime(time())) . "\n\n";
+
+    my $spam_test = Mail::SpamAssassin->new({
+	'local_tests_only' => 1,
+	'rules_filename' => '/pub/m/r/mradwin/private/share/spamassassin',
+    });
+
+    # avoid waring "Failed to create default user preference file
+    #               /var/www/.spamassassin/user_prefs"
+    $spam_test->compile_now(0);
+
+    my $spam_status = $spam_test->check_message_text($spam_headers . $message);
+
+    return $spam_status->is_spam();
+}
+
 
 sub email_name
 {
