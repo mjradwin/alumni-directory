@@ -2,15 +2,17 @@
 #     FILE: Makefile
 #   AUTHOR: Michael J. Radwin
 #    DESCR: Makefile for building the MVHS Alumni Internet Directory
-#      $Id: Makefile,v 1.27 1997/08/28 02:09:19 mjr Exp mjr $
+#      $Id: Makefile,v 1.28 1997/09/08 15:58:12 mjr Exp mjr $
 #
 
 WWWDIR=/home/divcom/mjr/public_html/mvhs
 RM=/bin/rm -f
 
-TARFILES=Makefile *.pl index.include bin data
+TARFILES=Makefile *.pl bin data
 
-all:	adrfile home submit new alpha class awalt goners pages books
+all:	adrfile home submit listings reunions links nicknames tech \
+	new alpha class awalt goners pages \
+	books
 
 chmod:
 	( cd $(WWWDIR) ; chmod -R a+rX * )
@@ -50,8 +52,28 @@ $(WWWDIR)/pages.html:	data/alpha.adr bin/mv_www_html
 	bin/mv_www_html data/alpha.adr $(WWWDIR)/pages.html
 
 home:	$(WWWDIR)/index.html
-$(WWWDIR)/index.html:	index.include bin/mv_home_html mv_util.pl
-	bin/mv_home_html -i index.include
+$(WWWDIR)/index.html:	data/index.include bin/mv_home_html mv_util.pl
+	bin/mv_home_html -i data/index.include
+
+listings:	$(WWWDIR)/listings.html
+$(WWWDIR)/listings.html:	data/listings.include bin/mv_home_html mv_util.pl
+	bin/mv_home_html -p10 -o $(WWWDIR)/listings.html data/listings.include
+
+reunions:	$(WWWDIR)/reunions.html
+$(WWWDIR)/reunions.html:	data/reunions.include bin/mv_home_html mv_util.pl
+	bin/mv_home_html -p11 -o $(WWWDIR)/reunions.html data/reunions.include
+
+links:	$(WWWDIR)/links.html
+$(WWWDIR)/links.html:	data/links.include bin/mv_home_html mv_util.pl
+	bin/mv_home_html -p12 -o $(WWWDIR)/links.html data/links.include
+
+nicknames:	$(WWWDIR)/nicknames.html
+$(WWWDIR)/nicknames.html:	data/nicknames.include bin/mv_home_html mv_util.pl
+	bin/mv_home_html -p13 -o $(WWWDIR)/nicknames.html data/nicknames.include
+
+tech:	$(WWWDIR)/tech.html
+$(WWWDIR)/tech.html:	data/tech.include bin/mv_home_html mv_util.pl
+	bin/mv_home_html -p14 -o $(WWWDIR)/tech.html data/tech.include
 
 submit:	$(WWWDIR)/add.html
 $(WWWDIR)/add.html:	bin/mv_home_html mv_util.pl
