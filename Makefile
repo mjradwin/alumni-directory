@@ -2,7 +2,23 @@
 #     FILE: Makefile
 #   AUTHOR: Michael J. Radwin
 #    DESCR: Makefile for building the Alumni Internet Directory
-#      $Id: Makefile,v 3.67 1999/03/05 01:05:30 mradwin Exp mradwin $
+#      $Id: Makefile,v 3.68 1999/03/26 17:10:13 mradwin Exp mradwin $
+#
+#   Copyright (c) 1995-1999  Michael John Radwin
+#
+#   This program is free software; you can redistribute it and/or modify
+#   it under the terms of the GNU General Public License as published by
+#   the Free Software Foundation; either version 2 of the License, or
+#   (at your option) any later version.
+#
+#   This program is distributed in the hope that it will be useful,
+#   but WITHOUT ANY WARRANTY; without even the implied warranty of
+#   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#   GNU General Public License for more details.
+#
+#   You should have received a copy of the GNU General Public License
+#   along with this program; if not, write to the Free Software
+#   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #
 
 WWWROOT=/home/web/radwin.org
@@ -32,6 +48,7 @@ BIN_VCARD=$(MVHSDIR)/bin/aid_write_vcards
 
 TARFILES= \
 	mvhs/README \
+	mvhs/COPYING \
 	mvhs/Makefile \
 	mvhs/cgi-bin/*.pl \
 	mvhs/cgi-bin/mvhsaid \
