@@ -1,6 +1,6 @@
 #!/usr/local/bin/perl5 -w
 
-# $Id: aid_staging_resend,v 1.1 2001/01/26 18:29:24 mradwin Exp mradwin $
+# $Id: aid_staging_resend,v 1.2 2001/01/26 18:35:36 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -24,6 +24,7 @@ $dirname =~ s,/[^/]+$,,;
 unshift(@INC, $dirname);
 
 use DB_File;
+use Fcntl qw(:DEFAULT :flock);
 
 require 'aid_util.pl';
 require 'getopts.pl';
