@@ -1,12 +1,6 @@
-STRONG.nu, B.nu {
-   color : black; 
-   background : #ffffcc; 
-}
-
-
 PRE.example {
    color : black; 
-   background : #eeeeee; 
+   background : #dddddd; 
    margin-right : 1em; 
    margin-left : 1em; 
 }
@@ -33,26 +27,22 @@ H1, H2, H3, H4, H5, H6 {
 
 DIV.example {
    color : black; 
-   background : #eeeeee; 
+   background : #dddddd; 
    border-width : 0; 
    border-style : none; 
    border-color : inherit; 
-}
-
-
-DIV.about {
-   color : black; 
-   background : #ffffcc; 
-   border-width : 0; 
-   border-style : none; 
-   border-color : inherit; 
-   width : 100%; 
 }
 
 
 .overline {
    font-family : Tahoma, Verdana, Arial, Helvetica, Geneva, SunSans-Regular, sans-serif; 
    margin-bottom : -2ex; 
+}
+
+
+.nu {
+   color : black; 
+   background : #ffffcc; 
 }
 
 
