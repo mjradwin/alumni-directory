@@ -2,11 +2,11 @@
 #     FILE: aid_util.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: perl library routines for the Alumni Internet Directory
-#      $Id: aid_util.pl,v 3.12 1998/05/19 00:55:38 mradwin Exp mradwin $
+#      $Id: aid_util.pl,v 3.13 1998/05/19 20:23:59 mradwin Exp mradwin $
 #
 
 $aid_util'rcsid =
- '$Id: aid_util.pl,v 3.12 1998/05/19 00:55:38 mradwin Exp mradwin $';
+ '$Id: aid_util.pl,v 3.13 1998/05/19 20:23:59 mradwin Exp mradwin $';
 
 # ----------------------------------------------------------------------
 # CONFIGURATION
@@ -125,7 +125,7 @@ $aid_util'pics_label = #'#
 "\"http://www.rsac.org/ratingsv01.html\" l gen true " . 
 "comment \"RSACi North America Server\" by \"" . 
 $aid_util'config{'admin_email'} . 
-"\" on \"1998.03.10T11:49-0800\" r (n 0 s 0 v 0 l 0))'>" .
+"\" on \"1998.03.10T11:49-0800\" r (n 0 s 0 v 0 l 0))'>\n" .
 "<meta http-equiv=\"PICS-Label\" content='(PICS-1.1 " . 
 "\"http://www.classify.org/safesurf/\" l gen true " .
 "for \"http://" . $aid_util'config{'master_svr'} . "\" by \"" . 
