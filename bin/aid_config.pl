@@ -2,7 +2,7 @@
 #     FILE: aid_config.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: configuration variables for Alumni Internet Directory
-#      $Id: aid_config.pl,v 1.32 1999/05/03 18:01:23 mradwin Exp mradwin $
+#      $Id: aid_config.pl,v 1.33 1999/05/04 17:00:08 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -22,7 +22,7 @@
 #
 
 $aid_util'rcsid =
- '$Id: aid_config.pl,v 1.32 1999/05/03 18:01:23 mradwin Exp mradwin $';
+ '$Id: aid_config.pl,v 1.33 1999/05/04 17:00:08 mradwin Exp mradwin $';
 
 # radwin.org (FreeBSD 2.2.2) configuration
 %aid_util'config =   #'#
@@ -165,14 +165,7 @@ $aid_util'copyright_path = $aid_util'config{'master_path'} .
 $aid_util'pics_label = #'#
 "  <meta http-equiv=\"PICS-Label\" content='(PICS-1.1 " . 
 "\"http://www.rsac.org/ratingsv01.html\" l gen true " . 
-"comment \"RSACi North America Server\" by \"" . 
-$aid_util'config{'admin_email'} . 
-"\" on \"1998.03.10T11:49-0800\" r (n 0 s 0 v 0 l 0))' />\n" .
-"  <meta http-equiv=\"PICS-Label\" content='(PICS-1.1 " . 
-"\"http://www.classify.org/safesurf/\" l gen true " .
-"for \"http://" . $aid_util'config{'master_srv'} . "\" by \"" . 
-$aid_util'config{'admin_email'} .
-"\" r (SS~~000 1 SS~~100 1))' />"; #"#
+"on \"1998.03.10T11:49-0800\" r (n 0 s 0 v 0 l 0))' />"; #"#
 
 $aid_util'noindex = "  <meta name=\"robots\"  content=\"noindex\" />"; #'#
 %aid_util'aid_aliases = ();   #'# global alias hash repository 
