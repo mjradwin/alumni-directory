@@ -2,11 +2,11 @@
 #     FILE: aid_util.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: perl library routines for the Alumni Internet Directory
-#      $Id: aid_util.pl,v 1.94 1998/01/07 19:00:02 mjr Exp mjr $
+#      $Id: aid_util.pl,v 1.95 1998/01/12 17:32:56 mjr Exp mjr $
 #
 
 $aid_util'rcsid =
- '$Id: aid_util.pl,v 1.94 1998/01/07 19:00:02 mjr Exp mjr $';
+ '$Id: aid_util.pl,v 1.95 1998/01/12 17:32:56 mjr Exp mjr $';
 
 # ----------------------------------------------------------------------
 # CONFIGURATION
@@ -594,7 +594,8 @@ are required.  All other fields are optional.</p>\n\n";
 </tr>
 <tr>
   <td colspan=2 valign=top><font color=\"#$cell_fg\">Location</font><br>
-  <font color=\"#$cell_fg\" size=\"-1\">(city, school, or company)</font></td>
+  <font color=\"#$cell_fg\" size=\"-1\">(your city, school, or company)</font></td>
+
   <td valign=top><input type=text name=\"location\" size=35
   value=\"$newrec{'location'}\"></td>
 </tr>
