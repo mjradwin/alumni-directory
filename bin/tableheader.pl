@@ -3,7 +3,7 @@
 #   AUTHOR: Michael J. Radwin
 #    DESCR: generates small-caps HTML headers with colored tables
 #     DATE: Mon Nov 11 23:52:52 EST 1996
-#      $Id: tableheader.pl,v 3.11 1998/12/28 17:16:49 mradwin Exp mradwin $
+#      $Id: tableheader.pl,v 3.12 1999/01/29 19:18:27 mradwin Exp mradwin $
 #
 
 
@@ -64,12 +64,12 @@ sub tableheader_internal {
     local($_);
 
     $fgcolor = "color=\"#$fgcolor\"";
-    $fn_size = "size=\"+$fn_size\"";
+    $fn_size = $fn_size; # ignore!
 
     @array = unpack('C*', $data);
     $last = pop(@array);   # the last char is a special case
 
-    $result = ""; 
+    $result = "<font $fgcolor>"; 
    
     for (@array) {
 	if ($_ == 32) {
@@ -77,42 +77,46 @@ sub tableheader_internal {
 	    next;
 
 	} elsif (($_ >= 65 && $_ <= 90) || ($_ >= 48 && $_ <= 57)) {
-	    $result .= sprintf("<font %s %s>%c</font>&nbsp;", $fn_size, 
-			       $fgcolor, $_);
+	    $result .= sprintf("<big>%c</big>&nbsp;", $_);
 
 	} elsif ($_ >= 97 && $_ <= 122) {
-	    $result .= sprintf("<font %s>%c</font>", $fgcolor, $_ - 32);
+	    $result .= sprintf("%c", $_ - 32);
 	    $result .= "&nbsp;";
 
 	} elsif ($_ == 38) {
-	    $result .= sprintf("<font %s>&amp;</font>", $fgcolor);
+	    $result .= "&amp;";
 	    $result .= "&nbsp;";
 
 	} elsif ($_ == 60) {
-	    $result .= sprintf("<font %s>&lt;</font>", $fgcolor);
+	    $result .= "&lt;";
 	    $result .= "&nbsp;";
 
 	} elsif ($_ == 62) {
-	    $result .= sprintf("<font %s>&gt;</font>", $fgcolor);
+	    $result .= "&gt;";
 	    $result .= "&nbsp;";
 
 	} else {
-	    $result .= sprintf("<font %s>%c</font>", $fgcolor, $_);
+	    $result .= sprintf("%c", $_);
 	    $result .= "&nbsp;";
 	}
     }
 
     # handle the last char differently
-	
     if (($last >= 65 && $last <= 90) || ($last >= 48 && $last <= 57)) {
-	$result .= sprintf("<font %s %s>%c</font>", $fn_size, 
-			   $fgcolor, $last);
+	$result .= sprintf("<big>%c</big>", $last);
     } elsif ($last >= 97 && $last <= 122) {
-	$result .= sprintf("<font %s>%c</font>", $fgcolor, $last - 32);
+	$result .= sprintf("%c", $last - 32);
+    } elsif ($last == 38) {
+	$result .= "&amp;";
+    } elsif ($last == 60) {
+	$result .= "&lt;";
+    } elsif ($last == 62) {
+	$result .= "&gt;";
     } else {
-	$result .= sprintf("<font %s>%c</font>", $fgcolor, $last);
+	$result .= sprintf("%c", $last);
     }
 
+    $result .= "</font>";
     $result;
 }
 1;
