@@ -4,7 +4,7 @@
 #     FILE: mvhsaid.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: Alumni Internet Directory CGI interface
-#      $Id: mvhsaid,v 3.96 1999/03/29 17:56:08 mradwin Exp mradwin $
+#      $Id: mvhsaid,v 3.97 1999/03/30 01:20:25 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -40,7 +40,7 @@ $mailprog = &aid_config('mailprog');
 $dbmfile = &aid_config('dbmfile');
 $dbmfile =~ s/\.db$//;
 
-$rcsid = '$Id: mvhsaid,v 3.96 1999/03/29 17:56:08 mradwin Exp mradwin $'; #'fnt
+$rcsid = '$Id: mvhsaid,v 3.97 1999/03/30 01:20:25 mradwin Exp mradwin $'; #'fnt
 
 $listing_upd_title = 'Update Your Directory Listing';
 $listing_upl_title = 'Select a Listing to Update';
@@ -50,10 +50,10 @@ $listing_sub_title = 'Review and Confirm Your Listing';
 &CgiDie(&aid_config('short_school') . " Alumni: Script Error",
 	"The database is unreadable.\n" .
 	"Please <a href=\"mailto:" . &aid_config('admin_email') .
-	"\">email " . &aid_config('admin_name') . "</a>.")
+	"\">e-mail " . &aid_config('admin_name') . "</a>.")
     unless -r "${dbmfile}.db";
 
-@required_headers = ('id', 'first', 'last', 'sch_id', 'year', 'email');
+@required_headers = ('id', 'gn', 'sn', 's', 'yr', 'e');
 
 # hack: convert "cgi-bin/mvhsaid/vcard/123.vcf" to "cgi-bin/mvhsaid?vcard=123"
 if (defined($ENV{'PATH_INFO'}) && $ENV{'PATH_INFO'} =~ m,^/vcard/,) 
@@ -157,10 +157,10 @@ if (defined($in{'version'})) {
     $in{'plusminus'} = defined $in{'plusminus'} && 
 	($in{'plusminus'} eq 'on' || $in{'plusminus'} == 1) ? 1 : 0;
 
-    if (! &is_email_okay($in{'email'}))
+    if (! &is_email_okay($in{'e'}))
     {
 	print "Content-Type: text/html\015\012\015\012";
-	print &aid_common_html_hdr(-1, (($in{'email'} =~ /^\s*$/) ? 'Blank' :
+	print &aid_common_html_hdr(-1, (($in{'e'} =~ /^\s*$/) ? 'Blank' :
 				    'Invalid') . ' E-mail Address',1);
 	print "\n";
 	print "<p>You must submit a valid, non-blank e-mail address to ";
@@ -202,60 +202,60 @@ foreach $key (keys(%in)) {
 }
 
 foreach $key (keys(%in)) {
-    next if $key eq 'message';
+    next if $key eq 'n';
     $in{$key} =~ s/;/,/g;   # can't handle ; because it's field delim
 }
 
 # remove apostropies and add a leading year to gradyear field
-$in{'year'} =~ s/^class\s+of\s*//i;
-$in{'year'} =~ s/^\'(\d\d)$/$1/;
-$in{'year'} = '0' . $in{'year'} if $in{'year'} =~ /^\d$/;
+$in{'yr'} =~ s/^class\s+of\s*//i;
+$in{'yr'} =~ s/^\'(\d\d)$/$1/;
+$in{'yr'} = '0' . $in{'yr'} if $in{'yr'} =~ /^\d$/;
 
 # Year 2000 stuff: make 2-digit year fields be 4 digits.
 # either 20 years in the future, or 80 years in the past.
-if ($in{'year'} =~ /^\d\d$/) {
+if ($in{'yr'} =~ /^\d\d$/) {
     $year = (localtime(time))[5];
     $year += 1900;  # localtime() returns number of years since 1900
-    if ((($year % 100) - $in{'year'}) <= 80) {
+    if ((($year % 100) - $in{'yr'}) <= 80) {
 	$year = int($year / 100);
-	$in{'year'} = $year . $in{'year'};
+	$in{'yr'} = $year . $in{'yr'};
     } else {
 	$year = int($year / 100);
-	$in{'year'} = ++$year . $in{'year'};
+	$in{'yr'} = ++$year . $in{'yr'};
     }
 }
 
-$in{'reunion'} = (defined $in{'reunion'} && 
-		  ($in{'reunion'} eq 'on' || $in{'reunion'} == 1)) ? 1 : 0;
+$in{'r'} = (defined $in{'r'} && 
+	    ($in{'r'} eq 'on' || $in{'r'} == 1)) ? 1 : 0;
 
 # uncapitalize those overzealous capslock names
-$in{'first'} = "\L$in{'first'}\E"
-    if ($in{'first'} eq "\U$in{'first'}\E") && $in{'first'} !~ /\./;
-$in{'last'} = "\L$in{'last'}\E"
-    if ($in{'last'} eq "\U$in{'last'}\E");
-$in{'married'} = "\L$in{'married'}\E"
-    if ($in{'married'} eq "\U$in{'married'}\E");
+$in{'gn'} = "\L$in{'gn'}\E"
+    if ($in{'gn'} eq "\U$in{'gn'}\E") && $in{'gn'} !~ /\./;
+$in{'sn'} = "\L$in{'sn'}\E"
+    if ($in{'sn'} eq "\U$in{'sn'}\E");
+$in{'mn'} = "\L$in{'mn'}\E"
+    if ($in{'mn'} eq "\U$in{'mn'}\E");
 
 # initial capitalize those lazy names
-$in{'first'} = "\u$in{'first'}";
-$in{'last'} = "\u$in{'last'}"
-    unless $in{'last'} =~ /^(van|d[ie]) /;
-$in{'married'} = "\u$in{'married'}"
-    unless $in{'married'} =~ /^(van|d[ie]) /;
+$in{'gn'} = "\u$in{'gn'}";
+$in{'sn'} = "\u$in{'sn'}"
+    unless $in{'sn'} =~ /^(van|d[ie]) /;
+$in{'mn'} = "\u$in{'mn'}"
+    unless $in{'mn'} =~ /^(van|d[ie]) /;
 
-$in{'middle'} = "\u$in{'middle'}";
+$in{'mi'} = "\u$in{'mi'}";
 
-$in{'www'} = '' if $in{'www'} eq 'http://';
-$in{'www'} = 'http://' . $in{'www'} if
-    $in{'www'} ne '' && $in{'www'} !~ m,^http://,i;
+$in{'w'} = '' if $in{'w'} eq 'http://';
+$in{'w'} = 'http://' . $in{'w'} if
+    $in{'w'} ne '' && $in{'w'} !~ m,^http://,i;
 
-$in{'last'} =~ s/^$in{'first'}\s+//i;
-$in{'married'} =~ s/^$in{'first'}\s+//i;
+$in{'sn'} =~ s/^$in{'gn'}\s+//i;
+$in{'mn'} =~ s/^$in{'gn'}\s+//i;
      
-$in{'married'} = '' if defined $in{'married'} &&
-    ($in{'married'} =~ /\(?\s*same\s+as\s+last\s+name\s*\)?/i ||
-     $in{'married'} =~ /\(?\s*same\s*\)?/i ||
-     $in{'married'} eq $in{'last'});
+$in{'mn'} = '' if defined $in{'mn'} &&
+    ($in{'mn'} =~ /\(?\s*same\s+as\s+last\s+name\s*\)?/i ||
+     $in{'mn'} =~ /\(?\s*same\s*\)?/i ||
+     $in{'mn'} eq $in{'sn'});
 
 # did they have non-empty entries for all the required fields?
 $empty_fields = '';
@@ -266,11 +266,11 @@ foreach (@required_headers)
 }
 
 # lowercase the hostname portion of the email address
-$email_tmp = $in{'email'};
-$email_tmp =~ s/\s//g;
-if (&is_email_okay($email_tmp))
+$mangled_e = $in{'e'};
+$mangled_e =~ s/\s//g;
+if (&is_email_okay($mangled_e))
 {
-    ($mail_user,$mail_addr) = split(/\@/, $email_tmp);
+    ($mail_user,$mail_addr) = split(/\@/, $mangled_e);
 	
     # test for initial-cap, rest lower user
     $lower_user = "\L$mail_user\E";
@@ -279,16 +279,16 @@ if (&is_email_okay($email_tmp))
     # test for all-caps user
     $mail_user = $lower_user if $mail_user eq "\U$mail_user\E";
 
-    $in{'email'} = $mail_user . '@' . "\L$mail_addr\E";
+    $in{'e'} = $mail_user . '@' . "\L$mail_addr\E";
 }
-elsif ($empty_fields !~ /\bemail\b/)
+elsif ($empty_fields !~ /\be\b/)
 {
-    $empty_fields .= 'email';
+    $empty_fields .= 'e';
 }
 
 if ($empty_fields ne '')
 {
-    delete $in{'time'};
+    delete $in{'u'};
     &send_upd_real(*in,$empty_fields);
     close(STDOUT);
     exit(0);
@@ -298,7 +298,7 @@ if ($empty_fields ne '')
 # the confirmation phase or the queueing phase.
 
 if (defined($in{'revise'})) {
-    delete $in{'time'};
+    delete $in{'u'};
     &send_upd_real(*in,'');
 } elsif (defined($in{'confirmed'})) {
     &queue_submission();
@@ -318,7 +318,7 @@ sub confirm_submission {
     %newrec = &aid_html_entify_rec(*in);
     foreach (keys %newrec) {
 	print "<input type=hidden name=\"$_\"";
-	print "\n" if $_ eq 'message';
+	print "\n" if $_ eq 'n';
 	print " value=\"$newrec{$_}\">\n";
     }
 
@@ -365,25 +365,25 @@ sub queue_submission {
     require 'ctime.pl';
 
     # set the times and then update the db.
-    $in{'time'} = time;
-    $in{'fresh'} = $in{'time'};
-    $in{'created'} = $in{'created'} ne '' ? $in{'created'} : $in{'time'};
-    $in{'inethost'} = $ENV{'REMOTE_HOST'};
-    $in{'bounce'} = 0;
-    $in{'message'} =~ s/\015\012/\n/g;
+    $in{'u'} = time;
+    $in{'f'} = $in{'u'};
+    $in{'c'} = $in{'c'} ne '' ? $in{'c'} : $in{'u'};
+    $in{'h'} = $ENV{'REMOTE_HOST'};
+    $in{'b'} = 0;
+    $in{'n'} =~ s/\015\012/\n/g;
 
-    if (($in{'id'} != -1) && ($in{'prev_email'} ne $in{'email'}))
+    if (($in{'id'} != -1) && ($in{'pe'} ne $in{'e'}))
     {
-	$in{'email_upd'} = $in{'time'};
-	$in{'email_old'} = $in{'prev_email'};
+	$in{'eu'} = $in{'u'};
+	$in{'eo'} = $in{'pe'};
     }
     else
     {
-	$in{'email_old'} = '';
+	$in{'eo'} = '';
     }
 
     $in{'browser'} = $ENV{'HTTP_USER_AGENT'};
-    $date = &ctime($in{'time'});
+    $date = &ctime($in{'u'});
     $mailto = &aid_config('mailto');
     $mailsubj = &aid_config('mailsubj');
     $mailname = &aid_config('admin_name');
@@ -391,19 +391,19 @@ sub queue_submission {
     $mailbody  = "Dear $mailname,\n\n";
 
     $mailbody .= 'Submission from ' . &aid_inorder_fullname(*in);
-    $mailbody .= ' <' . $in{'email'} . "> follows:\n";
+    $mailbody .= ' <' . $in{'e'} . "> follows:\n";
 
     $mailbody .= "\n_AID_BEGIN_SUBMISSION_\n";
 
     while (($key,$val) = each(%in))
     {
-	next if $key eq 'message' || $key eq 'confirmed';
+	next if $key eq 'n' || $key eq 'confirmed';
 	$mailbody .= $key . '=' . $val . "\n";
     }
 
-    if ($in{'message'} ne '')
+    if ($in{'n'} ne '')
     {
-	$mailbody .= "_AID_BEGIN_MESSAGE_\n" . $in{'message'} .
+	$mailbody .= "_AID_BEGIN_MESSAGE_\n" . $in{'n'} .
 	    "\n_AID_END_MESSAGE_\n";
     }
     
@@ -413,7 +413,7 @@ Love,
 the \L$mailsubj\E cgi-bin script
 $date";
 
-    system("$mailprog -s '$mailsubj [$in{'id'} $in{'email'}]' $mailto <<'EOM'
+    system("$mailprog -s '$mailsubj [$in{'id'} $in{'e'}]' $mailto <<'EOM'
 $mailbody
 EOM
 ");
@@ -437,7 +437,7 @@ the Directory.  Processing your submission can take up to 48 hours.
 If your submission was made Monday-Friday between 9am and 5pm Pacific
 Time, your submission will probably be processed within an hour.</p>
 
-<p>E-mail will be sent to <code><strong>$in{'email'}</strong></code>
+<p>E-mail will be sent to <code><strong>$in{'e'}</strong></code>
 confirming receipt of this submission when it it processed.
 See \"<a href=\"" . &aid_config('master_path') . 
 "etc/faq.html#submit\">What happens when I submit my listing?</a>\"
@@ -459,7 +459,7 @@ sub send_upd_real {
 			   (($rec{'id'} == -1) ? 
 			    $listing_add_title : $listing_upd_title),
 			   1,
-			   defined $rec{'time'} ? $rec{'time'} : undef);
+			   defined $rec{'u'} ? $rec{'u'} : undef);
 
     print &aid_submit_body(*rec,$empty_fields);
     print &aid_common_html_ftr(-1);
@@ -470,10 +470,10 @@ sub send_about {
     local($fullname) = &aid_inorder_fullname(*rec);
     local($html_name) = &aid_html_entify_str($fullname);
 
-    print "Last-Modified: ", &aid_http_date($rec{'time'}), "\015\012";
+    print "Last-Modified: ", &aid_http_date($rec{'u'}), "\015\012";
     print "Content-Type: text/html\015\012\015\012";
 
-    print &aid_common_html_hdr(-1,$fullname,1,$rec{'time'});
+    print &aid_common_html_hdr(-1,$fullname,1,$rec{'u'});
     print "<p>Here is more detailed information about $html_name.\n<br>";
     print "To update this listing, please click the button below.</p>\n\n";
     print &aid_about_text(*rec,0,1,1), "\n";
@@ -503,7 +503,7 @@ it and force us to install a password door.</p>
 sub send_vcard {
     local(*rec) = @_;
 
-    print "Last-Modified: ", &aid_http_date($rec{'time'}), "\015\012";
+    print "Last-Modified: ", &aid_http_date($rec{'u'}), "\015\012";
     print "Content-Type: text/x-vcard\015\012\015\012";
     print &aid_vcard_text(*rec);
 }
@@ -543,7 +543,7 @@ sub send_address_book {
 	&CgiDie(&aid_config('short_school') . " Alumni: Script Error",
 		"The class database is unavailable.\n" .
 		"Please <a href=\"mailto:" . &aid_config('admin_email') .
-		"\">email " . &aid_config('admin_name') . "</a>.");
+		"\">e-mail " . &aid_config('admin_name') . "</a>.");
     }
     
     print "Content-Type: text/$subtype\015\012\015\012";
@@ -552,8 +552,8 @@ sub send_address_book {
     {
 	%rec = &aid_db_unpack_rec($_,$DB{$_});
 
-	next unless $rec{'valid'};
-	next unless ($rec{'year'} <= $maxyr && $rec{'year'} >= $minyr);
+	next unless $rec{'v'};
+	next unless ($rec{'yr'} <= $maxyr && $rec{'yr'} >= $minyr);
 
 	&aid_book_write_entry(*STDOUT,$format,*rec);
     }
@@ -597,7 +597,7 @@ sub send_upd_list {
 	&CgiDie(&aid_config('short_school') . " Alumni: Script Error",
 		"The alphabetic database is unavailable.\n" .
 		"Please <a href=\"mailto:" . &aid_config('admin_email') .
-		"\">email " . &aid_config('admin_name') . "</a>.");
+		"\">e-mail " . &aid_config('admin_name') . "</a>.");
     }
 
     print "Content-Type: text/html\015\012\015\012";
@@ -612,7 +612,7 @@ sub send_upd_list {
     foreach (@alpha_ids) {
 	%rec = &aid_db_unpack_rec($_,$DB{$_});
 
-	$cur_initial = substr($rec{'last'}, 0, 1);
+	$cur_initial = substr($rec{'sn'}, 0, 1);
 	$cur_initial = "\L${cur_initial}\E";
 	if ("\L${initial}\E" ne $cur_initial) {
 	    $initial = $cur_initial;

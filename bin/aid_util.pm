@@ -2,7 +2,7 @@
 #     FILE: aid_util.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: perl library routines for the Alumni Internet Directory
-#      $Id: aid_util.pl,v 4.76 1999/03/27 04:25:47 mradwin Exp mradwin $
+#      $Id: aid_util.pl,v 4.77 1999/03/29 18:33:44 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -22,7 +22,7 @@
 #
 
 $aid_util'rcsid =
- '$Id: aid_util.pl,v 4.76 1999/03/27 04:25:47 mradwin Exp mradwin $';
+ '$Id: aid_util.pl,v 4.77 1999/03/29 18:33:44 mradwin Exp mradwin $';
 
 # ----------------------------------------------------------------------
 # CONFIGURATION
@@ -94,49 +94,49 @@ $aid_util'ID_INDEX    = 0;     #'# position that the ID key is in datafile
 @aid_util'field_names = #'# order is important!
     (
     'id',			# numerical userid
-    'valid',			# bit describing status
-    'last',			# last name
-    'married',			# married name
-    'first',			# first name
-    'request',			# type of periodic emailing
-    'reunion',			# bit for reunion email request
-    'bounce',			# date of first bounce (0 if none)
-    'created',			# date of record creation
-    'time',			# date of last update
-    'fresh',			# date of last successful verification
-    'sch_id',			# high school (primary or Awalt)
-    'year',			# 4-digit grad year or affiliation
-    'email',			# email address
-    'www',			# personal web page
-    'location',			# city, company, or college
-    'inethost',			# REMOTE_HOST of last update
-    'middle',			# middle initial
-    'email_upd',		# date of last update to email
-    'email_old',		# previous email address
+    'v',			# bit describing status
+    'sn',			# last name
+    'mn',			# married name
+    'gn',			# first name
+    'q',			# type of periodic emailing
+    'r',			# bit for reunion email request
+    'b',			# date of first bounce (0 if none)
+    'c',			# date of record creation
+    'u',			# date of last update
+    'f',			# date of last successful verification
+    's',			# high school (primary or Awalt)
+    'yr',			# 4-digit grad year or affiliation
+    'e',			# email address
+    'w',			# personal web page
+    'l',			# city, company, or college
+    'h',			# REMOTE_HOST of last update
+    'mi',			# middle initial
+    'eu',		# date of last update to email
+    'eo',		# previous email address
     );
 
 %aid_util'field_descr = #'#
     (
     'id',	'',
-    'valid',	'',
-    'last',	'Last Name/Maiden Name',
-    'married',	'Married Last Name',
-    'first',	'First Name',
-    'request',	'',
-    'reunion',	'',
-    'bounce',	'',
-    'created',	'',
-    'time',	'',
-    'fresh',	'',
-    'sch_id',	'High School',
-    'year',	'Graduation Year or Affiliation',
-    'email',	'E-mail Address',
-    'www',	'Personal Web Page',
-    'location',	'Location',
-    'inethost',	'',
-    'middle',	'Middle Initial',
-    'email_upd','',
-    'email_old','Previous E-mail Address',
+    'v',	'',
+    'sn',	'Last Name/Maiden Name',
+    'mn',	'Married Last Name',
+    'gn',	'First Name',
+    'q',	'',
+    'r',	'',
+    'b',	'',
+    'c',	'',
+    'u',	'',
+    'f',	'',
+    's',	'High School',
+    'yr',	'Graduation Year or Affiliation',
+    'e',	'E-mail Address',
+    'w',	'Personal Web Page',
+    'l',	'Location',
+    'h',	'',
+    'mi',	'Middle Initial',
+    'eu','',
+    'eo','Previous E-mail Address',
     );
 
 $aid_util'pack_format = 'C3N5'; #'#
@@ -150,14 +150,14 @@ for ($i = 0; $i <= $#aid_util'field_names; $i++) { #'#
 }
 
 $aid_util'blank_entry{'id'}      = -1;      #'#
-$aid_util'blank_entry{'valid'}   = 1;       #'#
-$aid_util'blank_entry{'request'} = 4;       #'#
-$aid_util'blank_entry{'reunion'} = 1;       #'#
-$aid_util'blank_entry{'bounce'} = 0;        #'#
-$aid_util'blank_entry{'email_upd'} = 0;     #'#
-$aid_util'blank_entry{'email_old'} = '';    #'#
-$aid_util'blank_entry{'message'} = '';      #'#
-$aid_util'blank_entry{'sch_id'}  = $aid_util'school_default;
+$aid_util'blank_entry{'v'}   = 1;       #'#
+$aid_util'blank_entry{'q'} = 4;       #'#
+$aid_util'blank_entry{'r'} = 1;       #'#
+$aid_util'blank_entry{'b'} = 0;        #'#
+$aid_util'blank_entry{'eu'} = 0;     #'#
+$aid_util'blank_entry{'eo'} = '';    #'#
+$aid_util'blank_entry{'n'} = '';      #'#
+$aid_util'blank_entry{'s'}  = $aid_util'school_default;
 
 %aid_util'image_tag = #'#
     (
@@ -261,9 +261,9 @@ sub aid_is_new_html
 
     local(*rec) = @_;
 
-    if (&main'aid_is_new($rec{'time'})) #')#
+    if (&main'aid_is_new($rec{'u'})) #')#
     {
-	if (&main'aid_is_new($rec{'created'})) #')#
+	if (&main'aid_is_new($rec{'c'})) #')#
         {
 	    ' ' . $image_tag{'new'};
 	}
@@ -283,15 +283,15 @@ sub aid_fullname
     package aid_util;
 
     local(*rec) = @_;
-    local($mid) = ($rec{'middle'} ne '') ? " $rec{'middle'}." : '';
+    local($mi) = ($rec{'mi'} ne '') ? " $rec{'mi'}." : '';
 
-    if ($rec{'first'} eq '') {
-	$rec{'last'};
+    if ($rec{'gn'} eq '') {
+	$rec{'sn'};
     } else {
-	if ($rec{'married'} ne '') {
-	    "$rec{'last'} (now $rec{'married'}), $rec{'first'}${mid}";
+	if ($rec{'mn'} ne '') {
+	    "$rec{'sn'} (now $rec{'mn'}), $rec{'gn'}${mi}";
 	} else {
-	    "$rec{'last'}, $rec{'first'}${mid}";
+	    "$rec{'sn'}, $rec{'gn'}${mi}";
 	}
     }
 }
@@ -302,15 +302,15 @@ sub aid_inorder_fullname
     package aid_util;
 
     local(*rec) = @_;
-    local($mid) = ($rec{'middle'} ne '') ? "$rec{'middle'}. " : '';
+    local($mi) = ($rec{'mi'} ne '') ? "$rec{'mi'}. " : '';
 
-    if ($rec{'first'} eq '') {
-	$rec{'last'};
+    if ($rec{'gn'} eq '') {
+	$rec{'sn'};
     } else {
-	if ($rec{'married'} ne '') {
-	    "$rec{'first'} ${mid}$rec{'last'} (now $rec{'married'})";
+	if ($rec{'mn'} ne '') {
+	    "$rec{'gn'} ${mi}$rec{'sn'} (now $rec{'mn'})";
 	} else {
-	    "$rec{'first'} ${mid}$rec{'last'}";
+	    "$rec{'gn'} ${mi}$rec{'sn'}";
 	}
     }
 }
@@ -326,23 +326,23 @@ sub aid_affiliate
     $affil = '  ';
     $len   = 2;
 
-    if ($rec{'year'} =~ /^\d+$/)
+    if ($rec{'yr'} =~ /^\d+$/)
     {
 	$affil .= "<a href=\"" . &main'aid_about_path(*rec,1) . "\">" #'#
 	    if $do_html_p;
-	$year = sprintf("%02d", $rec{'year'} % 100);
+	$year = sprintf("%02d", $rec{'yr'} % 100);
 
-	if ($rec{'sch_id'} == $school_default ||
-	    $rec{'sch_id'} == $school_awalt ||
-	    $rec{'sch_id'} == $school_both)
+	if ($rec{'s'} == $school_default ||
+	    $rec{'s'} == $school_awalt ||
+	    $rec{'s'} == $school_both)
 	{
-	    $tmp = $school_affil[$rec{'sch_id'}] . "'" . $year;
+	    $tmp = $school_affil[$rec{'s'}] . "'" . $year;
 	    $affil .= $tmp;
 	    $len   += length($tmp);
 	}
 	else
 	{
-	    warn "bad school $rec{'sch_id'} (id == $rec{'id'})!\n";
+	    warn "bad school $rec{'s'} (id == $rec{'id'})!\n";
 	}
 
 	$affil .= "</a>" if $do_html_p;
@@ -352,9 +352,9 @@ sub aid_affiliate
     {
 	$affil .= "<a href=\"" . &main'aid_about_path(*rec,1) . "\">" #'#
 	    if $do_html_p;
-	$tmp    = $school_affil[$rec{'sch_id'}] eq '' ?
-	    $school_name[$rec{'sch_id'}] : $school_affil[$rec{'sch_id'}];
-	$tmp    = "[$tmp $rec{'year'}]";
+	$tmp    = $school_affil[$rec{'s'}] eq '' ?
+	    $school_name[$rec{'s'}] : $school_affil[$rec{'s'}];
+	$tmp    = "[$tmp $rec{'yr'}]";
 	$affil .= $tmp;
 	$len   += length($tmp);
 	$affil .= "</a>" if $do_html_p;
@@ -424,16 +424,16 @@ sub aid_parse {
     local(%rec) = &main'aid_split($_); #'#
     local($mangledLast,$mangledFirst,$alias);
 
-    if ($rec{'valid'} == 0) {
-	$rec{'alias'} = '';
+    if ($rec{'v'} == 0) {
+	$rec{'a'} = '';
 	return %rec;
     }
 
-    $mangledFirst = &main'aid_mangle($rec{'first'}); #'#
-    if ($rec{'married'} ne '') {
-	$mangledLast = &main'aid_mangle($rec{'married'});   #'#
+    $mangledFirst = &main'aid_mangle($rec{'gn'}); #'#
+    if ($rec{'mn'} ne '') {
+	$mangledLast = &main'aid_mangle($rec{'mn'});   #'#
     } else {
-	$mangledLast = &main'aid_mangle($rec{'last'});   #'#
+	$mangledLast = &main'aid_mangle($rec{'sn'});   #'#
     }
 
 #    $alias = substr($mangledFirst, 0, 1) . substr($mangledLast, 0, 7);
@@ -447,7 +447,7 @@ sub aid_parse {
         $aid_aliases{$alias} = 1;
     }
 
-    $rec{'alias'} = $alias;
+    $rec{'a'} = $alias;
     %rec;
 }
 
@@ -490,7 +490,7 @@ sub aid_alpha_db {
 
     foreach (@db) {
 	%rec = &main'aid_split($_);  #'#
-	push(@datakeys, "\L$rec{'last'},$rec{'first'},$rec{'married'}\E");
+	push(@datakeys, "\L$rec{'sn'},$rec{'gn'},$rec{'mn'}\E");
     }
 
     @db[sort bydatakeys $[..$#db];
@@ -510,38 +510,38 @@ sub aid_yahoo_abook_path {
     local(*rec) = @_;
     local($url) = 'http://address.yahoo.com/yab?A=da&au=a';
 
-    $url .= '&fn=' . &url_escape($rec{'first'});
-    if ($rec{'married'} ne '')
+    $url .= '&fn=' . &url_escape($rec{'gn'});
+    if ($rec{'mn'} ne '')
     {
-	$url .= '&mn=' . &url_escape($rec{'last'});
-	$url .= '&ln=' . &url_escape($rec{'married'});
+	$url .= '&mn=' . &url_escape($rec{'sn'});
+	$url .= '&ln=' . &url_escape($rec{'mn'});
     }
     else
     {
-	$url .= '&mn=' . &url_escape($rec{'middle'});
-	$url .= '&ln=' . &url_escape($rec{'last'});
+	$url .= '&mn=' . &url_escape($rec{'mi'});
+	$url .= '&ln=' . &url_escape($rec{'sn'});
     }
     $url .= '&c=Unfiled';
-    $url .= '&nn=' . &url_escape($rec{'alias'});
-    $url .= '&e='  . &url_escape($rec{'email'});
+    $url .= '&nn=' . &url_escape($rec{'a'});
+    $url .= '&e='  . &url_escape($rec{'e'});
     $url .= '&yid=&wp=&pg=&pp=0&ti=';
-    $url .= '&co=' . $school_name[$rec{'sch_id'}];
-    if ($rec{'year'} =~ /^\d+$/) {
-	$url .= '+Class+of+' . $rec{'year'};
-    } else {	
-	$url .= '+' . &url_escape($rec{'year'});
+    $url .= '&co=' . $school_name[$rec{'s'}];
+    if ($rec{'yr'} =~ /^\d+$/) {
+	$url .= '+Class+of+' . $rec{'yr'};
+    } else {
+	$url .= '+' . &url_escape($rec{'yr'});
     }
     $url .= '&f=';
-    $url .= '&pu=' . &url_escape($rec{'www'});
+    $url .= '&pu=' . &url_escape($rec{'w'});
     $url .= '&af=d&wa1=';
 
-    if ($rec{'location'} =~ /^(.*),\s+(\w\w)$/)
+    if ($rec{'l'} =~ /^(.*),\s+(\w\w)$/)
     {
 	$url .= '&hc=' . &url_escape($1);
 	$url .= '&hs=' . $2;
 	$url .= '&hz=';
     }
-    elsif ($rec{'location'} =~ /^(.*),\s+(\w\w)\s+(\d\d\d\d\d)$/)
+    elsif ($rec{'l'} =~ /^(.*),\s+(\w\w)\s+(\d\d\d\d\d)$/)
     {
 	$url .= '&hc=' . &url_escape($1);
 	$url .= '&hs=' . $2;
@@ -549,7 +549,7 @@ sub aid_yahoo_abook_path {
     }
     else
     {
-	$url .= '&hc=' . &url_escape($rec{'location'});
+	$url .= '&hc=' . &url_escape($rec{'l'});
 	$url .= '&hs=&hz=';
     }
     $url .= '&hco=&mb=&op=&e1=&c1=';
@@ -567,7 +567,7 @@ sub aid_about_path {
     package aid_util;
 
     local(*rec,$suppress_anchor_p) = @_;
-    local($page) = ($rec{'year'} =~ /^\d+$/) ? $rec{'year'} : 'other';
+    local($page) = ($rec{'yr'} =~ /^\d+$/) ? $rec{'yr'} : 'other';
     local($anchor) = ($suppress_anchor_p) ? '' : "#id-$rec{'id'}";
 
     "$config{'master_path'}class/${page}.html${anchor}";
@@ -630,7 +630,7 @@ sub aid_html_entify_rec
 	$rec{$_} =~ s/</&lt;/g;
 	$rec{$_} =~ s/>/&gt;/g;
 	$rec{$_} =~ s/"/&quot;/g; #"#
-	$rec{$_} =~ s/\s+/ /g unless $_ eq 'message';
+	$rec{$_} =~ s/\s+/ /g unless $_ eq 'n';
     }
 
     %rec;
@@ -649,42 +649,42 @@ sub aid_submit_body
     local(@school_checked) = ('', '', '', '');
     local(@reqchk,$i,$reunion_chk,@empty_fields,$prev_email);
 
-    $prev_email = defined $rec{'prev_email'} ? 
-	$rec{'prev_email'} : $rec{'email'};
-    $rec{'www'} = 'http://' if $rec{'www'} eq '';
+    $prev_email = defined $rec{'pe'} ? 
+	$rec{'pe'} : $rec{'e'};
+    $rec{'w'} = 'http://' if $rec{'w'} eq '';
 
     # give defaults if they're being revalidated
-    if ($rec{'valid'} == 0)
+    if ($rec{'v'} == 0)
     {
-	$rec{'request'} = $blank_entry{'request'};
-	$rec{'reunion'} = $blank_entry{'reunion'};
+	$rec{'q'} = $blank_entry{'q'};
+	$rec{'r'} = $blank_entry{'r'};
     }
 
     for ($i = 0; $i < 5; $i++) {
-	$reqchk[$i] = ($rec{'request'} == $i) ? ' checked' : '';
+	$reqchk[$i] = ($rec{'q'} == $i) ? ' checked' : '';
     }
-    $reunion_chk = ($rec{'reunion'} == 1) ? ' checked' : '';
-    $school_checked[$rec{'sch_id'}] = ' checked';
+    $reunion_chk = ($rec{'r'} == 1) ? ' checked' : '';
+    $school_checked[$rec{'s'}] = ' checked';
 
     $body = '';
 
     if ($empty_fields ne '')
     {
-	if ($empty_fields =~ /email/ && $rec{'email'} !~ /^\s*$/)
+	if ($empty_fields =~ /e/ && $rec{'e'} !~ /^\s*$/)
 	{
 	    $body .= "<p><strong><span class=\"alert\">Your e-mail address\n";
-	    $body .= "(<code>" . $rec{'email'} . "</code>)\n";
+	    $body .= "(<code>" . $rec{'e'} . "</code>)\n";
 	    $body .= "appears to be invalid.</span>\n";
 	    $body .= "<br>It must be in the form of ";
 	    $body .= "<code>user\@isp.net</code>.\n";
-	    if ($rec{'email'} !~ /\@/)
+	    if ($rec{'e'} !~ /\@/)
 	    {
 		$body .= "Perhaps you meant to type ";
-		$body .= "<code>$rec{'email'}\@aol.com</code>?\n";
+		$body .= "<code>$rec{'e'}\@aol.com</code>?\n";
 	    }
 	    $body .= "</strong></p>\n\n";
 
-	    $empty_fields =~ s/email//g;
+	    $empty_fields =~ s/e//g;
 	}
 
 	@empty_fields = split(/\s+/, $empty_fields);
@@ -720,33 +720,33 @@ $instr
 </td></tr>
 <tr>
   <td valign=top align=right><label
-  for=\"first\"><strong>First Name:</strong></label></td>
+  for=\"gn\"><strong>First Name:</strong></label></td>
   <td valign=top>$star</td>
-  <td valign=top><input type=text name=\"first\" size=35 
-  value=\"$rec{'first'}\" id=\"first\"></td>
+  <td valign=top><input type=text name=\"gn\" size=35 
+  value=\"$rec{'gn'}\" id=\"gn\"></td>
 </tr>
 <tr>
   <td valign=top align=right><label
-  for=\"middle\"><strong>Middle Initial:</strong></label></td>
+  for=\"mi\"><strong>Middle Initial:</strong></label></td>
   <td>&nbsp;</td>
-  <td valign=top><input type=text name=\"middle\" size=1 maxlength=1
-  value=\"$rec{'middle'}\" id=\"middle\"></td>
+  <td valign=top><input type=text name=\"mi\" size=1 maxlength=1
+  value=\"$rec{'mi'}\" id=\"mi\"></td>
 </tr>
 <tr>
   <td valign=top align=right><label 
-  for=\"last\"><strong>Last Name/Maiden Name:</strong></label><br>
+  for=\"sn\"><strong>Last Name/Maiden Name:</strong></label><br>
   <small>(your last name in high school)</small></td>
   <td valign=top>$star</td>
-  <td valign=top><input type=text name=\"last\" size=35
-  value=\"$rec{'last'}\" id=\"last\"></td>
+  <td valign=top><input type=text name=\"sn\" size=35
+  value=\"$rec{'sn'}\" id=\"sn\"></td>
 </tr>
 <tr>
   <td valign=top align=right><label
-  for=\"married\"><strong>Married Last Name:</strong></label><br>
+  for=\"mn\"><strong>Married Last Name:</strong></label><br>
   <small>(if different from maiden name)</small></td>
   <td>&nbsp;</td>
-  <td valign=top><input type=text name=\"married\" size=35
-  value=\"$rec{'married'}\" id=\"married\"><br><br></td>
+  <td valign=top><input type=text name=\"mn\" size=35
+  value=\"$rec{'mn'}\" id=\"mn\"><br><br></td>
 </tr>
 
 <tr><td colspan=3 bgcolor=\"#$header_bg\">
@@ -755,13 +755,13 @@ $instr
 <tr>
   <td valign=top align=right><strong>High School Attended:</strong></td>
   <td valign=top>$star</td>
-  <td valign=top><input type=radio name=\"sch_id\" id=\"school_default\"
+  <td valign=top><input type=radio name=\"s\" id=\"school_default\"
   value=\"$school_default\"$school_checked[$school_default]><label
   for=\"school_default\">&nbsp;$school_name[$school_default]</label>
-  &nbsp;&nbsp;&nbsp;&nbsp;<input type=radio name=\"sch_id\" id=\"school_awalt\"
+  &nbsp;&nbsp;&nbsp;&nbsp;<input type=radio name=\"s\" id=\"school_awalt\"
   value=\"$school_awalt\"$school_checked[$school_awalt]><label
   for=\"school_awalt\">&nbsp;$school_name[$school_awalt]</label>
-  &nbsp;&nbsp;&nbsp;&nbsp;<input type=radio name=\"sch_id\" id=\"school_both\"
+  &nbsp;&nbsp;&nbsp;&nbsp;<input type=radio name=\"s\" id=\"school_both\"
   value=\"$school_both\"$school_checked[$school_both]><label
   for=\"school_both\">&nbsp;Both&nbsp;$school_name[$school_default]&nbsp;&amp;&nbsp;$school_name[$school_awalt]</label>
   <br>
@@ -771,11 +771,11 @@ $instr
 </tr>
 <tr>
   <td valign=top align=right><label
-  for=\"year\"><strong>Graduation Year or Affiliation:</strong></label><br>
+  for=\"yr\"><strong>Graduation Year or Affiliation:</strong></label><br>
   <small>(such as 1993, 2001, or Teacher)</small></td>
   <td valign=top>$star</td>
-  <td valign=top><input type=text name=\"year\" size=35
-  value=\"$rec{'year'}\" id=\"year\"><br><br></td>
+  <td valign=top><input type=text name=\"yr\" size=35
+  value=\"$rec{'yr'}\" id=\"yr\"><br><br></td>
 </tr>
 
 <tr><td colspan=3 bgcolor=\"#$header_bg\">
@@ -783,26 +783,26 @@ $instr
 </td></tr>
 <tr>
   <td valign=top align=right><label
-  for=\"email\"><strong>E-mail Address:</strong></label><br>
+  for=\"e\"><strong>E-mail Address:</strong></label><br>
   <small>(such as chester\@aol.com)</small></td>
   <td valign=top>$star</td>
-  <td valign=top><input type=text name=\"email\" size=35
-  value=\"$rec{'email'}\" id=\"email\"></td>
+  <td valign=top><input type=text name=\"e\" size=35
+  value=\"$rec{'e'}\" id=\"e\"></td>
 </tr>
 <tr>
   <td valign=top align=right><label
-  for=\"www\"><strong>Personal Web Page:</strong></label></td>
+  for=\"w\"><strong>Personal Web Page:</strong></label></td>
   <td>&nbsp;</td>
-  <td valign=top><input type=text name=\"www\" size=35
-  value=\"$rec{'www'}\" id=\"www\"></td>
+  <td valign=top><input type=text name=\"w\" size=35
+  value=\"$rec{'w'}\" id=\"w\"></td>
 </tr>
 <tr>
   <td valign=top align=right><label
-  for=\"location\"><strong>Location:</strong></label><br>
+  for=\"l\"><strong>Location:</strong></label><br>
   <small>(your city, school, or company)</small></td>
   <td>&nbsp;</td>
-  <td valign=top><input type=text name=\"location\" size=35
-  value=\"$rec{'location'}\" id=\"location\"><br><br></td>
+  <td valign=top><input type=text name=\"l\" size=35
+  value=\"$rec{'l'}\" id=\"l\"><br><br></td>
 </tr>
 
 <tr><td colspan=3 bgcolor=\"#$header_bg\">
@@ -810,11 +810,11 @@ $instr
 </td></tr>
 <tr>
   <td colspan=3>
-  <label for=\"message\">
+  <label for=\"n\">
   Let your classmates know what you've been doing since<br>graduation,
   or any important bits of news you'd like to share.</label><br>
-  <textarea name=\"message\" rows=10 cols=55 wrap=hard
-  id=\"message\">$rec{'message'}</textarea><br><br>
+  <textarea name=\"n\" rows=10 cols=55 wrap=hard
+  id=\"n\">$rec{'n'}</textarea><br><br>
   </td>
 </tr>
 
@@ -823,38 +823,38 @@ $instr
 </td></tr>
 <tr>
   <td colspan=3><input type=checkbox
-  name=\"reunion\" id=\"reunion\" $reunion_chk><label
-  for=\"reunion\">&nbsp;My class officers may notify me of
+  name=\"r\" id=\"r\" $reunion_chk><label
+  for=\"r\">&nbsp;My class officers may notify me of
   reunion information via e-mail.</label><br><br>Please 
   <a href=\"" . $config{'master_path'} . "etc/faq.html#mailings\">send 
   an updated copy</a> of the Directory to my e-mail address<br>
   every February, May, August and November:<br>
 
-  &nbsp;&nbsp;&nbsp;&nbsp;<input type=radio name=\"request\" id=\"request4\"
-  value=\"4\"$reqchk[4]><label for=\"request4\">&nbsp;
+  &nbsp;&nbsp;&nbsp;&nbsp;<input type=radio name=\"q\" id=\"q4\"
+  value=\"4\"$reqchk[4]><label for=\"q4\">&nbsp;
   $req_descr_long[4]</label><br>
 
-  &nbsp;&nbsp;&nbsp;&nbsp;<input type=radio name=\"request\" id=\"request3\"
-  value=\"3\"$reqchk[3]><label for=\"request3\">&nbsp;
+  &nbsp;&nbsp;&nbsp;&nbsp;<input type=radio name=\"q\" id=\"q3\"
+  value=\"3\"$reqchk[3]><label for=\"q3\">&nbsp;
   $req_descr_long[3]</label><br>
 
-  &nbsp;&nbsp;&nbsp;&nbsp;<input type=radio name=\"request\" id=\"request2\"
-  value=\"2\"$reqchk[2]><label for=\"request2\">&nbsp;
+  &nbsp;&nbsp;&nbsp;&nbsp;<input type=radio name=\"q\" id=\"q2\"
+  value=\"2\"$reqchk[2]><label for=\"q2\">&nbsp;
   $req_descr_long[2]</label><br>
 
-  &nbsp;&nbsp;&nbsp;&nbsp;<input type=radio name=\"request\" id=\"request1\"
-  value=\"1\"$reqchk[1]><label for=\"request1\">&nbsp;
+  &nbsp;&nbsp;&nbsp;&nbsp;<input type=radio name=\"q\" id=\"q1\"
+  value=\"1\"$reqchk[1]><label for=\"q1\">&nbsp;
   $req_descr_long[1]</label><br>
 
-  &nbsp;&nbsp;&nbsp;&nbsp;<input type=radio name=\"request\" id=\"request0\"
-  value=\"0\"$reqchk[0]><label for=\"request0\">&nbsp;
+  &nbsp;&nbsp;&nbsp;&nbsp;<input type=radio name=\"q\" id=\"q0\"
+  value=\"0\"$reqchk[0]><label for=\"q0\">&nbsp;
   $req_descr_long[0]</label>
 
   <input type=\"hidden\" name=\"id\" value=\"$rec{'id'}\">
-  <input type=\"hidden\" name=\"created\" value=\"$rec{'created'}\">
-  <input type=\"hidden\" name=\"email_upd\" value=\"$rec{'email_upd'}\">
-  <input type=\"hidden\" name=\"prev_email\" value=\"$prev_email\">
-  <input type=\"hidden\" name=\"valid\" value=\"1\">
+  <input type=\"hidden\" name=\"c\" value=\"$rec{'c'}\">
+  <input type=\"hidden\" name=\"eu\" value=\"$rec{'eu'}\">
+  <input type=\"hidden\" name=\"pe\" value=\"$prev_email\">
+  <input type=\"hidden\" name=\"v\" value=\"1\">
   <br><br>
   </td>
 </tr>
@@ -921,8 +921,8 @@ sub aid_verbose_entry {
     local(*rec);
     local($retval) = '';
 
-    $rec_arg{'message'} = &main'aid_get_usertext($rec_arg{'id'}) #'#
-	unless defined($rec_arg{'message'});
+    $rec_arg{'n'} = &main'aid_get_usertext($rec_arg{'id'}) #'#
+	unless defined($rec_arg{'n'});
 
     %rec = &main'aid_html_entify_rec(*rec_arg);
 
@@ -955,40 +955,40 @@ sub aid_verbose_entry {
 
     $retval .= "</dt>\n";
 
-    if ($rec{'year'} =~ /^\d+$/) {
+    if ($rec{'yr'} =~ /^\d+$/) {
 	# Last Awalt student graduated in 1983
-	$retval .= "<dt>School: <strong>$school_name[$rec{'sch_id'}]</strong></dt>\n" 
-	    if $rec{'year'} <= 1983;
+	$retval .= "<dt>School: <strong>$school_name[$rec{'s'}]</strong></dt>\n" 
+	    if $rec{'yr'} <= 1983;
 	if ($display_year) {
 	    $retval .= "<dt>Year:  <strong>";
 	    $retval .= 
 		"<a href=\"" . &main'aid_about_path(*rec,1) . "\">"; #'#
-	    $retval .= $rec{'year'};
+	    $retval .= $rec{'yr'};
 	    $retval .= "</a></strong></dt>\n";
 	}
     } else {
-	$retval .= "<dt>School: <strong>$school_name[$rec{'sch_id'}]</strong></dt>\n";
+	$retval .= "<dt>School: <strong>$school_name[$rec{'s'}]</strong></dt>\n";
 	$retval .= "<dt>Affiliation:  <strong>";
 	$retval .= "<a href=\"" . &main'aid_about_path(*rec,1) . "\">"; #'#
-	$retval .= $rec{'year'};
+	$retval .= $rec{'yr'};
 	$retval .= "</a></strong></dt>\n";
     }
 
-    $retval .= "<dt>E-mail: <code><strong><a href=\"mailto:$rec{'email'}\">";
-    $retval .= $rec{'email'};
+    $retval .= "<dt>E-mail: <code><strong><a href=\"mailto:$rec{'e'}\">";
+    $retval .= $rec{'e'};
     $retval .= "</a></strong></code></dt>\n";
-    $retval .= "<dt>Web Page: <code><strong><a href=\"$rec{'www'}\">$rec{'www'}</a></strong></code></dt>\n"
-	if $rec{'www'} ne '';
-    $retval .= "<dt>Location: <strong>$rec{'location'}</strong></dt>\n"
-	if $rec{'location'} ne '';
+    $retval .= "<dt>Web Page: <code><strong><a href=\"$rec{'w'}\">$rec{'w'}</a></strong></code></dt>\n"
+	if $rec{'w'} ne '';
+    $retval .= "<dt>Location: <strong>$rec{'l'}</strong></dt>\n"
+	if $rec{'l'} ne '';
     $retval .= "<dt>Updated: ";
-    $date = &main'aid_caldate($rec{'time'}); #'#
+    $date = &main'aid_caldate($rec{'u'}); #'#
     $retval .= "<strong>$date</strong></dt>\n";
 
-    if ($rec{'message'} ne '') {
+    if ($rec{'n'} ne '') {
 	$retval .= "<dt>What's New?</dt>\n";
-	$rec{'message'} =~ s/\n/<br>\n/g;
-	$retval .= "<dd>$rec{'message'}</dd>\n";
+	$rec{'n'} =~ s/\n/<br>\n/g;
+	$retval .= "<dd>$rec{'n'}</dd>\n";
     }
     $retval .= "</dl>\n\n";
 
@@ -1002,42 +1002,42 @@ sub aid_vcard_text {
     local(*rec) = @_;
     local($v_fn,$v_n,$retval);
 #    local($message);
-    local($mid) = ($rec{'middle'} ne '') ? "$rec{'middle'}. " : '';
-    local($v_mid) = ($rec{'middle'} ne '') ? ";$rec{'middle'}" : '';
+    local($mi) = ($rec{'mi'} ne '') ? "$rec{'mi'}. " : '';
+    local($v_mi) = ($rec{'mi'} ne '') ? ";$rec{'mi'}" : '';
 
     # "N:Public;John;Quinlan;Mr.;Esq." ==> "FN:Mr. John Q. Public, Esq."
-    if ($rec{'married'} ne '') {
-	$v_n  = "N:$rec{'married'};$rec{'first'};$rec{'last'}\015\012";
-	$v_fn = "FN:$rec{'first'} ${mid}$rec{'last'} $rec{'married'}\015\012";
+    if ($rec{'mn'} ne '') {
+	$v_n  = "N:$rec{'mn'};$rec{'gn'};$rec{'sn'}\015\012";
+	$v_fn = "FN:$rec{'gn'} ${mi}$rec{'sn'} $rec{'mn'}\015\012";
     } else {
-	$v_n  = "N:$rec{'last'};$rec{'first'}${v_mid}\015\012";
-	$v_fn = "FN:$rec{'first'} ${mid}$rec{'last'}\015\012";
+	$v_n  = "N:$rec{'sn'};$rec{'gn'}${v_mi}\015\012";
+	$v_fn = "FN:$rec{'gn'} ${mi}$rec{'sn'}\015\012";
     }
 
     $retval  = "Begin:vCard\015\012";
     $retval .= $v_n;
     $retval .= $v_fn;
-    $retval .= "ORG:$school_name[$rec{'sch_id'}];";
-    if ($rec{'year'} =~ /^\d+$/) {
-	$retval .= "Class of $rec{'year'}\015\012";
+    $retval .= "ORG:$school_name[$rec{'s'}];";
+    if ($rec{'yr'} =~ /^\d+$/) {
+	$retval .= "Class of $rec{'yr'}\015\012";
     } else {	
-	$retval .= "$rec{'year'}\015\012";
+	$retval .= "$rec{'yr'}\015\012";
     }
-    $retval .= "EMAIL;PREF;INTERNET:$rec{'email'}\015\012";
-    if ($rec{'location'} =~ /^(.*),\s+(\w\w)$/) {
+    $retval .= "EMAIL;PREF;INTERNET:$rec{'e'}\015\012";
+    if ($rec{'l'} =~ /^(.*),\s+(\w\w)$/) {
 	$retval .= "ADR:;;;$1;\U$2\E\015\012";
     } else {
-	$retval .= "ADR:;;;$rec{'location'}\015\012" if $rec{'location'} ne '';
+	$retval .= "ADR:;;;$rec{'l'}\015\012" if $rec{'l'} ne '';
     }
-    $retval .= "URL:$rec{'www'}\015\012" if $rec{'www'} ne '';
-    $retval .= "REV:" . &main'aid_vdate($rec{'time'}) . "\015\012"; #'#
+    $retval .= "URL:$rec{'w'}\015\012" if $rec{'w'} ne '';
+    $retval .= "REV:" . &main'aid_vdate($rec{'u'}) . "\015\012"; #'#
     $retval .= "VERSION:2.1\015\012";
 
-#    if ($rec{'message'} !~ /^\s*$/)
+#    if ($rec{'n'} !~ /^\s*$/)
 #    {
 #	$retval .= "NOTE;BASE64:\015\012";
 #	$retval .= "  ";
-#	$message = &main'old_encode_base64($rec{'message'}, "\015\012  "); #'#;
+#	$message = &main'old_encode_base64($rec{'n'}, "\015\012  "); #'#;
 #	substr($message,-4) = '';
 #	$retval .= $message . "\015\012\015\012";
 #    }
@@ -1062,15 +1062,15 @@ sub aid_about_text
 
     $retval .= "First Name         : ";
     $retval .= "<strong>" if $do_html_p;
-    $retval .= $rec{'first'};
+    $retval .= $rec{'gn'};
     $retval .= "</strong>" if $do_html_p;
     $retval .= "\n";
     
     $retval .= "Middle Initial     : ";
-    if ($rec{'middle'} ne '')
+    if ($rec{'mi'} ne '')
     {
 	$retval .= "<strong>" if $do_html_p;
-	$retval .= "$rec{'middle'}.";
+	$retval .= "$rec{'mi'}.";
 	$retval .= "</strong>" if $do_html_p;
     }
     else
@@ -1081,16 +1081,16 @@ sub aid_about_text
     
     $retval .= "Last/Maiden Name   : ";
     $retval .= "<strong>" if $do_html_p;
-    $retval .= $rec{'last'};
+    $retval .= $rec{'sn'};
     $retval .= "</strong>" if $do_html_p;
     $retval .= "\n";
     
     $retval .= "Married Last Name  : ";
-    if ($rec{'married'} eq '') {
+    if ($rec{'mn'} eq '') {
 	$retval .= "(same as last name)";
     } else {
 	$retval .= "<strong>" if $do_html_p;
-	$retval .= $rec{'married'};
+	$retval .= $rec{'mn'};
 	$retval .= "</strong>" if $do_html_p;
     }
     $retval .= "\n";
@@ -1098,11 +1098,11 @@ sub aid_about_text
     $retval .= "\n";
     $retval .= "School             : ";
     $retval .= "<strong>" if $do_html_p;
-    $retval .= $school_name[$rec{'sch_id'}];
+    $retval .= $school_name[$rec{'s'}];
     $retval .= "</strong>" if $do_html_p;
     $retval .= "\n";
     
-    if ($rec{'year'} =~ /^\d+$/) {
+    if ($rec{'yr'} =~ /^\d+$/) {
 	$retval .= "Graduation Year    : ";
     } else {
 	$retval .= "Affiliation        : ";
@@ -1110,7 +1110,7 @@ sub aid_about_text
     $retval .= "<strong>" if $do_html_p;
     $retval .= "<a href=\"" . &main'aid_about_path(*rec) . "\">" #'#
 	    if $do_html_p && !$show_req_p;
-    $retval .= $rec{'year'};
+    $retval .= $rec{'yr'};
     $retval .= "</a>" if $do_html_p && !$show_req_p;
     $retval .= "</strong>" if $do_html_p;
     $retval .= "\n";
@@ -1118,12 +1118,12 @@ sub aid_about_text
     $retval .= "\n";
     $retval .= "E-mail             : ";
     $retval .= "<strong>" if $do_html_p;
-    $retval .= "<a href=\"mailto:$rec{'email'}\">"
-	if $do_html_p && !$show_req_p && $rec{'valid'};
-    $retval .= $rec{'email'};
-    $retval .= "</a>" if $do_html_p && !$show_req_p && $rec{'valid'};
+    $retval .= "<a href=\"mailto:$rec{'e'}\">"
+	if $do_html_p && !$show_req_p && $rec{'v'};
+    $retval .= $rec{'e'};
+    $retval .= "</a>" if $do_html_p && !$show_req_p && $rec{'v'};
     $retval .= "</strong>" if $do_html_p;
-    if ($rec{'valid'} == 0)
+    if ($rec{'v'} == 0)
     {
 	$retval .= " ";
 	$retval .= "<em>" if $do_html_p;
@@ -1133,20 +1133,20 @@ sub aid_about_text
     $retval .= "\n";
 
     $retval .= "Personal Web Page  : ";
-    $retval .= ($rec{'www'} eq '') ? "(none)\n" :
-	((($do_html_p) ? "<strong><a href=\"$rec{'www'}\">" : "") .
-	 $rec{'www'} . 
+    $retval .= ($rec{'w'} eq '') ? "(none)\n" :
+	((($do_html_p) ? "<strong><a href=\"$rec{'w'}\">" : "") .
+	 $rec{'w'} . 
 	 (($do_html_p) ? "</a></strong>" : "") .
 	 "\n");
 
     $retval .= "Location           : ";
-    $retval .= ($rec{'location'} eq '') ? "(none)\n" :
+    $retval .= ($rec{'l'} eq '') ? "(none)\n" :
 	((($do_html_p) ? "<strong>" : "") .
-	 $rec{'location'} .
+	 $rec{'l'} .
 	 (($do_html_p) ? "</strong>" : "") .
 	 "\n");
 
-    if ($do_vcard_p && $do_html_p && $rec{'valid'}) {
+    if ($do_vcard_p && $do_html_p && $rec{'v'}) {
 	$retval .= "vCard              : ";
 	$retval .= "<a href=\"" . &main'aid_vcard_path($rec{'id'}) . "\">"; #'#
 	$retval .= $image_tag{'vcard'};
@@ -1162,35 +1162,35 @@ sub aid_about_text
     if ($show_req_p) {
 	$retval .= "\n";
 	$retval .= "Reunion Info Okay  : ";
-	$retval .= ($rec{'reunion'} == 1) ?
+	$retval .= ($rec{'r'} == 1) ?
 	    "yes\n" : "no\n";
 	$retval .= "Send E-mail Digests: ";
-	$retval .= defined $req_descr[$rec{'request'}] ?
-	    "$req_descr[$rec{'request'}]\n" : "(unknown)\n";
+	$retval .= defined $req_descr[$rec{'q'}] ?
+	    "$req_descr[$rec{'q'}]\n" : "(unknown)\n";
     } 
 
-    if ($rec{'time'} ne '' && $rec{'time'} != 0 &&
-	$rec{'created'} ne '' && $rec{'created'} != 0) {
+    if ($rec{'u'} ne '' && $rec{'u'} != 0 &&
+	$rec{'c'} ne '' && $rec{'c'} != 0) {
 	$retval .= "\n";
 	$retval .= "Joined Directory   : ";
-        $retval .= &main'aid_caldate($rec{'created'}) . "\n"; #'#
+        $retval .= &main'aid_caldate($rec{'c'}) . "\n"; #'#
     }
 
-    if ($rec{'time'} ne '' && $rec{'time'} != 0) {
+    if ($rec{'u'} ne '' && $rec{'u'} != 0) {
 	$retval .= "Last Updated       : ";
-	$retval .= &main'aid_caldate($rec{'time'}) . "\n"; #'#
+	$retval .= &main'aid_caldate($rec{'u'}) . "\n"; #'#
     }
 
-    $rec{'message'} = &main'aid_get_usertext($rec{'id'}) #'#
-	unless defined($rec{'message'});
+    $rec{'n'} = &main'aid_get_usertext($rec{'id'}) #'#
+	unless defined($rec{'n'});
 
-    if ($rec{'message'} ne '') {
+    if ($rec{'n'} ne '') {
 	$retval .= "\n";
 	$retval .= "What's New?        :\n";
 	$retval .= "</pre>\n" if $do_html_p;
 	$retval .= $do_html_p ? "<blockquote class=\"about\">\n" : "";
-	$rec{'message'} =~ s/\n/<br>\n/g if $do_html_p;
-	$retval .= $rec{'message'};
+	$rec{'n'} =~ s/\n/<br>\n/g if $do_html_p;
+	$retval .= $rec{'n'};
 	$retval .= $do_html_p ? "</blockquote>\n" : "";
     } else {
 	$retval .= "\n";
@@ -1439,54 +1439,54 @@ sub aid_book_write_entry {
     package aid_util;
 
     local(*BOOK,$option,*rec) = @_;
-    local($long_last) = $rec{'last'};
-    local($middle) = $rec{'middle'} ne '' ? "$rec{'middle'}." : '';
-    local($mid_spc) = $rec{'middle'} ne '' ? " $rec{'middle'}." : '';
+    local($long_last) = $rec{'sn'};
+    local($mi) = $rec{'mi'} ne '' ? "$rec{'mi'}." : '';
+    local($mi_spc) = $rec{'mi'} ne '' ? " $rec{'mi'}." : '';
 
-    $long_last .= " $rec{'married'}" if $rec{'married'} ne '';
+    $long_last .= " $rec{'mn'}" if $rec{'mn'} ne '';
 
-    $option eq 'p' && print BOOK "$rec{'alias'}\t$long_last, $rec{'first'}$mid_spc\t$rec{'email'}\t\t$school_name[$rec{'sch_id'}] $rec{'year'}\n";
-    $option eq 'e' && print BOOK "$rec{'alias'} = $long_last; $rec{'first'}, $school_name[$rec{'sch_id'}] $rec{'year'} = $rec{'email'}\n";
-    $option eq 'b' && print BOOK "alias $rec{'alias'}\t$rec{'email'}\n";
-    $option eq 'w' && print BOOK "<$rec{'alias'}>\015\012>$rec{'first'}$mid_spc $long_last <$rec{'email'}>\015\012<$rec{'alias'}>\015\012>$school_name[$rec{'sch_id'}] $rec{'year'}\015\012";
-    $option eq 'm' && print BOOK "alias $rec{'alias'} $rec{'email'}\015\012note $rec{'alias'} <name:$rec{'first'}$mid_spc $long_last>$school_name[$rec{'sch_id'}] $rec{'year'}\015\012";
+    $option eq 'p' && print BOOK "$rec{'a'}\t$long_last, $rec{'gn'}$mi_spc\t$rec{'e'}\t\t$school_name[$rec{'s'}] $rec{'yr'}\n";
+    $option eq 'e' && print BOOK "$rec{'a'} = $long_last; $rec{'gn'}, $school_name[$rec{'s'}] $rec{'yr'} = $rec{'e'}\n";
+    $option eq 'b' && print BOOK "alias $rec{'a'}\t$rec{'e'}\n";
+    $option eq 'w' && print BOOK "<$rec{'a'}>\015\012>$rec{'gn'}$mi_spc $long_last <$rec{'e'}>\015\012<$rec{'a'}>\015\012>$school_name[$rec{'s'}] $rec{'yr'}\015\012";
+    $option eq 'm' && print BOOK "alias $rec{'a'} $rec{'e'}\015\012note $rec{'a'} <name:$rec{'gn'}$mi_spc $long_last>$school_name[$rec{'s'}] $rec{'yr'}\015\012";
 
     # netscape is a bigger sucker
     if ($option eq 'n') {
-	print BOOK "    <DT><A HREF=\"mailto:$rec{'email'}\" ";
-	print BOOK "NICKNAME=\"$rec{'alias'}\">$rec{'first'}$mid_spc $long_last</A>\n";
-	print BOOK "<DD>$school_name[$rec{'sch_id'}] $rec{'year'}\n";
+	print BOOK "    <DT><A HREF=\"mailto:$rec{'e'}\" ";
+	print BOOK "NICKNAME=\"$rec{'a'}\">$rec{'gn'}$mi_spc $long_last</A>\n";
+	print BOOK "<DD>$school_name[$rec{'s'}] $rec{'yr'}\n";
     }
 
     elsif ($option eq 'l') {
-        print BOOK "dn: cn=$rec{'first'}$mid_spc $long_last,mail=$rec{'email'}\015\012";
+        print BOOK "dn: cn=$rec{'gn'}$mi_spc $long_last,mail=$rec{'e'}\015\012";
 	print BOOK "modifytimestamp: ";
-	$vdate = &main'aid_vdate($rec{'time'}); #'#
+	$vdate = &main'aid_vdate($rec{'u'}); #'#
 	$vdate =~ s/T//;
 	print BOOK "$vdate\015\012";
-        print BOOK "cn: $rec{'first'}$mid_spc $long_last\015\012";
-	if ($rec{'married'} ne '') {
-	    print BOOK "sn: $rec{'married'}\015\012";
+        print BOOK "cn: $rec{'gn'}$mi_spc $long_last\015\012";
+	if ($rec{'mn'} ne '') {
+	    print BOOK "sn: $rec{'mn'}\015\012";
 	} else {
-	    print BOOK "sn: $rec{'last'}\015\012";
+	    print BOOK "sn: $rec{'sn'}\015\012";
 	}
-        print BOOK "givenname: $rec{'first'}\015\012";
+        print BOOK "givenname: $rec{'gn'}\015\012";
         print BOOK "objectclass: top\015\012objectclass: person\015\012";
-        print BOOK "mail: $rec{'email'}\015\012";
-	if ($rec{'location'} =~ /^(.*),\s+(\w\w)$/) {
+        print BOOK "mail: $rec{'e'}\015\012";
+	if ($rec{'l'} =~ /^(.*),\s+(\w\w)$/) {
 	    print BOOK "locality: $1\015\012";
 	    print BOOK "st: $2\015\012";
 	} else {
-	    print BOOK "locality: $rec{'location'}\015\012" if $rec{'location'} ne '';
+	    print BOOK "locality: $rec{'l'}\015\012" if $rec{'l'} ne '';
 	}
-        print BOOK "o: $school_name[$rec{'sch_id'}]\015\012";
-	if ($rec{'year'} =~ /^\d+$/) {
-	    print BOOK "ou: Class of $rec{'year'}\015\012";
+        print BOOK "o: $school_name[$rec{'s'}]\015\012";
+	if ($rec{'yr'} =~ /^\d+$/) {
+	    print BOOK "ou: Class of $rec{'yr'}\015\012";
 	} else {
-	    print BOOK "ou: $rec{'year'}\015\012";
+	    print BOOK "ou: $rec{'yr'}\015\012";
 	}
-        print BOOK "homeurl: $rec{'www'}\015\012" if $rec{'www'} ne '';
-        print BOOK "xmozillanickname: $rec{'alias'}\015\012";
+        print BOOK "homeurl: $rec{'w'}\015\012" if $rec{'w'} ne '';
+        print BOOK "xmozillanickname: $rec{'a'}\015\012";
         print BOOK "\015\012";
     }
     
@@ -1496,23 +1496,23 @@ sub aid_book_write_entry {
     }
 
     elsif ($option eq 'o') {
-	print BOOK "\"\",\"$rec{'first'}\",";
-	if ($rec{'married'} ne '') {
-	    print BOOK "\"$rec{'last'}\",\"$rec{'married'}\",";
+	print BOOK "\"\",\"$rec{'gn'}\",";
+	if ($rec{'mn'} ne '') {
+	    print BOOK "\"$rec{'sn'}\",\"$rec{'mn'}\",";
 	} else {
-	    print BOOK "\"$middle\",\"$rec{'last'}\",";
+	    print BOOK "\"$mi\",\"$rec{'sn'}\",";
 	}
 
-	print BOOK "\"\",\"$school_name[$rec{'sch_id'}] $rec{'year'}\",\"\",";
+	print BOOK "\"\",\"$school_name[$rec{'s'}] $rec{'yr'}\",\"\",";
 	print BOOK "\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",";
 
-	if ($rec{'location'} =~ /^(.*),\s+(\w\w)$/) {
+	if ($rec{'l'} =~ /^(.*),\s+(\w\w)$/) {
 	    print BOOK "\"$1\",\"$2\",";
 	} else {
-	    print BOOK "\"$rec{'location'}\",\"\",";
+	    print BOOK "\"$rec{'l'}\",\"\",";
 	}
 
-	print BOOK "\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"$config{'short_school'} Alumni\",\"\",\"$rec{'email'}\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"$rec{'www'}\"\015\012";
+	print BOOK "\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"$config{'short_school'} Alumni\",\"\",\"$rec{'e'}\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"$rec{'w'}\"\015\012";
     }
 }
 
@@ -1548,29 +1548,29 @@ sub aid_db_pack_rec
     local(*rec) = @_;
 
     pack($pack_format,
-	 (($rec{'valid'} ? 1 : 0) |
-	  (($rec{'reunion'} ? 1 : 0) << 1)),
-	 $rec{'request'},
-	 $rec{'sch_id'},
-	 $rec{'bounce'},
-	 $rec{'created'},
-	 $rec{'time'},
-	 $rec{'fresh'},
-	 $rec{'email_upd'}
+	 (($rec{'v'} ? 1 : 0) |
+	  (($rec{'r'} ? 1 : 0) << 1)),
+	 $rec{'q'},
+	 $rec{'s'},
+	 $rec{'b'},
+	 $rec{'c'},
+	 $rec{'u'},
+	 $rec{'f'},
+	 $rec{'eu'}
 	 ) .
     join("\0",
-	 $rec{'last'},
-	 $rec{'married'},
-	 $rec{'first'},
-	 $rec{'middle'},
-	 $rec{'year'},
-	 $rec{'email'},
-	 $rec{'www'},
-	 $rec{'location'},
-	 $rec{'inethost'},
-	 $rec{'alias'},
-	 $rec{'message'},
-	 $rec{'email_old'}
+	 $rec{'sn'},
+	 $rec{'mn'},
+	 $rec{'gn'},
+	 $rec{'mi'},
+	 $rec{'yr'},
+	 $rec{'e'},
+	 $rec{'w'},
+	 $rec{'l'},
+	 $rec{'h'},
+	 $rec{'a'},
+	 $rec{'n'},
+	 $rec{'eo'}
 	 );
 };
 
@@ -1587,31 +1587,31 @@ sub aid_db_unpack_rec
 
     (
      $masked,
-     $rec{'request'},
-     $rec{'sch_id'},
-     $rec{'bounce'},
-     $rec{'created'},
-     $rec{'time'},
-     $rec{'fresh'},
-     $rec{'email_upd'}
+     $rec{'q'},
+     $rec{'s'},
+     $rec{'b'},
+     $rec{'c'},
+     $rec{'u'},
+     $rec{'f'},
+     $rec{'eu'}
      ) = unpack($pack_format, $val);
 
-    $rec{'valid'}   = ( $masked       & 1) ? 1 : 0;
-    $rec{'reunion'} = (($masked >> 1) & 1) ? 1 : 0;
+    $rec{'v'} = ( $masked       & 1) ? 1 : 0;
+    $rec{'r'} = (($masked >> 1) & 1) ? 1 : 0;
 
     (
-     $rec{'last'},
-     $rec{'married'},
-     $rec{'first'},
-     $rec{'middle'},
-     $rec{'year'},
-     $rec{'email'},
-     $rec{'www'},
-     $rec{'location'},
-     $rec{'inethost'},
-     $rec{'alias'},
-     $rec{'message'},
-     $rec{'email_old'}
+     $rec{'sn'},
+     $rec{'mn'},
+     $rec{'gn'},
+     $rec{'mi'},
+     $rec{'yr'},
+     $rec{'e'},
+     $rec{'w'},
+     $rec{'l'},
+     $rec{'h'},
+     $rec{'a'},
+     $rec{'n'},
+     $rec{'eo'}
      ) = split(/\0/, substr($val, $pack_len));
 
     %rec;
