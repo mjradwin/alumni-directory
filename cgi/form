@@ -4,7 +4,7 @@
 #     FILE: mvhsaid.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: MVHS Alumni Internet Directory CGI interface
-#      $Id: mvhsaid,v 1.14 1997/07/29 00:04:52 mjr Exp mjr $
+#      $Id: mvhsaid,v 1.15 1997/07/29 00:15:32 mjr Exp mjr $
 #
 
 require 'mv_util.pl';
@@ -18,8 +18,6 @@ $ftr_file = &mv_config('wwwdir') . ".submit.ftr";
 
 @required_headers = ('id', 'last', 'first', 'school', 'grad', 'mail');
 
-print "Content-type: text/html\n\n";
-
 open(SUBMIT_HDR,$hdr_file) || &panic("Can't open $hdr_file: $!");
 @submit_hdr = <SUBMIT_HDR>;
 close(SUBMIT_HDR);
@@ -32,10 +30,8 @@ close(SUBMIT_FTR);
 
 # debugging: what version is installed?
 if (defined($in{'version'})) {
-    print @submit_hdr, "\n";
-    print '<pre>Version: $Id: mvhsaid,v 1.14 1997/07/29 00:04:52 mjr Exp mjr $</pre>', "\n";
-    print @submit_ftr, "\n";
-    
+    print "Content-type: text/plain\n\n";
+    print '$Id: mvhsaid,v 1.15 1997/07/29 00:15:32 mjr Exp mjr $', "\n";
     exit(0);
 }
 
@@ -54,7 +50,19 @@ if (defined($in{'update'})) {
     exit(0);
 }
 
-# the undocumented "about" feature
+# the undocumented "vcard" feature
+if ($in{'vcard'} =~ /^\d+$/) {
+    @db = &mv_create_db($dbfile);
+    if (defined($db[$in{'vcard'}])) {
+	&send_vcard($db[$in{'vcard'}]);
+    } else {
+	&send_upd_real(";-1;2;;;;MVHS;;;",0,0);
+    }
+    exit(0);
+}
+
+
+# the documented "about" feature
 if ($in{'about'} =~ /^\d+$/) {
     @db = &mv_create_db($dbfile);
     if (defined($db[$in{'about'}])) {
@@ -142,6 +150,7 @@ $date
 EOM
 ");
 
+    print "Content-type: text/html\n\n";
     print @submit_hdr, "\n";
 
     print "<br>\n";
@@ -153,7 +162,6 @@ EOM
 
     print @submit_ftr, "\n";
 }
-
 
 
 sub bydatakeys { $datakeys[$a] cmp $datakeys[$b] }
@@ -173,17 +181,15 @@ sub mv_alpha_db {
     return @alpha;
 }
 
-
 sub send_upd_real {
     local($[) = 0;
     local($rawdata,$interactivep,$blank) = @_;
 
+    print "Content-type: text/html\n\n";
     print @submit_hdr, "\n";
     print &submit_body($rawdata,$interactivep,$blank);
     print @submit_ftr, "\n";
 }
-
-
 
 sub send_about {
     require 'tableheader.pl';
@@ -193,11 +199,26 @@ sub send_about {
     local($time,$id,$req,$last,$first,$married,
 	  $school,$year,$email,$homepage,$location) = split(/;/, $_[0]);
 
+    print "Content-type: text/html\n\n";
     print @submit_hdr, "\n<br>\n";
     print &tableheader(&inorder_fullname($first,$last,$married),
 		       1, "ffff99", 1);
     print &about_text($_[0],0,1), "\n";
     print @submit_ftr, "\n";
+}
+
+sub send_vcard {
+    local($[) = 0;
+    local($_);
+    local($time,$id,$req,$last,$first,$married,
+	  $school,$year,$email,$homepage,$location) = split(/;/, $_[0]);
+
+    print "Content-type: text/x-vCard\n\n";
+    print "Begin:vCard\nORG:$school $year;\nFN:";
+    print &inorder_fullname($first,$last,$married), "\n";
+    print "N:$last;$first\nEMAIL;PREF;INTERNET:$email\n";
+    print "URL:$homepage\n" if $homepage ne '';
+    print "End:vCard\n";
 }
 
 
@@ -217,6 +238,7 @@ sub send_upd_list {
 	"<img src=\"/~mjr/mvhs/blank.gif\" height=12 width=12 hspace=4 border=0 alt=\"\">";
     local($cgi) = &mv_config('cgi_path');
 
+    print "Content-type: text/html\n\n";
     print @submit_hdr, "\n";
     print "<br>\n";
     print &tableheader("Update Your Directory Listing", 1, "ffff99", 1);
@@ -258,6 +280,7 @@ sub send_upd_list {
 }
 
 sub panic {
+    print "Content-type: text/plain\n\n";
     print $_[0], "\n";
 
     exit;
