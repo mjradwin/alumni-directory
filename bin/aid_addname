@@ -43,8 +43,10 @@ sub readspool {
 		$newsFile = "${newsdir}/${id}.txt";
 		open(NEWSOUT, ">$newsFile") ||
 		    die "Can't open $newsFile: $!\n";
+		print "MESSAGE $newsFile\n";
 		while(<SPOOL>) {
 		    last if /^_MVHSAID_END_MESSAGE_/;
+		    print $_;
 		    print NEWSOUT $_;
 		}
 		close(NEWSOUT);
@@ -127,10 +129,8 @@ sub addname {
     }
     close(TMP);
 
-    print "/usr/local/gnu/bin/cp -f $tmpFile $dbFile\n";
     system "/usr/local/gnu/bin/cp -f $tmpFile $dbFile";
     unlink($tmpFile) || die "couldn't unlink $tmpFile: $!\n";
-#    unlink($dbFile) || die "couldn't unlink $dbFile: $!\n";
 
     return $id;
 }
