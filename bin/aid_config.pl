@@ -1,8 +1,8 @@
 #
 #     FILE: aid_config.pl
 #   AUTHOR: Michael J. Radwin
-#    DESCR: configuration for Alumni Internet Directory
-#      $Id: aid_config.pl,v 1.16 1999/03/30 01:20:25 mradwin Exp mradwin $
+#    DESCR: configuration variables for Alumni Internet Directory
+#      $Id: aid_config.pl,v 1.17 1999/04/06 16:01:21 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -20,6 +20,9 @@
 #   along with this program; if not, write to the Free Software
 #   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #
+
+$aid_util'rcsid =
+ '$Id: aid_util.pl,v 4.80 1999/04/05 22:58:17 mradwin Exp mradwin $';
 
 # radwin.org (FreeBSD 2.2.2) configuration
 %aid_util'config =   #'#
@@ -113,5 +116,188 @@ $aid_util'body_bg    = 'ffffff'; #'#
 $aid_util'body_fg    = '000000'; #'#
 $aid_util'body_link  = '0000cc'; #'#
 $aid_util'body_vlink = '990099'; #'#
+
+
+@aid_util'req_descr_long =   #'#
+    (
+     'No e-mail except for bi-yearly address verification.',
+     'All alumni, sorted by name. [~ 65 kbytes]',
+     'All alumni, sorted by graduating class. [~ 65 kbytes]',
+     'Only new and changed alumni entries. [~ 15 kbytes]',
+     'Only people from my graduating class.',
+     );
+
+@aid_util'req_descr =   #'#
+    (
+     'only address verification',
+     'yes (sorted by name)',
+     'yes (sorted by graduating class)',
+     'yes (new and changed entries)',
+     'yes (just my graduating class)',
+     );
+
+@aid_util'page_idx = #'#
+(
+ "Home,"             . $aid_util'config{'master_path'},
+ "Alpha,"            . $aid_util'config{'master_path'} . "alpha/a-index.html",
+ "Class,"            . $aid_util'config{'master_path'} . "class/",
+ "Awalt,"            . $aid_util'config{'master_path'} . "class/awalt.html",
+ "Web&nbsp;Pages,"   . $aid_util'config{'master_path'} . "pages.html",
+ "Recent,"           . $aid_util'config{'master_path'} . "recent.html",
+ "Search,"           . $aid_util'config{'search_cgi'},
+);
+
+@aid_util'second_idx = #'#
+(
+ "Add/Update," . $aid_util'config{'master_path'} . "add/", #'#
+ "Reunions,"   . $aid_util'config{'master_path'} . "etc/reunions.html", #'#
+ "Links,"      . $aid_util'config{'master_path'} . "etc/links.html",    #'#
+ "Download,"   . $aid_util'config{'master_path'} . "download/",        #'#
+ "FAQ,"        . $aid_util'config{'master_path'} . "etc/faq.html",     #'#
+ "Stats,"      . $aid_util'config{'master_path'} . "etc/stats.txt",    #'#
+ "Privacy,"    . $aid_util'config{'master_path'} . "etc/copyright.html", #'#
+);
+
+$aid_util'pics_label = #'#
+"  <meta http-equiv=\"PICS-Label\" content='(PICS-1.1 " . 
+"\"http://www.rsac.org/ratingsv01.html\" l gen true " . 
+"comment \"RSACi North America Server\" by \"" . 
+$aid_util'config{'admin_email'} . 
+"\" on \"1998.03.10T11:49-0800\" r (n 0 s 0 v 0 l 0))'>\n" .
+"  <meta http-equiv=\"PICS-Label\" content='(PICS-1.1 " . 
+"\"http://www.classify.org/safesurf/\" l gen true " .
+"for \"http://" . $aid_util'config{'master_srv'} . "\" by \"" . 
+$aid_util'config{'admin_email'} .
+"\" r (SS~~000 1 SS~~100 1))'>"; #"#
+
+$aid_util'noindex = "  <meta name=\"robots\"  content=\"noindex\">"; #'#
+%aid_util'aid_aliases = ();   #'# global alias hash repository 
+
+$aid_util'FIELD_SEP   = ";";   #'# character that separates fields in DB
+$aid_util'ID_INDEX    = 0;     #'# position that the ID key is in datafile
+@aid_util'field_names = #'# order is important!
+    (
+    'id',			# numerical userid
+    'v',			# bit describing status
+    'sn',			# last name
+    'mn',			# married name
+    'gn',			# first name
+    'q',			# type of periodic emailing
+    'r',			# bit for reunion email request
+    'b',			# date of first bounce (0 if none)
+    'c',			# date of record creation
+    'u',			# date of last update
+    'f',			# date of last successful verification
+    's',			# high school (primary or Awalt)
+    'yr',			# 4-digit grad year or affiliation
+    'e',			# email address
+    'w',			# personal web page
+    'l',			# city, company, or college
+    'h',			# REMOTE_HOST of last update
+    'mi',			# middle initial
+    'eu',		# date of last update to email
+    'eo',		# previous email address
+    );
+
+%aid_util'field_descr = #'#
+    (
+    'id',	'[numerical userid]',
+    'v',	'[valid bit describing status]',
+    'sn',	'Last Name/Maiden Name',
+    'mn',	'Married Last Name',
+    'gn',	'First Name',
+    'q',	'[type of quarterly emailing]',
+    'r',	'[bit for reunion email request]',
+    'b',	'[unix time - first bounce (0 if none)]',
+    'c',	'[unix time - record creation]',
+    'u',	'[unix time - last update]',
+    'f',	'[unix time - last successful verification]',
+    's',	'High School',
+    'yr',	'Graduation Year or Affiliation',
+    'e',	'E-mail Address',
+    'w',	'Personal Web Page',
+    'l',	'Location',
+    'h',	'[REMOTE_HOST of last update]',
+    'mi',	'Middle Initial',
+    'eu',	'[unix time - last update to email]',
+    'eo',	'Previous E-mail Address',
+    );
+
+$aid_util'pack_format = 'C3N5'; #'#
+$aid_util'pack_len    = 23;     #'#
+
+# ------------------------------------------------------------
+# %aid_util'blank_entry -- a prototypical blank entry to clone
+# ------------------------------------------------------------
+%aid_util'blank_entry = ();
+while (($key,$val) = each(%aid_util'field_descr))
+{
+    $aid_util'blank_entry{$key} = ''; #'#
+}
+undef($val);
+$aid_util'blank_entry{'id'} = -1;      #'#
+$aid_util'blank_entry{'v'}  = 1;       #'#
+$aid_util'blank_entry{'q'}  = 4;       #'#
+$aid_util'blank_entry{'r'}  = 1;       #'#
+$aid_util'blank_entry{'b'}  = 0;       #'#
+$aid_util'blank_entry{'eu'} = 0;       #'#
+$aid_util'blank_entry{'eo'} = '';      #'#
+$aid_util'blank_entry{'n'}  = '';      #'#
+$aid_util'blank_entry{'s'}  = $aid_util'school_default;
+
+%aid_util'image_tag = #'#
+    (
+    'new',
+    "<small><strong class=\"newupd\">*NEW*</strong></small>",
+
+    'new_anchored',
+    "<small><strong class=\"newupd\">*NEW*</strong></small>",
+
+    'updated',
+    "<small><strong class=\"newupd\">*UPDATED*</strong></small>",
+
+     'vcard',
+     "<img src=\"" . $aid_util'config{'image_path'} . #'#
+     "vcard.gif\" border=\"0\" align=\"top\" width=\"32\" height=\"32\" " .
+     "alt=\"[vCard]\">",
+
+     'info',
+     "<img src=\"" . $aid_util'config{'master_path'} . #'#
+     "info.gif\" border=\"0\" hspace=\"4\" width=\"12\" height=\"12\" " .
+     "alt=\"[i]\">",
+
+     'blank',
+     "<img src=\"" . $aid_util'config{'master_path'} . #'#
+     "blank.gif\" border=\"0\" hspace=\"4\" width=\"12\" height=\"12\" " .
+     "alt=\"\">",
+     );
+
+# give 'em back the configuration variable they need
+sub aid_config
+{
+    package aid_util;
+
+    local($[) = 0;
+
+    die "NO CONFIG $_[0]!\n" if !defined($config{$_[0]});
+    $config{$_[0]};
+}
+
+# give 'em back the image_tag they need
+sub aid_image_tag
+{
+    package aid_util;
+
+    local($[) = 0;
+
+    die "NO IMAGE_TAG $_[0]!\n" if !defined($image_tag{$_[0]});
+    $image_tag{$_[0]};
+}
+
+if ($^W && 0)
+{
+    &aid_image_tag('');
+    &aid_config('');
+}
 
 1;
