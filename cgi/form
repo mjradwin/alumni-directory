@@ -4,7 +4,7 @@
 #     FILE: mvhsaid.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: MVHS Alumni Internet Directory CGI interface
-#      $Id: mvhsaid,v 1.28 1997/09/24 01:02:56 mjr Exp mjr $
+#      $Id: mvhsaid,v 1.29 1997/09/25 22:24:26 mjr Exp mjr $
 #
 
 require 'mv_util.pl';
@@ -22,7 +22,7 @@ $dbfile = &mv_config('wwwdir') . "mvhs.adr";
 if (defined($in{'version'})) {
     select(STDOUT);  $| = 1;
     print "Content-type: text/plain\n\n";
-    print '$Id: mvhsaid,v 1.28 1997/09/24 01:02:56 mjr Exp mjr $', "\n";
+    print '$Id: mvhsaid,v 1.29 1997/09/25 22:24:26 mjr Exp mjr $', "\n";
     exit(0);
 }
 
@@ -79,17 +79,30 @@ foreach (@required_headers) {
 foreach $key (keys(%in)) {
     $in{$key} =~ s/^\s*//;  # get rid of leading and trailing whitespace
     $in{$key} =~ s/\s*$//;
+
+    $in{$key} = '' if $in{$key} =~ m|^n/a$|i;
 }
 
 # remove apostropies and leading year from gradyear field
 # e.g. '93 -> 93, 1993 -> 93
-$in{'grad'} =~ s/^\'(\d+)\s*$/$1/;
-$in{'grad'} =~ s/^19(\d+)\s*$/$1/;
-$in{'grad'} =~ s/^20(\d+)\s*$/$1/;
+$in{'grad'} =~ s/^\'(\d\d)$/$1/;
+$in{'grad'} =~ s/^19(\d+)$/$1/;
+$in{'grad'} =~ s/^20(\d+)$/$1/;
 
 #$in{'request'} = (defined($in{'request'})) ? 1 : 0;
 $in{'school'} = ($in{'school'} eq 'Other' && $in{'sch_other'} ne '') ? 
     $in{'sch_other'} : $in{'school'};
+
+# lowercase the hostname portion of the email address
+($mail_user, $mail_addr) = split(/\@/, $in{'mail'});
+$mail_addr = 'aol.com' if $mail_addr eq '';
+$mail_user = "\L$mail_user\E" if $mail_user eq "\U$mail_user\E";
+$in{'mail'} = $mail_user . '@' . "\L$mail_addr\E";
+
+# capitalize those lazy names
+$in{'first'} = "\u$in{'first'}";
+$in{'last'} = "\u$in{'last'}";
+$in{'married'} = "\u$in{'married'}";
 
 # did they have the required fields?
 if ($in{'school'} eq 'Other') {
@@ -103,13 +116,6 @@ foreach (@required_headers) {
 	exit(0);
     }
 }
-
-# lowercase the hostname portion of the email address
-($mail_user, $mail_addr) = split(/\@/, $in{'mail'});
-$mail_addr = 'aol.com' if $mail_addr eq '';
-$mail_user = "\L$mail_user\E" if $mail_user eq "\U$mail_user\E";
-$in{'mail'} = $mail_user . '@' . "\L$mail_addr\E";
-
 
 &queue_submission;
 exit(0);
