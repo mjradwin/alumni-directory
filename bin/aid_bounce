@@ -1,6 +1,6 @@
 #!/usr/bin/perl -w
 
-# $Id: aid_bounce,v 3.22 1999/05/24 18:21:51 mradwin Exp mradwin $
+# $Id: aid_bounce,v 5.1 1999/05/31 21:20:48 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -51,15 +51,20 @@ die "$usage\n" if $opt_f && ($opt_d || $opt_u || $opt_v);
 $cp   = &aid_config('cp');
 -x $cp   || die "error: $cp is not executable!";
 
-$dbFile = &aid_config('aiddir') . "data/master.adr";
-@db = &aid_create_db($dbFile);
+$dbmfile = &aid_config('aiddir') . "data/working.db";
+$dbmfile =~ s/\.db$//;
 
 if ($opt_d)
 {
-    for (@db)
+    die "can't open ${dbmfile}.db for reading\n"
+	unless -r "${dbmfile}.db";
+    dbmopen(%DB,$dbmfile,0444);
+
+    while (($key,$val) = each %DB)
     {
-	next unless defined($_) && $_ ne '';
-	%rec = &aid_split($_);
+	next unless $key =~ /^\d+$/;
+	%rec = &aid_db_unpack_rec($key,$val);
+
 	next unless $rec{'v'};
 	next if $rec{'b'} eq '0';
 
@@ -69,38 +74,33 @@ if ($opt_d)
 	print "\n";
     }
 
+    dbmclose(%DB);
     exit(0);
 }
 elsif ($opt_f)
 {
+    die "can't open ${dbmfile}.db for reading/writing\n"
+	unless -r "${dbmfile}.db" && -w "${dbmfile}.db";
+    dbmopen(%DB,$dbmfile,0644);
+
     @freshness = &time_log($opt_f);
     &freshen(@freshness);
+
+    dbmclose(%DB);
 }
 else
 {
-    # hash{email} = id
-    for (@db)
-    {
-	next unless defined($_) && $_ ne '';
-	%rec = &aid_split($_);
-	$addrs{"\L$rec{'e'}\E"} = $rec{'id'};
-    }
+    die "can't open ${dbmfile}.db for reading/writing\n"
+	unless -r "${dbmfile}.db" && -w "${dbmfile}.db";
+    dbmopen(%DB,$dbmfile,0644);
 
     &bounce_argv();
+    &aid_rebuild_secondary_keys(*DB,0);
+
+    dbmclose(%DB);
 }
 
-$tmpFile = "/tmp/aid_add.$$";
-open(TMP, ">$tmpFile") || die "error: can't open $tmpFile: $!\n";
-for (@db) {
-    next unless defined($_) && $_ ne '';
-    print TMP $_, "\n";
-}
-close(TMP);
-
-system "$cp -f $tmpFile $dbFile"
-    || die "error: failed to $cp -f $tmpFile $dbFile: $!\n";
-unlink($tmpFile) || die "error: couldn't unlink $tmpFile: $!\n";
-
+dbmclose(%DB);
 exit(0);
 
 # returns array[id] = time
@@ -127,18 +127,21 @@ sub time_log
 
 # freshen the user only if the bounce was non-zero and their
 # freshness is less than the parameter.
-sub freshen {
+sub freshen
+{
     local(@freshness) = @_;
     local($_);
 
-    for (@db) {
-	next unless defined($_) && $_ ne '';
-	%rec = &aid_split($_);
+    while (($key,$val) = each %DB)
+    {
+	next unless $key =~ /^\d+$/;
+	%rec = &aid_db_unpack_rec($key,$val);
+
 	next unless $rec{'v'} == 1 && defined $freshness[$rec{'id'}] &&
 	    $rec{'b'} == 0 && $rec{'f'} < $freshness[$rec{'id'}];
 
 	$rec{'f'} = $freshness[$rec{'id'}];
-	$db[$rec{'id'}] = &aid_join(*rec);
+	$DB{$rec{'id'}} = &aid_db_pack_rec(*rec);
     }
 
     1;
@@ -152,16 +155,17 @@ sub bounce_argv
 
     for (@ARGV) {
 	if (/^\d+$/) {
-	    if (defined $db[$_]) {
-		%rec = &aid_split($db[$_]);
+	    if (defined $DB{$_}) {
+		%rec = &aid_db_unpack_rec($_,$DB{$_});
 	    } else {
 		warn "can't find id $_\n";
 		next;
 	    }
 	} else {
 	    $_ = "\L$_\E";
-	    if (defined $addrs{$_}) {
-		%rec = &aid_split(@db[$addrs{$_}]);
+	    if (defined $DB{$_}) {
+		$_ = unpack("n*", $DB{$_});
+		%rec = &aid_db_unpack_rec($_,$DB{$_});
 	    } else {
 		warn "can't find e-mail addr $_\n";
 		next;
@@ -200,7 +204,7 @@ sub bounce_argv
 	}
 	print "\n";
 
-	$db[$rec{'id'}] = &aid_join(*rec);
+	$DB{$rec{'id'}} = &aid_db_pack_rec(*rec);
     }
 
     1;

@@ -2,7 +2,7 @@
 #     FILE: aid_util.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: perl library routines for the Alumni Internet Directory
-#      $Id: aid_util.pl,v 5.1 1999/05/31 21:20:48 mradwin Exp mradwin $
+#      $Id: aid_util.pl,v 5.2 1999/06/01 00:36:18 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -175,52 +175,30 @@ sub aid_mangle
 }
 
 
-sub aid_split {
-    package aid_util;
-
-    local($_) = @_;
-    local($[) = 0;
-    local(@fields) = defined $_ ? split(/$FIELD_SEP/) : ();
-    local($i);
-    local(%rec);
-
-    for ($i = 0; $i <= $#field_names; $i++) {
-	$rec{$field_names[$i]} = 
-	    defined($fields[$i]) ? $fields[$i] : '';
-    }
-
-    %rec;
-}
-
-
-sub aid_join {
+sub aid_ampersand_join
+{
     package aid_util;
 
     local(*rec) = @_;
-    local($[) = 0;
-    local($i,@fields);
+    local($key,$val,$retval,$_);
 
-    for ($i = 0; $i <= $#field_names; $i++) {
-	warn "aid_join: record is missing key '$field_names[$i]'"
-	    unless defined $rec{$field_names[$i]};
-	push(@fields, $rec{$field_names[$i]});
+    $retval = 'id=' . &main'aid_url_escape($rec{'id'}); #'#
+
+    foreach (@main'aid_edit_field_names) #'){}
+    {
+	next if $_ eq 'id';
+	$retval .= '&' . $_   . '=' . &main'aid_url_escape($rec{$_}); #'#
     }
-
-    join($FIELD_SEP, @fields);
+    
+    $retval . '&n=' . &main'aid_url_escape($rec{'n'}); #'#
 }
 
-
-sub aid_parse {
+sub aid_generate_alias
+{
     package aid_util;
 
-    local($_) = @_;
-    local(%rec) = &main'aid_split($_); #'#
+    local(*rec) = @_;
     local($mangledLast,$mangledFirst,$alias);
-
-    if ($rec{'v'} == 0) {
-	$rec{'a'} = '';
-	return %rec;
-    }
 
     $mangledFirst = &main'aid_mangle($rec{'gn'}); #'#
     if ($rec{'mn'} ne '') {
@@ -240,28 +218,7 @@ sub aid_parse {
         $aid_aliases{$alias} = 1;
     }
 
-    $rec{'a'} = $alias;
-    %rec;
-}
-
-
-sub aid_create_db {
-    package aid_util;
-
-    local($filename) = @_;
-    local($[) = 0;
-    local($_);
-    local(@db,*INFILE);
-
-    open(INFILE,$filename) || die "Can't open $filename: $!\n";
-    while(<INFILE>) {
-	chop;
-	next unless defined $_ && $_ !~ /^\s*$/;
-	$db[(split(/$FIELD_SEP/o))[$ID_INDEX]] = $_;
-    }
-    close(INFILE);
-    
-    @db;
+    $alias;
 }
 
 sub aid_vcard_path {
@@ -332,34 +289,6 @@ sub aid_about_path {
     local($anchor) = ($suppress_anchor_p) ? '' : "#id-$rec{'id'}";
 
     "$config{'master_path'}class/${page}.html${anchor}";
-}
-
-
-sub aid_newsfile {
-    package aid_util;
-
-    local($id) = @_;
-
-    $config{'wwwdir'} . "whatsnew/${id}.txt";
-}
-
-sub aid_get_usertext {
-    package aid_util;
-
-    local($id) = @_;
-    local($_);
-    local($text,$inFile,*TEXTFILE);
-
-    $text = '';
-    $inFile = &main'aid_newsfile($id); #'#
-
-    if (-r $inFile) {
-	open(TEXTFILE,$inFile) || die "Can't open $inFile: $!\n";
-	while(<TEXTFILE>) { $text .= $_; }
-	close(TEXTFILE);
-    }
-    
-    $text;
 }
 
 sub aid_html_entify_str
@@ -436,9 +365,6 @@ sub aid_verbose_entry {
     local($fullname);
     local(*rec);
     local($retval) = '';
-
-    $rec_arg{'n'} = &main'aid_get_usertext($rec_arg{'id'}) #'#
-	unless defined($rec_arg{'n'});
 
     %rec = &main'aid_html_entify_rec(*rec_arg);
 
@@ -683,9 +609,6 @@ sub aid_about_text
 	$retval .= "Joined Directory   : ";
         $retval .= &main'aid_caldate($rec{'c'}) . "\n"; #'#
     }
-
-    $rec{'n'} = &main'aid_get_usertext($rec{'id'}) #'#
-	unless defined($rec{'n'});
 
     if ($rec{'n'} ne '') {
 	$retval .= "\n";
@@ -1375,9 +1298,7 @@ if ($^W && 0)
     &aid_about_text();
     &aid_verbose_entry();
     &aid_html_entify_str();
-    &aid_create_db();
-    &aid_parse();
-    &aid_join();
+    &aid_ampersand_join();
     &aid_affiliate();
     &aid_common_html_hdr();
     &aid_common_html_ftr();
@@ -1390,11 +1311,11 @@ if ($^W && 0)
     &aid_yahoo_abook_path();
     &aid_url_escape();
     &aid_rebuild_secondary_keys();
+    &aid_generate_alias();
 
     $aid_util'body_bg = $aid_util'body_fg = $aid_util'body_vlink =
 	$aid_util'body_link = $aid_util'cell_bg = $aid_util'cell_fg =
 	    $aid_util'header_bg = '';
-    $aid_util'ID_INDEX = '';
     $aid_util'pack_len = '';
     $aid_util'MoY = '';
     $aid_util'noindex = '';

@@ -2,7 +2,7 @@
 #     FILE: aid_submit.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: submission form for Alumni Internet Directory
-#      $Id: aid_submit.pl,v 1.8 1999/05/31 18:43:22 mradwin Exp mradwin $
+#      $Id: aid_submit.pl,v 5.1 1999/05/31 21:20:48 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -219,6 +219,7 @@ E-mail Preferences</strong></big></font>
   <input type=\"hidden\" name=\"id\" value=\"$rec{'id'}\" />
   <input type=\"hidden\" name=\"c\" value=\"$rec{'c'}\" />
   <input type=\"hidden\" name=\"eu\" value=\"$rec{'eu'}\" />
+  <input type=\"hidden\" name=\"a\" value=\"$rec{'a'}\" />
   <input type=\"hidden\" name=\"pe\" value=\"$prev_email\" />
   <input type=\"hidden\" name=\"v\" value=\"1\" />
   <br /><br />

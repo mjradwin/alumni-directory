@@ -1,6 +1,6 @@
 #!/usr/bin/perl -w
 
-# $Id: aid_dbm_read,v 1.23 1999/05/31 19:35:58 mradwin Exp mradwin $
+# $Id: aid_dbm_read,v 5.1 1999/05/31 21:20:48 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -67,7 +67,7 @@ if ($opt_t)
     foreach (sort { $a <=> $b } @ids)
     {
 	%rec = &aid_db_unpack_rec($_,$DB{$_});
-	print DATA &aid_join(*rec);
+	print DATA &aid_ampersand_join(*rec);
 	print DATA ';', &old_encode_base64($rec{'n'},'')
 	    if ($rec{'n'} ne '');
 	print DATA "\n";
@@ -191,7 +191,7 @@ sub display_key_val
     if ($key =~ /^\d+$/)
     {
 	%rec = &aid_db_unpack_rec($key,$val);
-	print "record $key = ", &aid_join(*rec), "\n";
+	print "record $key = ", &aid_ampersand_join(*rec), "\n";
     }
 
     elsif ($key =~ /^_(www_)?(\d\d\d\d)$/)
@@ -230,6 +230,11 @@ sub display_key_val
     elsif ($key =~ /^_created$/)
     {
 	print "created = ", &ctime(unpack("N", $val));
+    }
+
+    elsif ($key =~ /^_nextid$/)
+    {
+	print "nextid = ", $val, "\n";
     }
 
     elsif ($key =~ /^_t(_[^_]+)?$/)

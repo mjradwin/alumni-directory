@@ -1,6 +1,6 @@
 #!/usr/bin/perl -w
 
-# $Id: aid_addname,v 5.1 1999/05/31 21:20:48 mradwin Exp mradwin $
+# $Id: aid_addname,v 5.2 1999/06/01 04:06:47 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -194,9 +194,10 @@ sub mail_welcome
 sub addname
 {
     local(*rec) = @_;
-    local($_);
     local($dbmfile,$logFile,%oldrec,*LOG);
     local($key_name,$key_email,%id_by_email,%id_by_name,$email);
+
+    %aid_util'aid_aliases = ();   #'# reset global alias hash repository 
 
     $logFile = &aid_config('aiddir') . "logs/additions.log";
     $dbmfile = &aid_config('aiddir') . "data/working.db";
@@ -218,6 +219,8 @@ sub addname
 	    &aid_mangle("\L$oldrec{'gn'}\E") . $oldrec{'yr'};
 	$id_by_email{$key_email} = $oldrec{'id'};
 	$id_by_name{$key_name} = $oldrec{'id'};
+
+	&aid_generate_alias(*oldrec);
     }
     undef(%oldrec);
 
@@ -289,14 +292,24 @@ sub addname
 	print LOG "new - ";
     }
 
+    $rec{'a'} = &aid_generate_alias(*rec)
+	unless defined $rec{'a'} && $rec{'a'} ne '';
+
     $DB{$rec{'id'}} = &aid_db_pack_rec(*rec);
     $email = $rec{'e'};
     $DB{"\L$email\E"} = pack('n', $rec{'id'});
     dbmclose(%DB);
 
-    print     &aid_join(*rec), "\n";
-    print LOG &aid_join(*rec), "\n";
+    local($joined) = &aid_ampersand_join(*rec);
+    print     $joined, "\n";
+    print LOG $joined, "\n";
     close(LOG);
 
     $rec{'id'};
+}
+
+
+if ($^W && 0)
+{
+    %aid_util'aid_aliases = ();   #'# reset global alias hash repository 
 }
