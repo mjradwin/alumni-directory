@@ -4,7 +4,7 @@
 #     FILE: mvhsaid.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: Alumni Internet Directory CGI interface
-#      $Id: mvhsaid,v 3.60 1999/02/10 20:25:05 mradwin Exp mradwin $
+#      $Id: mvhsaid,v 3.61 1999/02/11 16:01:05 mradwin Exp mradwin $
 #
 
 require 'aid_util.pl';
@@ -22,7 +22,7 @@ if ($ENV{'SCRIPT_NAME'} =~ m,/nph-,)
 # configuration
 $mailprog = &aid_config('mailprog');
 $dbmfile = &aid_config('wwwdir') . 'master';
-$rcsid = '$Id: mvhsaid,v 3.60 1999/02/10 20:25:05 mradwin Exp mradwin $'; #'fnt
+$rcsid = '$Id: mvhsaid,v 3.61 1999/02/11 16:01:05 mradwin Exp mradwin $'; #'fnt
 
 
 &CgiDie(&aid_config('short_school') . " Alumni: Script Error",
@@ -405,7 +405,7 @@ sub send_about {
 
     print "Content-Type: text/html\015\012\015\012";
     print &common_html_hdr(-1,$fullname,1);
-    print "<p>Here is more detailed information about $html_name.\n";
+    print "<p>Here is more detailed information about $html_name.\n<br>";
     print "To update this entry, please review the information and\n";
     print "click the button below.</p>\n\n";
     print &about_text(*rec,0,1,1), "\n";
