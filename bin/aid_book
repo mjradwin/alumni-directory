@@ -7,7 +7,7 @@
 require 'mv_util.pl';
 require 'getopts.pl';
 
-$usage = 'usage: mv_book [-h] -{p,e,b,w,m,n,v} infile.adr outfile
+$usage = 'usage: mv_book [-h] -{p,e,b,w,m,n,l,v} infile.adr outfile
     -h        Display usage information.
 
     -p        Pine address book
@@ -15,20 +15,22 @@ $usage = 'usage: mv_book [-h] -{p,e,b,w,m,n,v} infile.adr outfile
     -b        Berkeley Mail aliases
     -w        Eudora for Windows nicknames
     -m        Eudora Pro for Macintosh nicknames
-    -n        Netscape address book
+    -n        Netscape3 address book
+    -l        Netscape4 .ldif address book
     -v        vCard book
 ';
 
 # get the command-line options and die if there is a bad option or
 # there are no filenames
-&Getopts('hpebwmnv') || die "$usage\n";
+&Getopts('hpebwmnlv') || die "$usage\n";
 $opt_h && die "$usage\n";
 $ARGV[0] || die "$usage\n";
 $ARGV[1] || die "$usage\n";
 
 # must have at least 1 option
-$opt_p || $opt_e || $opt_b || $opt_w || $opt_m || $opt_n || $opt_v ||
-    die "$usage\n";
+$sum = $opt_p + $opt_e + $opt_b + $opt_w + $opt_m + $opt_n + $opt_l +
+    $opt_v;
+die "$usage\n" unless $sum == 1;
 
 open(MVHS,$ARGV[0]) || die "Can't open $ARGV[0]: $!\n";
 open(BOOK,">$ARGV[1]") || die "Can't open $ARGV[1]: $!\n";
@@ -71,9 +73,21 @@ while(<MVHS>) {
 	print BOOK "NICKNAME=\"$alias\">$first $last</A>\n";
 	print BOOK "<DD>$school $year\n";
     }
+
+    elsif ($opt_l) {
+        print BOOK "dn: cn=$first $last,mail=$email\n";
+        print BOOK "cn: $first $last\n";
+        print BOOK "sn: $last\n";
+        print BOOK "givenname: $first\n";
+        print BOOK "objectclass: top\nobjectclass: person\n";
+        print BOOK "mail: $email\n";
+        print BOOK "o: $school $year\n";
+        print BOOK "xmozillanickname: $alias\n";
+        print BOOK "\n";
+    }
     
     # lots of data for a vCard
-    if ($opt_v) {
+    elsif ($opt_v) {
 	print BOOK "Begin:vCard\nORG:$school $year;\nFN:$first $last\n";
 	print BOOK "N:$last;$first\nEMAIL;PREF;INTERNET:$email\n";
 	print BOOK "URL:$homepage\n" if $homepage ne '';
