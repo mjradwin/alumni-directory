@@ -4,7 +4,7 @@
 #     FILE: aid_rss_summary.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: creates an RDF Site Summary for the Directory
-#      $Id: aid_rss_summary,v 6.3 2003/10/30 07:28:18 mradwin Exp mradwin $
+#      $Id: aid_rss_summary,v 6.4 2003/10/30 17:56:04 mradwin Exp mradwin $
 #
 # Copyright (c) 2003  Michael J. Radwin.
 # All rights reserved.
@@ -115,8 +115,9 @@ foreach my $i (@ids) {
     my($affil) = aid_util::affiliate(\%rec, 0);
     print FMTOUT
 "<item>
-<title>" .  aid_util::html_entify_str(aid_util::inorder_fullname(\%rec)) .
-" $affil</title>
+<title>" . aid_util::html_entify_str(aid_util::inorder_fullname(\%rec)) . 
+aid_util::html_entify_str($affil) .
+"</title>
 <link>http://" . aid_util::config('master_srv') .
     aid_util::about_path(\%rec,0) . "</link>
 <description>Updated " . aid_util::caldate($rec{'u'}), ".";
