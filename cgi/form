@@ -4,7 +4,7 @@
 #     FILE: mvhsaid.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: Alumni Internet Directory CGI interface
-#      $Id: mvhsaid,v 3.64 1999/02/26 20:12:25 mradwin Exp mradwin $
+#      $Id: mvhsaid,v 3.65 1999/02/26 20:16:29 mradwin Exp mradwin $
 #
 
 require 'aid_util.pl';
@@ -22,9 +22,10 @@ if ($ENV{'SCRIPT_NAME'} =~ m,/nph-,)
 # configuration
 $mailprog = &aid_config('mailprog');
 $dbmfile = &aid_config('wwwdir') . 'master';
-$rcsid = '$Id: mvhsaid,v 3.64 1999/02/26 20:12:25 mradwin Exp mradwin $'; #'fnt
+$rcsid = '$Id: mvhsaid,v 3.65 1999/02/26 20:16:29 mradwin Exp mradwin $'; #'fnt
 
 $listing_upd_title = 'Step 1: Update Your Directory Listing';
+$listing_upl_title = 'Select a Listing to Update';
 $listing_add_title = 'Step 1: Add Your Listing to the Directory';
 $listing_sub_title = 'Step 2: Review and Confirm Your Listing';
 $listing_cnf_title = 'Thank You! Your Listing is Queued';
@@ -533,10 +534,10 @@ sub send_upd_list {
     }
 
     print "Content-Type: text/html\015\012\015\012";
-    print &common_html_hdr(-1,$listing_upd_title,1);
+    print &common_html_hdr(-1,$listing_upl_title,1);
     print "\n";
     
-    print "<p>Please select an listing to update from the list below.</p>\n";
+    print "<p>Please select a listing to update from the list below.\nThe list is quite long, so it may take a while for the entire list to load</p>\n";
     print "<p>\n", &jump_bar(), "</p>\n\n";
     print "<pre>";
     print "Name and Graduation Year                  Email\n";
