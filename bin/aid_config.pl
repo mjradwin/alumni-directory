@@ -2,7 +2,7 @@
 #     FILE: aid_config.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: configuration variables for Alumni Internet Directory
-#      $Id: aid_config.pl,v 5.2 1999/06/01 00:36:18 mradwin Exp mradwin $
+#      $Id: aid_config.pl,v 5.3 1999/06/01 05:42:12 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -202,17 +202,18 @@ if ($^W && 0)
     &aid_image_tag('');
     &aid_config('');
     $aid_util'copyright_path = '';
-    $aid_util'second_idx = ''; # line 150.
-    $aid_util'page_idx = ''; # line 139.
-    $aid_util'req_descr_long = ''; # line 121.
+    @aid_util'second_idx = (); # line 150.
+    @aid_util'page_idx = (); # line 139.
+    @aid_util'req_descr_long = (); # line 121.
     $aid_util'pics_label = ''; # line 161.
     $aid_util'pack_len = ''; # line 227.
     $aid_util'pack_format = ''; # line 226.
     $aid_util'aid_aliases = ''; # line 174.
     $aid_util'noindex = ''; # line 173.
-    $aid_util'req_descr = ''; # line 130.
+    @aid_util'req_descr = (); # line 130.
     @aid_edit_field_names = ();
     $aid_util'EPOCH       = '';
+    %aid_util'field_descr = (); #'#
 }
 
 1;
