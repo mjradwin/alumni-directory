@@ -2,11 +2,11 @@
 #     FILE: aid_util.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: perl library routines for the Alumni Internet Directory
-#      $Id: aid_util.pl,v 3.22 1998/05/26 23:23:51 mradwin Exp mradwin $
+#      $Id: aid_util.pl,v 3.23 1998/05/27 21:18:15 mradwin Exp mradwin $
 #
 
 $aid_util'rcsid =
- '$Id: aid_util.pl,v 3.22 1998/05/26 23:23:51 mradwin Exp mradwin $';
+ '$Id: aid_util.pl,v 3.23 1998/05/27 21:18:15 mradwin Exp mradwin $';
 
 # ----------------------------------------------------------------------
 # CONFIGURATION
@@ -303,9 +303,8 @@ sub affiliate {
     $len   = 2;
 
     if ($rec{'year'} =~ /^\d+$/) {
-	$affil .= "<a href=\"" . $config{'master_path'} . 
-	    "class/$rec{'year'}.html#id-$rec{'id'}\">" if $do_html_p;
-
+	$affil .= "<a href=\"" . &main'aid_about_path(*rec) . "\">" #'#
+	    if $do_html_p;
 	$year = $rec{'year'} % 100;
 	if ($rec{'school'} eq 'Awalt') {
 	    $affil  .= "A'$year";
@@ -322,8 +321,8 @@ sub affiliate {
 	$affil .= "</a>" if $do_html_p;
 
     } else {
-	$affil .= "<a href=\"" . $config{'master_path'} . 
-	    "class/other.html\">" if $do_html_p;
+	$affil .= "<a href=\"" . &main'aid_about_path(*rec) . "\">" #'#
+	    if $do_html_p;
 	$affil .= "[$rec{'school'} $rec{'year'}]";
 	$len   += length("[$rec{'school'} $rec{'year'}]");
 	$affil .= "</a>" if $do_html_p;
@@ -461,6 +460,17 @@ sub aid_vcard_path {
     local($id) = @_;
 
     $config{'cgi_path'} . "/vcard/${id}.vcf";
+}
+
+
+sub aid_about_path {
+    package aid_util;
+
+    local(*rec,$suppress_anchor_p) = @_;
+    local($page) = ($rec{'year'} =~ /^\d+$/) ? $rec{'year'} : 'other';
+    local($anchor) = ($suppress_anchor_p) ? '' : "#id-$rec{'id'}";
+
+    "$config{'master_path'}class/${page}.html${anchor}";
 }
 
 
@@ -758,15 +768,14 @@ sub aid_write_verbose_entry {
     if ($rec{'year'} =~ /^\d+$/) {
 	if ($display_year) {
 	    print FMTOUT "<dt>Year:  <strong>";
-	    print FMTOUT "<a href=\"" . $config{'master_path'} .
-		"class/$rec{'year'}.html\">";
+	    print FMTOUT 
+		"<a href=\"" . &main'aid_about_path(*rec,1) . "\">"; #'#
 	    print FMTOUT $rec{'year'};
 	    print FMTOUT "</a></strong></dt>\n";
 	}
     } else {
 	print FMTOUT "<dt>Affiliation:  <strong>";
-	print FMTOUT "<a href=\"" . $config{'master_path'} .
-	    "class/other.html\">";
+	print FMTOUT "<a href=\"" . &main'aid_about_path(*rec,1) . "\">"; #'#
 	print FMTOUT $rec{'year'};
 	print FMTOUT "</a></strong></dt>\n";
     }
@@ -834,17 +843,14 @@ sub about_text {
     $retval .= "</strong>" if $do_html_p;
     $retval .= "\n";
     
-    $retval .= "Grad. Year         : ";
-    if ($do_html_p) {
-	$retval .= "<strong>";
-	if ($rec{'year'} =~ /^\d+$/) {
-            $retval .= "<a href=\"" . $config{'master_path'} .
-                "class/$rec{'year'}.html#id-$rec{'id'}\">";
-	} else {
-	    $retval .= "<a href=\"" . $config{'master_path'} .
-		"class/other.html#id-$rec{'id'}\">";
-	}
+    if ($rec{'year'} =~ /^\d+$/) {
+	$retval .= "Grad. Year         : ";
+    } else {
+	$retval .= "Affiliation        : ";
     }
+    $retval .= "<strong>" .
+	"<a href=\"" . &main'aid_about_path(*rec) . "\">" #'#
+	    if $do_html_p;
     $retval .= $rec{'year'};
     $retval .= "</a></strong>" if $do_html_p;
     $retval .= "\n";
