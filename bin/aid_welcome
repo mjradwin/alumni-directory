@@ -8,35 +8,38 @@ push(@INC, '/home/mjr/lib');
 require 'mv_util.pl';
 require 'getopts.pl';
 
-$usage = 'usage: mv_welcome [-hu] targets.adr
+$usage = 'usage: mv_welcome [-h] [-u | -c] targets.adr
     -h        Display usage information.
     -u        Send "update" email, not "welcome" email.
+    -c        Send "confirmation" email, not "welcome" email.
 ';
 
-&Getopts('hu') || die "$usage\n";
+&Getopts('huc') || die "$usage\n";
 $opt_h && die "$usage\n";
+($opt_c && $opt_u) && die "$usage\n";
 $ARGV[0] || die "$usage\n";
 
 $today = localtime;
 $logfile = 'welcome.log';
-$subject = ($opt_u) ? 'Your MVHS Alumni Internet Directory entry is updated' : 
+$subject = ($opt_c) ? 'Confirming your MVHS Alumni Internet Directory entry' :
+    ($opt_u) ? 'Your MVHS Alumni Internet Directory entry is updated' : 
     'Welcome to the MVHS Alumni Internet Directory';
 
 open(LOG,">>$logfile") || die "Can't open $logfile: $!\n";
 open(TARGET,$ARGV[0]) || die "Can't open $ARGV[0]: $!\n";
 while(<TARGET>) {
     chop;
-    ($time,$id,$req,$last,$first,$school,$year,$email,$alias,$homepage) = &mv_parse($_);
+    ($time,$id,$req,$last,$first,$school,$year,$email,$alias,$homepage) =
+	&mv_parse($_);
     next unless $email;
-#    next unless $req;
+    next if $opt_c && !$req;
+
     $homepage = '(none)' if $homepage eq '';
+    $message =
+	&message_body($id,$req,$last,$first,$school,$year,$email,$homepage) .
+	&message_footer;
 
-    # this is our funky message
-    $denied = ($req) ? "" : "\nThis is the only email notice you will receive.\n";
-	
-    $message = &message_body($id,$last,$first,$school,$year,$email,$homepage);
-
-    &sendmail($email, &mv_config('admin_email'), 'Michael John Radwin',
+    &sendmail($email, &mv_config('admin_email'), &mv_config('admin_name'),
 	      $subject, $message);
     print LOG "$today $email\n";
 }
@@ -44,41 +47,28 @@ while(<TARGET>) {
 exit(0);
 
 
-sub sendmail {
-    local($to,$return,$from,$subject,$body) = @_;
-    local(*F);
-    local($toline) = join(', ', split(/[ \t]+/, $to));
-    local($header) =
-"From: $return ($from)\
-Return-Path: $return\
-Subject: $subject\
-To: $toline\
-";
-
-    if (open(F, "|/usr/lib/sendmail $to")) {
-	print F $header;
-	print F $body;
-	close(F);
-
-    } else {
-	warn "cannot send mail\n";
-    }
-}
-
 sub message_body {
-    local($id,$last,$first,$school,$year,$email) = @_;
-    
+    local($id,$req,$last,$first,$school,$year,$email,$homepage) = @_;
+    local($fullname) = &fullname($first,$last);
+    local($denied) = ($req) ? '' :
+	"\nSince you asked not to receive the Alumni Internet Directory via email,\nthis is the only notice you will receive.\n";
+
+    local($confirming) = ($opt_c) ? 
+"\nAs a service to alumni who do not have Web access, I will email a copy
+of the most current Internet Directory to everyone listed in it
+(including yourself) in a couple of weeks.  Please make sure your entry
+below is still current.\n" : '';
+
     return "Dear $first,
 
 Your email address is listed in the Mountain View High School/Awalt High
-School Alumni Internet Directory:\n\n" .
-
-&mv_config('master_url') . "
-
+School Alumni Internet Directory, located on the World Wide Web at:\n\n"
+. &mv_config('master_url') . "
+$confirming
 The database (which produced this form letter) shows the following
 information about you:
 
-Name:           $last, $first
+Name:           $fullname
 Email Address:  $email
 High School:    $school
 Grad Year:      $year
@@ -87,21 +77,11 @@ $denied
 If you feel as if you have received this email in error or do not want
 to be listed in the database, please let me know and I will remove your
 name from the database.  Or, if any of the above information is
-incorrect or out of date you can update your entry at:\n\n" .
+incorrect or out of date you can update your entry online at:\n\n" .
 
 &mv_config('cgi_url') . "?update=$id
 
-or email me corrections, and I'll be happy to fix your entry.  If
-everything you see above is correct, you're all set.
-
---
-Michael J. Radwin
-Mountain View High School, Class of '93
-
-Email     : " . &mv_config('admin_email') . "
-WWW       : " . &mv_config('admin_url') . "
-U.S. Mail : Brown University, P.O. Box 4505, Providence, RI, 02912-4505
-Phone     : 401-863-6418
-";
+or email me corrections, and I'll be happy to fix your entry. If 
+everything you see above is correct, you're all set.\n";
 
 }
