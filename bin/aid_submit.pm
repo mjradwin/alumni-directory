@@ -2,7 +2,7 @@
 #     FILE: aid_submit.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: submission form for Alumni Internet Directory
-#      $Id: aid_submit.pl,v 5.2 1999/06/01 05:42:12 mradwin Exp $
+#      $Id: aid_submit.pl,v 5.4 1999/06/08 19:42:09 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -142,6 +142,14 @@ Full Name</strong></big></font>
 <font color=\"#$header_fg\"><big><strong>2.
 Graduating Class while at $config{'short_school'}</strong></big></font>
 </td></tr>
+<tr>
+  <td valign=\"top\" colspan=\"3\">
+  Are you an alumnus of Awalt High School?  Please add your listing
+  to the<br />
+  <a href=\"/awalt/\">Awalt High School Alumni Internet Directory</a>
+  instead.
+  </td>
+</tr>
 <tr>
   <td valign=\"top\" align=\"right\"><label
   for=\"yr\"><strong>Graduation Year or Affiliation:</strong></label><br />
