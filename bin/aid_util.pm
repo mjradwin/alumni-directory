@@ -2,11 +2,11 @@
 #     FILE: aid_util.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: perl library routines for the Alumni Internet Directory
-#      $Id: aid_util.pl,v 4.27 1999/02/26 23:26:57 mradwin Exp mradwin $
+#      $Id: aid_util.pl,v 4.28 1999/02/26 23:31:42 mradwin Exp mradwin $
 #
 
 $aid_util'rcsid =
- '$Id: aid_util.pl,v 4.27 1999/02/26 23:26:57 mradwin Exp mradwin $';
+ '$Id: aid_util.pl,v 4.28 1999/02/26 23:31:42 mradwin Exp mradwin $';
 
 # ----------------------------------------------------------------------
 # CONFIGURATION
@@ -1129,11 +1129,13 @@ sub common_html_hdr {
 
     local($page,$title,$norobots,$time) = @_;
     local($hdr,$tablehdr,$timestamp,$titletag);
-    local($sec,$min,$hour,@rest) = localtime(defined $time ? $time : time);
+    local($pagetime) = defined $time ? $time : time;
+    local($sec,$min,$hour,@rest) = localtime($pagetime);
     local($ampm) = $hour >= 12 ? 'pm' : 'am';
 
     $hour -= 12 if $hour > 12;
-    $timestamp = sprintf("%s %2d:%02d%s", $caldate, $hour, $min, $ampm);
+    $timestamp = sprintf("%s %2d:%02d%s",
+			 &main'aid_caldate($pagetime), $hour, $min, $ampm);
 
     $tablehdr = $title eq '' ? '' :
 	"    <!-- \"$title\" --><strong>" .
