@@ -1,6 +1,6 @@
 #!/usr/bin/perl -w
 
-# $Id: aid_addname,v 3.31 1999/03/27 02:38:09 mradwin Exp mradwin $
+# $Id: aid_addname,v 3.32 1999/03/27 03:43:14 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -195,9 +195,10 @@ sub addname
 	%oldrec = &aid_split($_);
 
 	$key_email = "\L$oldrec{'email'}\E" .
-	    &mangle("\L$oldrec{'last'}\E") . &mangle("\L$oldrec{'first'}\E");
-	$key_name = &mangle("\L$oldrec{'last'}\E") .
-	    &mangle("\L$oldrec{'first'}\E") . $oldrec{'year'};
+	    &aid_mangle("\L$oldrec{'last'}\E") .
+	    &aid_mangle("\L$oldrec{'first'}\E");
+	$key_name = &aid_mangle("\L$oldrec{'last'}\E") .
+	    &aid_mangle("\L$oldrec{'first'}\E") . $oldrec{'year'};
 	$id_by_email{$key_email} = $oldrec{'id'};
 	$id_by_name{$key_name} = $oldrec{'id'};
     }
@@ -211,9 +212,9 @@ sub addname
     if ($rec{'id'} == -1)
     {
 	$key_email = "\L$rec{'email'}\E" .
-	    &mangle("\L$rec{'last'}\E") . &mangle("\L$rec{'first'}\E");
-	$key_name = &mangle("\L$rec{'last'}\E") .
-	    &mangle("\L$rec{'first'}\E") . $rec{'year'};
+	    &aid_mangle("\L$rec{'last'}\E") . &aid_mangle("\L$rec{'first'}\E");
+	$key_name = &aid_mangle("\L$rec{'last'}\E") .
+	    &aid_mangle("\L$rec{'first'}\E") . $rec{'year'};
 
 	if (defined $id_by_email{$key_email})
 	{
