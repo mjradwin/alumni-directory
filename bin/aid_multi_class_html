@@ -2,7 +2,7 @@
 
 #
 # does the html multi_class pages
-# $Id: aid_multi_class_html,v 5.27 2002/04/03 00:23:47 mradwin Exp mradwin $
+# $Id: aid_multi_class_html,v 5.28 2002/04/03 00:24:47 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -162,9 +162,6 @@ foreach $year (@years)
 	    my($refname,$title);
 
 	    my($date,$html) = split(/\0/, $r{$key}, 2);
-	    my($yr,$mon,$mday) = split(/\//, $date, 3);
-	    my($t) = &Time::Local::timelocal(59,59,23,$mday,$mon-1,$yr-1900);
-	    my($long_date) = &POSIX::strftime("%A, %B %e, %Y", localtime($t));
 
 	    if ($key =~ /^\d+$/)
 	    {
@@ -182,8 +179,20 @@ foreach $year (@years)
 		$title = $key;
 	    }
 
+	    my($long_date);
 	    my($prefix) = 'Past';
-	    $prefix = 'Upcoming' if ($t > time);
+	    if ($date eq "TBA")
+	    {
+		$prefix = "Upcoming";
+		$long_date = "TBA";
+	    }
+	    else
+	    {
+		my($yr,$mon,$mday) = split(/\//, $date, 3);
+		my $t = Time::Local::timelocal(59,59,23,$mday,$mon-1,$yr-1900);
+		$long_date = POSIX::strftime("%A, %B %e, %Y", localtime($t));
+		$prefix = 'Upcoming' if ($t > time);
+	    }
 
 	    print FMTOUT "<li>$prefix:\n",
 	    "<a href=\"",  &main::aid_config('master_path'),

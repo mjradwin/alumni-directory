@@ -2,7 +2,7 @@
 #     FILE: aid_util.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: perl library routines for the Alumni Internet Directory
-#      $Id: aid_util.pl,v 5.110 2003/03/14 20:52:19 mradwin Exp mradwin $
+#      $Id: aid_util.pl,v 5.111 2003/03/14 23:30:26 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -1378,10 +1378,6 @@ sub aid_write_reunion_hash
 
     foreach $key (sort keys %{$entries})
     {
-	my($date,$html) = split(/\0/, $entries->{$key}, 2);
-	my($year,$mon,$mday) = split(/\//, $date, 3);
-	my($t) = &Time::Local::timelocal(59,59,23,$mday,$mon-1,$year-1900);
-
 	if ($first)
 	{
 	    $first = 0;
@@ -1411,9 +1407,24 @@ sub aid_write_reunion_hash
 	    print FH " - <a name=\"$clean_key\">$key</a>";
 	}
 
-	print FH "</b></dt>\n",
-	"<dd>Date: ", &POSIX::strftime("%A, %B %e, %Y", localtime($t)),
-	"</dd>\n",
+	print FH "</b></dt>\n<dd>Date: ";
+
+	my($date,$html) = split(/\0/, $entries->{$key}, 2);
+	my($year,$mon,$mday,$t) = (0,0,0,0);
+
+	if ($date eq "TBA")
+	{
+	    print FH "TBA";
+	}
+	else
+	{
+	    ($year,$mon,$mday) = split(/\//, $date, 3);
+	    $t = Time::Local::timelocal(59,59,23,$mday,$mon-1,$year-1900);
+
+	    print FH POSIX::strftime("%A, %B %e, %Y", localtime($t));
+	}
+
+	print FH "</dd>\n",
 	$html, "\n";
 
 	# y! calendar
