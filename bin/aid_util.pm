@@ -2,11 +2,11 @@
 #     FILE: aid_util.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: perl library routines for the Alumni Internet Directory
-#      $Id: aid_util.pl,v 4.37 1999/03/04 00:14:34 mradwin Exp mradwin $
+#      $Id: aid_util.pl,v 4.38 1999/03/04 00:53:39 mradwin Exp mradwin $
 #
 
 $aid_util'rcsid =
- '$Id: aid_util.pl,v 4.37 1999/03/04 00:14:34 mradwin Exp mradwin $';
+ '$Id: aid_util.pl,v 4.38 1999/03/04 00:53:39 mradwin Exp mradwin $';
 
 # ----------------------------------------------------------------------
 # CONFIGURATION
@@ -757,7 +757,7 @@ $instr
 <font size=\"+1\"><strong>5. E-mail Updates</strong></font>
 </td></tr>
 <tr>
-  <td colspan=3><small><input type=checkbox
+  <td colspan=3><input type=checkbox
   name=\"reunion\" id=\"reunion\" $reunion_chk><label
   for=\"reunion\">&nbsp;My class officers may notify me of
   reunion information via e-mail.</label><br><br>Please 
@@ -783,7 +783,7 @@ $instr
 
   &nbsp;&nbsp;&nbsp;&nbsp;<input type=radio name=\"request\" id=\"request0\"
   value=\"0\"$reqchk[0]><label for=\"request0\">&nbsp;
-  $req_descr_long[0]</label></small>
+  $req_descr_long[0]</label>
 
   <input type=\"hidden\" name=\"id\" value=\"$rec{'id'}\">
   <input type=\"hidden\" name=\"created\" value=\"$rec{'created'}\">
