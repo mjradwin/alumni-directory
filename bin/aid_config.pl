@@ -2,7 +2,7 @@
 #     FILE: aid_config.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: configuration variables for Alumni Internet Directory
-#      $Id: aid_config.pl,v 1.36 1999/05/04 23:50:41 mradwin Exp mradwin $
+#      $Id: aid_config.pl,v 1.37 1999/05/14 00:41:47 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -22,7 +22,7 @@
 #
 
 $aid_util'rcsid =
- '$Id: aid_config.pl,v 1.36 1999/05/04 23:50:41 mradwin Exp mradwin $';
+ '$Id: aid_config.pl,v 1.37 1999/05/14 00:41:47 mradwin Exp mradwin $';
 
 # radwin.org (FreeBSD 2.2.2) configuration
 %aid_util'config =   #'#
@@ -77,10 +77,12 @@ information (birthdays, phone numbers, etc.) with other alumni.  People
 will only be allowed to access your information with your permission,
 and you can share as much or as little as you want.</p>
 
-<p>You might also be interested in joining the 
-<a href=\"http://clubs.yahoo.com/clubs/mountainviewhighschool\">MVHS
-Club on Yahoo!</a> The MVHS Club adds a Chat Room and Message Boards to
-the services currently provided by this Directory.</p>
+<p>You might also be interested in joining the <a
+href=\"http://clubs.yahoo.com/clubs/mountainviewhighschool\">MVHS Club
+on Yahoo!</a> (or <a
+href=\"http://clubs.yahoo.com/clubs/awalthighschool\">Awalt Club on
+Yahoo!</a>) These clubs add a chat room and message boards to the
+services currently provided by this Directory.</p>
 
 ",
      );
