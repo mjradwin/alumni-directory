@@ -1,6 +1,6 @@
 #!/usr/local/bin/perl -w
 
-# $Id: aid_addname,v 1.10 1998/01/03 11:38:28 mjr Exp mjr $
+# $Id: aid_addname,v 1.11 1998/01/03 11:58:13 mjr Exp mjr $
 
 require 'getopts.pl';
 require 'aid_util.pl';
@@ -16,6 +16,11 @@ $opt_h && die "$usage\n";
 $opt_h = $opt_h;                # avoid warning
 $opt_m = $opt_m;                # avoid warning
 $opt_w = $opt_w;                # avoid warning
+
+$echo = &aid_config('echo');
+$cat  = &aid_config('cat);
+$cp   = &aid_config('cp);
+$make = &aid_config('make);
 
 &readspool(($ARGV[0]) ? $ARGV[0] : &aid_config('spoolfile'));
 &rebuild() unless $opt_m;
@@ -71,8 +76,10 @@ sub readspool {
 		close(NEWSOUT);
 
 		$logFile = &aid_config('aiddir') . "logs/additions.log";
-		system("echo 'MESSAGE $newsFile' >> $logFile");
-		system("cat $newsFile >> $logFile");
+		system "$echo 'MESSAGE $newsFile' >> $logFile"
+		    || die "failed to $echo 'MESSAGE $newsFile' >> $logFile: $!\n";
+		system "$cat $newsFile >> $logFile"
+		    || die "failed to $cat $newsFile >> $logFile: $!\n";
 	    }
 	}
     }
@@ -86,7 +93,7 @@ sub rebuild {
     chdir &aid_config('aiddir') || die "can't chdir: $!\n";
 
     print "rebuilding...\n";
-    system 'make';
+    system "$make" || die "failed to $make: $!\n";
 }
 
 sub mail_welcome {
@@ -95,14 +102,18 @@ sub mail_welcome {
     print "mailing...";
     if (-e 'data/newmail.adr') {
 	print ' new';
-	system 'bin/aid_welcome data/newmail.adr';
-	unlink('data/newmail.adr');
+	system "./bin/aid_welcome data/newmail.adr"
+	    || die "failed to ./bin/aid_welcome data/newmail.adr: $!\n";
+	unlink('data/newmail.adr')
+	    || die "couldn't unlink data/newmail.adr: $!\n";
     }
 
     if (-e 'data/update.adr') {
 	print ' update';
-	system 'bin/aid_welcome -u data/update.adr';
-	unlink('data/update.adr');
+	system "./bin/aid_welcome -u data/update.adr"
+	    || die "failed to ./bin/aid_welcome -u data/update.adr: $!\n";
+	unlink('data/update.adr')
+	    || die "couldn't unlink data/update.adr: $!\n";
     }
 
     print "\n";
@@ -129,12 +140,14 @@ sub addname {
     if ($rec{'id'} == -1) {
 	$rec{'id'} = ($#db + 1);
 	$addme = &aid_join(*rec);
-	system("echo '$addme' >> $newmailFile");
+	system "$echo '$addme' >> $newmailFile"
+	    || die "failed to $echo '$addme' >> $newmailFile: $!\n";
     } else {
 	print     "==> UPDATE ", $db[$rec{'id'}], "\n";
 	print LOG "==> UPDATE ", $db[$rec{'id'}], "\n";
 	$addme = $rawdata;
-	system("echo '$addme' >> $updFile");
+	system "$echo '$addme' >> $updFile"
+	    || die "failed to $echo '$addme' >> $updFile: $!\n";
     }
 
     $db[$rec{'id'}] = $addme;
@@ -150,7 +163,8 @@ sub addname {
     }
     close(TMP);
 
-    system "/usr/local/gnu/bin/cp -f $tmpFile $dbFile";
+    system "$cp -f $tmpFile $dbFile"
+	|| die "failed to $cp -f $tmpFile $dbFile: $!\n";
     unlink($tmpFile) || die "couldn't unlink $tmpFile: $!\n";
 
     $rec{'id'};

@@ -2,7 +2,7 @@
 
 #
 # generates address books in several formats
-# $Id: aid_book,v 1.22 1998/01/03 11:32:52 mradwin Exp $
+# $Id: aid_book,v 1.21 1998/01/03 11:38:28 mjr Exp mjr $
 #
 
 require 'aid_util.pl';
@@ -91,6 +91,7 @@ exit(0);
 
 sub write_prefix {
     local(*BOOK,$option) = @_;
+    local($school) = &aid_config('school');
 
     # special case for netscape
     if ($option eq 'n') {
@@ -98,8 +99,8 @@ sub write_prefix {
 <!-- This is an automatically generated file.
 It will be read and overwritten.
 Do Not Edit! -->
-<TITLE>MVHS Alumni Address book</TITLE>
-<H1>MVHS Alumni Address book</H1>
+<TITLE>$school Alumni Address book</TITLE>
+<H1>$school Alumni Address book</H1>
 
 <DL><p>\n";
     }
