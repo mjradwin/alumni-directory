@@ -1,6 +1,6 @@
 #!/usr/local/bin/perl -w
 
-# $Id: aid_addname,v 6.1 2003/08/25 04:10:32 mradwin Exp mradwin $
+# $Id: aid_addname2,v 1.1 2003/08/25 06:24:55 mradwin Exp mradwin $
 #
 #   Copyright (c) 2003  Michael J. Radwin
 #
@@ -72,7 +72,6 @@ sub readspool
 	$DB_HASH, 'write')
 	or die "$staging: $!\n";
 
-    my(@vals) = ();
     if (defined $DBS{'_verified'})
     {
 	my(@key8s) = split(/\0/, $DBS{'_verified'});
@@ -86,15 +85,20 @@ sub readspool
 	    {
 		my($id,$packed) = split(/\0/, $DBS{$key8}, 2);
 
-		push(@vals, $DBS{$key8});
-		$DBS{$key8} = "p\0";
-
 		my %rec = aid_util::db_unpack_rec($id,$packed);
+		$rec{'f'} = $rec{'u'} = time;
+
+		print STDOUT "addname - ", aid_util::inorder_fullname(\%rec), "\n"
+		    unless $opts{'q'};
+
+		addname(\%rec) || die "$0: can't add $rec{'id'} $rec{'e'}!\n";
 
 		print STDOUT "OK key8 $key8 - ",
 		aid_util::inorder_fullname(\%rec), "\n"
 		    unless $opts{'q'};
 
+		# success, so clear entry from staging DB
+		$DBS{$key8} = "p\0";
 		if ($id != -1 && defined $DBS{$id})
 		{
 		    delete $DBS{$id};
@@ -104,32 +108,25 @@ sub readspool
 		    delete $DBS{lc($rec{'e'})};
 		}
 
-		undef(%rec);
+		$success = 1;
 	    }
 	    else
 	    {
 		warn "key8 $key8 was _verified, but invalid in staging.db\n";
+		$success = 0;
+		last;
 	    }
 	}
-
-	delete $DBS{'_verified'};
     }
-
-    untie(%DBS);
-
-    my($val);
-    foreach $val (@vals)
+    else
     {
-	my($id,$packed) = split(/\0/, $val, 2);
-	my %rec = aid_util::db_unpack_rec($id,$packed);
-	$rec{'f'} = $rec{'u'} = time;
-
-	print STDOUT "addname - ", aid_util::inorder_fullname(\%rec), "\n"
+	print STDOUT "nothing to do (no _verified in DB)\n"
 	    unless $opts{'q'};
-
-	addname(\%rec) || die "$0: can't add $rec{'id'} $rec{'e'}!\n";
-	$success = 1;
+	$success = 0;
     }
+
+    delete $DBS{'_verified'} if $success;
+    untie(%DBS);
 
     if ($success)
     {
@@ -189,13 +186,11 @@ sub mail_welcome
 sub addname
 {
     my($recp) = @_;
-
-    my(%oldrec);
-    my($logFile,$key_name,$key_email,%id_by_email,%id_by_name,$email);
+    my(%id_by_email,%id_by_name);
 
     %aid_util::aliases = ();   # reset global alias hash repository 
 
-    $logFile = aid_util::config('aiddir') . "logs/additions.log";
+    my $logFile = aid_util::config('aiddir') . "logs/additions.log";
 
     my(%DB);
     tie(%DB, 'DB_File::Lock', $dbmfile, O_CREAT|O_RDWR, 0644, $DB_HASH, 'write')
@@ -204,19 +199,18 @@ sub addname
     while (my($key,$val) = each %DB)
     {
 	next unless $key =~ /^\d+$/;
-	%oldrec = aid_util::db_unpack_rec($key,$val);
+	my %oldrec = aid_util::db_unpack_rec($key,$val);
 
-	$key_email = lc($oldrec{'e'}) .
+	my $key_email = lc($oldrec{'e'}) .
 	    aid_util::mangle(lc($oldrec{'sn'})) .
 	    aid_util::mangle(lc($oldrec{'gn'}));
-	$key_name = aid_util::mangle(lc($oldrec{'sn'})) .
+	my $key_name = aid_util::mangle(lc($oldrec{'sn'})) .
 	    aid_util::mangle(lc($oldrec{'gn'})) . $oldrec{'yr'};
 	$id_by_email{$key_email} = $oldrec{'id'};
 	$id_by_name{$key_name} = $oldrec{'id'};
 
 	aid_util::generate_alias(\%oldrec);
     }
-    undef(%oldrec);
 
     my $LOG;
     open($LOG, ">>$logFile") || die "$0: can't open $logFile: $!\n";
@@ -226,23 +220,23 @@ sub addname
     # email address before
     if ($recp->{'id'} == -1)
     {
-	$key_email = lc($recp->{'e'}) .
+	my $key_email = lc($recp->{'e'}) .
 	    aid_util::mangle(lc($recp->{'sn'})) .
 	    aid_util::mangle(lc($recp->{'gn'}));
-	$key_name = aid_util::mangle(lc($recp->{'sn'})) .
+	my $key_name = aid_util::mangle(lc($recp->{'sn'})) .
 	    aid_util::mangle(lc($recp->{'gn'})) . $recp->{'yr'};
 
 	if (defined $id_by_email{$key_email})
 	{
 	    $recp->{'id'} = $id_by_email{$key_email};
-	    %oldrec = aid_util::db_unpack_rec($recp->{'id'}, $DB{$recp->{'id'}});
+	    my %oldrec = aid_util::db_unpack_rec($recp->{'id'}, $DB{$recp->{'id'}});
 
 	    $recp->{'c'} = $oldrec{'c'};
 	}
 	elsif (defined $id_by_name{$key_name})
 	{
 	    $recp->{'id'} = $id_by_name{$key_name};
-	    %oldrec = aid_util::db_unpack_rec($recp->{'id'}, $DB{$recp->{'id'}});
+	    my %oldrec = aid_util::db_unpack_rec($recp->{'id'}, $DB{$recp->{'id'}});
 
 	    $recp->{'c'} = $oldrec{'c'};
 	    $recp->{'eu'} = $recp->{'u'} if
@@ -250,7 +244,6 @@ sub addname
 	    $recp->{'eo'} = $oldrec{'e'} if
 		$oldrec{'e'} ne $recp->{'e'};
 	}
-	undef(%oldrec);
     }
 
     if ($recp->{'id'} == -1)
@@ -265,7 +258,7 @@ sub addname
     }
     elsif (defined $DB{$recp->{'id'}})
     {
-	%oldrec = aid_util::db_unpack_rec($recp->{'id'},$DB{$recp->{'id'}});
+	my %oldrec = aid_util::db_unpack_rec($recp->{'id'},$DB{$recp->{'id'}});
 
 	push(@upd_ids, $recp->{'id'})
 	     unless ((grep(/\b$recp->{'id'}\b/, @new_ids)) ||
@@ -273,14 +266,13 @@ sub addname
 
 	if ($recp->{'e'} ne $oldrec{'e'})
 	{
-	    $email = $oldrec{'e'};
+	    my $email = $oldrec{'e'};
 	    delete $DB{lc($email)};
 	}
 
 	print     "upd ", $oldrec{'e'}, " "
 	    unless $opts{'q'};
 	print $LOG "upd ", $oldrec{'e'}, " ";
-	undef(%oldrec);
     }
     else
     {
@@ -295,7 +287,7 @@ sub addname
 	unless defined $recp->{'a'} && $recp->{'a'} ne '';
 
     $DB{$recp->{'id'}} = aid_util::db_pack_rec($recp);
-    $email = $recp->{'e'};
+    my $email = $recp->{'e'};
     $DB{lc($email)} = pack('n', $recp->{'id'});
 
     untie(%DB);
