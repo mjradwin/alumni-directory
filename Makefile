@@ -2,22 +2,22 @@
 #     FILE: Makefile
 #   AUTHOR: Michael J. Radwin
 #    DESCR: Makefile for building the MVHS Alumni Internet Directory
-#      $Id: mv_util.pl,v 1.12 1997/01/20 19:07:35 mjr Exp mjr $
+#      $Id: Makefile,v 1.10 1997/01/20 19:51:38 mjr Exp mjr $
 #
 
-WWWDIR=/pro/web/web/people/mjr/mvhs
-CGIDIR=/pro/web/cgi-bin
-CGIFILE=mjr-mvhs.cgi
-LIBDIR=/home/mjr/lib
+#WWWDIR=/pro/web/web/people/mjr/mvhs
+#CGIDIR=/pro/web/cgi-bin
+#CGIFILE=mjr-mvhs.cgi
+#LIBDIR=/home/mjr/lib
 
-#WWWDIR=/home/divcom/mjr/public_html/mvhs
-#CGIDIR=/home/divcom/mjr/public_html/cgi-bin
-#CGIFILE=mvhsaid
-#LIBDIR=/home/divcom/mjr/lib
+WWWDIR=/home/divcom/mjr/public_html/mvhs
+CGIDIR=/home/divcom/mjr/public_html/cgi-bin
+CGIFILE=mvhsaid
+LIBDIR=/home/divcom/mjr/lib
 
 all:	alpha grad new goners pages books dbtar adrfile home submit
-	( cd $(WWWDIR) ; chmod 0644 * ; /usr/local/bin/webupdate )
-#	( cd $(WWWDIR) ; chmod 0644 * )
+#	( cd $(WWWDIR) ; chmod 0644 * ; /usr/local/bin/webupdate )
+	( cd $(WWWDIR) ; chmod 0644 * )
 
 adrfile:	$(WWWDIR)/mvhs.adr
 $(WWWDIR)/mvhs.adr:	mvhs.adr
@@ -46,8 +46,8 @@ pages:	$(WWWDIR)/pages.html
 $(WWWDIR)/pages.html:	alpha.adr
 	./mv_www_html alpha.adr $(WWWDIR)/pages.html
 
-home:	$(WWWDIR)/home.html
-$(WWWDIR)/home.html:	$(WWWDIR)/.home.include mv_home_html
+home:	$(WWWDIR)/index.html
+$(WWWDIR)/index.html:	$(WWWDIR)/.home.include mv_home_html
 	./mv_home_html -i
 
 submit:	$(WWWDIR)/add.html
@@ -65,13 +65,13 @@ books:	alpha.adr
 	touch books
 
 gsort.adr:	goners.adr
-	sort -t: +3 -5 goners.adr > gsort.adr
+	sort -t\; +3 -6 goners.adr > gsort.adr
 
 alpha.adr:	mvhs.adr
-	sort -t: +3 -5 mvhs.adr > alpha.adr
+	sort -t\; +3 -6 mvhs.adr > alpha.adr
 
 class.adr:	mvhs.adr
-	sort -t: +6 -7 +3 -5 mvhs.adr > class.adr
+	sort -t\; +7 -8 +3 -6 mvhs.adr > class.adr
 
 dbtar:	$(WWWDIR)/mvhs_db.tar
 $(WWWDIR)/mvhs_db.tar:
