@@ -2,11 +2,11 @@
 #     FILE: aid_util.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: perl library routines for the Alumni Internet Directory
-#      $Id: aid_util.pl,v 4.19 1999/02/10 20:32:44 mradwin Exp mradwin $
+#      $Id: aid_util.pl,v 4.20 1999/02/10 20:55:21 mradwin Exp mradwin $
 #
 
 $aid_util'rcsid =
- '$Id: aid_util.pl,v 4.19 1999/02/10 20:32:44 mradwin Exp mradwin $';
+ '$Id: aid_util.pl,v 4.20 1999/02/10 20:55:21 mradwin Exp mradwin $';
 $aid_util'caldate = &aid_caldate(time); #'#
 
 # ----------------------------------------------------------------------
@@ -45,6 +45,7 @@ require 'aid_config.pl';
  "Awalt,"            . $aid_util'config{'master_path'} . "class/awalt.html",
  "Web&nbsp;Pages,"   . $aid_util'config{'master_path'} . "pages.html",
  "Recent&nbsp;Additions," . $aid_util'config{'master_path'} . "recent.html",
+ "Search,"           . $aid_util'config{'search_cgi'},
 );
 
 @aid_util'second_idx = #'#

@@ -2,7 +2,7 @@
 #     FILE: aid_config.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: configuration for Alumni Internet Directory
-#      $Id: aid_config.pl,v 1.4 1999/02/05 18:45:30 mradwin Exp mradwin $
+#      $Id: aid_config.pl,v 1.5 1999/02/05 18:50:29 mradwin Exp mradwin $
 #
 
 # radwin.org (FreeBSD 2.2.2) configuration
@@ -17,6 +17,7 @@
      'master_srv',   'www.radwin.org',
      'master_path',  '/mvhs-alumni/',
      'image_path',   '/images/',
+     'search_cgi',   '/cgi-bin/nph-aid-search',
      'vcard_cgi',    '/cgi-bin/nph-vcard',
      'goners_cgi',   '/cgi-bin/nph-mvhsaid/gone',
      'download_cgi', '/cgi-bin/nph-mvhsaid/mvhs.txt',
