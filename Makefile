@@ -2,7 +2,7 @@
 #     FILE: Makefile
 #   AUTHOR: Michael J. Radwin
 #    DESCR: Makefile for building the Alumni Internet Directory
-#      $Id: Makefile,v 3.84 1999/05/19 01:35:58 mradwin Exp mradwin $
+#      $Id: Makefile,v 3.85 1999/05/19 17:28:18 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -46,6 +46,7 @@ TARFILES= \
 	$(TAR_AIDDIR)/COPYING \
 	$(TAR_AIDDIR)/Makefile \
 	$(TAR_AIDDIR)/bin/aid_* \
+	$(TAR_AIDDIR)/bin/generic_config.pl \
 	$(TAR_AIDDIR)/bin/$(SCHOOL)_config.pl \
 	$(TAR_AIDDIR)/bin/$(SCHOOL)aid \
 	$(TAR_AIDDIR)/bin/nph-aid-search \
