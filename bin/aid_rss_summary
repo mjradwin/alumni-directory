@@ -4,7 +4,7 @@
 #     FILE: aid_rss_summary.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: creates an RDF Site Summary for the Directory
-#      $Id: aid_rss_summary,v 1.4 1999/07/06 18:47:59 mradwin Exp mradwin $
+#      $Id: aid_rss_summary,v 1.5 1999/07/06 18:50:27 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -56,7 +56,7 @@ die "corrupt/missing _class key!"
 $newest = 0;
 if (defined $DB{'_nextid'})
 {
-    for ($i = $DB{'_nextid'} - 1; $i > 0; $i++)
+    for ($i = $DB{'_nextid'} - 1; $i > 0; $i--)
     {
 	if (defined $DB{$i})
 	{
