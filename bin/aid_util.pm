@@ -2,7 +2,7 @@
 #     FILE: aid_util.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: perl library routines for the Alumni Internet Directory
-#      $Id: aid_util.pl,v 5.49 1999/12/02 17:27:15 mradwin Exp mradwin $
+#      $Id: aid_util.pl,v 5.50 1999/12/23 00:26:15 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -373,8 +373,7 @@ sub aid_sendmail
     $message =
 "From: $from <$return_path>
 To: $to
-${cc}X-Sender: $ENV{'USER'}\@$ENV{'HOST'}
-Organization: $config{'school'} Alumni Internet Directory
+${cc}Organization: $config{'school'} Alumni Internet Directory
 Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: QUOTED-PRINTABLE
 Subject: $subject
@@ -384,29 +383,29 @@ Subject: $subject
     my($smtp) = Net::SMTP->new($config{'smtp_svr'}, Timeout => 5); 
     unless ($smtp->mail($return_path)) {
 	warn "smtp failure for @targets\n";
-        return;
+        return 0;
     }
     foreach (@targets) {
 	unless($smtp->to($_)) {
 	    warn "smtp failure for @targets\n";
-            return;
+            return 0;
         }
     }
     unless($smtp->data()) {
 	warn "smtp failure for @targets\n";
-        return;
+        return 0;
     }
     unless($smtp->datasend($message)) {
 	warn "smtp failure for @targets\n";
-        return;
+        return 0;
     }
     unless($smtp->dataend()) {
 	warn "smtp failure for @targets\n";
-        return;
+        return 0;
     }
     unless($smtp->quit) {
 	warn "smtp failure for @targets\n";
-        return;
+        return 0;
     }
 }
 
