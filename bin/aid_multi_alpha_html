@@ -2,7 +2,7 @@
 
 #
 # does the html verbose pages
-# $Id: aid_alpha2_html,v 3.10 1998/05/17 05:18:53 mradwin Exp mradwin $
+# $Id: aid_alpha2_html,v 3.11 1998/05/20 23:16:32 mradwin Exp mradwin $
 #
 
 require 'aid_util.pl';
@@ -78,7 +78,7 @@ sub html_pre_entry {
     $needsanchor = ($do_html_p && (($a_name ne '') ||
 				   ($rec{'homepage'} ne ''))) ? 1 : 0;
     $retval = '';
-    $retval .= "<a href=\"$cgi?about=$rec{'id'}\">$info_gif</a>" if $do_html_p;
+    $retval .= "<a href=\"$cgi/dyn?about=$rec{'id'}\">$info_gif</a>" if $do_html_p;
     $retval .= "<a" if $needsanchor;
     $retval .= " name=\"$a_name\"" if ($do_html_p && $a_name ne '');
     $retval .= " href=\"$rec{'homepage'}\""

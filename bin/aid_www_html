@@ -37,7 +37,7 @@ while(<DATA>) {
     $fullname = &fullname(*rec);
     ($affil,$len) = &affiliate(*rec,1,'foob');
 
-    print FMTOUT "<a href=\"$cgi?about=$rec{'id'}\">$info_gif</a>";
+    print FMTOUT "<a href=\"$cgi/dyn?about=$rec{'id'}\">$info_gif</a>";
     print FMTOUT "<a name=\"$rec{'alias'}\"";
     print FMTOUT ' ' x (8 - (length($rec{'alias'})));
     print FMTOUT " href=\"$rec{'homepage'}\"";

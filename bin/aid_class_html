@@ -2,7 +2,7 @@
 
 #
 # does the html version of the grad-date address list
-# $Id: aid_class_html,v 3.10 1998/05/17 05:18:53 mradwin Exp mradwin $
+# $Id: aid_class_html,v 3.11 1998/05/20 23:26:59 mradwin Exp mradwin $
 #
 
 require 'aid_util.pl';
@@ -103,7 +103,7 @@ while(<DATA>) {
     }
 
     print FMTOUT ' ';
-    $opt_t || print FMTOUT "<a href=\"$cgi?about=$rec{'id'}\">$info_gif</a>";
+    $opt_t || print FMTOUT "<a href=\"$cgi/dyn?about=$rec{'id'}\">$info_gif</a>";
     $opt_t || print FMTOUT "<a name=\"$rec{'alias'}\"";
     $opt_t || print FMTOUT " href=\"$rec{'homepage'}\"" if $rec{'homepage'} ne '';
     $opt_t || print FMTOUT ">";
