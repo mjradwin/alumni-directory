@@ -2,7 +2,7 @@
 #     FILE: Makefile
 #   AUTHOR: Michael J. Radwin
 #    DESCR: Makefile for building the Alumni Internet Directory
-#      $Id: Makefile,v 3.43 1999/01/22 21:34:33 mradwin Exp mradwin $
+#      $Id: Makefile,v 3.44 1999/01/25 16:49:51 mradwin Exp mradwin $
 #
 
 WWWROOT=/home/web/radwin.org
@@ -110,14 +110,6 @@ $(LINKS):	$(MVHSDIR)/data/links.include $(BIN_HOME)
 	$(BIN_HOME) -p12 -i $(MVHSDIR)/data/links.include \
 		-t 'Other MVHS and Awalt websites' \
 		$(LINKS)
-
-NICKNAMES=$(WWWDIR)/books/HEADER.html
-nicknames:	$(NICKNAMES)
-$(NICKNAMES):	$(MVHSDIR)/data/nicknames.include $(BIN_HOME)
-	mkdir -p $(WWWDIR)/books
-	$(BIN_HOME) -p13 -i $(MVHSDIR)/data/nicknames.include \
-		-t 'Download Nickname and Address Book files' \
-		$(NICKNAMES)
 
 FAQ=$(WWWDIR)/etc/faq.html
 faq:	$(FAQ)
