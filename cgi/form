@@ -4,7 +4,7 @@
 #     FILE: mvhsaid.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: MVHS Alumni Internet Directory CGI interface
-#      $Id: mvhsaid,v 1.30 1997/10/06 15:31:04 mjr Exp $
+#      $Id: mvhsaid,v 1.31 1997/10/16 21:19:40 mjr Exp mjr $
 #
 
 require 'mv_util.pl';
@@ -22,7 +22,7 @@ $dbfile = &mv_config('wwwdir') . "mvhs.adr";
 if (defined($in{'version'})) {
     select(STDOUT);  $| = 1;
     print "Content-type: text/plain\n\n";
-    print '$Id: mvhsaid,v 1.30 1997/10/06 15:31:04 mjr Exp $', "\n";
+    print '$Id: mvhsaid,v 1.31 1997/10/16 21:19:40 mjr Exp mjr $', "\n";
     exit(0);
 }
 
@@ -139,7 +139,7 @@ sub confirm_submission {
     print &common_html_hdr(-1,1);
 
     print "<br>\n";
-    print &tableheader("Please confirm your information", 1, "ffff99", 1);
+    print &tableheader("Please confirm your submission", 1, "ffff99", 1);
     print "
 <p>Please confirm that all of the below information is correct.  If you
 have made any mistakes, select the <strong>Revise</strong> button to edit
@@ -193,9 +193,10 @@ EOM
     print &common_html_hdr(-1,1);
 
     print "<br>\n";
-    print &tableheader("Your submission is queued", 1, "ffff99", 1);
-    print "<p>Thank you!  The following information is queued for submission\n";
-    print "in the MVHS Alumni Internet Directory:</p>\n";
+    print &tableheader("Your submission is confirmed and queued", 1, "ffff99", 1);
+    print "<p>Thank you for your submission!\n";
+    print "The entry below has been added to the submission queue\n";
+    print "and will be processed in about a day:</p>\n";
 
     print &about_text(";;$in{'request'};$in{'last'};$in{'first'};$in{'married'};$in{'school'};$in{'grad'};$in{'mail'};$in{'homepage'};$in{'location'}",1,1), "\n";
 
