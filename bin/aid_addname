@@ -1,6 +1,6 @@
 #!/usr/bin/perl -w
 
-# $Id: aid_addname,v 3.13 1998/05/19 20:36:52 mradwin Exp mradwin $
+# $Id: aid_addname,v 3.14 1998/10/14 16:03:56 mradwin Exp mradwin $
 
 require 'getopts.pl';
 require 'aid_util.pl';
@@ -14,16 +14,13 @@ $usage = 'usage: aid_addname [-hwm] [mailspoolfile]
 &Getopts('hmw') || die "$usage\n";
 $opt_h && die "$usage\n";
 $opt_h = $opt_h;                # avoid warning
-$opt_m = $opt_m;                # avoid warning
 $opt_w = $opt_w;                # avoid warning
 
 $echo = &aid_config('echo');
-$cat  = &aid_config('cat');
 $cp   = &aid_config('cp');
 $make = &aid_config('make');
 
 -x $echo || die "$echo is not executable!";
--x $cat  || die "$cat  is not executable!";
 -x $cp   || die "$cp   is not executable!";
 -x $make || die "$make is not executable!";
 
@@ -34,20 +31,8 @@ $make = &aid_config('make');
 print "done!\n";
 exit(0);
 
-# make the "what's new" text fit in 55 columns.
-format NEWSOUT =
-^<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<~~
-$message
-.
-
-format STDOUT =
-^<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<~~
-$message
-.
-
 sub readspool {
     local($spoolFile) = @_;
-    local($[) = 0;
     local($_);
     local($id,$logFile,$newsFile,*SPOOL);
     local($newsp,$browserLog,$time);
@@ -77,23 +62,12 @@ sub readspool {
 		open(NEWSOUT, ">$newsFile") ||
 		    die "Can't open $newsFile: $!\n";
 		print "MESSAGE $newsFile\n";
-		$message = '';
 		while(<SPOOL>) {
 		    last if /^_AID_END_MESSAGE_/;
-		    $message .= $_;
+		    print STDOUT $_;
+		    print NEWSOUT $_;
 		}
-		$message_bak = $message;
-		write(NEWSOUT);	# destructively modifies message
-		$message = $message_bak;
-		write(STDOUT);
 		close(NEWSOUT);
-
-#		$logFile = &aid_config('aiddir') . "logs/additions.log";
-#		system "$echo 'MESSAGE $newsFile' >> $logFile"
-#		    || die "failed to $echo 'MESSAGE $newsFile' >> $logFile: $!\n";
-#		system "$cat $newsFile >> $logFile"
-#		    || die "failed to $cat $newsFile >> $logFile: $!\n";
-
 		$newsp = 1;	# they had a What's New? message
 	    }
 	}
