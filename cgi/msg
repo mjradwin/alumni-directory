@@ -4,7 +4,7 @@
 #     FILE: msg.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: Alumni Internet Directory update redirector
-#      $Id: msg,v 1.3 2003/02/20 19:09:57 mradwin Exp mradwin $
+#      $Id: msg,v 1.4 2003/02/20 19:11:36 mradwin Exp mradwin $
 #
 #   Copyright (c) 2003  Michael John Radwin
 #
@@ -108,8 +108,10 @@ _EOHTML_
 
     my $name = email_name();
     my $school = &aid_config('short_school');
-    my $status = &aid_sendmail_v2
-	(
+
+    my $status = 0;
+    for (my $i = 0; $status == 0 && $i < 3; $i++) {
+	$status = &aid_sendmail_v2(
 	 &aid_config('devnull_email'),
 	 "\"$from via $school Web Form\"",
 	 $subject,
@@ -117,6 +119,18 @@ _EOHTML_
 	 $message,
 	 $name,
 	 $rec{'e'});
+    }
+
+    &aid_cgi_die('ERROR: Unable to send e-mail',
+		 "We're sorry, we were unable to send e-mail to\n" .
+		 "<b>" . aid_protect_email($rec{'e'}) . "</b>.\n" .
+		 "<p>This may be a problem with our\n" .
+		 "server or perhaps with the target e-mail address.\n" .
+		 "Please try again in a few minutes.<p>If you continue\n" .
+		 "to get this error, please send e-mail to <a\n" .
+		 "href=\"mailto:" . &aid_config('admin_email') .
+		 "\">" . &aid_config('admin_email') . "</a>\n")
+	if $status == 0;
 
     print "Content-Type: text/html\015\012\015\012";
     print &aid_common_html_hdr(9, 'Message Sent', 1);
