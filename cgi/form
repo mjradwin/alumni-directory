@@ -4,7 +4,7 @@
 #     FILE: mvhsaid.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: MVHS Alumni Internet Directory CGI interface
-#      $Id: mvhsaid,v 3.29 1998/10/15 22:58:22 mradwin Exp mradwin $
+#      $Id: mvhsaid,v 3.30 1998/10/17 21:01:55 mradwin Exp mradwin $
 #
 
 require 'aid_util.pl';
@@ -24,7 +24,7 @@ if (defined($ENV{'PATH_INFO'}) && $ENV{'PATH_INFO'} =~ m,^/vcard/,) {
     $in{'vcard'} =~ s,^/vcard/(\d+).*$,$1,;
 }
 
-$rcsid = '$Id: mvhsaid,v 3.29 1998/10/15 22:58:22 mradwin Exp mradwin $'; #'fnt
+$rcsid = '$Id: mvhsaid,v 3.30 1998/10/17 21:01:55 mradwin Exp mradwin $'; #'fnt
 
 # special flags: version, update, vcard, about
 #
@@ -296,7 +296,7 @@ the Directory.  Processing your submission can take up to 48 hours.</p>
 <p>Email will be sent to <code><strong>$in{'email'}</strong></code>
 confirming receipt of this submission when it it processed.
 See \"<a href=\"" . &aid_config('master_path') . 
-"faq.html#submit\">What happens when I submit my entry?</a>\"
+"etc/faq.html#submit\">What happens when I submit my entry?</a>\"
 for behind-the-scenes details.</p>
 
 <p>You might also be interested in joining the 
@@ -390,7 +390,7 @@ sub send_upd_notfound {
     print "<p>Unable to find existing entry with email address\n";
     print "<code><strong>$notfound</strong></code>.</p>\n";
     print "<p>Please check the spelling and <a href=\""
-	. &aid_config('master_path') .  "add.html\">try again</a>.</p>\n";
+	. &aid_config('master_path') .  "add/\">try again</a>.</p>\n";
 
     print &common_html_ftr(-1);
 }
