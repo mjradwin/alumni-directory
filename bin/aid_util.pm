@@ -2,11 +2,11 @@
 #     FILE: aid_util.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: perl library routines for the Alumni Internet Directory
-#      $Id: aid_util.pl,v 1.89 1998/01/05 18:30:11 mjr Exp mjr $
+#      $Id: aid_util.pl,v 1.90 1998/01/05 20:59:07 mjr Exp mjr $
 #
 
 $aid_util'rcsid =
- '$Id: aid_util.pl,v 1.89 1998/01/05 18:30:11 mjr Exp mjr $';
+ '$Id: aid_util.pl,v 1.90 1998/01/05 20:59:07 mjr Exp mjr $';
 
 # ----------------------------------------------------------------------
 # CONFIGURATION
@@ -33,7 +33,11 @@ $aid_util'rcsid =
      'aiddir',       '/home/divcom/mjr/mvhs/',
      'sendmail',     '/usr/lib/sendmail',
      'mailprog',     '/usr/ucb/mail',
-     'mailto',       "mjr\@divcom",
+     'echo',         '/usr/bin/echo',
+     'cat',          '/usr/local/gnu/bin/cat',
+     'cp',           '/usr/local/gnu/bin/cp',
+     'make',         '/usr/local/gnu/bin/make',
+     'mailto',       "mjr\@localhost",
      'mailsubj',     'MVHSAID',
      'spoolfile',    '/var/spool/mail/mjr',
      'rcsid',        "$aid_util'rcsid",
@@ -64,22 +68,26 @@ $aid_util'rcsid =
 
 # foo.metamorphosis.net configuration
 #%aid_util'config =   #'font-lock
-#    ('admin_name',   "Michael John Radwin",
-#     'admin_email',  "mjr\@acm.org",
-#     'admin_school', "Mountain View High School, Class of '93",
-#     'admin_phone',  "408-536-2554",
-#     'admin_url',    "http://umop-ap.com/~mjr/",
-#     'master_srv',   "metamorphosis.net",
-#     'master_path',  "/~mjr/mvhs/",
-#     'cgi_path',     "/~mjr/cgi-bin/mvhsaid.cgi",
-#     'index_page',   "index.html",
-#     'wwwdir',       "/home/mjr/public_html/mvhs/",
-#     'aiddir',       "/home/mjr/mvhs/",
-#     'sendmail',     "/usr/sbin/sendmail",
-#     'mailprog',     "/usr/bin/mail",
-#     'mailto',       "mjr\@foo",
-#     'mailsubj',     "MVHSAID",
-#     );
+#     ('admin_name',   'Michael John Radwin',
+#      'admin_email',  "mjr\@acm.org",
+#      'school',       'BrownCS',
+#      'admin_school', "BrownCS, Class of '97",
+#      'admin_phone',  '408-536-2554',
+#      'admin_url',    'http://slimy.com/~mjr/',
+#      'master_srv',   'metamorphosis.net',
+#      'master_path',  '/~mjr/browncs/',
+#      'cgi_path',     '/~mjr/cgi-bin/browncsaid.cgi',
+#      'index_page',   'index.html',
+#      'wwwdir',       '/home/mjr/public_html/browncs/',
+#      'newsdir',      '/home/mjr/public_html/browncs/whatsnew/',
+#      'aiddir',       '/home/mjr/browncs/',
+#      'sendmail',     '/usr/sbin/sendmail',
+#      'mailprog',     '/usr/bin/mail',
+#      'mailto',       "mjr\@foo",
+#      'mailsubj',     'MVHSAID',
+#      'spoolfile',    '/var/mail/mjr',
+#      'rcsid',        "$aid_util'rcsid",
+#      );
 
 @aid_util'page_idx = #'font-lock
     ("Home,"                  . $aid_util'config{'master_path'},                 #'
