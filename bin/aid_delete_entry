@@ -1,6 +1,6 @@
 #!/usr/local/bin/perl -w
 
-# $Id: aid_delete_entry,v 1.8 2002/03/07 23:29:39 mradwin Exp mradwin $
+# $Id: aid_delete_entry,v 1.9 2003/03/14 23:30:26 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -24,12 +24,13 @@ $dirname =~ s,/[^/]+$,,;
 unshift(@INC, $dirname);
 
 use DB_File;
+use Fcntl qw(:DEFAULT :flock);
 
 require 'aid_util.pl';
 use Getopt::Std;
 
 $0 =~ s,.*/,,;  # basename
-$usage = "usage: $0 [-hd] infile.db userid
+my $usage = "usage: $0 [-hd] infile.db userid
     -h        Display usage information.
     -d        Display debug diffs.
 ";
@@ -41,11 +42,22 @@ $opt_d = $opt_d;		# avoid warning
 defined $ARGV[0] || die "$usage\n";
 defined $ARGV[1] || die "$usage\n";
 
-$dbmfile = shift;
-$db = tie(%DB, 'DB_File', $dbmfile, O_RDWR|O_CREAT, 0644, $DB_File::DB_HASH)
+my $dbmfile = shift;
+
+my(%DB);
+my($db) = tie(%DB, 'DB_File', $dbmfile, O_CREAT|O_RDWR, 0644,
+	      $DB_File::DB_HASH)
     or die "$dbmfile: $!\n";
 
-$id = shift;
+my($fd) = $db->fd;
+open(DB_FH, "+<&=$fd") || die "dup $!";
+unless (flock (DB_FH, LOCK_EX)) { die "flock: $!" }
+
+my $logFile = &aid_config('aiddir') . "logs/additions.log";
+open(LOG, ">>$logFile") || die "$0: can't open $logFile: $!\n";
+select(LOG); $| = 1; select(STDOUT);
+
+my $id = shift;
 if ($id =~ /^\d+$/)
 {
     die "$0: no key $id in $dbmfile\n"
@@ -54,7 +66,7 @@ if ($id =~ /^\d+$/)
 }
 elsif ($id =~ /\@/)
 {
-    $email = "\L$id\E";
+    my $email = "\L$id\E";
     die "$0: no key \L$id\E in $dbmfile\n"
 	unless defined $DB{$email} && $DB{$email} ne '';
 
@@ -70,15 +82,16 @@ else
 }
 
 delete $DB{$id};
-$email = "\L$rec{'e'}\E";
+my $email = "\L$rec{'e'}\E";
 delete $DB{$email};
 
-local($joined) = &aid_ampersand_join(*rec);
+my $joined = &aid_ampersand_join(*rec);
 warn "$0: deleting $joined\n";
+print LOG "del - $joined\n";
 
 # rebuilding the secondary keys will reconstruct _nextid.  Let's keep it
 # so we don't have duplicate people with the same id
-$prevnextid = $DB{'_nextid'};
+my $prevnextid = $DB{'_nextid'};
 my @diffs = &aid_rebuild_secondary_keys(\%DB,0);
 $DB{'_nextid'} = $prevnextid;
 $db->sync;
@@ -92,7 +105,13 @@ if ($opt_d)
 }
 
 warn "$0: delete successful\n";
+
+$db->sync;
+flock(DB_FH, LOCK_UN);
 undef $db;
 untie(%DB);
+close(DB_FH);
+
+close(LOG);
 exit 0;
 
