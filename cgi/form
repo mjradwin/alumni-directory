@@ -4,7 +4,7 @@
 #     FILE: form.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: Alumni Internet Directory CGI form-submission interface
-#      $Id: form,v 5.25 2000/05/30 23:15:01 mradwin Exp mradwin $
+#      $Id: form,v 5.26 2000/05/31 00:21:42 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -36,7 +36,7 @@ use CGI::Carp qw(fatalsToBrowser);
 # configuration
 $dbmfile = &aid_config('dbmfile');
 
-$rcsid = '$Id: form,v 5.25 2000/05/30 23:15:01 mradwin Exp mradwin $'; #'fnt
+$rcsid = '$Id: form,v 5.26 2000/05/31 00:21:42 mradwin Exp mradwin $'; #'fnt
 
 $listing_upd_title = 'Modify Your Directory Listing';
 $listing_upl_title = 'Select a Listing to Modify';
@@ -409,9 +409,7 @@ http://" . &aid_config('master_srv') . &aid_config('verify_cgi') . "?$randkey
 2. If the page asks you to enter your 8-letter verification
 code, please enter this code in the box provided:
 
-  *** VERIFICATION CODE ***
-          $randkey
-  *** VERIFICATION CODE ***
+$randkey
 
 3. Then click on the \"Verify my e-mail address\" button.
 
@@ -436,7 +434,7 @@ http://" . &aid_config('master_srv') . &aid_config('master_path') . "\n";
     &aid_sendmail(&aid_config('admin_email'),
 		  &aid_config('short_school') . ' Alumni Robot',
 		  &aid_config('short_school') .
-		  ' Alumni Internet Directory E-mail Verification',
+		  " Alumni Internet Directory Verification [$randkey]",
 		  $mailbody,$name,$cgi{'e'})
 	|| &aid_cgi_die('aid_sendmail failed',
 			"Unable to process form submission.\n" .
