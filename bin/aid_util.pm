@@ -2,7 +2,7 @@
 #     FILE: mv_util.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: perl library routines for the MVHS Alumni Internet Directory
-#      $Id: mv_util.pl,v 1.64 1997/12/20 02:44:20 mjr Exp mjr $
+#      $Id: mv_util.pl,v 1.65 1997/12/20 21:34:13 mjr Exp mjr $
 #
 
 CONFIG: {
@@ -449,7 +449,7 @@ sub today {
     package mv_util;
     require 'ctime.pl';
 
-    local($today) = &ctime(time);
+    local($today) = &ctime($_[0] ? $_[0] : time);
     chop $today;
     return $today;
 }
