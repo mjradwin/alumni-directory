@@ -2,11 +2,12 @@
 
 #
 # mails a welcome or update note to everyone in targets.adr
-# $Id$
+# $Id: mv_welcome,v 1.22 1997/12/22 22:31:42 mjr Exp mjr $
 #
 
 require 'mv_util.pl';
 require 'getopts.pl';
+require 'ctime.pl';
 
 $usage = 'usage: mv_welcome [-h] [-u | -c] targets.adr
     -h        Display usage information.
@@ -24,7 +25,7 @@ $subject = ($opt_c) ? 'Confirming your MVHS Alumni Internet Directory entry' :
     ($opt_u) ? 'Your MVHS Alumni Internet Directory entry is updated' : 
     'Welcome to the MVHS Alumni Internet Directory';
 
-$today = &today;
+$today = &ctime(time);
 open(LOG,">>$logfile") || die "Can't open $logfile: $!\n";
 open(TARGET,$ARGV[0]) || die "Can't open $ARGV[0]: $!\n";
 

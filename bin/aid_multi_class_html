@@ -2,12 +2,13 @@
 
 #
 # does the html verbose pages
-# $Id: mv_verbose_html,v 1.7 1997/12/22 23:26:42 mjr Exp mjr $
+# $Id: mv_verbose_html,v 1.8 1997/12/22 23:37:25 mjr Exp mjr $
 #
 
 require 'mv_util.pl';
 require 'tableheader.pl';
 require 'getopts.pl';
+require 'ctime.pl';
 
 $usage = 'usage: mv_verbose_html [-h] infile.adr
     -h        Display usage information.
@@ -124,7 +125,7 @@ sub write_entry {
     print FMTOUT "<dt>Location: <strong>$location</strong>\n"
 	if $location ne '';
     print FMTOUT "<dt>Updated: ";
-    print FMTOUT "<strong>" . &today($time) . "</strong>\n";
+    print FMTOUT "<strong>" . &ctime($time) . "</strong>\n";
 
     $message = &mv_get_usertext($id);
     if ($message ne '') {
