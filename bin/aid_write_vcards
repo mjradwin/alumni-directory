@@ -1,0 +1,42 @@
+#!/usr/bin/perl -w
+
+# $Id$
+
+require 'aid_util.pl';
+require 'getopts.pl';
+
+$0 =~ s,.*/,,;  # basename
+$usage = "usage: $0 [-h] infile.db path-to-create-in
+    -h        Display usage information.
+";
+
+&Getopts('h') || die "$usage\n";
+$opt_h && die "$usage\n";
+$opt_h = $opt_h;		# avoid warning
+
+$ARGV[0] || die "$usage\n";
+$ARGV[1] || die "$usage\n";
+
+$ARGV[0] =~ s/\.db$//;
+die "can't open $ARGV[0].db\n" unless -r "$ARGV[0].db";
+
+dbmopen(DB, $ARGV[0], 0444);
+
+while (($key,$val) = each %DB)
+{
+    next unless $key =~ /^\d+$/;
+    %rec = &aid_db_unpack_rec($key,$val);
+    next unless $rec{'valid'};
+    $filename = "$ARGV[1]/$rec{'id'}.vcf";
+
+    open(VCARD,">$filename") || die "can't open $filename: $!\n";
+    print VCARD &aid_vcard_text(*rec);
+    close(VCARD);
+
+    utime $rec{'time'}, $rec{'time'}, $filename;
+    print STDERR ".";
+}
+print STDERR "\n";
+
+dbmclose(DB);
+exit 0;
