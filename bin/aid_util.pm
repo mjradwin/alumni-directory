@@ -2,7 +2,7 @@
 #     FILE: aid_util.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: perl library routines for the Alumni Internet Directory
-#      $Id: aid_util.pl,v 5.31 1999/06/29 21:21:36 mradwin Exp mradwin $
+#      $Id: aid_util.pl,v 5.32 1999/06/29 21:51:31 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -359,7 +359,6 @@ sub aid_sendmail
 "From: $from <$return_path>\
 To: $to\
 X-Sender: $ENV{'USER'}\@$ENV{'HOST'}\
-Disposition-Notification-To: $from <$return_path>\ 
 Organization: $config{'school'} Alumni Internet Directory\
 Content-Type: text/plain; charset=ISO-8859-1\
 Content-Transfer-Encoding: 8bit\
