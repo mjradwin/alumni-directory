@@ -2,38 +2,57 @@
 #     FILE: generic_config.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: configuration variables for Alumni Internet Directory
-#      $Id: generic_config.pl,v 5.16 2000/05/30 23:45:15 mradwin Exp mradwin $
+#      $Id: generic_config.pl,v 5.17 2000/05/31 01:15:16 mradwin Exp mradwin $
 #
-#   Copyright (c) 1995-1999  Michael John Radwin
+# Copyright (c) 2003  Michael J. Radwin.
+# All rights reserved.
 #
-#   This program is free software; you can redistribute it and/or modify
-#   it under the terms of the GNU General Public License as published by
-#   the Free Software Foundation; either version 2 of the License, or
-#   (at your option) any later version.
+# Redistribution and use in source and binary forms, with or
+# without modification, are permitted provided that the following
+# conditions are met:
 #
-#   This program is distributed in the hope that it will be useful,
-#   but WITHOUT ANY WARRANTY; without even the implied warranty of
-#   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-#   GNU General Public License for more details.
+#  * Redistributions of source code must retain the above
+#    copyright notice, this list of conditions and the following
+#    disclaimer.
 #
-#   You should have received a copy of the GNU General Public License
-#   along with this program; if not, write to the Free Software
-#   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+#  * Redistributions in binary form must reproduce the above
+#    copyright notice, this list of conditions and the following
+#    disclaimer in the documentation and/or other materials
+#    provided with the distribution. 
 #
+#  * Neither the name of the High School Alumni Internet Directory
+#    nor the names of its contributors may be used to endorse or
+#    promote products derived from this software without specific
+#    prior written permission.
+#
+# THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND
+# CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES,
+# INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF
+# MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+# DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR
+# CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+# SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT
+# NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+# LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+# HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+# CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR
+# OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+# SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 $aid_util::rcsid =
- '$Id: generic_config.pl,v 5.16 2000/05/30 23:45:15 mradwin Exp mradwin $';
+ '$Id: generic_config.pl,v 5.17 2000/05/31 01:15:16 mradwin Exp mradwin $';
 
-# Generic HS on bogus-domain.org (FreeBSD 2.2.2) configuration
+# Generic HS on example.com (FreeBSD 2.2.2) configuration
 %aid_util::config =  
     (
      'school',       'Generic High School',
      'short_school', 'Generic',
      'admin_name',   'Jane Smith',
-     'admin_email',  "generic-alumni-admin\@bogus-domain.org",
+     'admin_email',  "generic-alumni-admin\@example.com",
+     'devnull_email',"dev-null\@example.com",
      'admin_school', "Generic High School, Class of '93",
-     'admin_url',    'http://www.bogus-domain.org/~jsmith/',
-     'master_srv',   'www.bogus-domain.org',
+     'admin_url',    'http://www.example.com/~jsmith/',
+     'master_srv',   'www.example.com',
      'master_path',  '/~jsmith/generic/',
      'verify_cgi',   '/~jsmith/generic/bin/verify',
      'remove_cgi',   '/~jsmith/generic/bin/remove',
@@ -47,15 +66,17 @@ $aid_util::rcsid =
      'update_cgi',   '/~jsmith/generic/bin/form/upd',
      'confirm_cgi',  '/~jsmith/generic/bin/form/cnf',
      'yab_cgi',      '/~jsmith/generic/bin/yab',
+     'message_cgi',  '/~jsmith/generic/bin/msg',
      'index_page',   'index.html',
      'wwwdir',       '/home/jsmith/public_html/generic/',
      'dbmfile',      '/home/jsmith/public_html/generic/master.db',
      'staging',      '/home/jsmith/public_html/generic/staging.db',
      'reunions',     '/home/jsmith/public_html/generic/reunions.db',
+     'limit',        '/home/jsmith/public_html/generit/limit.db',
      'aiddir',       '/home/jsmith/generic/',
-     'smtp_svr',     'smtp.bogus-domain.net',
+     'smtp_svr',     'smtp.example.com',
      'make',         '/usr/bin/make',
-     'mailto',       "generic-submissions\@bogus-domain.org",
+     'mailto',       "generic-submissions\@example.com",
      'spoolfile',    '/var/mail/jsmith',
      'rcsid',        "$aid_util::rcsid",
      'html_ad', '',
