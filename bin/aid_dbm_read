@@ -1,6 +1,6 @@
 #!/usr/bin/perl -w
 
-# $Id: aid_dbm_read,v 1.6 1999/02/10 20:45:40 mradwin Exp mradwin $
+# $Id: aid_dbm_read,v 1.7 1999/02/16 19:16:55 mradwin Exp mradwin $
 
 require 'aid_util.pl';
 require 'getopts.pl';
@@ -8,8 +8,8 @@ require 'getopts.pl';
 $0 =~ s,.*/,,;  # basename
 $usage = "usage: $0 [-hac] [-t adr] infile.db [key]
     -h        Display usage information.
-    -a        Display all, sorted by alpha.
-    -c        Display all, sorted by class.
+    -a        Display all valid, sorted by alpha.
+    -c        Display all valid, sorted by class.
     -t adr    Write text address file to <adr>.
 ";
 
@@ -28,21 +28,22 @@ dbmopen(DB, $ARGV[0], 0444);
 if ($opt_t)
 {
     open(DATA,">$opt_t") || die "can't open $opt_t: $!\n";
+
+    # sort the numeric keys by id
+    @ids = ();
     while (($key,$val) = each %DB)
     {
-	next unless $key =~ /^\d+$/;
-	$ids{sprintf("%05d",$key)} = $val;
+	push(@ids,$key) if $key =~ /^\d+$/;
     }
 
-    foreach (sort keys %ids)
+    foreach (sort { $a <=> $b } @ids)
     {
-	%rec = &aid_db_unpack_rec(int($_),$ids{$_});
+	%rec = &aid_db_unpack_rec($_,$DB{$_});
 	print DATA &aid_join(*rec), "\n";
     } 
     close(DATA);
-    undef %ids;
 }
-elsif ($ARGV[1])
+elsif (defined $ARGV[1])
 {
     &display_key_val("\L$ARGV[1]\E",$DB{"\L$ARGV[1]\E"});
 }
@@ -53,6 +54,7 @@ elsif ($opt_a)
     for (@ids)
     {
 	%rec = &aid_db_unpack_rec($_,$DB{$_});
+	next unless $rec{'valid'};
 	($affil,$i) = &affiliate(*rec,0);
 	print $rec{'last'}, ", ", $rec{'first'}, $affil, "\n";
     }
@@ -64,6 +66,7 @@ elsif ($opt_c)
     for (@ids)
     {
 	%rec = &aid_db_unpack_rec($_,$DB{$_});
+	next unless $rec{'valid'};
 	($affil,$i) = &affiliate(*rec,0);
 	print $rec{'last'}, ", ", $rec{'first'}, $affil, "\n";
     }
@@ -79,11 +82,19 @@ else
 dbmclose(DB);
 exit 0;
 
+# ugh. touch these variables so we don't get "possible typo" warnings.
+$a = $b if ($^W && 0);
 
 sub display_key_val
 {
     local($key,$val) = @_;
     local(*rec);
+
+    if (! defined $val)
+    {
+	print "undefined key $key!\n";
+	return 0;
+    }
 
     if ($key =~ /^\d+$/)
     {
@@ -91,19 +102,22 @@ sub display_key_val
 	print "record $key = ", &aid_join(*rec), "\n";
     }
 
-    elsif ($key =~ /^__(\d\d\d\d)__$/)
+    elsif ($key =~ /^__(awalt_)?(\d\d\d\d)__$/)
     {
-	print "year $1 = ", join(',', unpack("n*", $val)), "\n";
+	print "year ", (defined $1 ? $1 : ''), $2,
+	      " = ", join(',', unpack("n*", $val)), "\n";
     }
 
-    elsif ($key =~ /^__other__$/)
+    elsif ($key =~ /^__(awalt_)?other__$/)
     {
-	print "year other = ", join(',', unpack("n*", $val)), "\n";
+	print "year ", (defined $1 ? $1 : ''), 'other',
+	      " = ", join(',', unpack("n*", $val)), "\n";
     }
 
-    elsif ($key =~ /^__years__$/)
+    elsif ($key =~ /^__(awalt_)?years__$/)
     {
-	print "list years = ", join(',', unpack("n*", $val)), "\n";
+	print "list ", (defined $1 ? $1 : ''), 'years',
+	      " = ", join(',', unpack("n*", $val)), "\n";
     }
 
     elsif ($key =~ /^__class__$/)
@@ -123,7 +137,7 @@ sub display_key_val
 
     else
     {
-	print "unknown key $key!\n";
+	print "don't know how to interpret key $key!\n";
     }
 
     1;
