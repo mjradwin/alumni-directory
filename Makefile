@@ -2,7 +2,7 @@
 #     FILE: Makefile
 #   AUTHOR: Michael J. Radwin
 #    DESCR: Makefile for building the Alumni Internet Directory
-#      $Id: Makefile,v 1.61 1998/05/17 04:11:02 mradwin Exp mradwin $
+#      $Id: Makefile,v 3.10 1998/05/17 05:19:30 mradwin Exp mradwin $
 #
 
 WWWDIR=/home/web/radwin.org/docs/mvhs-alumni
@@ -28,7 +28,7 @@ TARFILES=README Makefile cgi-bin/*.pl cgi-bin/mvhsaid bin/aid_* data/*.include
 SNAPSHOTFILES=bin/aid_make mvhs web/mvhs-alumni/*.gif \
 	web/mvhs-alumni/whatsnew
 
-all:	adrfile home submit reunions links nicknames tech \
+all:	adrfile index submit reunions links nicknames tech \
 	recent pages alpha2 class awalt goners \
 	verbose books
 
@@ -78,12 +78,12 @@ $(VERBOSE):	$(ADR_CLASS) $(BIN_VERBOSE)
 	mkdir -p $(WWWDIR)/class
 	$(BIN_VERBOSE) $(ADR_CLASS)
 
-HOME=$(WWWDIR)/index.html
-home:	$(HOME)
-$(HOME):	data/index.include $(BIN_HOME) aid_util.pl $(ADR_MASTER)
+INDEX=$(WWWDIR)/index.html
+index:	$(INDEX)
+$(INDEX):	data/index.include $(BIN_HOME) aid_util.pl $(ADR_MASTER)
 	$(BIN_HOME) -p0 -i data/index.include \
 		-t 'Welcome to the MVHS Alumni Internet Directory!' \
-		$(HOME)
+		$(INDEX)
 
 REUNIONS=$(WWWDIR)/reunions.html
 reunions:	$(REUNIONS)
