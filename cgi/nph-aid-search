@@ -49,9 +49,9 @@ if (!&ReadParse() || !defined($in{'q'}) || $in{'q'} =~ /^\s*$/)
     exit(0);
 }
 
-if (defined $DB{'__alpha__'})
+if (defined $DB{'_alpha'})
 {
-    @alpha_ids = unpack("n*",$DB{'__alpha__'});
+    @alpha_ids = unpack("n*",$DB{'_alpha'});
 }
 else
 {
@@ -183,9 +183,9 @@ sub print_search_form
 	    "The database is missing the years list!\n" .
 	    "Please <a href=\"mailto:" . &aid_config('admin_email') .
 	    "\">email " . &aid_config('admin_name') . "</a>.")
-	unless defined $DB{'__class__'};
+	unless defined $DB{'_class'};
 
-    @years = unpack("n*",$DB{'__years__'});
+    @years = unpack("n*",$DB{'_years'});
     push(@years, 'other');
 
     print "<center><p>\n";

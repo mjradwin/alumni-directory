@@ -4,7 +4,7 @@
 #     FILE: mvhsaid.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: Alumni Internet Directory CGI interface
-#      $Id: mvhsaid,v 3.97 1999/03/30 01:20:25 mradwin Exp mradwin $
+#      $Id: mvhsaid,v 3.98 1999/04/05 16:04:01 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -40,7 +40,7 @@ $mailprog = &aid_config('mailprog');
 $dbmfile = &aid_config('dbmfile');
 $dbmfile =~ s/\.db$//;
 
-$rcsid = '$Id: mvhsaid,v 3.97 1999/03/30 01:20:25 mradwin Exp mradwin $'; #'fnt
+$rcsid = '$Id: mvhsaid,v 3.98 1999/04/05 16:04:01 mradwin Exp mradwin $'; #'fnt
 
 $listing_upd_title = 'Update Your Directory Listing';
 $listing_upl_title = 'Select a Listing to Update';
@@ -533,9 +533,9 @@ sub send_address_book {
     }
 
     dbmopen(%DB,$dbmfile,0444);
-    if (defined $DB{'__class__'})
+    if (defined $DB{'_class'})
     {
-	@class_ids = unpack("n*",$DB{'__class__'});
+	@class_ids = unpack("n*",$DB{'_class'});
     }
     else
     {
@@ -587,9 +587,9 @@ sub send_upd_list {
     local(%rec);
 
     dbmopen(%DB,$dbmfile,0444);
-    if (defined $DB{'__alpha__'})
+    if (defined $DB{'_alpha'})
     {
-	@alpha_ids = unpack("n*",$DB{'__alpha__'});
+	@alpha_ids = unpack("n*",$DB{'_alpha'});
     }
     else
     {
