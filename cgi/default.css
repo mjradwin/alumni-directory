@@ -1,0 +1,24 @@
+body {
+  color: black;
+  background: white;
+}
+
+a:link    { color: #0000cc;  }
+a:visited { color: #990099;  }
+a:active  { color: #ffcc00;  }
+
+strong.newupd {
+  background-color: #ffc;
+}
+
+div.about {
+  width: 100%;
+  border: none;
+  color: black;
+  background-color: #ffc;
+}
+
+pre.about {
+  color: black;
+  margin-left: 1em;
+}
