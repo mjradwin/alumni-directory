@@ -2,11 +2,11 @@
 #     FILE: aid_util.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: perl library routines for the Alumni Internet Directory
-#      $Id: aid_util.pl,v 4.62 1999/03/16 02:04:39 mradwin Exp mradwin $
+#      $Id: aid_util.pl,v 4.63 1999/03/16 02:11:50 mradwin Exp mradwin $
 #
 
 $aid_util'rcsid =
- '$Id: aid_util.pl,v 4.62 1999/03/16 02:04:39 mradwin Exp mradwin $';
+ '$Id: aid_util.pl,v 4.63 1999/03/16 02:11:50 mradwin Exp mradwin $';
 
 # ----------------------------------------------------------------------
 # CONFIGURATION
@@ -958,7 +958,7 @@ sub aid_verbose_entry {
     $retval .= "&nbsp;|&nbsp;";
     $retval .= "<a href=\"" . &main'aid_yahoo_abook_path(*rec) . "\">"; #'#
     $retval .= 'add to Y! address book';
-    $retval .= "</a>\n";
+    $retval .= "</a>";
     $retval .= "&nbsp;|&nbsp;";
     $retval .= "<a href=\"" . $config{'about_cgi'} . "?about=$rec{'id'}\">";
     $retval .= "update</a>";
