@@ -1,6 +1,6 @@
 #!/usr/bin/perl -w
 
-# $Id: aid_addname,v 3.17 1998/11/19 18:15:37 mradwin Exp mradwin $
+# $Id: aid_addname,v 3.18 1999/02/24 20:37:19 mradwin Exp mradwin $
 
 require 'getopts.pl';
 require 'aid_util.pl';
@@ -125,7 +125,7 @@ sub addname {
     local($rawdata) = @_;
     local($[) = 0;
     local($_);
-    local($dbFile,$logFile,@db,%oldrec);
+    local($dbFile,$logFile,@db,%oldrec,%id_by_email);
     local(%rec) = &aid_split($rawdata);
     local($addme,$tmpFile,*LOG,*TMP,*ADR);
 
@@ -133,8 +133,24 @@ sub addname {
     $logFile = &aid_config('aiddir') . "logs/additions.log";
     @db = &aid_create_db($dbFile);
 
+    for (@db) {
+	next unless defined($_) && $_ ne '';
+	%oldrec = &aid_split($_);
+	$id_by_email{"\L$oldrec{'email'}$oldrec{'last'}$oldrec{'first'}\E"} =
+	    $oldrec{'id'};
+    }
+
     open(LOG, ">>$logFile") || die "Can't open $logFile: $!\n";
     select(LOG); $| = 1; select(STDOUT);
+
+    # assign the double-submit newbies the same id if we've seen their
+    # email address before
+    if (($rec{'id'} == -1) &&
+	(defined $id_by_email{"\L$rec{'email'}$rec{'last'}$rec{'first'}\E"}))
+    {
+	$rec{'id'} = $id_by_email{"\L$rec{'email'}\E"};
+	$rawdata = &aid_join(*rec);
+    }
 
     if ($rec{'id'} == -1) {
 	$rec{'id'} = ($#db + 1);
