@@ -2,7 +2,7 @@
 
 #
 # mails a welcome, update, confirm, or massmail message to members
-# $Id: aid_welcome,v 5.31 2002/03/07 23:29:39 mradwin Exp mradwin $
+# $Id: aid_welcome,v 5.32 2002/06/16 18:08:12 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -33,6 +33,7 @@ require 'aid_util.pl';
 use Getopt::Std;
 require 'ctime.pl';
 
+use lib "/pub/m/r/mradwin/private/lib/perl5/site_perl";
 use Net::SMTP; 
 
 $default_sleep = 0;
