@@ -2,11 +2,11 @@
 #     FILE: aid_util.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: perl library routines for the Alumni Internet Directory
-#      $Id: aid_util.pl,v 4.44 1999/03/09 01:33:41 mradwin Exp mradwin $
+#      $Id: aid_util.pl,v 4.45 1999/03/09 01:46:16 mradwin Exp mradwin $
 #
 
 $aid_util'rcsid =
- '$Id: aid_util.pl,v 4.44 1999/03/09 01:33:41 mradwin Exp mradwin $';
+ '$Id: aid_util.pl,v 4.45 1999/03/09 01:46:16 mradwin Exp mradwin $';
 
 # ----------------------------------------------------------------------
 # CONFIGURATION
@@ -330,7 +330,7 @@ sub affiliate {
 	if ($rec{'school'} eq 'Awalt') {
 	    $affil  .= "A'$year";
 	    $len    += length("A'$year");
-	} elsif ($rec{'school'} eq 'MVHS+Awalt') {
+	} elsif ($rec{'school'} eq 'Awalt+MVHS') {
 	    $affil  .= "MV/A'$year";
 	    $len    += length("MV/A'$year");
 	} elsif ($rec{'school'} eq $config{'short_school'} ||
@@ -613,7 +613,7 @@ sub submit_body {
     } elsif ($rec{'school'} eq 'Awalt') {
 	$awalt_checked = ' checked';
 	$rec{'school'} = '';
-    } elsif ($rec{'school'} eq 'MVHS+Awalt') {
+    } elsif ($rec{'school'} eq 'Awalt+MVHS') {
 	$both_checked = ' checked';
 	$rec{'school'} = '';
     }
@@ -711,7 +711,7 @@ $instr
   value=\"Awalt\"$awalt_checked><label
   for=\"school_Awalt\">&nbsp;Awalt</label>
   &nbsp;&nbsp;&nbsp;&nbsp;<input type=radio name=\"school\" id=\"school_both\"
-  value=\"MVHS+Awalt\"$both_checked><label
+  value=\"Awalt+MVHS\"$both_checked><label
   for=\"school_both\">&nbsp;Both&nbsp;MVHS&nbsp;&amp;&nbsp;Awalt</label>
   <br>
   <small>(Did you attend/graduate from another school such as
