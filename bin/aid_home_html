@@ -2,7 +2,7 @@
 
 #
 # does the html version of just home pages
-# $Id: aid_home_html,v 5.5 1999/06/08 19:29:01 mradwin Exp mradwin $
+# $Id: aid_home_html,v 5.6 1999/06/08 21:54:43 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -29,37 +29,46 @@ require 'aid_util.pl';
 require 'getopts.pl';
 
 $0 =~ s,.*/,,;  # basename
-$usage = "usage: $0 [-hs] [-i <infile>] -p <pg> -t <text> <outfile>
+$usage = "usage: $0 [-hs] [-f <infile>] [-i <keys>] -p <pg> -t <text> <outfile>
  -h            Display usage information.
  -s            Create the submit page.
  -d            Create the download page.
- -i <infile>   Create an 'other' page from html code in <infile>.
+ -f <infile>   Create an 'other' page from html code in <infile>.
  -p <pg>       Use page number <pg> for generating content.  REQUIRED.
  -t <text>     Put a tableheader with 'text'.  REQUIRED.
+ -i <keys>     Incremental update only for list of keys.
 
  <outfile>     Write results to <outfile>.
 
-Either -s, -d or -i must be supplied.  They are mutuallly exclusive.
+Either -s, -d or -f must be supplied.  They are mutuallly exclusive.
 ";
 
-&Getopts('hst:i:p:d') || die "$usage\n";
+&Getopts('hst:f:p:di:') || die "$usage\n";
 $opt_h && die "$usage\n";
 $opt_h = $opt_h;		# avoid warning
 %blank_entry = %aid_util'blank_entry = %aid_util'blank_entry;
 
 die "$usage\n" unless $ARGV[0];
 die "$usage\n"
-    unless ($opt_s ? 1 : 0) + ($opt_i ? 1 : 0) + ($opt_d ? 1 : 0) == 1;
+    unless ($opt_s ? 1 : 0) + ($opt_f ? 1 : 0) + ($opt_d ? 1 : 0) == 1;
 die "$usage\n" unless defined($opt_p);
 die "$usage\n" unless defined($opt_t);
 
-$infile = $opt_i;
+@incremental = ($opt_i ? split(/[,\s]+/, $opt_i) : ());
+
+if (@incremental && $opt_d && (! grep(/_years/, @incremental)))
+{
+    print STDOUT "incremental download page avoided; no _years key.\n";
+    exit(0);
+}
+
+$infile = $opt_f;
 $outfile = $ARGV[0];
 
 $dbmfile = &aid_config('dbmfile');
 $dbmfile =~ s/\.db$//;
 
-if ($opt_i)
+if ($opt_f)
 {
     open(INFILE,$infile) || die "Can't open $infile: $!\n";
     $time = (stat(INFILE))[9];
@@ -79,7 +88,7 @@ else
     $time = unpack("N",$DB{'_t'});
 }
 
-if ($opt_i && $opt_p == 0)
+if ($opt_f && $opt_p == 0)
 {
     die "can't open ${dbmfile}.db\n" unless -r "${dbmfile}.db";
     dbmopen(%DB,$dbmfile,0444);
@@ -169,7 +178,7 @@ years after mine.</label>
 }
 print OUTFILE &aid_common_html_ftr($opt_p,$time);
 
-dbmclose(%DB) unless $opt_i || $opt_s;
+dbmclose(%DB) unless $opt_f || $opt_s;
 close(OUTFILE);
 utime $time, $time, $outfile;
 
