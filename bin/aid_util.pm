@@ -2,11 +2,11 @@
 #     FILE: aid_util.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: perl library routines for the Alumni Internet Directory
-#      $Id: aid_util.pl,v 2.11 1998/05/07 16:44:39 mjr Exp mjr $
+#      $Id: aid_util.pl,v 2.12 1998/05/07 16:49:46 mjr Exp mradwin $
 #
 
 $aid_util'rcsid =
- '$Id: aid_util.pl,v 2.11 1998/05/07 16:44:39 mjr Exp mjr $';
+ '$Id: aid_util.pl,v 2.12 1998/05/07 16:49:46 mjr Exp mradwin $';
 
 # ----------------------------------------------------------------------
 # CONFIGURATION
@@ -16,35 +16,63 @@ $aid_util'rcsid =
 # subroutines submit_body() and affiliate()
 # ----------------------------------------------------------------------
 
-# divcom.umop-ap.com configuration
-%aid_util'config =  #'#
+# radwin.org (FreeBSD 2.2.2) configuration
+%aid_util'config =   #'#
     ('admin_name',   'Michael John Radwin',
-     'admin_email',  "mjr\@acm.org",
+     'admin_email',  "mvhs-alumni\@radwin.org",
      'school',       'Mountain View High School',
      'short_school', 'MVHS',
      'admin_school', "Mountain View High School, Class of '93",
      'admin_phone',  '408-536-2554',
-     'admin_url',    'http://slimy.com/~mjr/',
-     'master_srv',   'umop-ap.com',
-     'master_path',  '/~mjr/mvhs/',
-     'cgi_path',     '/cgi-bin/cgiwrap/mjr/mvhsaid',
+     'admin_url',    'http://www.radwin.org/michael/',
+     'master_srv',   'www.radwin.org',
+     'master_path',  '/mvhs-alumni/',
+     'cgi_path',     '/cgi-bin/mvhsaid',
      'index_page',   'index.html',
-     'wwwdir',       '/home/divcom/mjr/public_html/mvhs/',
-     'newsdir',      '/home/divcom/mjr/public_html/mvhs/whatsnew/',
-     'aiddir',       '/home/divcom/mjr/mvhs/',
-     'sendmail',     '/usr/lib/sendmail',
-     'mailprog',     '/usr/ucb/mail',
-     'echo',         '/usr/bin/echo',
-     'cat',          '/usr/local/gnu/bin/cat',
-     'cp',           '/usr/local/gnu/bin/cp',
-     'make',         '/usr/local/gnu/bin/make',
-     'mailto',       "mjr\@divcom",
+     'wwwdir',       '/home/web/radwin.org/docs/mvhs-alumni/',
+     'newsdir',      '/home/web/radwin.org/docs/mvhs-alumni/whatsnew/',
+     'aiddir',       '/home/users/mradwin/mvhs/',
+     'sendmail',     '/usr/sbin/sendmail',
+     'mailprog',     '/usr/bin/mail',
+     'echo',         '/bin/echo',
+     'cat',          '/bin/cat',
+     'cp',           '/bin/cp',
+     'make',         '/usr/bin/make',
+     'mailto',       "mradwin\@localhost",
      'mailsubj',     'MVHSAID',
-     'spoolfile',    '/var/spool/mail/mjr',
+     'spoolfile',    '/var/mail/mradwin',
      'rcsid',        "$aid_util'rcsid",
      );
 
-# albert.corp.adobe.com configuration
+# divcom.umop-ap.com (SunOS 4.1.3) configuration
+# %aid_util'config =  #'#
+#     ('admin_name',   'Michael John Radwin',
+#      'admin_email',  "mjr\@acm.org",
+#      'school',       'Mountain View High School',
+#      'short_school', 'MVHS',
+#      'admin_school', "Mountain View High School, Class of '93",
+#      'admin_phone',  '408-536-2554',
+#      'admin_url',    'http://slimy.com/~mjr/',
+#      'master_srv',   'umop-ap.com',
+#      'master_path',  '/~mjr/mvhs/',
+#      'cgi_path',     '/cgi-bin/cgiwrap/mjr/mvhsaid',
+#      'index_page',   'index.html',
+#      'wwwdir',       '/home/divcom/mjr/public_html/mvhs/',
+#      'newsdir',      '/home/divcom/mjr/public_html/mvhs/whatsnew/',
+#      'aiddir',       '/home/divcom/mjr/mvhs/',
+#      'sendmail',     '/usr/lib/sendmail',
+#      'mailprog',     '/usr/ucb/mail',
+#      'echo',         '/usr/bin/echo',
+#      'cat',          '/usr/local/gnu/bin/cat',
+#      'cp',           '/usr/local/gnu/bin/cp',
+#      'make',         '/usr/local/gnu/bin/make',
+#      'mailto',       "mjr\@divcom",
+#      'mailsubj',     'MVHSAID',
+#      'spoolfile',    '/var/spool/mail/mjr',
+#      'rcsid',        "$aid_util'rcsid",
+#      );
+
+# albert.corp.adobe.com (Solaris 2.5.1) configuration
 # %aid_util'config =  #'#
 #     ('admin_name',   'Michael John Radwin',
 #      'admin_email',  "mjr\@acm.org",
@@ -64,29 +92,6 @@ $aid_util'rcsid =
 #      'mailto',       "mradwin",
 #      'mailsubj',     'MVHSAID',
 #      'spoolfile',    '/var/mail/mradwin', 
-#      'rcsid',        "$aid_util'rcsid",
-#      );
-
-# foo.metamorphosis.net configuration
-#%aid_util'config =   #'#
-#     ('admin_name',   'Michael John Radwin',
-#      'admin_email',  "mjr\@acm.org",
-#      'school',       'BrownCS',
-#      'admin_school', "BrownCS, Class of '97",
-#      'admin_phone',  '408-536-2554',
-#      'admin_url',    'http://slimy.com/~mjr/',
-#      'master_srv',   'metamorphosis.net',
-#      'master_path',  '/~mjr/browncs/',
-#      'cgi_path',     '/~mjr/cgi-bin/browncsaid.cgi',
-#      'index_page',   'index.html',
-#      'wwwdir',       '/home/mjr/public_html/browncs/',
-#      'newsdir',      '/home/mjr/public_html/browncs/whatsnew/',
-#      'aiddir',       '/home/mjr/browncs/',
-#      'sendmail',     '/usr/sbin/sendmail',
-#      'mailprog',     '/usr/bin/mail',
-#      'mailto',       "mjr\@foo",
-#      'mailsubj',     'MVHSAID',
-#      'spoolfile',    '/var/mail/mjr',
 #      'rcsid',        "$aid_util'rcsid",
 #      );
 
