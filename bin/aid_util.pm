@@ -2,7 +2,7 @@
 #     FILE: aid_util.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: perl library routines for the Alumni Internet Directory
-#      $Id: aid_util.pl,v 5.99 2002/01/25 03:54:49 mradwin Exp mradwin $
+#      $Id: aid_util.pl,v 5.100 2002/01/25 03:57:48 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -25,7 +25,7 @@ require 'school_config.pl';
 require 'aid_config.pl';
 require 'aid_submit.pl';
 
-use lib "/home/mradwin/local/lib/perl5/site_perl";
+use lib "/pub/m/r/mradwin/private/lib/perl5/site_perl";
 
 use MIME::QuotedPrint;
 use Net::SMTP; 
