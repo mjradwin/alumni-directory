@@ -4,7 +4,7 @@
 #     FILE: form.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: Alumni Internet Directory CGI form-submission interface
-#      $Id: form,v 5.26 2000/05/31 00:21:42 mradwin Exp mradwin $
+#      $Id: form,v 5.27 2000/05/31 01:01:48 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -36,7 +36,7 @@ use CGI::Carp qw(fatalsToBrowser);
 # configuration
 $dbmfile = &aid_config('dbmfile');
 
-$rcsid = '$Id: form,v 5.26 2000/05/31 00:21:42 mradwin Exp mradwin $'; #'fnt
+$rcsid = '$Id: form,v 5.27 2000/05/31 01:01:48 mradwin Exp mradwin $'; #'fnt
 
 $listing_upd_title = 'Modify Your Directory Listing';
 $listing_upl_title = 'Select a Listing to Modify';
@@ -333,11 +333,11 @@ sub queue_submission {
     require 'ctime.pl';
 
     # set the times and then update the db.
-    $cgi{'u'} = time unless defined $cgi{'u'};
-    $cgi{'f'} = $cgi{'u'} unless defined $cgi{'f'};
-    $cgi{'c'} = $cgi{'c'} ne '' ? $cgi{'c'} : $cgi{'u'};
+    $cgi{'f'} = $cgi{'u'} = time;
+    $cgi{'c'} = $cgi{'u'}
+	unless defined $cgi{'c'} && $cgi{'c'} =~ /^\d+$/;
     $cgi{'h'} = &remote_host() unless defined $cgi{'h'};
-    $cgi{'b'} = 0 unless defined $cgi{'b'};
+    $cgi{'b'} = 0;
     $cgi{'n'} =~ s/\015\012/\n/g;
     $cgi{'n'} =~ s/\015/\n/g;
     $cgi{'n'} =~ s/[ \t]+\n/\n/g;
