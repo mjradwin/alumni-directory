@@ -2,11 +2,11 @@
 #     FILE: aid_util.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: perl library routines for the Alumni Internet Directory
-#      $Id: aid_util.pl,v 3.23 1998/05/27 21:18:15 mradwin Exp mradwin $
+#      $Id: aid_util.pl,v 3.24 1998/05/27 21:39:09 mradwin Exp mradwin $
 #
 
 $aid_util'rcsid =
- '$Id: aid_util.pl,v 3.23 1998/05/27 21:18:15 mradwin Exp mradwin $';
+ '$Id: aid_util.pl,v 3.24 1998/05/27 21:39:09 mradwin Exp mradwin $';
 
 # ----------------------------------------------------------------------
 # CONFIGURATION
@@ -303,7 +303,7 @@ sub affiliate {
     $len   = 2;
 
     if ($rec{'year'} =~ /^\d+$/) {
-	$affil .= "<a href=\"" . &main'aid_about_path(*rec) . "\">" #'#
+	$affil .= "<a href=\"" . &main'aid_about_path(*rec,1) . "\">" #'#
 	    if $do_html_p;
 	$year = $rec{'year'} % 100;
 	if ($rec{'school'} eq 'Awalt') {
@@ -321,7 +321,7 @@ sub affiliate {
 	$affil .= "</a>" if $do_html_p;
 
     } else {
-	$affil .= "<a href=\"" . &main'aid_about_path(*rec) . "\">" #'#
+	$affil .= "<a href=\"" . &main'aid_about_path(*rec,1) . "\">" #'#
 	    if $do_html_p;
 	$affil .= "[$rec{'school'} $rec{'year'}]";
 	$len   += length("[$rec{'school'} $rec{'year'}]");

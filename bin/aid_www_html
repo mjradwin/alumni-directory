@@ -34,7 +34,7 @@ while(<DATA>) {
     next if $rec{'homepage'} eq '';
 
     $fullname = &fullname(*rec);
-    ($affil,$len) = &affiliate(*rec,0);
+    ($affil,$len) = &affiliate(*rec,1);
 
     print FMTOUT "<a href=\"" . &aid_about_path(*rec) . "\">$info_gif</a>"; #'#
     print FMTOUT "<a name=\"$rec{'alias'}\"";
