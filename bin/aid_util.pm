@@ -2,7 +2,7 @@
 #     FILE: mv_util.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: perl library routines for the MVHS Alumni Internet Directory
-#      $Id: mv_util.pl,v 1.35 1997/09/24 00:27:24 mjr Exp mjr $
+#      $Id: mv_util.pl,v 1.36 1997/09/24 00:57:00 mjr Exp mjr $
 #
 
 CONFIG: {
@@ -380,20 +380,20 @@ sub about_text {
     $do_vcard_p = 0 unless defined($do_vcard_p);
 
     $retval .= "<pre>\n" if $do_html_p;
-    $retval .= "First Name        : ";
+    $retval .= "First Name         : ";
     $retval .= ($first eq '') ? "\n" : 
 	((($do_html_p) ? "<strong>" : "") .
 	 $first . 
 	 (($do_html_p) ? "</strong>" : "") .
 	 "\n");
     
-    $retval .= "Last/Maiden Name  : ";
+    $retval .= "Last/Maiden Name   : ";
     $retval .= "<strong>" if $do_html_p;
     $retval .= $last;
     $retval .= "</strong>" if $do_html_p;
     $retval .= "\n";
     
-    $retval .= "Married Name      : ";
+    $retval .= "Married Name       : ";
     $retval .= ($married eq '') ? "(same as last name)\n" :
 	((($do_html_p) ? "<strong>" : "") .
 	 $married . 
@@ -401,33 +401,33 @@ sub about_text {
 	 "\n");
     
     $retval .= "\n";
-    $retval .= "School            : ";
+    $retval .= "School             : ";
     $retval .= "<strong>" if $do_html_p;
     $retval .= $school;
     $retval .= "</strong>" if $do_html_p;
     $retval .= "\n";
     
-    $retval .= "Grad. Year        : ";
+    $retval .= "Grad. Year         : ";
     $retval .= "<strong>" if $do_html_p;
     $retval .= $year;
     $retval .= "</strong>" if $do_html_p;
     $retval .= "\n";
 
     $retval .= "\n";
-    $retval .= "Email             : ";
+    $retval .= "Email              : ";
     $retval .= "<strong><a href=\"mailto:$email\">" if $do_html_p;
     $retval .= $email;
     $retval .= "</a></strong>" if $do_html_p;
     $retval .= "\n";
 
-    $retval .= "Web Page          : ";
+    $retval .= "Web Page           : ";
     $retval .= ($homepage eq '') ? "(none)\n" :
 	((($do_html_p) ? "<strong><a href=\"$homepage\">" : "") .
 	 $homepage . 
 	 (($do_html_p) ? "</a></strong>" : "") .
 	 "\n");
 
-    $retval .= "Location          : ";
+    $retval .= "Location           : ";
     $retval .= ($location eq '') ? "(none provided)\n" :
 	((($do_html_p) ? "<strong>" : "") .
 	 $location .
@@ -435,7 +435,7 @@ sub about_text {
 	 "\n");
 
     if ($do_vcard_p && $do_html_p) {
-	$retval .= "vCard             : ";
+	$retval .= "vCard              : ";
 	$retval .= "<a href=\"$config{'cgi_path'}?vcard=$id\">";
 	$retval .= "<img src=\"$config{'master_path'}vcard.gif\" ";
 	$retval .= "height=32 width=32 border=0 align=top ";
@@ -444,14 +444,14 @@ sub about_text {
 
     if ($show_req_p) {
 	$retval .= "\n";
-	$retval .= "Send Email Updates: ";
+	$retval .= "Send Email Updates : ";
 	$retval .= ($req == 2) ? "yes (sorted by graduating class)\n" :
 	    ($req == 1) ? "yes (sorted by name)\n" : "no\n";
     } 
 
     if ($time ne '') {
 	$retval .= "\n";
-	$retval .= "Last Updated      : ";
+	$retval .= "Last Updated       : ";
 	$retval .= do ctime($time);
     }
 
@@ -545,12 +545,9 @@ sub common_html_hdr {
     package mv_util;
     require 'ctime.pl';
 
-    local($page, $page_name, $norobots) = @_;
+    local($page,$norobots) = @_;
     local($h1, $h2, $h3, $h4, $html_head);
     local($name, $url);
-
-#    ($page_name) = split(/,/, $page_idx[$page]) unless $page_name;
-#    $page_name =~ s/&nbsp;/ /g;
 
     $h1 = "<body bgcolor=\"#ffffff\" link=\"#0000cc\" text=\"#000000\" vlink=\"#990099\">
 <hr noshade size=1>
