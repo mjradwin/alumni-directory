@@ -49,21 +49,16 @@ $directory_name = &aid_config('short_school') . ' Alumni Internet Directory';
 
 %confirm_parameters = 
     (
-     'subject',  "$directory_name",
+     'subject',  "Confirming your $directory_name listing",
      'log',      'confirm',
      'intro', 
 
 "
-I'm happy to announce that Awalt High School alumni now
-have their own Internet Directory!  Previously, Awalt
-alumni shared the Mountain View High School directory.
-
-Your listing has been moved from the MVHS directory to
-the new Awalt directory.  There's no need to re-enter
-your contact information to be listed on the new site.
-
-If everything you see below is correct, NO ACTION IS
-REQUIRED ON YOUR PART.
+You were sent this address verification message because
+it has been 6 months since we last confirmed your
+Directory listing.  Please make sure your infromation
+below is still current.  If everything you see below is
+correct, NO ACTION IS REQUIRED ON YOUR PART.
 ",
 
      'textfile', '',
@@ -190,6 +185,12 @@ if ($opt_a)
 
 	    next unless $rec{'v'};
 	    next if $opt_m && $rec{'q'} != $opt_r;
+
+	    if ($opt_c)
+	    {
+		next unless $rec{'q'} == 0;
+		next unless &aid_is_old($rec{'f'});
+	    }
 
 	    &mail_user(*rec);
 	    sleep $params{'sleep'} if $params{'sleep'} > 0;
