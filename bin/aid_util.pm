@@ -2,7 +2,7 @@
 #     FILE: mv_util.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: perl library routines for the MVHS Alumni Internet Directory
-#      $Id: mv_util.pl,v 1.54 1997/10/29 16:33:49 mjr Exp mjr $
+#      $Id: mv_util.pl,v 1.55 1997/10/31 18:56:33 mjr Exp mjr $
 #
 
 CONFIG: {
@@ -470,7 +470,7 @@ sub about_text {
 
     if ($do_vcard_p && $do_html_p) {
 	$retval .= "vCard              : ";
-	$retval .= "<a href=\"$config{'cgi_path'}?vcard=$id\">";
+	$retval .= "<a href=\"$config{'cgi_path'}/vcard/${id}.vcf\">";
 	$retval .= "<img src=\"$config{'master_path'}vcard.gif\" ";
 	$retval .= "height=32 width=32 border=0 align=top ";
 	$retval .= "alt=\"[vCard]\"></a>\n";
