@@ -2,7 +2,7 @@
 #     FILE: aid_util.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: perl library routines for the Alumni Internet Directory
-#      $Id: aid_util.pl,v 5.54 2000/01/23 21:55:00 mradwin Exp mradwin $
+#      $Id: aid_util.pl,v 5.55 2000/02/01 19:45:55 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -382,7 +382,7 @@ Subject: $subject
 
 " . &main'encode_qp($body);
 
-    my($smtp) = Net::SMTP->new($config{'smtp_svr'}, Timeout => 5); 
+    my($smtp) = Net::SMTP->new($config{'smtp_svr'}, Timeout => 30); 
     unless ($smtp->mail($return_path)) {
 	warn "smtp failure for @targets\n";
         return 0;
