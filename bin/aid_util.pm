@@ -2,11 +2,11 @@
 #     FILE: aid_util.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: perl library routines for the Alumni Internet Directory
-#      $Id: aid_util.pl,v 3.15 1998/05/19 20:37:11 mradwin Exp mradwin $
+#      $Id: aid_util.pl,v 3.16 1998/05/19 20:37:58 mradwin Exp mradwin $
 #
 
 $aid_util'rcsid =
- '$Id: aid_util.pl,v 3.15 1998/05/19 20:37:11 mradwin Exp mradwin $';
+ '$Id: aid_util.pl,v 3.16 1998/05/19 20:37:58 mradwin Exp mradwin $';
 
 # ----------------------------------------------------------------------
 # CONFIGURATION
@@ -558,6 +558,10 @@ are required.  All other fields are optional.</p>\n\n";
     $body . "
 <form method=post action=\"" . $config{'cgi_path'} . "\"> 
 <table border=0>
+<tr><td align=right><input type=\"submit\" value=\"Next &gt;\">
+&nbsp;
+<input type=\"reset\" value=\"Start Over\">
+</td></tr>
 <tr><td>
 <table border=0 width=\"100%\">
 <tr><td bgcolor=\"#$cell_bg\"><table border=0 cellspacing=7>
@@ -640,6 +644,9 @@ are required.  All other fields are optional.</p>\n\n";
   &nbsp;&nbsp;&nbsp;&nbsp;<input type=radio name=\"request\"
   value=\"0\"$reqchk[0]>&nbsp;&nbsp;No e-mail except for address
   verification (once per year).</font>
+  <input type=\"hidden\" name=\"id\" value=\"$newrec{'id'}\">
+  <input type=\"hidden\" name=\"created\" value=\"$newrec{'created'}\">
+  <input type=\"hidden\" name=\"valid\" value=\"1\">
   </td>
 </tr>
 </table>
@@ -647,10 +654,8 @@ are required.  All other fields are optional.</p>\n\n";
 <tr><td align=right><input type=\"submit\" value=\"Next &gt;\">
 &nbsp;
 <input type=\"reset\" value=\"Start Over\">
-<input type=\"hidden\" name=\"id\" value=\"$newrec{'id'}\">
-<input type=\"hidden\" name=\"created\" value=\"$newrec{'created'}\">
-<input type=\"hidden\" name=\"valid\" value=\"1\">
-</td></tr></table>
+</td></tr>
+</table>
 </form>
 
 ";
