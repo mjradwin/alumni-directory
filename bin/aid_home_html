@@ -2,7 +2,7 @@
 
 #
 # does the html version of just home pages
-# $Id: aid_home_html,v 3.11 1998/11/02 17:56:16 mradwin Exp mradwin $
+# $Id: aid_home_html,v 3.12 1998/11/26 00:51:51 mradwin Exp mradwin $
 #
 
 require 'aid_util.pl';
@@ -101,7 +101,7 @@ are of the form <code><strong>flllllll</strong></code> where
 
 <br>
 
-<input type=checkbox name=\"plusminus\" id=\"plusminus\" checked><label
+<input type=checkbox name=\"plusminus\" id=\"plusminus\"><label
 for=\"plusminus\">&nbsp;Also download graduating classes 3 years before and 3
 years after mine.</label>
 
