@@ -4,7 +4,7 @@
 #     FILE: mvhsaid.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: MVHS Alumni Internet Directory CGI interface
-#      $Id: mvhsaid,v 1.25 1997/08/26 00:55:04 mjr Exp mjr $
+#      $Id: mvhsaid,v 1.26 1997/09/02 16:56:32 mjr Exp mjr $
 #
 
 require 'mv_util.pl';
@@ -22,7 +22,7 @@ $dbfile = &mv_config('wwwdir') . "mvhs.adr";
 if (defined($in{'version'})) {
     select(STDOUT);  $| = 1;
     print "Content-type: text/plain\n\n";
-    print '$Id: mvhsaid,v 1.25 1997/08/26 00:55:04 mjr Exp mjr $', "\n";
+    print '$Id: mvhsaid,v 1.26 1997/09/02 16:56:32 mjr Exp mjr $', "\n";
     exit(0);
 }
 
@@ -228,7 +228,12 @@ sub send_vcard {
     select(STDOUT);  $| = 1;
     print "Content-type: text/x-vCard\n\n";
     print "Begin:vCard\n";
-    print "ORG:$school $year\n";
+    print "ORG:$school;";
+    if ($year =~ /^\d+$/) {
+	print "Class of '$year\n";
+    } else {
+	print "$year\n";
+    }
     print "FN: $first $long_last\n";
     print "N:$last;$first;$married\n";
     print "EMAIL;PREF;INTERNET:$email\n";
