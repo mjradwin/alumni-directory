@@ -2,7 +2,7 @@
 #     FILE: Makefile
 #   AUTHOR: Michael J. Radwin
 #    DESCR: Makefile for building the Alumni Internet Directory
-#      $Id: Makefile,v 3.36 1998/11/03 22:50:44 mradwin Exp mradwin $
+#      $Id: Makefile,v 3.37 1998/11/03 23:05:59 mradwin Exp mradwin $
 #
 
 WWWROOT=/home/web/radwin.org
@@ -29,12 +29,12 @@ BIN_RECENT=$(MVHSDIR)/bin/aid_shortlist_html
 BIN_MULTI_CLASS=$(MVHSDIR)/bin/aid_multi_class_html
 BIN_PAGES=$(MVHSDIR)/bin/aid_shortlist_html
 
-TARFILES=README \
-	Makefile \
-	cgi-bin/*.pl \
-	cgi-bin/mvhsaid \
-	bin/aid_* \
-	data/*.include
+TARFILES=mvhs/README \
+	mvhs/Makefile \
+	mvhs/cgi-bin/*.pl \
+	mvhs/cgi-bin/mvhsaid \
+	mvhs/bin/aid_* \
+	mvhs/data/*.include
 
 SNAPSHOTFILES=mvhs \
 	web/images/vcard.gif \
@@ -184,7 +184,7 @@ recent.txt:	$(ADR_CLASS) $(BIN_RECENT)
 	$(BIN_RECENT) -m3 -t $(ADR_CLASS) recent.txt
 
 tar:
-	( cd $(MVHSDIR) ; tar cfz $(WWWDIR)/etc/mvhsaid.tar.gz $(TARFILES) )
+	( cd $(MVHSDIR)/.. ; tar cfz $(WWWDIR)/etc/mvhsaid.tar.gz $(TARFILES) )
 
 snapshot:
 	( cd $(HOME) ; tar cfz $(WWWDIR)/etc/snapshot.tar.gz $(SNAPSHOTFILES) )
