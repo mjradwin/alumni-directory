@@ -38,11 +38,10 @@ while(<MVHS>) {
     $last =~ s/[ \t]/+/g;
     $married =~ s/[ \t]/+/g;
 
-    print FMTOUT "<a href=\"", &mv_config('cgi_path'), "?";
+    print FMTOUT "<a href=\"", &mv_config('cgi_path'), "?revise&";
     print FMTOUT "id=$id&request=$req&first=$first&last=$last&";
     print FMTOUT "married=$married&school=$school&grad=$year&";
-    print FMTOUT "mail=$email&homepage=$homepage&location=$location&";
-    print FMTOUT "revise\">";
+    print FMTOUT "mail=$email&homepage=$homepage&location=$location\">";
     print FMTOUT $fullname;
     print FMTOUT "</a>";
     print FMTOUT $affil;
