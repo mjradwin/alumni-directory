@@ -1,6 +1,6 @@
 #!/usr/local/bin/perl5 -w
 
-# $Id: aid_stats,v 5.10 1999/12/22 23:36:47 mradwin Exp mradwin $
+# $Id: aid_stats,v 5.11 2000/02/29 21:55:00 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -147,17 +147,9 @@ printf FMTOUT "%3.0f%% (%4d) have invalid e-mail address\n",
 print FMTOUT "\n";
 
 printf FMTOUT "%3.0f%% (%4d) requesting quarterly digests:\n",
-    ((100 * ($nreq[1] + $nreq[2] + $nreq[3] + $nreq[4])) / $nlegit),
-    ($nreq[1] + $nreq[2] + $nreq[3] + $nreq[4]);
+    ((100 * ($nreq[3] + $nreq[4])) / $nlegit),
+    ($nreq[3] + $nreq[4]);
 
-printf FMTOUT "%3.0f%% (%4d) - %s\n",
-    ((100 * $nreq[1]) / $nlegit),
-    $nreq[1],
-    $aid_util'req_descr_long[1]; #'#
-printf FMTOUT "%3.0f%% (%4d) - %s\n",
-    ((100 * $nreq[2]) / $nlegit),
-    $nreq[2],
-    $aid_util'req_descr_long[2]; #'#
 printf FMTOUT "%3.0f%% (%4d) - %s\n",
     ((100 * $nreq[3]) / $nlegit),
     $nreq[3],
