@@ -2,7 +2,7 @@
 #     FILE: mv_util.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: perl library routines for the MVHS Alumni Internet Directory
-#      $Id: mv_util.pl,v 1.50 1997/10/17 23:48:09 mjr Exp mjr $
+#      $Id: mv_util.pl,v 1.51 1997/10/23 00:36:31 mjr Exp mjr $
 #
 
 CONFIG: {
@@ -14,7 +14,7 @@ CONFIG: {
 	 'admin_email',  "mjr\@acm.org",
 	 'admin_school', "Mountain View High School, Class of '93",
 	 'admin_phone',  "408-536-2554",
-	 'admin_url',    "http://umop-ap.com/~mjr/",
+	 'admin_url',    "http://slimy.com/~mjr/",
 	 'master_srv',   "umop-ap.com",
 	 'master_path',  "/~mjr/mvhs/",
 	 'cgi_path',     "/cgi-bin/cgiwrap/mjr/mvhsaid",
