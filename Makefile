@@ -2,12 +2,11 @@
 #     FILE: Makefile
 #   AUTHOR: Michael J. Radwin
 #    DESCR: Makefile for building the Alumni Internet Directory
-#      $Id: Makefile,v 1.54 1998/05/07 16:45:16 mjr Exp mjr $
+#      $Id: Makefile,v 1.55 1998/05/07 16:48:24 mjr Exp mradwin $
 #
 
-HOMEDIR=/home/divcom/mjr
-#HOMEDIR=/home/mjr
-WWWDIR=$(HOMEDIR)/public_html/mvhs
+HOMEDIR=/home/users/mradwin
+WWWDIR=/home/web/radwin.org/docs/mvhs-alumni
 RM=/bin/rm -f
 
 TARFILES=README Makefile *.pl bin/* data/*.include
