@@ -2,11 +2,11 @@
 #     FILE: aid_util.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: perl library routines for the Alumni Internet Directory
-#      $Id: aid_util.pl,v 4.23 1999/02/16 23:44:50 mradwin Exp mradwin $
+#      $Id: aid_util.pl,v 4.24 1999/02/22 19:05:39 mradwin Exp mradwin $
 #
 
 $aid_util'rcsid =
- '$Id: aid_util.pl,v 4.23 1999/02/16 23:44:50 mradwin Exp mradwin $';
+ '$Id: aid_util.pl,v 4.24 1999/02/22 19:05:39 mradwin Exp mradwin $';
 
 # ----------------------------------------------------------------------
 # CONFIGURATION
@@ -15,6 +15,11 @@ $aid_util'rcsid =
 # *aid_util'variables in this configuration section, and the
 # subroutines submit_body() and affiliate()
 # ----------------------------------------------------------------------
+
+# since aid_config depends on caldate, do these first
+@aid_util'MoY = #'#
+    ('Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec');
+$aid_util'caldate = &aid_caldate(time); #'#
 
 require 'aid_config.pl';
 
@@ -57,12 +62,6 @@ require 'aid_config.pl';
  "Stats,"      . $aid_util'config{'master_path'} . "etc/stats.txt",    #'#
  "Privacy,"    . $aid_util'config{'master_path'} . "etc/copyright.html", #'#
 );
-
-@aid_util'MoY = #'#
-    ('Jan','Feb','Mar','Apr','May','Jun',
-     'Jul','Aug','Sep','Oct','Nov','Dec');
-
-$aid_util'caldate = &aid_caldate(time); #'#
 
 $aid_util'pics_label = #'#
 "  <meta http-equiv=\"PICS-Label\" content='(PICS-1.1 " . 
