@@ -4,7 +4,6 @@
 # mails everyone the nifty mvhs address list
 #
 
-
 require 'mv_util.pl';
 require 'getopts.pl';
 require 'ctime.pl';
@@ -33,13 +32,14 @@ open(TARGET,$ARGV[0]) || die "Can't open $ARGV[0]: $!\n";
 while(<TARGET>) {
     chop;
     ($time,$id,$req,$last,$first,$married,
-     $school,$year,$email,$alias,$homepage) = &mv_parse($_);
+     $school,$year,$email,$alias,$homepage,$location) = &mv_parse($_);
     next unless $email;
     next if $opt_c && !$req;
 
     $homepage = '(none)' if $homepage eq '';
     $message =
-	&message_body($id,$req,$last,$first,$school,$year,$email,$homepage) .
+	&message_body($id,$req,$last,$first,$married,
+		      $school,$year,$email,$homepage,$location) .
 	&message_footer;
 
     &sendmail($email, &mv_config('admin_email'), &mv_config('admin_name'),
@@ -51,7 +51,8 @@ exit(0);
 
 
 sub message_body {
-    local($id,$req,$last,$first,$school,$year,$email,$homepage) = @_;
+    local($id,$req,$last,$first,$married,
+	  $school,$year,$email,$homepage,$location) = @_;
     local($fullname) = &inorder_fullname($first,$last,$married);
     local($denied) = ($req) ? '' :
 	"\nSince you asked not to receive the Alumni Internet Directory via email,\nthis is the only notice you will receive.\n";
@@ -76,6 +77,7 @@ Email Address:  $email
 High School:    $school
 Grad Year:      $year
 WWW page:       $homepage
+Location:       $location
 $denied
 If you feel as if you have received this email in error or do not want
 to be listed in the database, please let me know and I will remove your

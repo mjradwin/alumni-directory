@@ -1,9 +1,6 @@
 #!/usr/local/bin/perl
 
 # does the html version of the grad-date address list
-#
-
-
 
 require 'mv_util.pl';
 require 'tableheader.pl';
@@ -24,7 +21,7 @@ while(<MVHSPRE>) {
     chop;
 
     ($time,$id,$req,$last,$first,$married,
-     $school,$year,$email,$alias,$homepage) = &mv_parse($_);
+     $school,$year,$email,$alias,$homepage,$location) = &mv_parse($_);
 
     if ($lastYear ne $year) {
 	$lastYear = $year;
@@ -53,7 +50,7 @@ $first_fac_staff = 0;
 while(<MVHS>) {
     chop;
     ($time,$id,$req,$last,$first,$married,
-     $school,$year,$email,$alias,$homepage) = &mv_parse($_);
+     $school,$year,$email,$alias,$homepage,$location) = &mv_parse($_);
 
     if ($lastYear ne $year) {
 	$lastYear = $year;

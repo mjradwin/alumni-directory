@@ -1,9 +1,6 @@
 #!/usr/local/bin/perl
 
 # does the html version of just home pages
-#
-
-
 
 require 'getopts.pl';
 require 'mv_util.pl';
@@ -35,7 +32,7 @@ print FMTOUT "------------------------------------------------------------------
 while(<MVHS>) {
     chop;
     ($time,$id,$req,$last,$first,$married,
-     $school,$year,$email,$alias,$homepage) = &mv_parse($_);
+     $school,$year,$email,$alias,$homepage,$location) = &mv_parse($_);
     next if $homepage eq '';
 
     $fullname = &fullname($first,$last,$married);

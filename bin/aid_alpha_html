@@ -1,9 +1,6 @@
 #!/usr/local/bin/perl
 
 # does the html version of the alphabetical address list
-#
-
-
 
 require 'mv_util.pl';
 require 'tableheader.pl';
@@ -52,7 +49,7 @@ $lastInitial = "Z";
 while(<MVHS>) {
     chop;
     ($time,$id,$req,$last,$first,$married,
-     $school,$year,$email,$alias,$homepage) = &mv_parse($_);
+     $school,$year,$email,$alias,$homepage,$location) = &mv_parse($_);
 
     if ($lastInitial ne substr($last, 0, 1)) {
 	$lastInitial = substr($last, 0, 1);

@@ -148,8 +148,8 @@ sub mangle {
 sub mv_parse {
     local($[) = 0;
     local($_) = @_;
-    local($time,$id,$req,$last,$first,$married,$school,$year,$email,$homepage)
-	= split(/;/);
+    local($time,$id,$req,$last,$first,$married,$school,
+	  $year,$email,$homepage,$location) = split(/;/);
     local($mangledLast,$mangledFirst,$alias);
 
     $mangledLast = &'mangle($last);   #' font-lock
@@ -165,7 +165,8 @@ sub mv_parse {
         $mv_aliases{$alias} = 1;
     }
 
-    return ($time,$id,$req,$last,$first,$married,$school,$year,$email,$alias,$homepage);
+    return ($time,$id,$req,$last,$first,$married,
+	    $school,$year,$email,$alias,$homepage,$location);
 }
 
 
@@ -198,8 +199,8 @@ sub submit_body {
     local($star) = "<font color=\"#ff0000\">*</font>";
     local($rawdata,$interactivep,$blank) = @_;
     local($mvhs_checked,$awalt_checked,$other_checked) = ('', '', '');
-    local($time,$id,$req,$last,$first,$married,$school,$year,$email,$homepage)
-	= split(/;/, $rawdata);
+    local($time,$id,$req,$last,$first,$married,
+	  $school,$year,$email,$homepage,$location) = split(/;/, $rawdata);
 
     $homepage = 'http://' if $homepage eq '';
     $req = ($req) ? ' checked' : '';
@@ -283,14 +284,20 @@ All other fields are optional.";
       value=\"$year\"></td>
 </tr>
 <tr>
-  <td valign=top rowspan=2><strong>Internet</strong></td>
+  <td valign=top rowspan=3><strong>Contact Info</strong></td>
   <td valign=top>E-mail address $star</td>
   <td valign=top><input type=text name=\"mail\" size=35
   value=\"$email\"></td>
 </tr>
+<tr>
   <td valign=top>Web Page</td>
   <td valign=top><input type=text name=\"homepage\" size=35
       value=\"$homepage\"></td>
+</tr>
+<tr>
+  <td valign=top>Location</td>
+  <td valign=top><input type=text name=\"location\" size=35
+      value=\"$location\"></td>
 </tr>
 <tr>
   <td colspan=3><input type=checkbox name=\"request\"$req> Please send
