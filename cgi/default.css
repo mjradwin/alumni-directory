@@ -7,9 +7,20 @@ a:link    { color: #0000cc;  }
 a:visited { color: #990099;  }
 a:active  { color: #ffcc00;  }
 
+b.nu {
+  color: black;
+  background: #ffffcb;
+}
+
 strong.nu {
   color: black;
   background: #ffffcb;
+}
+
+b.i {
+  color: black;
+  background: #ffffcb;
+  text-decoration: none;
 }
 
 strong.i {
