@@ -2,7 +2,7 @@
 
 #
 # does the html verbose pages
-# $Id: aid_multi_alpha_html,v 3.37 1999/05/04 18:53:33 mradwin Exp mradwin $
+# $Id: aid_multi_alpha_html,v 3.38 1999/05/19 01:36:09 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -46,6 +46,7 @@ die "no _alpha key!\n" unless defined $DB{'_alpha'};
 
 $initial = "Z";
 
+select(STDOUT); $| = 1;
 @alpha_ids = unpack("n*",$DB{'_alpha'});
 foreach $id (@alpha_ids)
 {
@@ -55,7 +56,7 @@ foreach $id (@alpha_ids)
     $cur_initial = substr($rec{'sn'}, 0, 1);
     $cur_initial = "\U${cur_initial}\E";
     if ("\U${initial}\E" ne $cur_initial) {
-	print STDERR ".";
+	print STDOUT ".";
         $initial = $cur_initial;
 	if ($initial ne 'A') {
 	    print FMTOUT "</pre>\n";
@@ -80,7 +81,7 @@ foreach $id (@alpha_ids)
 
     print FMTOUT &html_pre_entry(*rec,'',1);
 }
-print STDERR "\n";
+print STDOUT "\n";
 dbmclose(%DB);
 
 print FMTOUT "</pre>\n";

@@ -1,6 +1,6 @@
 #!/usr/bin/perl -w
 
-# $Id: aid_write_vcards,v 1.7 1999/04/26 22:21:34 mradwin Exp mradwin $
+# $Id: aid_write_vcards,v 1.8 1999/05/19 01:36:09 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -46,7 +46,8 @@ dbmopen(%DB,$dbmfile,0444) || die "$0: ${dbmfile}.db: $!\n";
 
 $pathname = shift;
 
-print STDERR "vcards...";
+select(STDOUT); $| = 1;
+print STDOUT "vcards...";
 if (@ARGV)
 {
     foreach (@ARGV)
@@ -60,7 +61,7 @@ if (@ARGV)
 	close(VCARD);
 
 	utime $rec{'u'}, $rec{'u'}, $filename;
-	print STDERR ' ', $_;
+	print STDOUT ' ', $_;
     }
 }
 else
@@ -78,10 +79,10 @@ else
 	close(VCARD);
 
 	utime $rec{'u'}, $rec{'u'}, $filename;
-	print STDERR "." if ($i++ % 100) == 0;
+	print STDOUT "." if ($i++ % 100) == 0;
     }
 }
-print STDERR "\n";
+print STDOUT "\n";
 
 dbmclose(%DB);
 

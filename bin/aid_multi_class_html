@@ -2,7 +2,7 @@
 
 #
 # does the html multi_class pages
-# $Id: aid_multi_class_html,v 3.34 1999/05/04 18:53:33 mradwin Exp mradwin $
+# $Id: aid_multi_class_html,v 3.35 1999/05/19 01:36:09 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -47,9 +47,10 @@ die "no _years key!\n" unless defined $DB{'_years'};
 @years = unpack("n*",$DB{'_years'});
 push(@years, 'other');
 
+select(STDOUT); $| = 1;
 foreach $year (@years)
 {
-    print STDERR ".";
+    print STDOUT ".";
     @ids = unpack("n*",$DB{"_${year}"});
 
     $outFile = &aid_config('wwwdir') . "class/${year}.html";
@@ -89,7 +90,7 @@ foreach $year (@years)
 
 $time = unpack("N",$DB{'_t'});
 dbmclose(%DB);
-print STDERR "\n";
+print STDOUT "\n";
 
 # index page
 $outFile = &aid_config('wwwdir') . "class/index.html";

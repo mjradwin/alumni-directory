@@ -1,8 +1,8 @@
 #
 #     FILE: aid_util.pl
 #   AUTHOR: Michael J. Radwin
-#    DESCR: perl library routines for the Alumni Internet Directory
-#      $Id: aid_util.pl,v 4.108 1999/05/19 01:38:51 mradwin Exp mradwin $
+#    DECR: perl library routines for the Alumni Internet Directory
+#      $Id: aid_util.pl,v 4.109 1999/05/24 18:21:51 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -1180,7 +1180,8 @@ sub aid_rebuild_secondary_keys
     local($maxval) = -1;
 
     # first pass -- gather all names with alpha data
-    print STDERR "$0: building index..." unless $quiet;
+    select(STDOUT); $| = 1;
+    print STDOUT "$0: building index..." unless $quiet;
     while(($key,$val) = each(%DB))
     {
 	if ($key =~ /^\d+$/)
@@ -1195,7 +1196,7 @@ sub aid_rebuild_secondary_keys
 	    $old_db{$key} = $val;
 	}
     }
-    print STDERR "." unless $quiet;
+    print STDOUT "." unless $quiet;
     
     # can't delete while iterating, so do it now
     while(($key,$val) = each(%old_db))
@@ -1211,7 +1212,7 @@ sub aid_rebuild_secondary_keys
 	push(@alpha_ids,$id);
     }
     undef(@datakeys);		# garbage-collect
-    print STDERR "." unless $quiet;
+    print STDOUT "." unless $quiet;
 
     # second pass - timestamps and lists
     foreach $id (@alpha_ids)
@@ -1284,7 +1285,7 @@ sub aid_rebuild_secondary_keys
 	}
 
     }
-    print STDERR "." unless $quiet;
+    print STDOUT "." unless $quiet;
 
     $DB{'_alpha'} = pack("n*", @alpha_ids);
 
@@ -1300,7 +1301,7 @@ sub aid_rebuild_secondary_keys
 	$new_db{"_${ykey}"} = $new_db{"_t_${ykey}"} = 1;
 	push(@class_ids, @alpha_ids);
     }
-    print STDERR "." unless $quiet;
+    print STDOUT "." unless $quiet;
 
     $DB{'_class'} = pack("n*", @class_ids);
 
@@ -1312,7 +1313,7 @@ sub aid_rebuild_secondary_keys
 	$DB{"_www_${ykey}"} = pack("n*", split(/ /, $www_class_members{$ykey}));
 	$new_db{"_www_${ykey}"} = 1;
     }
-    print STDERR "." unless $quiet;
+    print STDOUT "." unless $quiet;
 
     # now do years, but only for awalt
     @years = sort keys %awalt;
@@ -1322,7 +1323,7 @@ sub aid_rebuild_secondary_keys
 	$DB{"_awalt_${ykey}"} = pack("n*", split(/ /, $awalt{$ykey}));
 	$new_db{"_awalt_${ykey}"} = 1;
     }
-    print STDERR "." unless $quiet;
+    print STDOUT "." unless $quiet;
 
     $DB{'_t'} = pack("N", $latest);
     $DB{'_t_www'} = pack("N", $latest_www);
@@ -1341,7 +1342,7 @@ sub aid_rebuild_secondary_keys
 	$DB{"_t_${key}"} = pack("N", $val);
 	$new_db{"_t_${key}"} = 1;
     }
-    print STDERR ".\n" unless $quiet;
+    print STDOUT ".\n" unless $quiet;
 
     # static keys (always present)
     $new_db{'_alpha'} =  $new_db{'_years'} =

@@ -1,6 +1,6 @@
 #!/usr/bin/perl -w
 
-# $Id: aid_grep_bounce,v 1.5 1999/03/26 19:41:22 mradwin Exp mradwin $
+# $Id: aid_grep_bounce,v 1.6 1999/05/19 01:36:09 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -38,7 +38,8 @@ sub readspool {
     local($_,*SPOOL);
 
     open(SPOOL, $spoolFile) || die "can't open $spoolFile: $!\n";
-    print STDERR "reading spool...\n";
+    select(STDOUT); $| = 1;
+    print STDOUT "reading spool...\n";
     while(<SPOOL>) {
 	if (/^\s*----- The following addresses had permanent fatal errors -----\s*$/)
 	{

@@ -1,6 +1,6 @@
 #!/usr/bin/perl -w
 
-# $Id: aid_dbm_write,v 1.23 1999/04/12 16:18:53 mradwin Exp mradwin $
+# $Id: aid_dbm_write,v 1.24 1999/05/19 01:36:09 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -52,7 +52,8 @@ if ($opt_c)
 }
 
 $i = 0;
-print STDERR "$0: writing primary data...";
+select(STDOUT); $| = 1;
+print STDOUT "$0: writing primary data...";
 for (@db)
 {
     next unless defined($_) && $_ ne '';
@@ -62,14 +63,14 @@ for (@db)
     $DB{$rec{'id'}} = &aid_db_pack_rec(*rec);
     $DB{"\L$rec{'e'}\E"} = pack("n", $rec{'id'});
     
-    print STDERR "." if ($i++ % 100) == 0;
+    print STDOUT "." if ($i++ % 100) == 0;
 }
-print STDERR "\n";
+print STDOUT "\n";
 
 &aid_rebuild_secondary_keys(*DB,0,0);
 dbmclose(%DB);
 
-print STDERR "$0: build successful\n";
+print STDOUT "$0: build successful\n";
 exit(0);
 
 # avoid warnings

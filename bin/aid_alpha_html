@@ -2,7 +2,7 @@
 
 #
 # does the html version of the alphabetical address list
-# $Id: aid_alpha_html,v 3.27 1999/04/05 16:26:17 mradwin Exp mradwin $
+# $Id: aid_alpha_html,v 3.28 1999/05/19 01:36:09 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -72,6 +72,7 @@ print FMTOUT "------------------------------------------------------------------
 @alpha_ids = unpack("n*",$DB{'_alpha'});
 $initial = "Z";
 
+select(STDOUT); $| = 1;
 foreach $id (@alpha_ids)
 {
     %rec = &aid_db_unpack_rec($id,$DB{$id});
@@ -80,7 +81,7 @@ foreach $id (@alpha_ids)
     $cur_initial = substr($rec{'sn'}, 0, 1);
     $cur_initial = "\U${cur_initial}\E";
     if ("\U${initial}\E" ne $cur_initial) {
-	print STDERR ".";
+	print STDOUT ".";
         $initial = $cur_initial;
 	print FMTOUT "\n";
 	$opt_t || print FMTOUT "<a name=\"last$initial\">";
@@ -107,7 +108,7 @@ foreach $id (@alpha_ids)
     $opt_t || print FMTOUT &aid_is_new_html(*rec);
     print FMTOUT "\n";
 }
-print STDERR "\n";
+print STDOUT "\n";
 
 $opt_t || print FMTOUT "</pre>\n";
 $opt_t || print FMTOUT &aid_common_html_ftr(1);
