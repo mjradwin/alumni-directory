@@ -2,7 +2,7 @@
 
 #
 # does the html version of just home pages
-# $Id: aid_home_html,v 3.34 1999/03/27 04:25:18 mradwin Exp mradwin $
+# $Id: aid_home_html,v 3.35 1999/04/05 16:26:17 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -78,6 +78,11 @@ if ($opt_i && $opt_p == 0)
     die "no _t key!\n" unless defined $DB{'_t'};
     $time = unpack("N",$DB{'_t'});
     dbmclose(%DB);
+}
+
+if ($opt_s)
+{
+    $time = (stat(&aid_config('cgidir') . 'aid_submit.pl'))[9];
 }
 
 open(OUTFILE,">$outfile") || die "Can't open $outfile: $!\n";
