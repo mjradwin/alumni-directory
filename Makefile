@@ -2,7 +2,7 @@
 #     FILE: Makefile
 #   AUTHOR: Michael J. Radwin
 #    DESCR: Makefile for building the Alumni Internet Directory
-#      $Id: Makefile,v 3.78 1999/05/03 22:26:52 mradwin Exp mradwin $
+#      $Id: Makefile,v 3.79 1999/05/03 23:53:47 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -150,6 +150,7 @@ REUNIONS=$(WWWDIR)/etc/reunions.html
 REUNIONS_TS=$(WWWDIR)/etc/.reunions.html
 reunions:	$(REUNIONS_TS)
 $(REUNIONS_TS):	$(AIDDIR)/data/reunions.include $(BIN_HOME)
+	mkdir -p $(WWWDIR)/etc
 	$(BIN_HOME) -p11 -i $(AIDDIR)/data/reunions.include \
 		-t 'Reunion Information' \
 		$(REUNIONS)
@@ -158,6 +159,7 @@ LINKS=$(WWWDIR)/etc/links.html
 LINKS_TS=$(WWWDIR)/etc/.links.html
 links:	$(LINKS_TS)
 $(LINKS_TS):	$(AIDDIR)/data/links.include $(BIN_HOME)
+	mkdir -p $(WWWDIR)/etc
 	$(BIN_HOME) -p12 -i $(AIDDIR)/data/links.include \
 		-t 'Other MVHS and Awalt Resources' \
 		$(LINKS)
@@ -166,6 +168,7 @@ FAQ=$(WWWDIR)/etc/faq.html
 FAQ_TS=$(WWWDIR)/etc/.faq.html
 faq:	$(FAQ_TS)
 $(FAQ_TS):	$(AIDDIR)/data/faq.include $(BIN_HOME)
+	mkdir -p $(WWWDIR)/etc
 	$(BIN_HOME) -p14 -i $(AIDDIR)/data/faq.include \
 		-t 'Frequently Asked Questions' \
 		$(FAQ)
@@ -174,6 +177,7 @@ COPYRIGHT=$(WWWDIR)/etc/copyright.html
 COPYRIGHT_TS=$(WWWDIR)/etc/.copyright.html
 copyright:	$(COPYRIGHT_TS)
 $(COPYRIGHT_TS):	$(AIDDIR)/data/copyright.include $(BIN_HOME)
+	mkdir -p $(WWWDIR)/etc
 	$(BIN_HOME) -p16 -i $(AIDDIR)/data/copyright.include \
 		-t 'Acceptable Use, Privacy Statement, Copyright' \
 		$(COPYRIGHT)
@@ -181,12 +185,14 @@ $(COPYRIGHT_TS):	$(AIDDIR)/data/copyright.include $(BIN_HOME)
 STATS=$(WWWDIR)/etc/stats.html
 stats:	$(STATS)
 $(STATS):	$(BIN_STATS) $(DBFILE)
+	mkdir -p $(WWWDIR)/etc
 	$(BIN_STATS) $(DBFILE) $(STATS)
 
 SUBMIT=$(WWWDIR)/add/new.html
 SUBMIT_TS=$(WWWDIR)/add/.new.html
 submit:	$(SUBMIT_TS)
 $(SUBMIT_TS):	$(BIN_HOME) $(AID_SUBMIT_PL)
+	mkdir -p $(WWWDIR)/add
 	$(BIN_HOME) -s -p20 \
 		-t 'Add Your Listing to the Directory' \
 		$(SUBMIT)
@@ -195,6 +201,7 @@ ADDUPDATE=$(WWWDIR)/add/index.html
 ADDUPDATE_TS=$(WWWDIR)/add/.index.html
 addupdate:	$(ADDUPDATE_TS)
 $(ADDUPDATE_TS):	$(AIDDIR)/data/add.include $(BIN_HOME)
+	mkdir -p $(WWWDIR)/add
 	$(BIN_HOME) -p10 -i $(AIDDIR)/data/add.include \
 		-t 'Add or Update Your Listing' \
 		$(ADDUPDATE)
@@ -224,9 +231,11 @@ recent.txt:	$(DBFILE) $(BIN_RECENT)
 	$(BIN_RECENT) -m3 -t $(DBFILE) recent.txt
 
 tar:
+	mkdir -p $(WWWDIR)/etc
 	( cd $(HOME) ; tar cfz $(WWWDIR)/etc/mvhsaid.tar.gz $(TARFILES) )
 
 snapshot:
+	mkdir -p $(WWWDIR)/etc
 	( cd $(HOME) ; tar cfz $(WWWDIR)/etc/snapshot.tar.gz $(SNAPSHOTFILES) )
 
 chmod:
