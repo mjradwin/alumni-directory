@@ -1,6 +1,6 @@
 #!/usr/bin/perl -w
 
-# $Id: aid_addname,v 3.33 1999/03/27 04:56:30 mradwin Exp mradwin $
+# $Id: aid_addname,v 3.34 1999/04/05 16:26:17 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -33,6 +33,11 @@ $usage = "usage: $0 [-hwm] [mailspoolfile]
 $opt_h && die "$usage\n";
 $opt_h = $opt_h;                # avoid warning
 $opt_w = $opt_w;                # avoid warning
+
+$sub_beg_str = &aid_config('sub_beg_str');
+$sub_end_str = &aid_config('sub_end_str');
+$note_beg_str = &aid_config('note_beg_str');
+$note_end_str = &aid_config('note_end_str');
 
 $cp   = &aid_config('cp');
 $make = &aid_config('make');
@@ -72,21 +77,21 @@ sub readspool {
     print STDERR "reading spool...\n";
     while(<SPOOL>)
     {
-	next unless /^_AID_BEGIN_SUBMISSION_/;
+	next unless /^$sub_beg_str/o;
 	
 	%rec = ();
 	$newsp = 0;
 	while(<SPOOL>)
 	{
-	    last if /^_AID_END_SUBMISSION_/;
+	    last if /^$sub_end_str/o;
 
-	    if (/^_AID_BEGIN_MESSAGE_/)
+	    if (/^$note_beg_str/o)
 	    {
 		$note = '';
 		$maxlen = 0;
 		while(<SPOOL>)
 		{
-		    last if /^_AID_END_MESSAGE_/;
+		    last if /^$note_end_str/o;
 		    $maxlen = length($_) if (length($_) > $maxlen);
 		    $note .= $_;
 		}
@@ -95,6 +100,7 @@ sub readspool {
 	    else
 	    {
 		chop;
+		warn "$0: bad spool line $_\n" unless /^.+=.*$/;
 		($key,$val) = split(/=/, $_, 2);
 		$rec{$key} = $val;
 	    }
