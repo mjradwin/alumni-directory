@@ -4,7 +4,7 @@
 #     FILE: msg.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: Alumni Internet Directory update redirector
-#      $Id: msg,v 1.1 2003/02/20 01:09:26 mradwin Exp mradwin $
+#      $Id: msg,v 1.2 2003/02/20 01:16:42 mradwin Exp mradwin $
 #
 #   Copyright (c) 2003  Michael John Radwin
 #
@@ -181,7 +181,7 @@ sub form
     $message = aid_html_entify_str($message);
 
     print <<_EOHTML_;
-<form method="post" action="$action">
+<form method="post" action="$action/post">
 <input type="hidden" name="id" value="$id">
 <input type="hidden" name="hash" value="$hash">
 <table border="0" cellspacing="1" cellpadding="2" >
