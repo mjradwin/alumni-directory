@@ -1,6 +1,6 @@
 #!/usr/bin/perl -w
 
-# $Id: aid_dbm_read,v 1.9 1999/02/27 00:16:47 mradwin Exp mradwin $
+# $Id: aid_dbm_read,v 1.10 1999/03/02 23:25:36 mradwin Exp mradwin $
 
 require 'aid_util.pl';
 require 'getopts.pl';
@@ -134,19 +134,19 @@ sub display_key_val
 	print "record $key = ", &aid_join(*rec), "\n";
     }
 
-    elsif ($key =~ /^__(awalt_)?(\d\d\d\d)__$/)
+    elsif ($key =~ /^__(awalt_|www_)?(\d\d\d\d)__$/)
     {
 	print "year ", (defined $1 ? $1 : ''), $2,
 	      " = ", join(',', unpack("n*", $val)), "\n";
     }
 
-    elsif ($key =~ /^__(awalt_)?other__$/)
+    elsif ($key =~ /^__(awalt_|www_)?other__$/)
     {
 	print "year ", (defined $1 ? $1 : ''), 'other',
 	      " = ", join(',', unpack("n*", $val)), "\n";
     }
 
-    elsif ($key =~ /^__(awalt_)?years__$/)
+    elsif ($key =~ /^__(awalt_|www_)?years__$/)
     {
 	print "list ", (defined $1 ? $1 : ''), 'years',
 	      " = ", join(',', unpack("n*", $val)), "\n";
@@ -165,6 +165,12 @@ sub display_key_val
     elsif ($key =~ /^__created__$/)
     {
 	print "created = ", &ctime(unpack("N", $val));
+    }
+
+    elsif ($key =~ /^__t(_[^_]+)?__$/)
+    {
+	print "time", (defined $1 ? $1 : ''), 
+	  " = ", &ctime(unpack("N", $val));
     }
 
     elsif ($key =~ /\@/)

@@ -1,6 +1,6 @@
 #!/usr/bin/perl -w
 
-# $Id: aid_dbm_write,v 1.13 1999/02/27 02:00:14 mradwin Exp mradwin $
+# $Id: aid_dbm_write,v 1.14 1999/03/02 17:23:24 mradwin Exp mradwin $
 
 require 'aid_util.pl';
 require 'getopts.pl';
@@ -19,6 +19,7 @@ $opt_h = $opt_h;		# avoid warning
 %awalt = ();
 %class_members = ();
 %class_latest = ();
+%www_class_members = ();
 @alpha_ids = ();
 
 print STDERR "reading text db...";
@@ -50,8 +51,6 @@ for (@db)
     if ($rec{'valid'})
     {
 	$latest = $rec{'time'} if $rec{'time'} > $latest;
-	$latest_www = $rec{'time'} if
-	    (($rec{'www'} ne '') && ($rec{'time'} > $latest_www));
 
 	$ykey = ($rec{'year'} =~ /^\d+$/) ? $rec{'year'} : 'other';
 	if (defined $class_members{$ykey})
@@ -64,6 +63,19 @@ for (@db)
 	{
 	    $class_members{$ykey}  =       $rec{'id'};
 	    $class_latest{$ykey}   =       $rec{'time'};
+	}
+
+	if ($rec{'www'} ne '')
+	{
+	    $latest_www = $rec{'time'} if $rec{'time'} > $latest_www;
+	    if (defined $www_class_members{$ykey})
+	    {
+		$www_class_members{$ykey} .= ' ' . $rec{'id'};
+	    }
+	    else
+	    {
+		$www_class_members{$ykey}  =       $rec{'id'};
+	    }
 	}
 
 	if ($rec{'school'} =~ /awalt/i)
@@ -112,6 +124,15 @@ foreach $ykey (@years)
 
 $DB{'__class__'} = pack("n*", @class_ids);
 print STDERR ".";
+
+# now do years, but only for www
+@years = sort keys %www_class_members;
+$DB{'__www_years__'} = pack("n*",grep(/\d+/,@years));
+foreach $ykey (@years)
+{
+    $DB{"__www_${ykey}__"} = pack("n*", split(/ /, $www_class_members{$ykey}));
+    print STDERR ".";
+}
 
 # now do years, but only for awalt
 @years = sort keys %awalt;
