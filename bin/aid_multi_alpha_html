@@ -2,7 +2,7 @@
 
 #
 # does the html verbose pages
-# $Id: aid_multi_alpha_html,v 3.26 1999/02/27 02:00:14 mradwin Exp mradwin $
+# $Id: aid_multi_alpha_html,v 3.27 1999/03/02 01:26:34 mradwin Exp mradwin $
 #
 
 require 'aid_util.pl';
@@ -99,8 +99,7 @@ sub html_pre_entry {
     $retval .= "<a href=\"mailto:" . $rec{'email'} . "\">" if $do_html_p;
     $retval .= $rec{'email'};
     $retval .= "</a>" if $do_html_p;
-    $retval .= " " . &aid_image_tag('new_anchored')
-	if ($do_html_p && &is_new($rec{'time'}));
+    $retval .= &aid_is_new_html(*rec) if $do_html_p;
     $retval .= "\n";
 
     $retval;

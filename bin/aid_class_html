@@ -2,7 +2,7 @@
 
 #
 # does the html version of the grad-date address list
-# $Id: aid_class_html,v 3.25 1999/02/27 02:00:14 mradwin Exp mradwin $
+# $Id: aid_class_html,v 3.26 1999/03/02 01:26:34 mradwin Exp mradwin $
 #
 
 require 'aid_util.pl';
@@ -115,7 +115,7 @@ foreach $year (@years)
 	$opt_t || print FMTOUT "<a href=\"mailto:", $rec{'email'}, "\">";
 	print FMTOUT $rec{'email'};
 	$opt_t || print FMTOUT "</a>";
-	$opt_t || print FMTOUT " " . &aid_image_tag('new_anchored') if &is_new($rec{'time'});
+	$opt_t || print FMTOUT &aid_is_new_html(*rec);
 	print FMTOUT "\n";
     }
 }

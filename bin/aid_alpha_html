@@ -2,7 +2,7 @@
 
 #
 # does the html version of the alphabetical address list
-# $Id: aid_alpha_html,v 3.21 1999/02/24 20:37:19 mradwin Exp mradwin $
+# $Id: aid_alpha_html,v 3.22 1999/02/27 00:16:47 mradwin Exp mradwin $
 #
 
 require 'aid_util.pl';
@@ -84,7 +84,7 @@ foreach $id (@alpha_ids)
     $opt_t || print FMTOUT "<a href=\"mailto:", $rec{'email'}, "\">";
     print FMTOUT $rec{'email'};
     $opt_t || print FMTOUT "</a>";
-    $opt_t || print FMTOUT " " . &aid_image_tag('new_anchored') if &is_new($rec{'time'});
+    $opt_t || print FMTOUT &aid_is_new_html(*rec);
     print FMTOUT "\n";
 }
 print STDERR "\n";
