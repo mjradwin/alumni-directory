@@ -2,11 +2,11 @@
 #     FILE: aid_util.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: perl library routines for the Alumni Internet Directory
-#      $Id: aid_util.pl,v 3.38 1998/08/20 21:57:45 mradwin Exp mradwin $
+#      $Id: aid_util.pl,v 3.39 1998/09/03 02:25:23 mradwin Exp mradwin $
 #
 
 $aid_util'rcsid =
- '$Id: aid_util.pl,v 3.38 1998/08/20 21:57:45 mradwin Exp mradwin $';
+ '$Id: aid_util.pl,v 3.39 1998/09/03 02:25:23 mradwin Exp mradwin $';
 
 # ----------------------------------------------------------------------
 # CONFIGURATION
@@ -64,10 +64,7 @@ $aid_util'rcsid =
      "Acceptable&nbsp;Use," . $aid_util'config{'master_path'} . "copyright.html", #'#
      );
 
-($i,$i,$i,$aid_util'mday,$aid_util'mon,$aid_util'yr,$i,$i,$i) #')#
-    = localtime(time);
-$aid_util'caldate = sprintf("%d/%02d/%02d", ($aid_util'yr+1900),
-    ($aid_util'mon+1), $aid_util'mday);
+$aid_util'caldate = &aid_caldate(time); #'#
 
 $aid_util'pics_label = #'#
 "<meta http-equiv=\"PICS-Label\" content='(PICS-1.1 " . 
@@ -197,14 +194,15 @@ sub aid_image_tag {
     $image_tag{$_[0]};
 }
 
-#sub aid_tableheader {
-#    require 'tableheader.pl';
-#    package aid_util;
-#
-#    local($text) = @_;
-#    
-#    &main'tableheader($text,1,$header_bg,$header_fg,1); #'#
-#}
+sub aid_caldate {
+    package aid_util;
+
+    local($time) = @_;
+    local($i,$day,$month,$year);
+
+    ($i,$i,$i,$day,$month,$year,$i,$i,$i) = localtime($time);
+    sprintf("%d/%02d/%02d", ($year+1900), ($month+1), $day);
+}
 
 # is the GMT less than one month ago?
 # 2678400 = 31 days * 24 hrs * 60 mins * 60 secs
@@ -709,7 +707,6 @@ sub message_footer {
 }
 
 sub aid_write_verbose_entry {
-    require 'ctime.pl';
     package aid_util;
 
     local(*FMTOUT,*rec_arg,$display_year,$suppress_new) = @_;
@@ -769,11 +766,11 @@ sub aid_write_verbose_entry {
     print FMTOUT "<dt>Location: <strong>$rec{'location'}</strong></dt>\n"
 	if $rec{'location'} ne '';
     print FMTOUT "<dt>Joined: ";
-    $date = &main'ctime($rec{'created'}); chop $date;
+    $date = &main'aid_caldate($rec{'created'}); #'#
     print FMTOUT "<strong>$date</strong></dt>\n";
     if ($rec{'time'} != $rec{'created'}) {
 	print FMTOUT "<dt>Updated: ";
-	$date = &main'ctime($rec{'time'}); chop $date;
+        $date = &main'aid_caldate($rec{'time'}); #'#
 	print FMTOUT "<strong>$date</strong></dt>\n";
     }
 
@@ -786,7 +783,6 @@ sub aid_write_verbose_entry {
 
 
 sub about_text {
-    require 'ctime.pl';
     package aid_util;
 
     local($retval) = '';
@@ -883,12 +879,12 @@ sub about_text {
 	$rec{'created'} ne '' && $rec{'created'} != 0) {
 	$retval .= "\n";
 	$retval .= "Joined Directory   : ";
-	$retval .= &main'ctime($rec{'created'}); #'#
+        $retval .= &main'aid_caldate($rec{'created'}); #'#
     }
 
     if ($rec{'time'} ne '' && $rec{'time'} != 0) {
 	$retval .= "Last Updated       : ";
-	$retval .= &main'ctime($rec{'time'}); #'#
+	$retval .= &main'aid_caldate($rec{'time'}); #'#
     }
 
     $rec{'message'} = &main'aid_get_usertext($rec{'id'}) #'#
