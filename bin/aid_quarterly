@@ -2,7 +2,7 @@
 
 #
 # massmails quarterly messages
-# $Id: aid_quarterly,v 1.1 1999/11/29 19:05:28 mradwin Exp mradwin $
+# $Id: aid_quarterly,v 1.2 1999/11/30 21:27:07 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -35,6 +35,8 @@ mkdir classonly
 ./bin/aid_multi_class_welcome data/working.db classonly
 rm -rf classonly
 
-cat logs/massmail-${date}-?.log > logs/massmail-${date}.log
+ids=`./bin/aid_dbm_read -oi data/working.db`
+./bin/aid_welcome -c -l logs/massmail-${date}-c.log data/working.db $ids
 
+cat logs/massmail-${date}-?.log > logs/massmail-${date}.log
 rm -f logs/massmail-${date}-?.log
