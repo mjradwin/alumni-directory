@@ -1,6 +1,6 @@
 #!/usr/local/bin/perl5 -w
 
-# $Id: aid_addname,v 5.15 2000/04/25 01:31:38 mradwin Exp mradwin $
+# $Id: aid_addname,v 5.16 2000/04/25 18:22:58 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -24,29 +24,26 @@ $dirname =~ s,/[^/]+$,,;
 unshift(@INC, $dirname);
 
 use DB_File;
+use Fcntl qw(:DEFAULT :flock);
 
 require 'getopts.pl';
 require 'aid_util.pl';
 
 $0 =~ s,.*/,,;  # basename
-$usage = "usage: $0 [-hwm] [mailspoolfile]
+$usage = "usage: $0 [-hwm]
     -h        Display usage information.
     -w        Don't mail welcome messages.
     -m        Manual operation (don't rebuild or mail welcome messages).
+    -q        Quiet mode (no error messages).
 ";
 
-&Getopts('hmw') || die "$usage\n";
+&Getopts('hmwq') || die "$usage\n";
 $opt_h && die "$usage\n";
 $opt_h = $opt_h;                # avoid warning
 $opt_w = $opt_w;                # avoid warning
-
-$sub_beg_str = &aid_config('sub_beg_str');
-$sub_end_str = &aid_config('sub_end_str');
-$note_beg_str = &aid_config('note_beg_str');
-$note_end_str = &aid_config('note_end_str');
+$opt_m = $opt_m;                # avoid warning
 
 $dbmfile = &aid_config('aiddir') . "data/working.db";
-$spoolfile = $ARGV[0] ? $ARGV[0] : &aid_config('spoolfile');
 
 $make = &aid_config('make');
 -x $make || die "$0: $make is not executable!";
@@ -56,99 +53,72 @@ $make = &aid_config('make');
 @mod_keys = ();
 
 select(STDOUT); $| = 1;
-&readspool($spoolfile);
-&rebuild() unless $opt_m;
-&mail_welcome() unless $opt_m || $opt_w;
+$status = &readspool();
+if (!$opt_m && $status)
+{
+    &rebuild();
+    &mail_welcome() unless $opt_w;
+}
 
-print STDOUT "done!\n";
+print STDOUT "done!\n"
+    unless $opt_q;
 exit(0);
 
 sub readspool
 {
-    local($spoolFile) = @_;
-    local($_);
-    local($logFile,*SPOOL,$newsp,$browserLog,$success,$state);
+    my($success) = 0;
 
-    $success = 0;
-    $browserLog = &aid_config('aiddir') . "logs/browsers.log";
-    open(SPOOL, $spoolFile) || die "$0: can't open $spoolFile: $!\n";
-    print STDOUT "reading spool...\n";
-    while(<SPOOL>)
-    {
-	$state = 0;
-	next unless /^$sub_beg_str/o;
+    my($staging) = &aid_config('staging');
+    die "$staging: $!\n" unless -r $staging;
 
-	$state = 1;
-	%rec = ();
-	$newsp = 0;
-	while(<SPOOL>)
-	{
-	    if (/^$sub_end_str/o)
-	    {
-		$state = 2;
-		last;
-	    }
+    my($db) = tie(%DBS, 'DB_File', $staging, O_CREAT|O_RDWR, 0644,
+		  $DB_File::DB_HASH)
+	or die "$staging: $!\n";
 
-	    if (/^$note_beg_str/o)
-	    {
-		$note = '';
-		$maxlen = 0;
-		while(<SPOOL>)
-		{
-		    last if /^$note_end_str/o;
-		    $maxlen = length($_) if (length($_) > $maxlen);
-		    $note .= $_;
-		}
-		$newsp = 1;	# they had a What's New? note
-	    }
-	    else
-	    {
-		chop;
-		warn "$0: bad spool line $_\n" unless /^.+=.*$/;
-		($key,$val) = split(/=/, $_, 2);
-		$rec{$key} = $val;
-	    }
-	}
+    my($fd) = $db->fd;
+    open(DB_FH, "+<&=$fd") || die "dup $!";
 
-	if ($state != 2)
-	{
-	    warn "corrupt mailspool!  attempting to recover...\n";
-	    next;
-	}
-
-	if ($newsp)
-	{
-	    $rec{'n'} = $note;
-	}
-	else
-	{
-	    $rec{'n'} = '';
-	}
-
-	&addname(*rec) || die "$0: can't add $rec{'id'} $rec{'e'}!\n";
-#	print STDOUT $note if $newsp;
-
-	if ($rec{'browser'} !~ /^\s*$/)
-	{
-	    open(BROWSERLOG,">>$browserLog") || die "$0: $browserLog: $!\n";
-	    print BROWSERLOG time, " - $rec{'id'} - $rec{'browser'}\n";
-	    close(BROWSERLOG);
-	}
-
-	$success = 1;
+    unless (flock (DB_FH, LOCK_EX | LOCK_NB)) {
+	unless (flock (DB_FH, LOCK_EX)) { die "flock: $!" }
     }
-    close(SPOOL);
+
+    print STDOUT "reading spool...\n"
+	unless $opt_q;
+    if (defined $DBS{'_verified'})
+    {
+	@key8s = split(/\0/, $DBS{'_verified'});
+
+	foreach $key8 (@key8s)
+	{
+	    my($val) = $DBS{$key8};
+	    my($id,$packed) = split(/\0/, $val, 2);
+	    %rec = &aid_db_unpack_rec($id,$packed);
+
+	    &addname(*rec) || die "$0: can't add $rec{'id'} $rec{'e'}!\n";
+	    $success = 1;
+
+	    $DBS{$key8} = "\0";
+	}
+
+	delete $DBS{'_verified'};
+	$db->sync;
+    }
+
+    flock(DB_FH, LOCK_UN);
+    undef $db;
+    untie(%DBS);
+    close(DB_FH);
 
     if ($success)
     {
-	local(%DB);
+	my(%DB);
 	tie(%DB, 'DB_File', $dbmfile, O_RDWR|O_CREAT, 0644, $DB_File::DB_HASH)
 	    or die "$dbmfile: $!\n";
 	@mod_keys = &aid_rebuild_secondary_keys(*DB,0,0,1);
 	untie(%DB);
     }
 
-    1;
+    $success;
 }
 
 
@@ -160,7 +130,8 @@ sub rebuild
 
     $cmd = $make . ' MOD_IDS="' . join(' ', @new_ids, @upd_ids) . '"' .
 	' MOD_KEYS="' . join(' ', @mod_keys) . '"';
-    print STDOUT "cd ", &aid_config('aiddir'), "; $cmd\n";
+    print STDOUT "cd ", &aid_config('aiddir'), "; $cmd\n"
+	unless $opt_q;
 
     system $cmd || die "$0: failed to run $cmd: $!\n";
 }
@@ -174,14 +145,16 @@ sub mail_welcome
     if (@new_ids)
     {
 	$cmd = "./bin/aid_welcome $dbmfile " . join(' ', @new_ids);
-	print STDOUT $cmd, "\n";
+	print STDOUT $cmd, "\n"
+	    unless $opt_q;
 	system $cmd || die "$0: failed to run $cmd: $!\n";
     }
 
     if (@upd_ids)
     {
 	$cmd = "./bin/aid_welcome -u $dbmfile " . join(' ', @upd_ids);
-	print STDOUT $cmd, "\n";
+	print STDOUT $cmd, "\n"
+	    unless $opt_q;
 	system $cmd || die "$0: failed to run $cmd: $!\n";
     }
 }
@@ -255,7 +228,8 @@ sub addname
 	$DB{'_nextid'} = $DB{'_nextid'} + 1;
 
 	push(@new_ids, $rec{'id'});
-	print     "new - ";
+	print     "new - "
+	    unless $opt_q;
 	print LOG "new - ";
     }
     elsif (defined $DB{$rec{'id'}})
@@ -272,7 +246,8 @@ sub addname
 	    delete $DB{"\L$email\E"};
 	}
 
-	print     "upd ", $oldrec{'e'}, " ";
+	print     "upd ", $oldrec{'e'}, " "
+	    unless $opt_q;
 	print LOG "upd ", $oldrec{'e'}, " ";
 	undef(%oldrec);
     }
@@ -280,7 +255,8 @@ sub addname
     {
 	warn "$rec{'id'} doesn't appear to be new, but not in DB.\n";
 	push(@new_ids, $rec{'id'});
-	print     "new - ";
+	print     "new - "
+	    unless $opt_q;
 	print LOG "new - ";
     }
 
@@ -293,7 +269,8 @@ sub addname
     untie(%DB);
 
     local($joined) = &aid_ampersand_join(*rec);
-    print     $joined, "\n";
+    print     $joined, "\n"
+	unless $opt_q;
     print LOG $joined, "\n";
     close(LOG);
 
