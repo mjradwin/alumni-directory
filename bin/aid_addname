@@ -1,6 +1,6 @@
 #!/usr/local/bin/perl
 
-# $Id$
+# $Id: mv_addname,v 1.6 1997/12/22 22:31:42 mjr Exp mjr $
 
 require 'getopts.pl';
 require 'mv_util.pl';
@@ -21,11 +21,22 @@ $opt_h && die "$usage\n";
 print "done!\n";
 exit(0);
 
+# make the "what's new" text fit in 55 columns.
+format NEWSOUT =
+^<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<~~
+$message
+.
+
+format STDOUT =
+^<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<~~
+$message
+.
+
 sub readspool {
     local($spoolFile) = @_;
     local($[) = 0;
     local($_);
-    local($id,$newsFile,*NEWSOUT,*SPOOL);
+    local($id,$newsFile,*SPOOL);
 
     open(SPOOL, $spoolFile) || die "can't open $spoolFile: $!\n";
     print "reading spool...\n";
@@ -45,17 +56,24 @@ sub readspool {
 		open(NEWSOUT, ">$newsFile") ||
 		    die "Can't open $newsFile: $!\n";
 		print "MESSAGE $newsFile\n";
+		$message = '';
 		while(<SPOOL>) {
 		    last if /^_MVHSAID_END_MESSAGE_/;
-		    print $_;
-		    print NEWSOUT $_;
+		    $message .= $_;
 		}
+		$message_bak = $message;
+		write(NEWSOUT);	# destructively modifies message
+		$message = $message_bak;
+		write(STDOUT);
 		close(NEWSOUT);
 	    }
 	}
     }
     close(SPOOL);
+
+    1;
 }
+
 
 sub rebuild {
     chdir &mv_config('mvhsdir') || die "can't chdir: $!\n";
