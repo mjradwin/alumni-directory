@@ -30,14 +30,16 @@ $ENV{'PATH_INFO'} =~ s/%([A-Fa-f0-9]{2})/pack("c",hex($1))/ge;
 
 if ($ENV{'PATH_INFO'} =~ m,/(\d+)\.vcf,i)
 {
+    $id = $1;
+
     $dbmfile = &aid_config('dbmfile');
     $dbmfile =~ s/\.db$//;
 
     dbmopen(%DB,$dbmfile,0444);
-    $val = $DB{$1};
+    $val = $DB{$id};
     dbmclose(%DB);
 
-    %rec = &aid_db_unpack_rec($1,$val);
+    %rec = &aid_db_unpack_rec($id,$val);
 
     print "Last-Modified: ", &aid_http_date($rec{'time'}), "\015\012";
     print "Content-Type: text/x-vcard\015\012\015\012";
