@@ -1,6 +1,6 @@
 #!/usr/bin/perl -w
 
-# $Id: aid_bounce,v 3.12 1998/05/18 17:16:19 mradwin Exp mradwin $
+# $Id: aid_bounce,v 3.13 1998/06/01 16:45:04 mradwin Exp mradwin $
 
 require 'ctime.pl';
 require 'getopts.pl';
@@ -61,6 +61,8 @@ unlink($tmpFile) || die "error: couldn't unlink $tmpFile: $!\n";
 exit(0);
 
 
+# freshen the user only if the bounce was non-zero and their
+# freshness is less than the parameter.
 sub freshen {
     for (@db) {
 	next unless defined($_) && $_ ne '';
@@ -75,7 +77,8 @@ sub freshen {
     1;
 }
 
-
+# if the user has never bounced, set firstbounce to time.
+# if the user has bounced, set freshness to time
 sub bounce_argv {
     for (@ARGV) {
 	if (/^\d+$/) {
@@ -101,7 +104,12 @@ sub bounce_argv {
 	} else {
 	    print &ctime($rec{'bounces'});
 	}
-	$rec{'bounces'} = $time;
+
+	if ($rec{'bounces'} != 0) {
+	    $rec{'fresh'} = $time;
+	} else {
+	    $rec{'bounces'} = $time;
+	}
 	$rec{'valid'} = 0 if $opt_v;
 	$db[$rec{'id'}] = &aid_join(*rec);
     }
