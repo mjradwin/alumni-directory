@@ -2,7 +2,7 @@
 
 #
 # generates address books in several formats
-# $Id: aid_book,v 6.4 2003/10/30 17:56:04 mradwin Exp mradwin $
+# $Id: aid_book,v 6.5 2004/02/17 03:48:52 mradwin Exp mradwin $
 #
 # Copyright (c) 2003  Michael J. Radwin.
 # All rights reserved.
@@ -66,6 +66,7 @@ my $usage = "usage: $0 [-h] [-y year] -{p,e,b,w,m,n,l,v,o} outfile infile.db
     -l        Netscape4 .ldif address book
     -v        vCard book
     -o        Outlook Express .csv
+    -t        Plain text
 
     -y year   Only output for a given graduating class.
 ";
@@ -73,12 +74,13 @@ my $usage = "usage: $0 [-h] [-y year] -{p,e,b,w,m,n,l,v,o} outfile infile.db
 # get the command-line options and die if there is a bad option or
 # there are no filenames
 my(%opts);
-getopts('hp:e:b:w:m:n:l:v:o:y:', \%opts) || die "$usage\n";
+getopts('hp:e:b:w:m:n:l:v:o:y:t:', \%opts) || die "$usage\n";
 $opts{'h'} && die "$usage\n";
 $ARGV[0] || die "$usage\n";
 
 # must have at least 1 option
 die "$usage\n" unless
+    $opts{'t'} ||
     $opts{'p'} || $opts{'e'} || $opts{'b'} || $opts{'w'} || 
     $opts{'m'} || $opts{'n'} || $opts{'l'} || $opts{'v'} || $opts{'o'};
 
@@ -90,6 +92,7 @@ tie(%DB, 'DB_File::Lock', $dbmfile, O_RDONLY, 0444, $DB_HASH, 'read')
 die "no _alpha key!" unless defined $DB{'_alpha'};
 
 my($BOOKp,$BOOKe,$BOOKb,$BOOKw,$BOOKm,$BOOKn,$BOOKl,$BOOKv,$BOOKo);
+my $BOOKt;
 
 if ($opts{'p'}) {
     open($BOOKp,">$opts{'p'}") || die "Can't open $opts{'p'}: $!\n"; }
@@ -109,6 +112,8 @@ if ($opts{'v'}) {
     open($BOOKv,">$opts{'v'}") || die "Can't open $opts{'v'}: $!\n"; }
 if ($opts{'o'}) {
     open($BOOKo,">$opts{'o'}") || die "Can't open $opts{'o'}: $!\n"; }
+if ($opts{'t'}) {
+    open($BOOKt,">$opts{'t'}") || die "Can't open $opts{'t'}: $!\n"; }
 
 $opts{'p'} && aid_util::book_write_prefix($BOOKp,'p');
 $opts{'e'} && aid_util::book_write_prefix($BOOKe,'e');
@@ -144,6 +149,7 @@ foreach my $id (@alpha_ids)
     $opts{'l'} && aid_util::book_write_entry($BOOKl,'l',\%rec);
     $opts{'v'} && aid_util::book_write_entry($BOOKv,'v',\%rec);
     $opts{'o'} && aid_util::book_write_entry($BOOKo,'o',\%rec);
+    $opts{'t'} && print $BOOKt $rec{'e'}, "\n";
 }
 
 untie(%DB);
@@ -167,5 +173,6 @@ $opts{'n'} && close($BOOKn);
 $opts{'l'} && close($BOOKl);
 $opts{'v'} && close($BOOKv);
 $opts{'o'} && close($BOOKo);
+$opts{'t'} && close($BOOKt);
 
 exit(0);
