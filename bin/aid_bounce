@@ -1,6 +1,6 @@
 #!/usr/local/bin/perl -w
 
-# $Id: aid_bounce,v 5.9 2000/04/25 18:22:58 mradwin Exp mradwin $
+# $Id: aid_bounce,v 5.10 2001/09/16 16:57:51 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -24,6 +24,7 @@ $dirname =~ s,/[^/]+$,,;
 unshift(@INC, $dirname);
 
 use DB_File;
+use Fcntl qw(:DEFAULT :flock);
 
 require 'getopts.pl';
 require 'aid_util.pl';
@@ -62,8 +63,12 @@ if ($opt_d)
     $mode = (stat($dbmfile))[2];
     chmod 0444, $dbmfile;
 
-    tie(%DB, 'DB_File', $dbmfile, O_RDONLY, 0444, $DB_File::DB_HASH)
+    my($db) = tie(%DB, 'DB_File', $dbmfile, O_RDONLY, 0444, $DB_File::DB_HASH)
 	or die "$dbmfile: $!\n";
+    my($fd) = $db->fd;
+    open(DB_FH, +<&=$fd") || die "dup $!";
+    unless (flock (DB_FH, LOCK_SH)) { die "flock: $!" }
+
     while (($key,$val) = each %DB)
     {
 	next unless $key =~ /^\d+$/;
@@ -77,30 +82,48 @@ if ($opt_d)
 	    if $rec{'f'} > $rec{'b'};
 	print "\n";
     }
+
+    flock(DB_FH, LOCK_UN);
+    undef $db;
     untie(%DB);
+    close(DB_FH);
 
     chmod $mode, $dbmfile;
     exit(0);
 }
 elsif ($opt_f)
 {
-    tie(%DB, 'DB_File', $dbmfile, O_RDWR|O_CREAT, 0644, $DB_File::DB_HASH)
+    my($db) = tie(%DB, 'DB_File', $dbmfile, O_RDWR|O_CREAT, 0644,
+		  $DB_File::DB_HASH)
 	or die "$dbmfile: $!\n";
+    my($fd) = $db->fd;
+    open(DB_FH, "+<&=$fd") || die "dup $!";
+    unless (flock (DB_FH, LOCK_EX)) { die "flock: $!" }
 
     @freshness = &time_log($opt_f);
     &freshen(@freshness);
 
-    untie(%DB);
+    flock(DB_FH, LOCK_UN);
+    undef $db;
+    untie(%DBS);
+    close(DB_FH);
 }
 else
 {
-    tie(%DB, 'DB_File', $dbmfile, O_RDWR|O_CREAT, 0644, $DB_File::DB_HASH)
+    my($db) = tie(%DB, 'DB_File', $dbmfile, O_RDWR|O_CREAT, 0644,
+		  $DB_File::DB_HASH)
 	or die "$dbmfile: $!\n";
+    my($fd) = $db->fd;
+    open(DB_FH, "+<&=$fd") || die "dup $!";
+    unless (flock (DB_FH, LOCK_EX)) { die "flock: $!" }
 
     &bounce_args(@ARGV);
     &aid_rebuild_secondary_keys(*DB,0);
 
-    untie(%DB);
+    flock(DB_FH, LOCK_UN);
+    undef $db;
+    untie(%DBS);
+    close(DB_FH);
 }
 
 exit(0);
