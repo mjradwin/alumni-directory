@@ -4,7 +4,7 @@
 #     FILE: mvhsaid.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: Alumni Internet Directory CGI interface
-#      $Id: mvhsaid,v 3.61 1999/02/11 16:01:05 mradwin Exp mradwin $
+#      $Id: mvhsaid,v 3.62 1999/02/11 17:06:21 mradwin Exp mradwin $
 #
 
 require 'aid_util.pl';
@@ -22,7 +22,7 @@ if ($ENV{'SCRIPT_NAME'} =~ m,/nph-,)
 # configuration
 $mailprog = &aid_config('mailprog');
 $dbmfile = &aid_config('wwwdir') . 'master';
-$rcsid = '$Id: mvhsaid,v 3.61 1999/02/11 16:01:05 mradwin Exp mradwin $'; #'fnt
+$rcsid = '$Id: mvhsaid,v 3.62 1999/02/11 17:06:21 mradwin Exp mradwin $'; #'fnt
 
 
 &CgiDie(&aid_config('short_school') . " Alumni: Script Error",
@@ -293,10 +293,12 @@ sub confirm_submission {
     print "Please confirm that all of the below information is
 correct.</font></strong></p>
 
-<p>If you have made any mistakes, select the
-<strong>&lt;&nbsp;Back</strong> button to edit your entry.<br>
-If everything is correct, please hit the
-<strong>Finish&nbsp;&gt;</strong> button.</p>\n";
+<ul>
+<li>If you have made any mistakes, select the
+<strong>&lt;&nbsp;Back</strong> button to edit your entry.
+<li>If everything is correct, please hit the
+<strong>Finish&nbsp;&gt;</strong> button.
+</ul>\n";
 
     print "\n<form method=post action=\"", &aid_config('confirm_cgi'), "\">\n";
     %newrec = &rec_html_entify(*in);
@@ -306,11 +308,7 @@ If everything is correct, please hit the
 	print " value=\"$newrec{$_}\">\n";
     }
 
-    print "\n<p align=right>\n";
-    print "<input type=submit name=\"revise\" value=\"&lt;&nbsp;Back\">\n";
-    print "&nbsp;\n";
-    print "<input type=submit name=\"confirmed\" value=\"Finish&nbsp;&gt;\">\n";
-    print "</p>\n\n";
+    print "\n\n";
     print &about_text(*in,1,1,0), "\n";
     print "<p align=right>\n";
     print "<input type=submit name=\"revise\" value=\"&lt;&nbsp;Back\">\n";
