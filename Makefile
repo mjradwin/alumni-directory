@@ -2,7 +2,7 @@
 #     FILE: Makefile
 #   AUTHOR: Michael J. Radwin
 #    DESCR: Makefile for building the Alumni Internet Directory
-#      $Id: Makefile,v 5.16 1999/06/29 21:22:17 mradwin Exp mradwin $
+#      $Id: Makefile,v 5.17 1999/06/29 21:50:05 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -57,7 +57,7 @@ SNAPSHOTFILES= \
 all:	index submit \
 	addupdate reunions links faq copyright \
 	recent multi_class multi_alpha \
-	pages goners download stats pine_book rss
+	pages goners download stats pine_book rss db_dump
 
 SYMLINKS=$(AID_SUBMIT_PL) $(AID_UTIL_PL) $(BINDIR)/aid_config.pl \
 	$(BINDIR)/$(SCHOOL)_config.pl $(CGISRC)/cgi-lib.pl
@@ -95,6 +95,8 @@ dbfile:	$(DBFILE)
 $(DBFILE):	$(WORKING_DB)
 	$(CP) $(WORKING_DB) $(DBFILE)
 	chmod 0444 $(DBFILE)
+
+db_dump:	$(DBFILE)
 	$(BINDIR)/aid_dbm_read -u ./data/master.u $(DBFILE)
 
 MULTI_ALPHA_TS=$(WWWDIR)/alpha/.index.html
