@@ -4,24 +4,42 @@
 #     FILE: form.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: Alumni Internet Directory CGI form-submission interface
-#      $Id: form,v 6.2 2003/08/25 16:13:56 mradwin Exp mradwin $
+#      $Id: form,v 6.3 2003/10/30 07:28:07 mradwin Exp mradwin $
 #
-#   Copyright (c) 2003  Michael J. Radwin
+# Copyright (c) 2005  Michael J. Radwin.
+# All rights reserved.
 #
-#   This program is free software; you can redistribute it and/or modify
-#   it under the terms of the GNU General Public License as published by
-#   the Free Software Foundation; either version 2 of the License, or
-#   (at your option) any later version.
+# Redistribution and use in source and binary forms, with or
+# without modification, are permitted provided that the following
+# conditions are met:
 #
-#   This program is distributed in the hope that it will be useful,
-#   but WITHOUT ANY WARRANTY; without even the implied warranty of
-#   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-#   GNU General Public License for more details.
+#  * Redistributions of source code must retain the above
+#    copyright notice, this list of conditions and the following
+#    disclaimer.
 #
-#   You should have received a copy of the GNU General Public License
-#   along with this program; if not, write to the Free Software
-#   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+#  * Redistributions in binary form must reproduce the above
+#    copyright notice, this list of conditions and the following
+#    disclaimer in the documentation and/or other materials
+#    provided with the distribution.
 #
+#  * Neither the name of the High School Alumni Internet Directory
+#    nor the names of its contributors may be used to endorse or
+#    promote products derived from this software without specific
+#    prior written permission.
+#
+# THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND
+# CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES,
+# INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF
+# MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+# DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR
+# CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+# SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT
+# NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+# LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+# HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+# CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR
+# OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+# SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 BEGIN {
     if ($0 =~ m,(.*[/\\]),) {
@@ -43,7 +61,7 @@ use strict;
 # configuration
 my $dbmfile = aid_util::config('dbmfile');
 
-my $rcsid = '$Id: form,v 6.2 2003/08/25 16:13:56 mradwin Exp mradwin $'; #'fnt
+my $rcsid = '$Id: form,v 6.3 2003/10/30 07:28:07 mradwin Exp mradwin $'; #'fnt
 
 my $listing_upd_title = 'Modify Your Directory Listing';
 my $listing_add_title = 'Join the Directory';
@@ -106,7 +124,7 @@ elsif (defined($cgi{'update'}) || defined($cgi{'upd'}))
     {
 	$key =~ s/^\s*//;
 	$key =~ s/\s*$//;
-	$key = "\L$key\E";
+	$key = lc($key);
 
 	my(%DB);
 	tie(%DB, 'DB_File::Lock', $dbmfile, O_RDONLY, 0444, $DB_HASH, 'read')
@@ -188,12 +206,12 @@ $cgi{'r'} = (defined $cgi{'r'} &&
 	    ($cgi{'r'} eq 'on' || $cgi{'r'} == 1)) ? 1 : 0;
 
 # uncapitalize those overzealous capslock names
-$cgi{'gn'} = "\L$cgi{'gn'}\E"
-    if ($cgi{'gn'} eq "\U$cgi{'gn'}\E") && $cgi{'gn'} !~ /\./;
-$cgi{'sn'} = "\L$cgi{'sn'}\E"
-    if ($cgi{'sn'} eq "\U$cgi{'sn'}\E");
-$cgi{'mn'} = "\L$cgi{'mn'}\E"
-    if ($cgi{'mn'} eq "\U$cgi{'mn'}\E");
+$cgi{'gn'} = lc($cgi{'gn'})
+    if ($cgi{'gn'} eq uc($cgi{'gn'})) && $cgi{'gn'} !~ /\./;
+$cgi{'sn'} = lc($cgi{'sn'})
+    if ($cgi{'sn'} eq uc($cgi{'sn'}));
+$cgi{'mn'} = lc($cgi{'mn'})
+    if ($cgi{'mn'} eq uc($cgi{'mn'}));
 
 # initial capitalize those lazy names
 $cgi{'gn'} = "\u$cgi{'gn'}";
@@ -325,10 +343,22 @@ sub queue_submission {
     $cgi{'n'} =~ s/\015/\n/g;
     $cgi{'n'} =~ s/[ \t]+\n/\n/g;
 
-    if (($cgi{'id'} != -1) && ("\L$cgi{'pe'}\E" ne "\L$cgi{'e'}\E"))
+    if ($cgi{'id'} != -1)
     {
-	$cgi{'eu'} = $cgi{'u'};
-	$cgi{'eo'} = $cgi{'pe'};
+	my(%DB);
+	tie(%DB, 'DB_File::Lock', $dbmfile, O_RDONLY, 0444, $DB_HASH, 'read')
+	    or die "$dbmfile: $!\n";
+	my $oldval = $DB{$cgi{'id'}};
+	untie(%DB);
+
+	my %oldrec = aid_util::db_unpack_rec($cgi{'id'}, $oldval);
+	$cgi{'pe'} = $oldrec{'e'};
+
+	if (lc($cgi{'pe'}) ne lc($cgi{'e'}))
+	{
+	    $cgi{'eu'} = $cgi{'u'};
+	    $cgi{'eo'} = $cgi{'pe'};
+	}
     }
     else
     {
@@ -345,8 +375,8 @@ sub queue_submission {
 
     if (($cgi{'id'} != -1) && defined $DBW{$cgi{'id'}}) {
 	$randkey = $DBW{$cgi{'id'}};
-    } elsif (($cgi{'id'} == -1) && defined $DBW{"\L$cgi{'e'}\E"}) {
-	$randkey = $DBW{"\L$cgi{'e'}\E"};
+    } elsif (($cgi{'id'} == -1) && defined $DBW{lc($cgi{'e'})}) {
+	$randkey = $DBW{lc($cgi{'e'})};
     } else {
 	NEWKEY:
 	for (;;) {
@@ -359,10 +389,10 @@ sub queue_submission {
     if ($cgi{'id'} != -1) {
 	$DBW{$cgi{'id'}} = $randkey;
     } else {
-	$DBW{"\L$cgi{'e'}\E"} = $randkey;
+	$DBW{lc($cgi{'e'})} = $randkey;
     }
 
-    if (($cgi{'id'} != -1) && ("\L$cgi{'pe'}\E" eq "\L$cgi{'e'}\E"))
+    if (($cgi{'id'} != -1) && (lc($cgi{'pe'}) eq lc($cgi{'e'})))
     {
 	if (defined $DBW{'_verified'})
 	{
