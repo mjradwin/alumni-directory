@@ -2,12 +2,11 @@
 
 #
 # does the html verbose pages
-# $Id: aid_alpha2_html,v 3.15 1998/05/27 21:46:49 mradwin Exp mradwin $
+# $Id: aid_multi_alpha_html,v 3.16 1998/05/27 21:49:54 mradwin Exp mradwin $
 #
 
 require 'aid_util.pl';
 require 'getopts.pl';
-require 'ctime.pl';
 
 $usage = 'usage: aid_alpha2_html [-h] infile.adr
     -h        Display usage information.
