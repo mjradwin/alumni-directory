@@ -1,10 +1,10 @@
-#!/usr/bin/perl
+#!/usr/bin/perl -w
 
 #
-#     FILE: mvhsaid.pl
+#     FILE: form.pl
 #   AUTHOR: Michael J. Radwin
-#    DESCR: Alumni Internet Directory CGI interface
-#      $Id: form,v 3.108 1999/05/19 01:06:17 mradwin Exp mradwin $
+#    DESCR: Alumni Internet Directory CGI form-submission interface
+#      $Id: form,v 3.109 1999/05/31 17:29:07 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -40,7 +40,7 @@ $mailprog = &aid_config('mailprog');
 $dbmfile = &aid_config('dbmfile');
 $dbmfile =~ s/\.db$//;
 
-$rcsid = '$Id: form,v 3.108 1999/05/19 01:06:17 mradwin Exp mradwin $'; #'fnt
+$rcsid = '$Id: form,v 3.109 1999/05/31 17:29:07 mradwin Exp mradwin $'; #'fnt
 
 $listing_upd_title = 'Update Your Directory Listing';
 $listing_upl_title = 'Select a Listing to Update';
@@ -125,29 +125,6 @@ elsif (defined($in{'update'}) || defined($in{'upd'}))
 	&send_upd_notfound($key);
     }
 
-    close(STDOUT);
-    exit(0);
-
-} elsif (defined($in{'download'})) {
-    $in{'plusminus'} = defined $in{'plusminus'} && 
-	($in{'plusminus'} eq 'on' || $in{'plusminus'} == 1) ? 1 : 0;
-
-    if (! &is_email_okay($in{'email'}))
-    {
-	print "Content-Type: text/html\015\012\015\012";
-	print &aid_common_html_hdr(-1, (($in{'email'} =~ /^\s*$/) ? 'Blank' :
-				    'Invalid') . ' E-mail Address',1);
-	print "\n";
-	print "<p>You must submit a valid, non-blank e-mail address to ";
-	print "download address books.\n";
-	print "<p>Please <a href=\"" . &aid_config('master_path') .
-	    "download/\">try again</a>.</p>\n";
-	print &aid_common_html_ftr(-1);
-    }
-    elsif (defined $in{'format'} && defined $in{'year'})
-    {
-	&send_address_book($in{'format'},$in{'year'},$in{'plusminus'});
-    }
     close(STDOUT);
     exit(0);
 }
@@ -446,61 +423,6 @@ sub send_upd_real {
     print &aid_submit_body(*rec,$empty_fields);
     print &aid_common_html_ftr(-1);
 }
-
-
-sub send_address_book {
-    local($format,$year,$plusminus_p) = @_;
-    local(@class_ids,%DB);
-    local($_,%rec,$minyr,$maxyr);
-    local($subtype) = 'plain';
-
-    if ($format eq 'o') {
-	$subtype = 'x-csv';
-    } elsif ($format eq 'v') {
-	$subtype = 'directory';
-    } elsif ($format eq 'l') {
-	$subtype = 'ldif';
-    } elsif ($format eq 'n') {
-	$subtype = 'html;charset=ISO-8859-1';
-    }
-
-    if ($plusminus_p) {
-	$minyr = $year - 3;
-	$maxyr = $year + 3;
-    } else {
-	$minyr = $maxyr = $year;
-    }
-
-    dbmopen(%DB,$dbmfile,0444);
-    if (defined $DB{'_class'})
-    {
-	@class_ids = unpack("n*",$DB{'_class'});
-    }
-    else
-    {
-	dbmclose(%DB);
-	&CgiDie(&aid_config('short_school') . " Alumni: Script Error",
-		"The class database is unavailable.\n" .
-		"Please <a href=\"mailto:" . &aid_config('admin_email') .
-		"\">e-mail " . &aid_config('admin_name') . "</a>.");
-    }
-    
-    print "Content-Type: text/$subtype\015\012\015\012";
-    &aid_book_write_prefix(*STDOUT,$format);
-    foreach (@class_ids)
-    {
-	%rec = &aid_db_unpack_rec($_,$DB{$_});
-
-	next unless $rec{'v'};
-	next unless ($rec{'yr'} <= $maxyr && $rec{'yr'} >= $minyr);
-
-	&aid_book_write_entry(*STDOUT,$format,*rec);
-    }
-    dbmclose(%DB);
-
-    &aid_book_write_suffix(*STDOUT,$format);
-}
-
 
 sub send_upd_notfound {
     local($notfound) = @_;

@@ -1,6 +1,11 @@
 #!/usr/local/bin/perl
 
 #
+#     FILE: vcard.pl
+#   AUTHOR: Michael J. Radwin
+#    DESCR: Alumni Internet Directory CGI vCard generation
+#      $Id: form,v 3.109 1999/05/31 17:29:07 mradwin Exp mradwin $
+#
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
 #   This program is free software; you can redistribute it and/or modify
