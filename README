@@ -1,5 +1,5 @@
 Alumni Internet Directory README file
-$Id: README,v 5.7 1999/11/30 22:02:38 mradwin Exp mradwin $
+$Id: README,v 5.8 2000/02/29 22:00:24 mradwin Exp mradwin $
 
 ========================================================================
  Copyright (c) 1995-1999  Michael John Radwin
@@ -95,11 +95,17 @@ page, download page, etc.
 
 5. Process new submissions as they come in
 ------------------------------------------------------------------------
-As you get new submissions in your e-mail inbox, run ./bin/aid_addname
-and then delete the submission e-mails.  aid_addname reads the spool
-file and modifies data/working.db, invokes 'make all' to push out the
-new static HTML pages, and then invokes aid_welcome to e-mail the new
-members to tell them that their submission has been received.
+New submissions get added to a staging database, and then the site gets
+rebuilt in batch.  You'll want to create a cron job that checks every 5
+minutes or so and rebuids the HTML pages:
+
+# build alumni directories
+0-55/5 * * * * nice $HOME/mvhs/bin/aid_addname -q
+
+aid_addname reads the staging.db and modifies data/working.db, invokes
+'make all' to push out the new static HTML pages, and then invokes
+aid_welcome to e-mail the new members to tell them that their submission
+has been received.
 
 
 6. Send out quarterly digests and bi-yearly confirmation messages
