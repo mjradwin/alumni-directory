@@ -2,7 +2,7 @@
 
 #
 # mails a welcome or update note to everyone in targets.adr
-# $Id: aid_welcome,v 3.28 1999/03/09 02:17:22 mradwin Exp mradwin $
+# $Id: aid_welcome,v 3.29 1999/03/09 18:14:57 mradwin Exp mradwin $
 #
 
 require 'aid_util.pl';
@@ -23,7 +23,7 @@ Mutually exclusive optional message types (instead of 'welcome' e-mail):
     -m <textfile> Massmail the contents of <textfile>.
 ";
 
-$directory_name = "$aid_util'short_school Alumni Internet Directory";
+$directory_name = &aid_config('short_school') . ' Alumni Internet Directory';
 
 %confirm_parameters = 
     (
