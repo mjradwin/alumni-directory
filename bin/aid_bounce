@@ -1,18 +1,18 @@
 #!/usr/bin/perl -w
 
-# $Id: aid_bounce,v 3.14 1998/08/08 02:39:46 mradwin Exp mradwin $
+# $Id: aid_bounce,v 3.15 1998/11/03 17:13:10 mradwin Exp mradwin $
 
-require 'ctime.pl';
 require 'getopts.pl';
 require 'aid_util.pl';
 
-$usage = 'usage: aid_bounce [-hv] [-f <time>] [ids...]
+$usage = 'usage: aid_bounce [-hv] [-f <log>] [ids...]
     -h        Display usage information.
-    -v        Invalidate ids.
-    -u        Revalidate ids (zero bounce field).
+    -v        Invalidate ids (clear valid bit).
+    -u        Revalidate ids (zero bounce field and set valid bit).
     -d        Display goners candidates.
-    -f <time> Set all freshness fields to <time> unless an entry
-              has non-zero bounces, or freshness is later than <time>.
+    -f <log>  Set all freshness fields to value stored in <log> file
+              unless an entry has non-zero bounce or freshness is
+              later than time in <log> file.
 
 Bumps up the bounce field for every id or email address listed on the
 command line.
@@ -21,9 +21,6 @@ command line.
 &Getopts('hvf:du') || die "$usage\n";
 $opt_h && die "$usage\n";
 $opt_h = $opt_h;                # avoid warning
-
-die "error: freshness date too small\n$usage\n"
-    if (defined $opt_f) && ($opt_f < 815137658);
 
 die "$usage\n" unless $opt_d || $opt_f || @ARGV;
 die "$usage\n" if $opt_v && $opt_u;
@@ -44,8 +41,9 @@ if ($opt_d)
 	next unless $rec{'valid'};
 	next if $rec{'bounce'} eq '0';
 
-	print "$rec{'id'} - $rec{'email'} ", &aid_caldate($rec{'bounce'});
-	print " ", &aid_caldate($rec{'fresh'}) if $rec{'fresh'} > $rec{'bounce'};
+	print "$rec{'id'} - $rec{'email'} - bounce ", &aid_caldate($rec{'bounce'});
+	print " - fresh ", &aid_caldate($rec{'fresh'})
+	    if $rec{'fresh'} > $rec{'bounce'};
 	print "\n";
     }
 
@@ -53,7 +51,8 @@ if ($opt_d)
 }
 elsif ($opt_f)
 {
-    &freshen();
+    @freshness = &time_log($opt_f);
+    &freshen(@freshness);
 }
 else
 {
@@ -82,17 +81,41 @@ unlink($tmpFile) || die "error: couldn't unlink $tmpFile: $!\n";
 
 exit(0);
 
+# returns array[id] = time
+sub time_log
+{
+    local($log) = @_;
+    local($_,@log,*LOG);
+
+    @log = ();
+    open(LOG,$log) || die "error: can't open $log: $!\n";
+    while(<LOG>)
+    {
+	if (/^(\d+) - (\d+) - /)
+	{
+	    $log[$2] = $1;
+	}
+    }
+    close(LOG);
+
+    @log;
+}
+
+
 
 # freshen the user only if the bounce was non-zero and their
 # freshness is less than the parameter.
 sub freshen {
+    local(@freshness) = @_;
+    local($_);
+
     for (@db) {
 	next unless defined($_) && $_ ne '';
 	%rec = &aid_split($_);
-	next unless $rec{'valid'} == 1 && 
-	    $rec{'bounce'} == 0 && $rec{'fresh'} < $opt_f;
+	next unless $rec{'valid'} == 1 && defined $freshness[$rec{'id'}] &&
+	    $rec{'bounce'} == 0 && $rec{'fresh'} < $freshness[$rec{'id'}];
 
-	$rec{'fresh'} = $opt_f;
+	$rec{'fresh'} = $freshness[$rec{'id'}];
 	$db[$rec{'id'}] = &aid_join(*rec);
     }
 
@@ -123,16 +146,18 @@ sub bounce_argv
 	    }
 	}
 
-	print "$rec{'email'} ($rec{'id'}) was ";
+	print "$rec{'id'} - $rec{'email'} - bounce ";
 	if ($rec{'bounce'} == 0) {
-	    print "blank\n";
+	    print "(none)";
 	} else {
-	    print &ctime($rec{'bounce'});
+	    print &aid_caldate($rec{'bounce'});
 	}
 
 	if ($opt_u)
 	{
 	    $rec{'bounce'} = 0;
+	    $rec{'valid'} = 1;
+	    print " - clear";
 	}
 	else
 	{
@@ -151,6 +176,7 @@ sub bounce_argv
 		$rec{'request'} = $aid_util'blank_entry{'request'}; #'#
 	    }
 	}
+	print "\n";
 
 	$db[$rec{'id'}] = &aid_join(*rec);
     }
