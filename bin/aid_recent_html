@@ -2,7 +2,7 @@
 
 #
 # does the html version of the recent address list
-# $Id: aid_recent_html,v 1.27 1998/03/20 04:27:08 mjr Exp mjr $
+# $Id: aid_recent_html,v 1.28 1998/03/20 04:37:53 mjr Exp mjr $
 #
 
 require 'aid_util.pl';
@@ -23,7 +23,7 @@ page.</p>\n\n";
 @newbies = ();
 while(<DATA>) {
     chop;
-    %rec = &aid_parse($_);
+    %rec = &aid_split($_);
     next unless &is_new($rec{'time'});
     push(@newbies,$_);
 }

@@ -2,7 +2,7 @@
 
 #
 # does the html verbose pages
-# $Id: aid_verbose_html,v 1.17 1998/02/18 17:37:25 mjr Exp mjr $
+# $Id: aid_verbose_html,v 1.18 1998/03/20 04:30:58 mjr Exp mjr $
 #
 
 require 'aid_util.pl';
@@ -23,7 +23,7 @@ open(DATA,$ARGV[0]) || die "Can't open $ARGV[0]: $!\n";
 # first-time only
 $_ = <DATA>;
 chop;
-%rec = &aid_split($_);
+%rec = &aid_parse($_);
 @years = ();
 
 # main loop
@@ -44,7 +44,7 @@ for(;;) {
     &aid_write_verbose_entry(*FMTOUT,*rec);
     while(<DATA>) {
 	chop;
-	%rec = &aid_split($_);
+	%rec = &aid_parse($_);
 	
 	last if (($rec{'year'} ne $currentYear) && ($currentYear =~ /^\d+$/));
 	&aid_write_verbose_entry(*FMTOUT,*rec);
