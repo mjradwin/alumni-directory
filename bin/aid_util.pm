@@ -2,7 +2,7 @@
 #     FILE: aid_util.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: perl library routines for the Alumni Internet Directory
-#      $Id: aid_util.pl,v 5.48 1999/10/20 19:36:37 mradwin Exp mradwin $
+#      $Id: aid_util.pl,v 5.49 1999/12/02 17:27:15 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -24,6 +24,9 @@
 require 'mvhs_config.pl';
 require 'aid_config.pl';
 require 'aid_submit.pl';
+
+use MIME::QuotedPrint;
+use Net::SMTP; 
 
 @aid_util'MoY = #'#
     ('Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec');
@@ -351,33 +354,59 @@ sub aid_sendmail
 {
     package aid_util;
 
-    local($to,$return_path,$from,$subject,$body) = @_;
-    local(*F);
-    local($header);
+    local($return_path,$from,$subject,$body,@recip) = @_;
+    local($message,$i,$to,$cc,@targets);
 
-    $header =
+    $to = "\"$recip[0]\" <$recip[1]>";
+    @targets = ($recip[1]);
+    shift(@recip);
+    shift(@recip);
+    $cc = '';
+    for ($i = 0; $i < @recip; $i += 2)
+    {
+	$cc .= ', ' unless $cc eq '';
+	$cc .= "\"$recip[$i]\" <$recip[$i+1]>";
+	push(@targets, $recip[$i+1]);
+    }
+    $cc = "Cc: $cc\n" if $cc ne '';
+
+    $message =
 "From: $from <$return_path>
 To: $to
-X-Sender: $ENV{'USER'}\@$ENV{'HOST'}
+${cc}X-Sender: $ENV{'USER'}\@$ENV{'HOST'}
 Organization: $config{'school'} Alumni Internet Directory
 Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: QUOTED-PRINTABLE
 Subject: $subject
 
-";
+" . &main'encode_qp($body);
 
-    if (open(F, "| $config{'sendmail'} -t -R hdrs")) {
-	print F $header;
-	print F &main'aid_qp_encode($body); #'#;
-	close(F);
-
-	if (open(F, ">$ENV{'HOME'}/.aid_sendmail")) {
-	    print F $header;
-	    print F &main'aid_qp_encode($body); #'#;
-	    close(F);
-	}
-    } else {
-	warn "cannot send mail: $!\n";
+    my($smtp) = Net::SMTP->new($config{'smtp_svr'}, Timeout => 5); 
+    unless ($smtp->mail($return_path)) {
+	warn "smtp failure for @targets\n";
+        return;
+    }
+    foreach (@targets) {
+	unless($smtp->to($_)) {
+	    warn "smtp failure for @targets\n";
+            return;
+        }
+    }
+    unless($smtp->data()) {
+	warn "smtp failure for @targets\n";
+        return;
+    }
+    unless($smtp->datasend($message)) {
+	warn "smtp failure for @targets\n";
+        return;
+    }
+    unless($smtp->dataend()) {
+	warn "smtp failure for @targets\n";
+        return;
+    }
+    unless($smtp->quit) {
+	warn "smtp failure for @targets\n";
+        return;
     }
 }
 
@@ -505,7 +534,7 @@ sub aid_vcard_text {
 #    {
 #	$retval .= "NOTE;BASE64:\015\012";
 #	$retval .= "  ";
-#	$message = &main'old_encode_base64($rec{'n'}, "\015\012  "); #'#;
+#	$message = &main'encode_base64($rec{'n'}, "\015\012  "); #'#;
 #	substr($message,-4) = '';
 #	$retval .= $message . "\015\012\015\012";
 #    }
@@ -1337,58 +1366,11 @@ sub aid_url_escape
     $_;
 }
 
-
-# not quite up-to-spec, since we should trim lines to 76 chars.
-sub aid_qp_encode
-{
-    package aid_util;
-
-    local($res) = @_;
-    local($multi_default);
-
-    $multi_default = (defined $*) ? $* : 0;
-    $* = 1;			# enable multi-line
-
-    $res =~ s/([^ \t\n!-<>-~])/sprintf("=%02X", ord($1))/eg;  # rule #2,#3
-    $res =~ s/([ \t])$/sprintf("=%02X", ord($1))/eg; # bogus rule #3
-
-    $* = $multi_default;	# restore default
-    
-    $res;
-}
-
-sub old_encode_base64
-{
-    package hacked_MIME;
-
-    local($res) = "";
-    local($eol) = $_[1];
-    $eol = "\n" unless defined $eol;
-    while ($_[0] =~ /((.|\n){1,45})/g) {
-	$res .= substr(pack('u', $1), 1);
-	chop($res);
-    }
-    $res =~ tr|` -_|AA-Za-z0-9+/|;               # `# help emacs
-    # fix padding at the end
-    local($padding) = (3 - length($_[0]) % 3) % 3;
-    if ($padding)
-    {
-	$res =~ s/.{$padding}$//;
-	$res .= '=' x $padding;
-    }
-    # break encoded string into lines of no more than 76 characters each
-    if (length $eol) {
-	$res =~ s/(.{1,76})/$1$eol/g;
-    }
-    $res;
-}
-
 # We get a whole bunch of warnings about "possible typo" when running
 # with the -w switch.  Touch them all once to get rid of the warnings.
 # This is ugly and I hate it.
 if ($^W && 0)
 {
-    &old_encode_base64();
     &aid_http_date();
     &aid_book_write_suffix();
     &aid_book_write_entry();
