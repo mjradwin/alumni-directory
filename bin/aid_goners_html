@@ -31,6 +31,13 @@ while(<MVHS>) {
     $fullname = &fullname($first,$last,$married);
     $affil = &affiliate($year,$school);
 
+    # now that we've grabbed the fullname, modify the parts that
+    # are likely to be bad for x-url-encoded.  Don't do anything fancy,
+    # just replace spaces with plusses.
+    $first =~ s/[ \t]/+/g;
+    $last =~ s/[ \t]/+/g;
+    $married =~ s/[ \t]/+/g;
+
     print FMTOUT "<a href=\"", &mv_config('cgi_path'), "?";
     print FMTOUT "id=$id&request=$req&first=$first&last=$last&";
     print FMTOUT "married=$married&school=$school&grad=$year&";
