@@ -4,7 +4,7 @@
 #     FILE: mvhsaid.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: MVHS Alumni Internet Directory CGI interface
-#      $Id: mvhsaid,v 3.13 1998/05/19 22:29:23 mradwin Exp mradwin $
+#      $Id: mvhsaid,v 3.14 1998/05/26 18:34:37 mradwin Exp mradwin $
 #
 
 require 'aid_util.pl';
@@ -24,7 +24,7 @@ if (defined($ENV{'PATH_INFO'}) && $ENV{'PATH_INFO'} =~ m,^/vcard/,) {
     $in{'vcard'} =~ s,^/vcard/(\d+).*$,$1,;
 }
 
-$rcsid = '$Id: mvhsaid,v 3.13 1998/05/19 22:29:23 mradwin Exp mradwin $'; #'fnt
+$rcsid = '$Id: mvhsaid,v 3.14 1998/05/26 18:34:37 mradwin Exp mradwin $'; #'fnt
 
 # special flags: version, update, vcard, about
 #
@@ -399,7 +399,7 @@ sub send_upd_list {
 	$fullname = &fullname(*rec);
 	($affil,$len) = &affiliate(*rec,0);
 
-	print "<a$anchor href=\"", &aid_config('cgi_path'), "?update=$rec{'id'}\">";
+	print "<a$anchor href=\"", &aid_config('cgi_path'), "/upd?update=$rec{'id'}\">";
 	print $fullname;
 	print "</a>";
 	print $affil;

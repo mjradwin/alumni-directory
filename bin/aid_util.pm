@@ -2,11 +2,11 @@
 #     FILE: aid_util.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: perl library routines for the Alumni Internet Directory
-#      $Id: aid_util.pl,v 3.19 1998/05/22 22:15:10 mradwin Exp mradwin $
+#      $Id: aid_util.pl,v 3.20 1998/05/26 18:34:37 mradwin Exp mradwin $
 #
 
 $aid_util'rcsid =
- '$Id: aid_util.pl,v 3.19 1998/05/22 22:15:10 mradwin Exp mradwin $';
+ '$Id: aid_util.pl,v 3.20 1998/05/26 18:34:37 mradwin Exp mradwin $';
 
 # ----------------------------------------------------------------------
 # CONFIGURATION
@@ -450,6 +450,15 @@ sub aid_alpha_db {
     @alpha;
 }
 
+sub aid_vcard_path {
+    package aid_util;
+
+    local($id) = @_;
+
+    $config{'cgi_path'} . "/vcard/${id}.vcf";
+}
+
+
 sub aid_newsfile {
     package aid_util;
 
@@ -481,20 +490,20 @@ sub aid_get_usertext {
 sub rec_html_entify {
     package aid_util;
 
-    local(*rec) = @_;
-    local(%newrec,$_);
+    local(*rec_arg) = @_;
+    local(%rec,$_);
 
-    %newrec = %rec;
+    %rec = %rec_arg;
 
-    foreach (keys %newrec) {
-	$newrec{$_} =~ s/&/&amp;/g;
-	$newrec{$_} =~ s/</&lt;/g;
-	$newrec{$_} =~ s/>/&gt;/g;
-	$newrec{$_} =~ s/"/&quot;/g; #"#
-	$newrec{$_} =~ s/\s+/ /g;
+    foreach (keys %rec) {
+	$rec{$_} =~ s/&/&amp;/g;
+	$rec{$_} =~ s/</&lt;/g;
+	$rec{$_} =~ s/>/&gt;/g;
+	$rec{$_} =~ s/"/&quot;/g; #"#
+	$rec{$_} =~ s/\s+/ /g;
     }
 
-    %newrec;
+    %rec;
 }
 
 sub submit_body {
@@ -504,31 +513,31 @@ sub submit_body {
     local($_);
     local($body);
     local($star) = "<font color=\"#$star_fg\">*</font>";
-    local(*rec,$blankp) = @_;
-    local(%newrec) = &main'rec_html_entify(*rec); #'#
+    local(*rec_arg,$blankp) = @_;
+    local(%rec) = &main'rec_html_entify(*rec_arg); #'#
     local($mvhs_checked,$awalt_checked,$other_checked) = ('', '', '');
     local(@reqchk,$i,$reunion_chk);
 
-    $newrec{'homepage'} = 'http://' if $newrec{'homepage'} eq '';
+    $rec{'homepage'} = 'http://' if $rec{'homepage'} eq '';
 
     for ($i = 0; $i < 3; $i++) {
-	$reqchk[$i] = ($newrec{'request'} == $i) ? ' checked' : '';
+	$reqchk[$i] = ($rec{'request'} == $i) ? ' checked' : '';
     }
-    $reunion_chk = ($newrec{'reunion'} == 1) ? ' checked' : '';
+    $reunion_chk = ($rec{'reunion'} == 1) ? ' checked' : '';
 
-    if ($newrec{'school'} eq $config{'short_school'} || 
-	$newrec{'school'} eq '') {
+    if ($rec{'school'} eq $config{'short_school'} || 
+	$rec{'school'} eq '') {
 	$mvhs_checked = ' checked';
-	$newrec{'school'} = '';
-    } elsif ($newrec{'school'} eq 'Awalt') {
+	$rec{'school'} = '';
+    } elsif ($rec{'school'} eq 'Awalt') {
 	$awalt_checked = ' checked';
-	$newrec{'school'} = '';
+	$rec{'school'} = '';
     } else {
 	$other_checked = ' checked';
-	$newrec{'school'} = '' if $newrec{'school'} eq 'Other';
+	$rec{'school'} = '' if $rec{'school'} eq 'Other';
     }
 
-    if ($newrec{'id'} != -1) {
+    if ($rec{'id'} != -1) {
 	$body = "
 <p>Please update the following information and hit the
 <strong>Next&nbsp;&gt;</strong> button.</p>
@@ -539,7 +548,7 @@ are required.  All other fields are optional.</p>\n\n";
     } else {
 	$body = "
 <p>If you'd like to update your existing entry, please see the 
-<a href=\"" . $config{'cgi_path'} . "?update\">update page</a>.  
+<a href=\"" . $config{'cgi_path'} . "/upl?update\">update page</a>.  
 To update the entry for an alumnus with an invalid address, please see
 the <a href=\"" . $config{'master_path'} . "invalid.html\">invalid
 addresses page</a>.</p>
@@ -556,7 +565,7 @@ are required.  All other fields are optional.</p>\n\n";
     }
 	
     $body . "
-<form method=post action=\"" . $config{'cgi_path'} . "/form\"> 
+<form method=post action=\"" . $config{'cgi_path'} . "/sub\"> 
 <table border=0>
 <tr><td align=right><input type=\"submit\" value=\"Next &gt;\">
 &nbsp;
@@ -569,19 +578,19 @@ are required.  All other fields are optional.</p>\n\n";
   <td valign=top><font color=\"#$cell_fg\">First Name</font></td>
   <td>$star</td>
   <td valign=top><input type=text name=\"first\" size=35 
-  value=\"$newrec{'first'}\"></td>
+  value=\"$rec{'first'}\"></td>
 </tr>
 <tr>
   <td valign=top><font color=\"#$cell_fg\">Last/Maiden Name</font></td>
   <td>$star</td>
   <td valign=top><input type=text name=\"last\" size=35
-  value=\"$newrec{'last'}\"></td>
+  value=\"$rec{'last'}\"></td>
 </tr>
 <tr>
   <td colspan=2 valign=top><font color=\"#$cell_fg\">Married Name</font><br>
   <font color=\"#$cell_fg\" size=\"-1\">(if different from Maiden Name)</font></td>
   <td valign=top><input type=text name=\"married\" size=35
-  value=\"$newrec{'married'}\"></td>
+  value=\"$rec{'married'}\"></td>
 </tr>
 <tr>
   <td valign=top><font color=\"#$cell_fg\">High School</font></td>
@@ -595,39 +604,39 @@ are required.  All other fields are optional.</p>\n\n";
   <td valign=top>&nbsp;</td>
   <td valign=top><input type=radio name=\"school\" 
   value=\"Other\"$other_checked><font color=\"#$cell_fg\">&nbsp;Other:&nbsp;</font><input type=text
-  name=\"sch_other\" size=27 value=\"$newrec{'school'}\"></td>
+  name=\"sch_other\" size=27 value=\"$rec{'school'}\"></td>
 </tr>
 <tr>
   <td valign=top><font color=\"#$cell_fg\">Graduation year or affiliation</font><br>
   <font color=\"#$cell_fg\" size=\"-1\">(such as 1993, 2001, or Teacher)</font></td>
   <td>$star</td>
   <td valign=top><input type=text name=\"year\" size=35
-  value=\"$newrec{'year'}\"></td>
+  value=\"$rec{'year'}\"></td>
 </tr>
 <tr>
   <td valign=top><font color=\"#$cell_fg\">E-mail address</font><br>
   <font color=\"#$cell_fg\" size=\"-1\">(such as albert\@aol.com)</font></td>
   <td>$star</td>
   <td valign=top><input type=text name=\"email\" size=35
-  value=\"$newrec{'email'}\"></td>
+  value=\"$rec{'email'}\"></td>
 </tr>
 <tr>
   <td colspan=2 valign=top><font color=\"#$cell_fg\">Personal Web Page</font></td>
   <td valign=top><input type=text name=\"homepage\" size=35
-  value=\"$newrec{'homepage'}\"></td>
+  value=\"$rec{'homepage'}\"></td>
 </tr>
 <tr>
   <td colspan=2 valign=top><font color=\"#$cell_fg\">Location</font><br>
   <font color=\"#$cell_fg\" size=\"-1\">(your city, school, or company)</font></td>
 
   <td valign=top><input type=text name=\"location\" size=35
-  value=\"$newrec{'location'}\"></td>
+  value=\"$rec{'location'}\"></td>
 </tr>
 <tr>
   <td colspan=3><font color=\"#$cell_fg\">
   <br><strong>What's New?</strong> Write a paragraph about what
   you've been up to recently.</font><br>
-  <textarea name=\"message\" rows=10 cols=55 wrap=soft>$newrec{'message'}</textarea>
+  <textarea name=\"message\" rows=10 cols=55 wrap=soft>$rec{'message'}</textarea>
   </td>
 </tr>
 <tr>
@@ -644,8 +653,8 @@ are required.  All other fields are optional.</p>\n\n";
   &nbsp;&nbsp;&nbsp;&nbsp;<input type=radio name=\"request\"
   value=\"0\"$reqchk[0]>&nbsp;&nbsp;No e-mail except for address
   verification (once per year).</font>
-  <input type=\"hidden\" name=\"id\" value=\"$newrec{'id'}\">
-  <input type=\"hidden\" name=\"created\" value=\"$newrec{'created'}\">
+  <input type=\"hidden\" name=\"id\" value=\"$rec{'id'}\">
+  <input type=\"hidden\" name=\"created\" value=\"$rec{'created'}\">
   <input type=\"hidden\" name=\"valid\" value=\"1\">
   </td>
 </tr>
@@ -727,7 +736,7 @@ sub aid_write_verbose_entry {
     print FMTOUT "</font>\n";
 
     print FMTOUT "&nbsp;<font size=\"-1\">[";
-    print FMTOUT "<a href=\"" . $config{'cgi_path'} . "/vcard/$rec{'id'}.vcf\">";
+    print FMTOUT "<a href=\"" . &main'aid_vcard_path($rec{'id'}) . "\">"; #'#
     print FMTOUT "vCard</a>";
     print FMTOUT "&nbsp;|&nbsp;";
     print FMTOUT "<a href=\"" . $config{'cgi_path'} . "/dyn?about=$rec{'id'}\">";
@@ -787,8 +796,8 @@ sub about_text {
     package aid_util;
 
     local($retval) = '';
-    local(*rec,$show_req_p,$do_html_p,$do_vcard_p) = @_;
-    local(%newrec) = $do_html_p ? &main'rec_html_entify(*rec) : %rec; #'#
+    local(*rec_arg,$show_req_p,$do_html_p,$do_vcard_p) = @_;
+    local(%rec) = $do_html_p ? &main'rec_html_entify(*rec_arg) : %rec_arg; #'#
 
     $do_vcard_p = 0 unless defined($do_vcard_p);
 
@@ -796,22 +805,22 @@ sub about_text {
 
     $retval .= "First Name         : ";
     $retval .= "<strong>" if $do_html_p;
-    $retval .= $newrec{'first'};
+    $retval .= $rec{'first'};
     $retval .= "</strong>" if $do_html_p;
     $retval .= "\n";
     
     $retval .= "Last/Maiden Name   : ";
     $retval .= "<strong>" if $do_html_p;
-    $retval .= $newrec{'last'};
+    $retval .= $rec{'last'};
     $retval .= "</strong>" if $do_html_p;
     $retval .= "\n";
     
     $retval .= "Married Name       : ";
-    if ($newrec{'married'} eq '') {
+    if ($rec{'married'} eq '') {
 	$retval .= "(same as last name)";
     } else {
 	$retval .= "<strong>" if $do_html_p;
-	$retval .= $newrec{'married'};
+	$retval .= $rec{'married'};
 	$retval .= "</strong>" if $do_html_p;
     }
     $retval .= "\n";
@@ -819,49 +828,49 @@ sub about_text {
     $retval .= "\n";
     $retval .= "School             : ";
     $retval .= "<strong>" if $do_html_p;
-    $retval .= $newrec{'school'};
+    $retval .= $rec{'school'};
     $retval .= "</strong>" if $do_html_p;
     $retval .= "\n";
     
     $retval .= "Grad. Year         : ";
     if ($do_html_p) {
 	$retval .= "<strong>";
-	if ($newrec{'year'} =~ /^\d+$/) {
+	if ($rec{'year'} =~ /^\d+$/) {
             $retval .= "<a href=\"" . $config{'master_path'} .
-                "class/$newrec{'year'}.html#id-$newrec{'id'}\">";
+                "class/$rec{'year'}.html#id-$rec{'id'}\">";
 	} else {
 	    $retval .= "<a href=\"" . $config{'master_path'} .
-		"class/other.html#id-$newrec{'id'}\">";
+		"class/other.html#id-$rec{'id'}\">";
 	}
     }
-    $retval .= $newrec{'year'};
+    $retval .= $rec{'year'};
     $retval .= "</a></strong>" if $do_html_p;
     $retval .= "\n";
 
     $retval .= "\n";
     $retval .= "Email              : ";
-    $retval .= "<strong><a href=\"mailto:$newrec{'email'}\">" if $do_html_p;
-    $retval .= $newrec{'email'};
+    $retval .= "<strong><a href=\"mailto:$rec{'email'}\">" if $do_html_p;
+    $retval .= $rec{'email'};
     $retval .= "</a></strong>" if $do_html_p;
     $retval .= "\n";
 
     $retval .= "Personal Web Page  : ";
-    $retval .= ($newrec{'homepage'} eq '') ? "(none)\n" :
-	((($do_html_p) ? "<strong><a href=\"$newrec{'homepage'}\">" : "") .
-	 $newrec{'homepage'} . 
+    $retval .= ($rec{'homepage'} eq '') ? "(none)\n" :
+	((($do_html_p) ? "<strong><a href=\"$rec{'homepage'}\">" : "") .
+	 $rec{'homepage'} . 
 	 (($do_html_p) ? "</a></strong>" : "") .
 	 "\n");
 
     $retval .= "Location           : ";
-    $retval .= ($newrec{'location'} eq '') ? "(none)\n" :
+    $retval .= ($rec{'location'} eq '') ? "(none)\n" :
 	((($do_html_p) ? "<strong>" : "") .
-	 $newrec{'location'} .
+	 $rec{'location'} .
 	 (($do_html_p) ? "</strong>" : "") .
 	 "\n");
 
     if ($do_vcard_p && $do_html_p) {
 	$retval .= "vCard              : ";
-	$retval .= "<a href=\"$config{'cgi_path'}/vcard/$newrec{'id'}.vcf\">";
+	$retval .= "<a href=\"" . &main'aid_vcard_path($rec{'id'}) . "\">"; #'#
 	$retval .= $image_tag{'vcard'};
 	$retval .= "</a>\n";
     }
@@ -869,36 +878,36 @@ sub about_text {
     if ($show_req_p) {
 	$retval .= "\n";
 	$retval .= "Reunion Info Okay  : ";
-	$retval .= ($newrec{'reunion'} == 1) ?
+	$retval .= ($rec{'reunion'} == 1) ?
 	    "yes\n" : "no\n";
 	$retval .= "Send Email Updates : ";
-	$retval .= ($newrec{'request'} == 2) ?
+	$retval .= ($rec{'request'} == 2) ?
 	    "yes (sorted by graduating class)\n" :
-	    ($newrec{'request'} == 1) ? "yes (sorted by name)\n" : 
+	    ($rec{'request'} == 1) ? "yes (sorted by name)\n" : 
 		"only address verification\n";
     } 
 
-    if ($newrec{'time'} ne '' && $newrec{'time'} != 0 &&
-	$newrec{'created'} ne '' && $newrec{'created'} != 0) {
+    if ($rec{'time'} ne '' && $rec{'time'} != 0 &&
+	$rec{'created'} ne '' && $rec{'created'} != 0) {
 	$retval .= "\n";
 	$retval .= "Joined Directory   : ";
-	$retval .= &main'ctime($newrec{'created'}); #'#
+	$retval .= &main'ctime($rec{'created'}); #'#
     }
 
-    if ($newrec{'time'} ne '' && $newrec{'time'} != 0) {
+    if ($rec{'time'} ne '' && $rec{'time'} != 0) {
 	$retval .= "Last Updated       : ";
-	$retval .= &main'ctime($newrec{'time'}); #'#
+	$retval .= &main'ctime($rec{'time'}); #'#
     }
 
-    $newrec{'message'} = &main'aid_get_usertext($newrec{'id'}) #'#
-	unless defined($newrec{'message'});
+    $rec{'message'} = &main'aid_get_usertext($rec{'id'}) #'#
+	unless defined($rec{'message'});
 
-    if ($newrec{'message'} ne '') {
+    if ($rec{'message'} ne '') {
 	$retval .= "\n";
 	$retval .= "What's New?        :\n";
 	$retval .= "</pre>\n" if $do_html_p;
 	$retval .= $do_html_p ? "<blockquote>\n" : "";
-	$retval .= $newrec{'message'};
+	$retval .= $rec{'message'};
 	$retval .= $do_html_p ? "\n</blockquote>\n" : "";
     } else {
 	$retval .= "</pre>\n" if $do_html_p;
