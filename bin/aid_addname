@@ -1,6 +1,6 @@
 #!/usr/bin/perl -w
 
-# $Id: aid_addname,v 3.26 1999/03/23 19:31:43 mradwin Exp mradwin $
+# $Id: aid_addname,v 3.27 1999/03/24 17:28:19 mradwin Exp mradwin $
 
 require 'getopts.pl';
 require 'aid_util.pl';
@@ -23,8 +23,8 @@ $make = &aid_config('make');
 -x $cp   || die "$cp   is not executable!";
 -x $make || die "$make is not executable!";
 
-$adr_newmail = &aid_config('aiddir') . 'data/newmail.adr';
-$adr_update  = &aid_config('aiddir') . 'data/update.adr';
+@new_ids = ();
+@upd_ids = ();
 
 &readspool(($ARGV[0]) ? $ARGV[0] : &aid_config('spoolfile'));
 &rebuild() unless $opt_m;
@@ -126,45 +126,50 @@ sub readspool {
 }
 
 
-sub rebuild {
+sub rebuild
+{
     chdir &aid_config('aiddir') || die "can't chdir: $!\n";
 
     print STDERR "rebuilding...\n";
-    system "$make" || die "failed to $make: $!\n";
+    system $make || die "failed to run $make: $!\n";
 }
 
-sub mail_welcome {
+sub mail_welcome
+{
+    local($cmd);
+    local($dbfile) = &aid_config('wwwdir') . 'master.db';
+
     chdir &aid_config('aiddir') || die "can't chdir: $!\n";
 
     print STDERR "mailing...";
-    if (-e $adr_newmail) {
-	print STDERR ' new';
-	system "./bin/aid_welcome $adr_newmail"
-	    || die "failed to ./bin/aid_welcome $adr_newmail: $!\n";
-	unlink($adr_newmail)
-	    || die "couldn't unlink $adr_newmail: $!\n";
+    if (@new_ids)
+    {
+	print STDERR ' new(', join(' ', @new_ids), ')';
+	$cmd = "./bin/aid_welcome $dbfile " . join(' ', @new_ids);
+	system $cmd || die "failed to run $cmd: $!\n";
     }
 
-    if (-e $adr_update) {
-	print STDERR ' update';
-	system "./bin/aid_welcome -u $adr_update"
-	    || die "failed to ./bin/aid_welcome -u $adr_update: $!\n";
-	unlink($adr_update)
-	    || die "couldn't unlink $adr_update: $!\n";
+    if (@upd_ids)
+    {
+	print STDERR ' upd(', join(' ', @upd_ids), ')';
+	$cmd = "./bin/aid_welcome -u $dbfile " . join(' ', @upd_ids);
+	system $cmd || die "failed to run $cmd: $!\n";
     }
 
     print STDERR "\n";
 }
 
 
-sub addname {
+sub addname
+{
     local($rawdata) = @_;
     local($[) = 0;
     local($_);
     local($dbFile,$logFile,@db,%oldrec);
     local(%rec) = &aid_split($rawdata);
-    local($addme,$tmpFile,*LOG,*TMP,*ADR);
+    local($addme,$tmpFile,*LOG,*TMP);
     local($key_name,$key_email,%id_by_email,%id_by_name);
+    local($cmd);
 
     $dbFile = &aid_config('aiddir') . "data/master.adr";
     $logFile = &aid_config('aiddir') . "logs/additions.log";
@@ -221,10 +226,7 @@ sub addname {
 	$rec{'id'} = ($#db + 1);
 	$addme = &aid_join(*rec);
 
-	open(ADR,">>$adr_newmail") || die "$adr_newmail: $!\n";
-	print ADR $addme, "\n";
-	close(ADR);
-
+	push(@new_ids, $rec{'id'});
 	print     "new - ";
 	print LOG "new - ";
 
@@ -232,10 +234,7 @@ sub addname {
 	%oldrec = &aid_split($db[$rec{'id'}]);
 	$addme = $rawdata;
 
-	open(ADR,">>$adr_update") || die "$adr_update: $!\n";
-	print ADR $addme, "\n";
-	close(ADR);
-
+	push(@upd_ids, $rec{'id'});
 	print     "upd ", $oldrec{'email'}, " ";
 	print LOG "upd ", $oldrec{'email'}, " ";
     }
@@ -253,8 +252,8 @@ sub addname {
     }
     close(TMP);
 
-    system "$cp -f $tmpFile $dbFile"
-	|| die "failed to $cp -f $tmpFile $dbFile: $!\n";
+    $cmd = "$cp -f $tmpFile $dbFile";
+    system $cmd || die "failed to run $cmd: $!\n";
     unlink($tmpFile) || die "couldn't unlink $tmpFile: $!\n";
 
     $rec{'id'};
