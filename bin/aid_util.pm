@@ -2,7 +2,7 @@
 #     FILE: aid_util.pl
 #   AUTHOR: Michael J. Radwin
 #    DECR: perl library routines for the Alumni Internet Directory
-#      $Id: aid_util.pl,v 4.112 1999/05/27 21:41:40 mradwin Exp mradwin $
+#      $Id: aid_util.pl,v 4.113 1999/05/27 21:51:14 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -824,13 +824,14 @@ sub aid_common_html_hdr
     local($page,$title,$norobots,$time,$subtitle) = @_;
     local($hdr,$tablehdr,$timestamp,$titletag);
     local($pagetime) = defined $time ? $time : time;
-    local($sec,$min,$hour) = localtime($pagetime);
-    local($ampm) = $hour >= 12 ? 'pm' : 'am';
+#    local($sec,$min,$hour) = localtime($pagetime);
+#    local($ampm) = $hour >= 12 ? 'pm' : 'am';
 
-    $hour -= 12 if $hour > 12;
-    $hour  = 12 if $hour == 0;
-    $timestamp = sprintf("%s %2d:%02d%s",
-			 &main'aid_caldate($pagetime), $hour, $min, $ampm);
+#    $hour -= 12 if $hour > 12;
+#    $hour  = 12 if $hour == 0;
+#    $timestamp = sprintf("%s %2d:%02d%s",
+#			 &main'aid_caldate($pagetime), $hour, $min, $ampm);
+    $timestamp = &main'aid_caldate($pagetime);
 
     $tablehdr = $title eq '' ? '' :
 	"    <!-- \"$title\" --><strong>" .
