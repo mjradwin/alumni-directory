@@ -21,11 +21,15 @@ $ARGV[1] || die "$usage\n";
 open(MVHS,$ARGV[0]) || die "Can't open $ARGV[0]: $!\n";
 open(FMTOUT,">$ARGV[1]") || die "Can't open $ARGV[1]: $!\n";
 
+$info_gif = "<img src=\"info.gif\" height=12 width=12 hspace=4 border=0 alt=\"[i]\">";
+$blank_gif = "<img src=\"blank.gif\" height=12 width=12 hspace=4 border=0 alt=\"\">";
+$cgi = &mv_config('cgi_path');
+
 print FMTOUT &common_html_hdr(4);
 print FMTOUT "<br>";
 print FMTOUT &tableheader("Alumni with Web Pages", 1, 'ffff99', 1);
 print FMTOUT "<pre>";
-print FMTOUT "Name and Graduation Year                  Email\n";
+print FMTOUT "Name and Graduation Year$blank_gif                  Email\n";
 print FMTOUT "---------------------------------------------------------------------------\n";
 
 while(<MVHS>) {
@@ -37,6 +41,7 @@ while(<MVHS>) {
     $fullname = &fullname($first,$last,$married);
     $affil = &affiliate($year,$school);
 
+    print FMTOUT "<a href=\"$cgi?about=$id\">$info_gif</a>";
     print FMTOUT "<a name=\"$alias\"";
     print FMTOUT ' ' x (8 - (length($alias)));
     print FMTOUT " href=\"$homepage\"";

@@ -4,7 +4,7 @@
 #     FILE: mvhsaid.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: MVHS Alumni Internet Directory CGI interface
-#      $Id: mvhsaid,v 1.4 1997/03/24 16:02:46 mjr Exp mjr $
+#      $Id: mvhsaid,v 1.5 1997/03/24 16:32:10 mjr Exp mjr $
 #
 
 require 'mv_util.pl';
@@ -33,7 +33,7 @@ close(SUBMIT_FTR);
 # debugging: what version is installed?
 if (defined($in{'version'})) {
     print @submit_hdr, "\n";
-    print '<pre>Version: $Id: mvhsaid,v 1.4 1997/03/24 16:02:46 mjr Exp mjr $</pre>', "\n";
+    print '<pre>Version: $Id: mvhsaid,v 1.5 1997/03/24 16:32:10 mjr Exp mjr $</pre>', "\n";
     print @submit_ftr, "\n";
     
     exit(0);
@@ -266,13 +266,19 @@ sub send_upd_list {
     local($fullname);
     local($time,$req,$id,$last,$first,$married,$school,$year,$email,$homepage);
 
+    local($info_gif) =
+	"<img src=\"info.gif\" height=12 width=12 hspace=4 border=0 alt=\"[i]\">";
+    local($blank_gif) =
+	"<img src=\"blank.gif\" height=12 width=12 hspace=4 border=0 alt=\"\">";
+    local($cgi) = &mv_config('cgi_path');
+
     print @submit_hdr, "\n";
     print "<br>\n";
     print &tableheader("Update Your Directory Listing", 1, "ffff99", 1);
     print "\n";
     print "<p>Please select an entry to update from the list below.<p>\n";
     print "<pre>";
-    print "Name and Graduation Year                  Email\n";
+    print "Name and Graduation Year$blank_gif                  Email\n";
     print "---------------------------------------------------------------------------\n";
 
     foreach (@db) {
@@ -293,6 +299,7 @@ sub send_upd_list {
 	$affil_tmp =~ s/<[^>]+>//g;
 	$affil_len = length($affil_tmp);
 
+	print "<a href=\"$cgi?about=$id\">$info_gif</a>";
 	print "<a href=\"", &mv_config('cgi_path'), "?update=$id\">";
 	print $fullname;
 	print "</a>";

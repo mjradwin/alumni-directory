@@ -40,7 +40,11 @@ if (!$opt_t) {
     print FMTOUT "\n<p>\n<pre>";
 }
 
-print FMTOUT "Name and Graduation Year                  Email\n";
+$info_gif = "<img src=\"info.gif\" height=12 width=12 hspace=4 border=0 alt=\"[i]\">";
+$blank_gif = "<img src=\"blank.gif\" height=12 width=12 hspace=4 border=0 alt=\"\">";
+$cgi = &mv_config('cgi_path');
+
+print FMTOUT "Name and Graduation Year$blank_gif                 Email\n";
 print FMTOUT "---------------------------------------------------------------------------";
 
 $lastInitial = "Z";
@@ -61,7 +65,8 @@ while(<MVHS>) {
     $fullname = &fullname($first,$last,$married);
     $affil = &affiliate($year,$school);
 
-    print FMTOUT '  ';
+    print FMTOUT ' ';
+    $opt_t || print FMTOUT "<a href=\"$cgi?about=$id\">$info_gif</a>";
     $opt_t || print FMTOUT "<a name=\"$alias\"";
     $opt_t || print FMTOUT " href=\"$homepage\"" if $homepage ne '';
     $opt_t || print FMTOUT ">";

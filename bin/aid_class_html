@@ -38,8 +38,13 @@ while(<MVHSPRE>) {
     }
 }
 close(MVHSPRE);
+
+$info_gif = "<img src=\"info.gif\" height=12 width=12 hspace=4 border=0 alt=\"[i]\">";
+$blank_gif = "<img src=\"blank.gif\" height=12 width=12 hspace=4 border=0 alt=\"\">";
+$cgi = &mv_config('cgi_path');
+
 print FMTOUT "</tt></p>\n\n";
-print FMTOUT "<pre>Name                                      Email
+print FMTOUT "<pre>Name$blank_gif                                     Email
 ---------------------------------------------------------------------------";
 
 open(MVHS,$ARGV[0]) || die "Can't open $ARGV[0]: $!\n";
@@ -74,7 +79,8 @@ while(<MVHS>) {
 	$affil     = "";
     }
 
-    print FMTOUT '  ';
+    print FMTOUT ' ';
+    print FMTOUT "<a href=\"$cgi?about=$id\">$info_gif</a>";
     print FMTOUT "<a name=\"$alias\"";
     print FMTOUT " href=\"$homepage\"" if $homepage ne '';
     print FMTOUT ">";
