@@ -15,7 +15,7 @@ open(FMTOUT,">$ARGV[1]") || die "Can't open $ARGV[1]: $!\n";
 
 print FMTOUT &common_html_hdr(3);
 print FMTOUT "<br>";
-print FMTOUT &tableheader("Recent Additions to the Directory", 1, 'eeee88', 1);
+print FMTOUT &tableheader("Recent Additions to the Directory", 1, 'eeee99', 1);
 print FMTOUT "<pre>";
 print FMTOUT "Name and Graduation Year                  Email\n";
 print FMTOUT "---------------------------------------------------------------------------\n";
@@ -54,6 +54,6 @@ while(<MVHS>) {
 }
 
 print FMTOUT "</pre>\n";
-print FMTOUT &common_html_ftr;
+print FMTOUT &common_html_ftr(3);
 
 exit(0);

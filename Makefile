@@ -23,8 +23,8 @@ ${WWWDIR}/recent.html:	alpha.adr
 	./mv_new_html alpha.adr ${WWWDIR}/recent.html
 
 goners:	${WWWDIR}/invalid.html
-${WWWDIR}/invalid.html:	goners.adr
-	./mv_goners_html goners.adr ${WWWDIR}/invalid.html
+${WWWDIR}/invalid.html:	gsort.adr
+	./mv_goners_html gsort.adr ${WWWDIR}/invalid.html
 
 pages:	${WWWDIR}/pages.html
 ${WWWDIR}/pages.html:	alpha.adr
@@ -48,6 +48,9 @@ books:	alpha.adr
 	./mv_book -n alpha.adr ${WWWDIR}/address-book.html
 	./mv_book -v alpha.adr ${WWWDIR}/mvhs.vcf
 	touch books
+
+gsort.adr:	goners.adr
+	sort -t: +3 -5 goners.adr > gsort.adr
 
 alpha.adr:	mvhs.adr
 	sort -t: +3 -5 mvhs.adr > alpha.adr

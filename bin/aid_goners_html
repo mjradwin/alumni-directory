@@ -5,6 +5,7 @@
 
 push(@INC, '/home/mjr/lib');
 require 'mv_util.pl';
+require 'tableheader.pl';
 
 $today = localtime;
 
@@ -13,10 +14,12 @@ open(MVHS,$ARGV[0]) || die "Can't open $ARGV[0]: $!\n";
 open(FMTOUT,">$ARGV[1]") || die "Can't open $ARGV[1]: $!\n";
 
 print FMTOUT &common_html_hdr(-1, "Invalid&nbsp;Addresses");
+print FMTOUT "<br>";
+print FMTOUT &tableheader("Alumni with Invalid Addresses", 1, 'eeee99', 1);
 print FMTOUT "<p>The following addresses are invalid.  If you know a new email\n";
 print FMTOUT "address for anyone on this list, please <a href=\"add.html\">submit it</a>!</p>\n\n";
 print FMTOUT "<pre>";
-print FMTOUT "Name and Graduation Year\n";
+print FMTOUT "Name and Graduation Year                  Last known whereabouts\n";
 print FMTOUT "---------------------------------------------------------------------------\n";
 
 while(<MVHS>) {
@@ -42,10 +45,12 @@ while(<MVHS>) {
 
     print FMTOUT $fullname;
     print FMTOUT $affil;
+    print FMTOUT ' ' x (42 - (length($fullname) + $affil_len));
+    print FMTOUT $email;
     print FMTOUT "\n";
 }
 
 print FMTOUT "</pre>\n";
-print FMTOUT &common_html_ftr;
+print FMTOUT &common_html_ftr(-1, "Invalid&nbsp;Addresses");
 
 exit(0);

@@ -36,6 +36,6 @@ if ($opt_i) {
     print FMTOUT &submit_body(":-1:1:::MVHS:::");
 }
 
-print FMTOUT &common_html_ftr;
+print FMTOUT &common_html_ftr($pageno);
 
 exit(0);
