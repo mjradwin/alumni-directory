@@ -4,7 +4,7 @@
 #     FILE: remove.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: CGI for removal of e-mail address from staging DB
-#      $Id: remove,v 1.4 2000/05/30 23:57:58 mradwin Exp mradwin $
+#      $Id: remove,v 1.5 2000/05/31 00:02:38 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-2000  Michael John Radwin
 #
@@ -65,7 +65,7 @@ if (defined $key)
 	unless (flock (DB_FH, LOCK_EX)) { die "flock: $!" }
     }
 
-    if (defined $DB{$key} && $DB{$key} ne "\0")
+    if (defined $DB{$key} && $DB{$key} =~ /^-?\d+\0.+$/)
     {
 	my($val) = $DB{$key};
 	my($id,$packed) = split(/\0/, $val, 2);
@@ -137,6 +137,19 @@ entry from the Directory?</big></p>
 </form>
 ";
 	}
+
+	print &aid_common_html_ftr(20);
+
+	close(STDOUT);
+	exit(0);
+    }
+    elsif (defined $DB{$key} && $DB{$key} =~ /^[^\0]*\0$/)
+    {
+	print "Content-Type: text/html\015\012\015\012";
+        print &aid_common_html_hdr(20,'Already removed',1);
+
+	print "<p>The removal code you entered\n",
+	    "(<b>$key</b>) has already been processed.</p>\n";
 
 	print &aid_common_html_ftr(20);
 
