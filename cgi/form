@@ -4,7 +4,7 @@
 #     FILE: form.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: Alumni Internet Directory CGI form-submission interface
-#      $Id: form,v 5.23 2000/05/12 22:12:42 mradwin Exp mradwin $
+#      $Id: form,v 5.24 2000/05/30 17:26:41 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -36,7 +36,7 @@ use CGI::Carp qw(fatalsToBrowser);
 # configuration
 $dbmfile = &aid_config('dbmfile');
 
-$rcsid = '$Id: form,v 5.23 2000/05/12 22:12:42 mradwin Exp mradwin $'; #'fnt
+$rcsid = '$Id: form,v 5.24 2000/05/30 17:26:41 mradwin Exp mradwin $'; #'fnt
 
 $listing_upd_title = 'Modify Your Directory Listing';
 $listing_upl_title = 'Select a Listing to Modify';
@@ -352,76 +352,122 @@ sub queue_submission {
 	$cgi{'eo'} = '';
     }
 
-    $cgi{'browser'} = $ENV{'HTTP_USER_AGENT'};
-    $date = &ctime($cgi{'u'});
-    $mailto = &aid_config('mailto');
-    $mailsubj = &aid_config('short_school') . "AID";
-    $mailname = &aid_config('admin_name');
+    my($dbmfilew) = &aid_config('staging');
 
-    $mailbody  = "Dear $mailname,\n\n";
+    my(%DBW);
+    my($dbw) = tie(%DBW, 'DB_File', $dbmfilew, O_CREAT|O_RDWR, 0644,
+		   $DB_File::DB_HASH)
+	or die "$dbmfilew: $!\n";
 
-    ($affil,$len) = &aid_affiliate(*cgi,0);
-    $mailbody .= "Submission from userid $cgi{'id'}:\n  " .
-	&aid_inorder_fullname(*cgi) . $affil . ' <' . $cgi{'e'} . ">\n";
-
-    $mailbody .= "\n" . &aid_config('sub_beg_str') . "\n";
-
-    while (($key,$val) = each(%cgi))
-    {
-	next if $key eq 'n' || $key eq 'confirmed';
-	$mailbody .= $key . '=' . $val . "\n";
-    }
-
-    if ($cgi{'n'} ne '')
-    {
-	$mailbody .= &aid_config('note_beg_str') . "\n";
-	$mailbody .= $cgi{'n'} . "\n";
-	$mailbody .= &aid_config('note_end_str') . "\n";
-    }
+    my($fdw) = $dbw->fd;
+    open(DB_FHW, "+<&=$fdw") || die "dup $!";
     
-    $mailbody .= &aid_config('sub_end_str') . "
+    unless (flock (DB_FHW, LOCK_EX | LOCK_NB)) {
+	unless (flock (DB_FHW, LOCK_EX)) { die "flock: $!" }
+    }
 
-Love,
-the Alumni Internet Directory form-submission script
-$date";
+    my($randkey);
 
-    &aid_sendmail($mailto, &aid_config('short_school') . ' Alumni Robot',
-		  "$mailsubj [$cgi{'id'} $cgi{'e'}]",
-		  $mailbody,$mailname,$mailto)
+    for (;;) {
+	$randkey = &encode_key(int(rand(0x7FFFFFFF)));
+	unless (defined $DBW{$randkey}) {
+	    $DBW{$randkey} = $cgi{'id'} . "\0" . &aid_db_pack_rec(*cgi);
+	    last;
+	}
+    }
+
+    $dbw->sync;
+    flock(DB_FHW, LOCK_UN);
+    undef $dbw;
+    untie(%DBW);
+    close(DB_FHW);
+
+    my($name) = $cgi{'gn'};
+    $name .= " $cgi{'mi'}."
+	if defined $cgi{'mi'} && $cgi{'mi'} ne '';
+    $name .= " $cgi{'sn'}";
+    $name .= " $cgi{'mn'}"
+	if defined $cgi{'mn'} && $cgi{'mn'} ne '';
+    $name =~ s/\"/\'/g;
+
+    $mailbody = &aid_inorder_fullname(*cgi) . ",
+
+You recently were asked to verify your e-mail address
+with the " . &aid_config('short_school') . " Alumni Internet Directory.
+
+Please follow the instructions below to complete the
+verification process.
+
+TO VERIFY YOUR ADDRESS:
+
+1. If your email reader will allow you to click on links,
+click the following link.  If not, enter the URL into your
+browser:
+
+http://" . &aid_config('master_srv') . &aid_config('verify_cgi') . "?$randkey
+
+2. If the page asks you to enter your 8-letter verification
+code, please enter this code in the box provided:
+
+  *** VERIFICATION CODE ***
+          $randkey
+  *** VERIFICATION CODE ***
+
+3. Then click on the \"Verify my e-mail address\" button.
+
+
+WAS THIS EMAIL SENT TO THE WRONG ADDRESS?
+
+If you did not request this confirmation, you can remove
+your e-mail address from our database by clicking on the
+following link:
+
+http://" . &aid_config('master_srv') . &aid_config('remove_cgi') . "?$randkey
+
+If this link does not work for you, please reply to this message
+with the word REMOVE in the subject line (and be sure to include
+the full text of this email in your reply).
+
+Regards,
+
+" . &aid_config('short_school') . " Alumni Internet Directory
+http://" . &aid_config('master_srv') . &aid_config('master_path') . "\n";
+
+    &aid_sendmail(&aid_config('admin_email'),
+		  &aid_config('short_school') . ' Alumni Robot',
+		  &aid_config('short_school') .
+		  ' Alumni Internet Directory E-mail Verification',
+		  $mailbody,$name,$cgi{'e'})
 	|| &aid_cgi_die('aid_sendmail failed',
 			"Unable to process form submission.\n" .
 			"Please <a href=\"mailto:" .
 			&aid_config('admin_email') .
 			"\">e-mail " . &aid_config('admin_name') . "</a>.");
 
-    $fullname = &aid_inorder_fullname(*cgi);
-
     print "Content-Type: text/html\015\012\015\012";
-    print &aid_common_html_hdr(20,
-			   (($cgi{'id'} == -1 ? 'Welcome, ' : 'Thank You, ') .
-			    $fullname . '!'),
-			   1);
+    print &aid_common_html_hdr(20,'Check your e-mail',1);
 
-    $fullname = &aid_html_entify_str($fullname);
     print "
+<p>We sent a verification message to <b>$cgi{'e'}</b>.
+Check your e-mail for this message and then follow the
+instructions provided.</p>
 
-<h3>Your submission has been received but is not yet published.</h3>
+<h3>Last Step: Verify your e-mail address</h3>
 
-<p>The listing for <strong>$fullname</strong> has been added
-to the submission queue, but it has <strong>not yet been published in
-the Directory</strong>.  Processing your submission can take up to 48 hours.
-If your submission was made Monday-Friday between 9am and 5pm Pacific
-Time, your submission will probably be processed within an hour.</p>
+<p>Please check your e-mail and find the 8-letter
+verification code that was sent to you by the ",
+&aid_config('short_school'), "
+Alumni Robot and enter it below.</p>
 
-<p>E-mail will be sent to <code><strong>$cgi{'e'}</strong></code>
-confirming receipt of this submission when it it processed.
-See \"<a href=\"" . &aid_config('master_path') . 
-"etc/faq.html#submit\">What happens when I submit my listing?</a>\"
-for behind-the-scenes details.</p>
-
+<form method=\"get\" action=\"" . &aid_config('verify_cgi') . "\">
+<label for=\"k\">Enter 8-letter code:</label>
+&nbsp;
+<input id=\"k\" type=\"text\" size=\"8\" maxlength=\"8\" name=\"k\" value=\"\">
+&nbsp;
+<input type=\"submit\" value=\"Verify my e-mail address\">
+</form>
 ";
 
-    print &aid_config('html_ad');
     print &aid_common_html_ftr(20);
 }
 
@@ -562,6 +608,25 @@ sub remote_host
     }
 
     $ip;
+}
+
+sub encode_key
+{
+    my($key) = @_;
+    my($retval) = '';
+    my(@encode) = 
+	(
+	 'A','B','C','D','E','G','H','J',
+	 'K','P','Q','R','T','X','Y','Z'
+	 );
+
+    my($i);
+    for($i=7; $i>=0; $i--) {
+	$retval .= $encode[$key & 0x0000000F];
+	$key >>= 4; # Shift for next position
+    }
+
+    $retval;
 }
 
 # avoid stupid warnings
