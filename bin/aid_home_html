@@ -2,7 +2,7 @@
 
 #
 # does the html version of just home pages
-# $Id: aid_home_html,v 5.20 2001/09/16 16:57:51 mradwin Exp mradwin $
+# $Id: aid_home_html,v 5.21 2002/03/07 23:29:39 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -99,6 +99,13 @@ if ($opt_f && $opt_p == 0)
 
     die "corrupt/missing _t key!" unless defined $DB{'_t'} && $DB{'_t'} ne '';
     $time = unpack("N",$DB{'_t'});
+
+    die "corrupt/missing _years key!"
+	unless defined $DB{'_years'} && $DB{'_years'} ne '';
+
+    @years = unpack("n*",$DB{'_years'});
+    push(@years, 'other') if defined $DB{'_other'} && $DB{'_other'} ne '';
+
     untie(%DB);
 }
 
@@ -185,6 +192,12 @@ years after mine.</label>
 </form>\n\n";
 
 } else { # implicit opt_i
+
+    if ($opt_p == 0) {
+	print OUTFILE "<p>Classes:\n",
+	&aid_class_jump_bar('class/', '.html', *years, 0), "</p>\n";
+    }
+
     print OUTFILE @lines;
 }
 print OUTFILE &aid_common_html_ftr($opt_p,$time);
