@@ -32,15 +32,11 @@ open(TARGET,$ARGV[0]) || die "Can't open $ARGV[0]: $!\n";
 while(<TARGET>) {
     chop;
     ($time,$id,$req,$last,$first,$married,
-     $school,$year,$email,$alias,$homepage,$location) = &mv_parse($_);
+     $school,$year,$email,$homepage,$location) = split(/;/);
     next unless $email;
     next if $opt_c && !$req;
 
-    $homepage = '(none)' if $homepage eq '';
-    $message =
-	&message_body($id,$req,$last,$first,$married,
-		      $school,$year,$email,$homepage,$location) .
-	&message_footer;
+    $message = &message_body($_) . &message_footer;
 
     &sendmail($email, &mv_config('admin_email'), &mv_config('admin_name'),
 	      $subject, $message);
@@ -51,12 +47,12 @@ exit(0);
 
 
 sub message_body {
-    local($id,$req,$last,$first,$married,
-	  $school,$year,$email,$homepage,$location) = @_;
-    local($fullname) = &inorder_fullname($first,$last,$married);
+    local($time,$id,$req,$last,$first,$married,
+	  $school,$year,$email,$homepage,$location) = split(/;/, $_[0]);
     local($denied) = ($req) ? '' :
 	"\nSince you asked not to receive the Alumni Internet Directory via email,\nthis is the only notice you will receive.\n";
 
+    local($about) = &about_text($_[0],1,0);
     local($confirming) = ($opt_c) ? 
 "\nAs a service to alumni who do not have Web access, I will email a copy
 of the most current Internet Directory to everyone listed in it
@@ -72,12 +68,7 @@ $confirming
 The database (which produced this form letter) shows the following
 information about you:
 
-Name:           $fullname
-Email Address:  $email
-High School:    $school
-Grad Year:      $year
-WWW page:       $homepage
-Location:       $location
+$about
 $denied
 If you feel as if you have received this email in error or do not want
 to be listed in the database, please let me know and I will remove your

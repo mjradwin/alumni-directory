@@ -2,7 +2,7 @@
 #     FILE: mv_util.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: perl library routines for the MVHS Alumni Internet Directory
-#      $Id: mv_util.pl,v 1.17 1997/03/25 21:11:47 mjr Exp $
+#      $Id: mv_util.pl,v 1.18 1997/03/27 01:17:36 mjr Exp $
 #
 
 CONFIG: {
@@ -363,6 +363,118 @@ sub message_footer {
 	"WWW       : " . $config{'admin_url'} . "\n" .
 	"U.S. Mail : " . $config{'admin_usmail'} . "\n" .
 	"Phone     : " . $config{'admin_phone'};
+}
+
+
+sub about_text {
+    package mv_util;
+    require 'ctime.pl';
+
+    local($retval) = '';
+    local($rawdata,$show_req_p,$do_html_p) = @_;
+    local($time,$id,$req,$last,$first,$married,
+	  $school,$year,$email,$homepage,$location) = split(/;/, $rawdata);
+
+    $do_html_p && $retval .= "<pre>\n";
+    $retval .= "First Name        : ";
+    $retval .= ($first eq '') ? "\n" : 
+	((($do_html_p) ? "<strong>" : "") .
+	 $first . 
+	 (($do_html_p) ? "</strong>" : "") .
+	 "\n");
+    
+    $retval .= "Last/Maiden Name  : ";
+    $do_html_p && $retval .= "<strong>";
+    $retval .= $last;
+    $do_html_p && $retval .= "</strong>";
+    $retval .= "\n";
+    
+    $retval .= "Married Name      : ";
+    $retval .= ($married eq '') ? "(same as last name)\n" :
+	((($do_html_p) ? "<strong>" : "") .
+	 $married . 
+	 (($do_html_p) ? "</strong>" : "") .
+	 "\n");
+    
+    $retval .= "\n";
+    $retval .= "School            : ";
+    $do_html_p && $retval .= "<strong>";
+    $retval .= $school;
+    $do_html_p && $retval .= "</strong>";
+    $retval .= "\n";
+    
+    $retval .= "Grad. Year        : ";
+    $do_html_p && $retval .= "<strong>";
+    $retval .= $year;
+    $do_html_p && $retval .= "</strong>";
+    $retval .= "\n";
+
+    $retval .= "\n";
+    $retval .= "Email             : ";
+    $do_html_p && $retval .= "<strong><a href=\"mailto:$email\">";
+    $retval .= $email;
+    $do_html_p && $retval .= "</a></strong>";
+    $retval .= "\n";
+
+    $retval .= "Web Page          : ";
+    $retval .= ($homepage eq '') ? "(none)\n" :
+	((($do_html_p) ? "<strong><a href=\"$homepage\">" : "") .
+	 $homepage . 
+	 (($do_html_p) ? "</a></strong>" : "") .
+	 "\n");
+
+    $retval .= "Location          : ";
+    $retval .= ($location eq '') ? "(none provided)\n" :
+	((($do_html_p) ? "<strong>" : "") .
+	 $location .
+	 (($do_html_p) ? "</strong>" : "") .
+	 "\n");
+
+    if ($show_req_p) {
+	$retval .= "\n";
+	$retval .= "Send Email Updates: ";
+	$retval .= ($req == 2) ? "yes (sorted by graduating class)\n" :
+	    ($req == 1) ? "yes (sorted by name)\n" : "no\n";
+    } 
+
+    if ($time ne '') {
+	$retval .= "\n";
+	$retval .= "Last Updated      : ";
+	$retval .= &ctime($time);
+    }
+
+    $do_html_p && $retval .= "</pre>\n";
+
+    if ($do_html_p && $time ne '') {
+	$retval .= &'modify_html($id,&'inorder_fullname($first,$last,$married));
+    }
+
+    return $retval;
+}
+
+sub modify_html {
+    package mv_util;
+
+    local($id,$name) = @_;
+    local($cgi) = $config{'cgi_path'};
+
+    return "
+<!-- borrowed from gamelan -->
+To update the entry for this person or any of his/her resource
+entries, please click the button below.
+
+<form method=get action=\"$cgi\">
+<center><input type=hidden name=\"update\" value=\"$id\">
+<input type=submit value=\"Update $name\">
+</center>
+</form>
+
+<strong>Note:</strong> To avoid malicious modification by other
+people passing through, we mail the original user about the change
+(plus the new user if the email changes). The honor system has worked
+for us so far; please don't abuse it and force us to install an
+annoying password door.<p>
+";
 }
 
 
