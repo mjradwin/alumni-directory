@@ -2,7 +2,7 @@
 #     FILE: Makefile
 #   AUTHOR: Michael J. Radwin
 #    DESCR: Makefile for building the Alumni Internet Directory
-#      $Id: Makefile,v 3.68 1999/03/26 17:10:13 mradwin Exp mradwin $
+#      $Id: Makefile,v 3.69 1999/03/26 19:41:16 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -25,53 +25,56 @@ WWWROOT=/home/web/radwin.org
 WWWDIR=$(WWWROOT)/docs/mvhs-alumni
 CGIDIR=$(WWWROOT)/cgi-bin
 AID_UTIL_PL=$(CGIDIR)/aid_util.pl
-MVHSDIR=/home/users/mradwin/mvhs
+AIDDIR=/home/users/mradwin/mvhs
+TAR_AIDDIR=mvhs
+TAR_IMGDIR=web/images
+TAR_WWWDIR=web/mvhs-alumni
 
 RM=/bin/rm -f
 MV=/bin/mv -f
 CP=/bin/cp -pf
 
-ADR_MASTER=$(MVHSDIR)/data/master.adr
+ADR_MASTER=$(AIDDIR)/data/master.adr
 
-BIN_MULTI_ALPHA=$(MVHSDIR)/bin/aid_multi_alpha_html
-BIN_ALPHA=$(MVHSDIR)/bin/aid_alpha_html
-BIN_BOOK=$(MVHSDIR)/bin/aid_book
-BIN_CLASS=$(MVHSDIR)/bin/aid_class_html
-BIN_GONERS=$(MVHSDIR)/bin/aid_goners_html
-BIN_HOME=$(MVHSDIR)/bin/aid_home_html
-BIN_RECENT=$(MVHSDIR)/bin/aid_shortlist_html
-BIN_MULTI_CLASS=$(MVHSDIR)/bin/aid_multi_class_html
-BIN_PAGES=$(MVHSDIR)/bin/aid_class_html
-BIN_STATS=$(MVHSDIR)/bin/aid_stats
-BIN_DBM_WRITE=$(MVHSDIR)/bin/aid_dbm_write
-BIN_VCARD=$(MVHSDIR)/bin/aid_write_vcards
+BIN_MULTI_ALPHA=$(AIDDIR)/bin/aid_multi_alpha_html
+BIN_ALPHA=$(AIDDIR)/bin/aid_alpha_html
+BIN_BOOK=$(AIDDIR)/bin/aid_book
+BIN_CLASS=$(AIDDIR)/bin/aid_class_html
+BIN_GONERS=$(AIDDIR)/bin/aid_goners_html
+BIN_HOME=$(AIDDIR)/bin/aid_home_html
+BIN_RECENT=$(AIDDIR)/bin/aid_shortlist_html
+BIN_MULTI_CLASS=$(AIDDIR)/bin/aid_multi_class_html
+BIN_PAGES=$(AIDDIR)/bin/aid_class_html
+BIN_STATS=$(AIDDIR)/bin/aid_stats
+BIN_DBM_WRITE=$(AIDDIR)/bin/aid_dbm_write
+BIN_VCARD=$(AIDDIR)/bin/aid_write_vcards
 
 TARFILES= \
-	mvhs/README \
-	mvhs/COPYING \
-	mvhs/Makefile \
-	mvhs/cgi-bin/*.pl \
-	mvhs/cgi-bin/mvhsaid \
-	mvhs/cgi-bin/nph-aid-search \
-	mvhs/cgi-bin/nph-vcard \
-	mvhs/bin/aid_* \
-	mvhs/data/test.adr \
-	mvhs/data/*.include \
-	web/images/vcard.gif \
-	web/mvhs-alumni/default.css \
-	web/mvhs-alumni/*.gif
+	$(TAR_AIDDIR)/README \
+	$(TAR_AIDDIR)/COPYING \
+	$(TAR_AIDDIR)/Makefile \
+	$(TAR_AIDDIR)/cgi-bin/*.pl \
+	$(TAR_AIDDIR)/cgi-bin/mvhsaid \
+	$(TAR_AIDDIR)/cgi-bin/nph-aid-search \
+	$(TAR_AIDDIR)/cgi-bin/nph-vcard \
+	$(TAR_AIDDIR)/bin/aid_* \
+	$(TAR_AIDDIR)/data/test.adr \
+	$(TAR_AIDDIR)/data/*.include \
+	$(TAR_IMGDIR)/vcard.gif \
+	$(TAR_WWWDIR)/default.css \
+	$(TAR_WWWDIR)/*.gif
 
 SNAPSHOTFILES= \
-	mvhs \
-	mvhs/cgi-bin/RCS/* \
-	mvhs/cgi-bin/*.pl \
-	mvhs/cgi-bin/mvhsaid \
-	mvhs/cgi-bin/nph-aid-search \
-	mvhs/cgi-bin/nph-vcard \
-	web/images/vcard.gif \
-	web/mvhs-alumni/default.css \
-	web/mvhs-alumni/*.gif \
-	web/mvhs-alumni/master.db
+	$(TAR_AIDDIR) \
+	$(TAR_AIDDIR)/cgi-bin/RCS/* \
+	$(TAR_AIDDIR)/cgi-bin/*.pl \
+	$(TAR_AIDDIR)/cgi-bin/mvhsaid \
+	$(TAR_AIDDIR)/cgi-bin/nph-aid-search \
+	$(TAR_AIDDIR)/cgi-bin/nph-vcard \
+	$(TAR_IMGDIR)/vcard.gif \
+	$(TAR_WWWDIR)/default.css \
+	$(TAR_WWWDIR)/*.gif \
+	$(TAR_WWWDIR)/master.db
 
 all:	index submit \
 	addupdate reunions links faq copyright \
@@ -145,40 +148,40 @@ $(MULTI_CLASS):	$(DBFILE) $(BIN_MULTI_CLASS)
 INDEX=$(WWWDIR)/index.html
 INDEX_TS=$(WWWDIR)/.index.html
 index:	$(INDEX_TS)
-$(INDEX_TS):	$(MVHSDIR)/data/index.include $(BIN_HOME) $(DBFILE)
-	$(BIN_HOME) -p0 -i $(MVHSDIR)/data/index.include \
+$(INDEX_TS):	$(AIDDIR)/data/index.include $(BIN_HOME) $(DBFILE)
+	$(BIN_HOME) -p0 -i $(AIDDIR)/data/index.include \
 		-t '' \
 		$(INDEX)
 
 REUNIONS=$(WWWDIR)/etc/reunions.html
 REUNIONS_TS=$(WWWDIR)/etc/.reunions.html
 reunions:	$(REUNIONS_TS)
-$(REUNIONS_TS):	$(MVHSDIR)/data/reunions.include $(BIN_HOME)
-	$(BIN_HOME) -p11 -i $(MVHSDIR)/data/reunions.include \
+$(REUNIONS_TS):	$(AIDDIR)/data/reunions.include $(BIN_HOME)
+	$(BIN_HOME) -p11 -i $(AIDDIR)/data/reunions.include \
 		-t 'Reunions' \
 		$(REUNIONS)
 
 LINKS=$(WWWDIR)/etc/links.html
 LINKS_TS=$(WWWDIR)/etc/.links.html
 links:	$(LINKS_TS)
-$(LINKS_TS):	$(MVHSDIR)/data/links.include $(BIN_HOME)
-	$(BIN_HOME) -p12 -i $(MVHSDIR)/data/links.include \
+$(LINKS_TS):	$(AIDDIR)/data/links.include $(BIN_HOME)
+	$(BIN_HOME) -p12 -i $(AIDDIR)/data/links.include \
 		-t 'Other MVHS and Awalt Web Resources' \
 		$(LINKS)
 
 FAQ=$(WWWDIR)/etc/faq.html
 FAQ_TS=$(WWWDIR)/etc/.faq.html
 faq:	$(FAQ_TS)
-$(FAQ_TS):	$(MVHSDIR)/data/faq.include $(BIN_HOME)
-	$(BIN_HOME) -p14 -i $(MVHSDIR)/data/faq.include \
+$(FAQ_TS):	$(AIDDIR)/data/faq.include $(BIN_HOME)
+	$(BIN_HOME) -p14 -i $(AIDDIR)/data/faq.include \
 		-t 'Frequently Asked Questions' \
 		$(FAQ)
 
 COPYRIGHT=$(WWWDIR)/etc/copyright.html
 COPYRIGHT_TS=$(WWWDIR)/etc/.copyright.html
 copyright:	$(COPYRIGHT_TS)
-$(COPYRIGHT_TS):	$(MVHSDIR)/data/copyright.include $(BIN_HOME)
-	$(BIN_HOME) -p16 -i $(MVHSDIR)/data/copyright.include \
+$(COPYRIGHT_TS):	$(AIDDIR)/data/copyright.include $(BIN_HOME)
+	$(BIN_HOME) -p16 -i $(AIDDIR)/data/copyright.include \
 		-t 'Acceptable Use - Privacy Statement - Copyright' \
 		$(COPYRIGHT)
 
@@ -198,8 +201,8 @@ $(SUBMIT_TS):	$(BIN_HOME) $(AID_UTIL_PL)
 ADDUPDATE=$(WWWDIR)/add/index.html
 ADDUPDATE_TS=$(WWWDIR)/add/.index.html
 addupdate:	$(ADDUPDATE_TS)
-$(ADDUPDATE_TS):	$(MVHSDIR)/data/add.include $(BIN_HOME)
-	$(BIN_HOME) -p10 -i $(MVHSDIR)/data/add.include \
+$(ADDUPDATE_TS):	$(AIDDIR)/data/add.include $(BIN_HOME)
+	$(BIN_HOME) -p10 -i $(AIDDIR)/data/add.include \
 		-t 'Add or Update Your Listing' \
 		$(ADDUPDATE)
 
@@ -211,23 +214,6 @@ $(DOWNLOAD_TS):	$(BIN_HOME) $(AID_UTIL_PL) $(DBFILE)
 	$(BIN_HOME) -d -p13 \
 		-t 'Download Nickname and Address Book Files' \
 		$(DOWNLOAD)
-
-BOOKS=$(WWWDIR)/books/mvhs.vdir
-books:	$(BOOKS)
-$(BOOKS):	$(DBFILE) $(BIN_BOOK)
-	mkdir -p $(WWWDIR)/books
-	$(BIN_BOOK) \
-		-p $(WWWDIR)/books/pine.txt \
-		-e $(WWWDIR)/books/elm.txt \
-		-b $(WWWDIR)/books/berkeley.txt \
-		-w $(WWWDIR)/books/eudora2.txt \
-		-m $(WWWDIR)/books/eudora3.txt \
-		-n $(WWWDIR)/books/address-book.html \
-		-l $(WWWDIR)/books/address-book.ldif \
-		-o $(WWWDIR)/books/outlook.csv \
-		-v $(BOOKS) \
-		$(DBFILE)
-	$(RM) $(WWWDIR)/books/pine.txt.lu
 
 PINE_BOOK=$(HOME)/.addressbook-mvhs
 pine_book:	$(PINE_BOOK)
@@ -245,7 +231,7 @@ recent.txt:	$(DBFILE) $(BIN_RECENT)
 	$(BIN_RECENT) -m3 -t $(DBFILE) recent.txt
 
 tar:
-	( cd $(MVHSDIR)/.. ; tar cfz $(WWWDIR)/etc/mvhsaid.tar.gz $(TARFILES) )
+	( cd $(HOME) ; tar cfz $(WWWDIR)/etc/mvhsaid.tar.gz $(TARFILES) )
 
 snapshot:
 	( cd $(HOME) ; tar cfz $(WWWDIR)/etc/snapshot.tar.gz $(SNAPSHOTFILES) )
