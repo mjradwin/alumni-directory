@@ -2,7 +2,7 @@
 #     FILE: aid_util.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: perl library routines for the Alumni Internet Directory
-#      $Id: aid_util.pl,v 5.71 2000/06/06 20:40:41 mradwin Exp mradwin $
+#      $Id: aid_util.pl,v 5.72 2000/07/13 21:00:50 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -366,6 +366,11 @@ sub aid_sendmail_v2
     local($return_path,$from,$subject,$xtrahead,$body,@recip) = @_;
     local($message,$i,$to,$cc,@targets);
 
+    my($smtp) = Net::SMTP->new($config{'smtp_svr'}, Timeout => 30);
+    unless ($smtp) {
+	return 0;
+    }
+
     chomp($xtrahead);
     $xtrahead .= "\n" if $xtrahead ne '';
 
@@ -393,7 +398,6 @@ Subject: $subject
 
 " . &main::encode_qp($body);
 
-    my($smtp) = Net::SMTP->new($config{'smtp_svr'}, Timeout => 30); 
     unless ($smtp->mail($return_path)) {
 	warn "smtp mail() failure for @targets\n";
         return 0;
@@ -416,8 +420,12 @@ Subject: $subject
 	warn "smtp dataend() failure for @targets\n";
         return 0;
     }
+    unless($smtp->quit) {
+	warn "smtp quit failure for @targets\n";
+        return 0;
+    }
 
-    $smtp->quit;
+    1;
 }
 
 
