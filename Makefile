@@ -2,7 +2,7 @@
 #     FILE: Makefile
 #   AUTHOR: Michael J. Radwin
 #    DESCR: Makefile for building the Alumni Internet Directory
-#      $Id: Makefile,v 3.56 1999/02/26 20:15:20 mradwin Exp mradwin $
+#      $Id: Makefile,v 3.57 1999/02/26 20:43:28 mradwin Exp mradwin $
 #
 
 WWWROOT=/home/web/radwin.org
@@ -29,25 +29,29 @@ BIN_PAGES=$(MVHSDIR)/bin/aid_shortlist_html
 BIN_STATS=$(MVHSDIR)/bin/aid_stats
 BIN_DBM_WRITE=$(MVHSDIR)/bin/aid_dbm_write
 
-TARFILES=mvhs/README \
+TARFILES= \
+	mvhs/README \
 	mvhs/Makefile \
 	mvhs/cgi-bin/*.pl \
 	mvhs/cgi-bin/mvhsaid \
-	mvhs/cgi-bin/nph-mvhsaid \
+	mvhs/cgi-bin/nph-aid-search \
 	mvhs/cgi-bin/nph-vcard \
 	mvhs/bin/aid_* \
 	mvhs/data/test.adr \
-	mvhs/data/*.include
+	mvhs/data/*.include \
+	web/images/vcard.gif \
+	web/mvhs-alumni/*.gif
 
-SNAPSHOTFILES=mvhs \
-	mvhs/cgi-bin/RCS \
+SNAPSHOTFILES= \
+	mvhs \
+	mvhs/cgi-bin/RCS/* \
 	mvhs/cgi-bin/*.pl \
 	mvhs/cgi-bin/mvhsaid \
-	mvhs/cgi-bin/nph-mvhsaid \
+	mvhs/cgi-bin/nph-aid-search \
 	mvhs/cgi-bin/nph-vcard \
 	web/images/vcard.gif \
 	web/mvhs-alumni/*.gif \
-	web/mvhs-alumni/whatsnew
+	web/mvhs-alumni/master.db
 
 all:	$(CGIDIR)/nph-mvhsaid \
 	stats index submit \
