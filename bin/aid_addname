@@ -1,6 +1,6 @@
 #!/usr/bin/perl -w
 
-# $Id: aid_addname,v 3.29 1999/03/26 19:41:22 mradwin Exp mradwin $
+# $Id: aid_addname,v 3.30 1999/03/26 20:23:37 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -251,7 +251,10 @@ sub addname
 	%oldrec = &aid_split($db[$rec{'id'}]);
 	$addme = $rawdata;
 
-	push(@upd_ids, $rec{'id'});
+	push(@upd_ids, $rec{'id'})
+	     unless ((grep(/$rec{'id'}/, @new_ids)) ||
+		     (grep(/$rec{'id'}/, @upd_ids)));
+
 	print     "upd ", $oldrec{'email'}, " ";
 	print LOG "upd ", $oldrec{'email'}, " ";
     }
