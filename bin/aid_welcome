@@ -61,13 +61,13 @@ Your email address is listed in the Mountain View High School/Awalt High
 School Alumni Internet Directory, located on the World Wide Web at:\n\n"
 . &mv_config('master_url') . "
 $confirming
-The database (which produced this form letter) shows the following
+The directory (which produced this form letter) shows the following
 information about you:
 
 $about$denied
 If you feel as if you have received this email in error or do not want
-to be listed in the database, please let me know and I will remove your
-name from the database.  Or, if any of the above information is
+to be listed in the directory, please let me know and I will remove your
+name from the directory.  Or, if any of the above information is
 incorrect or out of date you can update your entry online at:\n\n" .
 
 &mv_config('cgi_url') . "?update=$id
