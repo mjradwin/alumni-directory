@@ -1,0 +1,65 @@
+#!/usr/local/bin/perl5 -w
+
+# $Id: aid_dbm_read,v 5.13 2000/02/29 21:55:00 mradwin Exp $
+#
+#   Copyright (c) 1995-1999  Michael John Radwin
+#
+#   This program is free software; you can redistribute it and/or modify
+#   it under the terms of the GNU General Public License as published by
+#   the Free Software Foundation; either version 2 of the License, or
+#   (at your option) any later version.
+#
+#   This program is distributed in the hope that it will be useful,
+#   but WITHOUT ANY WARRANTY; without even the implied warranty of
+#   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#   GNU General Public License for more details.
+#
+#   You should have received a copy of the GNU General Public License
+#   along with this program; if not, write to the Free Software
+#   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+#
+
+$dirname = $0;
+$dirname =~ s,/[^/]+$,,;
+unshift(@INC, $dirname);
+
+use DB_File;
+
+require 'aid_util.pl';
+require 'getopts.pl';
+require 'ctime.pl';
+
+$0 =~ s,.*/,,;  # basename
+$usage = "usage: $0 [-h]
+    -h        Display usage information.
+";
+
+&Getopts('h') || die "$usage\n";
+$opt_h && die "$usage\n";
+
+my($dbmfile) = &aid_config('staging');
+die "$dbmfile: $!\n" unless -r $dbmfile;
+
+tie(%DB, 'DB_File', $dbmfile, O_RDONLY, 0444, $DB_File::DB_HASH)
+    or die "$dbmfile: $!\n";
+
+while (($key,$val) = each %DB)
+{
+    if ($key =~ /^\w{8}$/ && $val =~ /^-?\d+\0/)
+    {
+	my($id,$packed) = split(/\0/, $val, 2);
+	%rec = &aid_db_unpack_rec($id,$packed);
+
+	($affil,undef) = &aid_affiliate(*rec,0);
+
+	print "key=$key\tid=$id\n",
+	&ctime($rec{'u'}),
+	&aid_inorder_fullname(*rec), $affil, "\n\n";
+    }
+}
+
+# avoid warnings
+if ($^W && 0)
+{
+    $opt_h = $opt_h;		# avoid warning
+}
