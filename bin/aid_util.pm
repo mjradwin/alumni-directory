@@ -2,7 +2,7 @@
 #     FILE: mv_util.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: perl library routines for the MVHS Alumni Internet Directory
-#      $Id: mv_util.pl,v 1.14 1997/03/23 22:23:58 mjr Exp $
+#      $Id: mv_util.pl,v 1.15 1997/03/24 16:02:20 mjr Exp $
 #
 
 CONFIG: {
@@ -62,6 +62,7 @@ sub mv_config {
     return $config{$_[0]};
 }
 
+
 # is the GMT less than one month ago?
 sub is_new {
     package mv_util;
@@ -69,11 +70,13 @@ sub is_new {
     return ((time - $_[0]) < 2419200) ? 1 : 0;
 }
 
+
 sub cannonize_email {
     package mv_util;
     local($usr, $dom) = split(/\@/, $_[0]);
     return $usr . '@' . "\L$dom\E";
 }
+
 
 sub fullname {
     package mv_util;
@@ -109,17 +112,6 @@ sub inorder_fullname {
 }
 
 
-sub old_fullname {
-    package mv_util;
-    local($first, $last) = @_;
-
-    if ($first) {
-	return "$last, $first";
-    } else {
-	return $last;
-    }
-}
-
 sub affiliate {
     package mv_util;
     local($year, $school) = @_;
@@ -137,6 +129,7 @@ sub affiliate {
 }
 
 
+# remove punctuation, hyphens, parentheses, and quotes.
 sub mangle {
     package mv_util;
     local($name) = @_;
@@ -175,69 +168,6 @@ sub mv_parse {
     return ($time,$id,$req,$last,$first,$married,$school,$year,$email,$alias,$homepage);
 }
 
-sub colon_mv_parse {
-    package mv_util;
-
-    local($[) = 0;
-    local($_) = @_;
-    local($time,$id,$req,$last,$first,$school,$year,$email,@homepg) = split(/:/);
-    local($homepage, $mangledLast, $mangledFirst, $alias);
-    $homepage = join(':', @homepg);
-
-    $mangledLast = &'mangle($last);
-    $mangledFirst = &'mangle($first);
-
-    $alias = substr($mangledFirst, 0, 1) . substr($mangledLast, 0, 7);
-    $alias = "\L$alias\E";
-
-    if ($mv_aliases{$alias} > 0) {
-        $mv_aliases{$alias}++;
-        $alias = substr($alias, 0, 7) . $mv_aliases{$alias};
-    } else {
-        $mv_aliases{$alias} = 1;
-    }
-
-    return ($time,$id,$req,$last,$first,$school,$year,$email,$alias,$homepage);
-}
-
-sub mv_old_parse {
-    package mv_util;
-
-    local($[) = 0;
-    local($_) = @_;
-    local($last, $first, $school, $year, $email, @homepg) = split(/:/);
-    local($homepage, $mangledLast, $mangledFirst, $alias);
-    $homepage = join(':', @homepg);
-
-    $mangledLast = &'mangle($last);
-    $mangledFirst = &'mangle($first);
-
-    $alias = substr($mangledFirst, 0, 1) . substr($mangledLast, 0, 7);
-    $alias = "\L$alias\E";
-
-    return ($last, $first, $school, $year, $email, $alias, $homepage);
-}
-
-
-# index on uid
-sub old_mv_create_db {
-    package mv_util;
-
-    local($filename) = @_;
-    local($[) = 0;
-    local($_);
-    local(@db, @result, *INFILE);
-
-    open(INFILE,$filename) || die "Can't open $filename: $!\n";
-    while(<INFILE>) {
-	chop;
-	@result = &'mv_parse($_); #'  (let the font-lock be unconfused)
-	$db[$result[1]] = $_;
-    }
-    close(INFILE);
-    
-    return @db;
-}
 
 sub mv_create_db {
     package mv_util;
@@ -257,6 +187,7 @@ sub mv_create_db {
     return @db;
 }
 
+
 sub submit_body {
     package mv_util;
     require 'tableheader.pl';
@@ -264,6 +195,7 @@ sub submit_body {
     local($[) = 0;
     local($_);
     local($tableh);
+    local($star) = "<font color=\"#ff0000\">*</font>";
     local($rawdata,$interactivep,$blank) = @_;
     local($mvhs_checked,$awalt_checked,$other_checked) = ('', '', '');
     local($time,$id,$req,$last,$first,$married,$school,$year,$email,$homepage)
@@ -302,7 +234,7 @@ href=\"" . $config{'cgi_path'} . "?update\">update page</a>.  To add a new
 entry, please enter the following information and hit the submit button.
 Your submission will be processed in a day or so.</p>
 
-<p>Fields marked with a <font color=\"#ff0000\">*</font> are required.
+<p>Fields marked with a $star are required.
 All other fields are optional.";
     }
 
@@ -320,14 +252,14 @@ All other fields are optional.";
 <table border=0 cellspacing=10>
 <tr>
   <td valign=top rowspan=3><strong>Your Name</strong></td>
-  <td valign=top>First Name</td>
+  <td valign=top>First Name $star</td>
   <td valign=top><input type=text name=\"first\" size=35 
-  value=\"$first\"><font color=\"#ff0000\">*</font></td>
+  value=\"$first\"></td>
 </tr>
 <tr>
-  <td valign=top>Last/Maiden Name</td>
+  <td valign=top>Last/Maiden Name $star</td>
   <td valign=top><input type=text name=\"last\" size=35
-  value=\"$last\"><font color=\"#ff0000\">*</font></td>
+  value=\"$last\"></td>
 </tr>
 <tr>
   <td valign=top>Married Name<br><em>(if different from Maiden
@@ -336,25 +268,25 @@ All other fields are optional.";
       value=\"$married\"></td>
 </tr>
 <tr>
-  <td valign=top rowspan=2><strong>High School</strong></td>
+  <td valign=top rowspan=2><strong>High School</strong> $star</td>
   <td valign=top><input type=radio name=\"school\"
   value=\"MVHS\"$mvhs_checked>MVHS&nbsp;&nbsp;<input type=radio
   name=\"school\" value=\"Awalt\"$awalt_checked>Awalt&nbsp;&nbsp;<input 
   type=radio name=\"school\" value=\"Other\"$other_checked>Other:</td>
   <td valign=top><input type=text name=\"sch_other\" size=35
-      value=\"$school\"><font color=\"#ff0000\">*</font></td>
+      value=\"$school\"></td>
 </tr>
 <tr>
-  <td valign=top>Graduation year or affiliation<br><em>(such as 93,
-      87, or Teacher)</em></td>
+  <td valign=top>Graduation year or affiliation
+      $star<br><em>(such as 93, 87, or Teacher)</em></td>
   <td valign=top><input type=text name=\"grad\" size=35
-      value=\"$year\"><font color=\"#ff0000\">*</font></td>
+      value=\"$year\"></td>
 </tr>
 <tr>
   <td valign=top rowspan=2><strong>Internet</strong></td>
-  <td valign=top>E-mail address</td>
+  <td valign=top>E-mail address $star</td>
   <td valign=top><input type=text name=\"mail\" size=35
-  value=\"$email\"><font color=\"#ff0000\">*</font></td>
+  value=\"$email\"></td>
 </tr>
   <td valign=top>Web Page</td>
   <td valign=top><input type=text name=\"homepage\" size=35
@@ -376,75 +308,6 @@ All other fields are optional.";
 
 }
 
-
-sub old_submit_body {
-    package mv_util;
-    require 'tableheader.pl';
-
-    local($[) = 0;
-    local($_);
-    local($tableh);
-    local($mvhs_checked,$awalt_checked,$other_checked) = ('', '', '');
-    local($time,$id,$req,$last,$first,$school,$year,$email,$alias,$homepage) 
-	= &'mv_parse($_[0]); #' font-lock
-
-    $homepage = 'http://' if $homepage eq '';
-    $req = ($req) ? ' checked' : '';
-
-    return "<br>\n" .
-	&tableheader("Add a Listing to the Directory", 1, 'ffff99', 1) .
-"<p>Thanks for adding a name to the MVHS Alumni Internet
-Directory!  To update your entry, please see the <a
-href=\"" . $config{'cgi_path'} . "?update\">update page</a>.  To add a new
-entry, please enter the following information and hit the submit button.
-Your submission will be processed in a day or so.</p>
-
-<form method=post action=\"" . $config{'cgi_path'} . "\"> 
-<table border=0 cellspacing=10>
-<tr>
-  <td><strong>Full Name</strong><br><em>(i.e. Smith, Chester)</em></td>
-  <td><input type=text name=\"last\" size=\"17\"
-    value=\"$last\"> ,<br><font size=\"-1\">Last</font></td>
-  <td><input type=text name=\"first\" size=\"17\"
-      value=\"$first\"><br><font size=\"-1\">First</font></td>
-</tr>
-<tr>
-  <td><strong>E-mail
-      address</strong><br><em>(i.e. cfs\@some.edu)</em></td>
-  <td colspan=2><input type=text name=\"mail\" size=\"40\"
-      value=\"$email\"><br></td>
-</tr>
-<tr>
-  <td><strong>WWW home page</strong> (if
-      any)<br><em>(i.e. http://some.edu/~cfs/)</em></td>
-  <td colspan=2><input type=text name=\"homepage\" size=\"40\"
-      value=\"$homepage\"><br></td>
-</tr>
-<tr>
-  <td><strong>High School</strong><br><em>(MVHS or Awalt)</em></td>
-  <td colspan=2><input type=text name=\"school\" size=\"10\" 
-      value=\"$school\"><br></td>
-</tr>
-<tr>
-  <td><strong>Graduation year</strong> or affiliation<br><em>(e.g. 1993,
-      87)</em></td>
-  <td colspan=2><input type=text name=\"grad\" size=\"10\"
-      value=\"$year\"><br></td>
-</tr>
-<tr>
-  <td colspan=3><input type=checkbox name=\"request\"$req> Please send
-  me updated alumni addresses through email.</td>
-</tr>
-<input type=\"hidden\" name=\"id\" value=\"$id\">
-</table>
-
-<P>
-<input type=\"submit\" value=\"Submit entry\">
-<input type=\"reset\" value=\"Reset form\">
-</form>
-
-";
-}
 
 sub sendmail {
     package mv_util;
@@ -469,6 +332,7 @@ To: $toline\
     }
 }
 
+
 sub message_footer {
     package mv_util;
 
@@ -480,6 +344,7 @@ sub message_footer {
 	"U.S. Mail : " . $config{'admin_usmail'} . "\n" .
 	"Phone     : " . $config{'admin_phone'};
 }
+
 
 sub common_html_ftr {
     package mv_util;
@@ -521,6 +386,7 @@ href=\"mailto:" . $config{'admin_email'} .
 
 }
 
+
 sub common_html_hdr {
     package mv_util;
     require 'ctime.pl';
@@ -532,7 +398,7 @@ sub common_html_hdr {
 #    ($page_name) = split(/,/, $page_idx[$page]) unless $page_name;
 #    $page_name =~ s/&nbsp;/ /g;
 
-    $h1 = "<body bgcolor=\"#ffffff\" LINK=\"#0000cc\" TEXT=\"#000000\" VLINK=\"#990099\">
+    $h1 = "<body bgcolor=\"#ffffff\" link=\"#0000cc\" text=\"#000000\" vlink=\"#990099\">
 <hr noshade size=1>
 <table border=0 cellpadding=8 cellspacing=0 width=\"100%\">
 <tr>

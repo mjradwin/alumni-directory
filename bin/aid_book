@@ -4,8 +4,8 @@
 # pine-style address book
 #
 
-#push(@INC, '/home/mjr/lib');
-push(@INC, '/home/divcom/mjr/lib');  # divcom
+
+
 require 'mv_util.pl';
 require 'getopts.pl';
 

@@ -3,8 +3,8 @@
 #
 # mails everyone the nifty mvhs address list
 #
-#push(@INC, '/home/mjr/lib');
-push(@INC, '/home/divcom/mjr/lib');  # divcom
+
+
 require 'mv_util.pl';
 require 'getopts.pl';
 require 'ctime.pl';

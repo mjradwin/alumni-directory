@@ -3,8 +3,8 @@
 # does the html version of just home pages
 #
 
-#push(@INC, '/home/mjr/lib');
-push(@INC, '/home/divcom/mjr/lib');  # divcom
+
+
 require 'getopts.pl';
 require 'mv_util.pl';
 require 'tableheader.pl';
