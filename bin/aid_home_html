@@ -2,7 +2,7 @@
 
 #
 # does the html version of just home pages
-# $Id: aid_home_html,v 3.39 1999/05/19 01:36:09 mradwin Exp mradwin $
+# $Id: aid_home_html,v 5.1 1999/05/31 21:20:48 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -114,54 +114,55 @@ such as John Smith and Jane Smith, then the first one will be
 <code><strong>jsmith</strong></code> and the second will be
 <code><strong>jsmith2</strong></code>.</p>\n\n";
 
-    print OUTFILE "<p><form method=\"get\" action=\"";
+    print OUTFILE "<form method=\"get\" action=\"";
     print OUTFILE &aid_config('download_cgi') . "\">\n";
-    print OUTFILE "<input type=\"hidden\" name=\"download\" value=\"1\">\n\n";
+    print OUTFILE "<input type=\"hidden\" name=\"download\" value=\"1\" />\n\n";
 
     print OUTFILE "<label for=\"year\">Year to download:&nbsp;</label>\n";
     print OUTFILE "<select name=\"year\" id=\"year\">\n";
     foreach (@years)
     {
 	print OUTFILE "<option";
-	print OUTFILE " selected" if $_ eq '1993';
-	print OUTFILE ">$_\n" unless $_ eq 'other';
-	print OUTFILE " value=\"other\">Faculty/Staff\n" if $_ eq 'other';
+	print OUTFILE " selected=\"selected\"" if $_ eq '1993';
+	print OUTFILE ">$_" unless $_ eq 'other';
+	print OUTFILE " value=\"other\">Faculty/Staff" if $_ eq 'other';
+	print OUTFILE "</option>\n";
     }
     print OUTFILE "</select>\n";
 
     print OUTFILE "
-<br>
+<br />
 
-<input type=checkbox name=\"plusminus\" id=\"plusminus\"><label
+<input type=\"checkbox\" name=\"plusminus\" id=\"plusminus\" /><label
 for=\"plusminus\">&nbsp;Also download graduating classes 3 years before and 3
 years after mine.</label>
 
-<br>
+<br />
 
 <label for=\"format\">Format:&nbsp;</label>
 <select name=\"format\" id=\"format\">
-<option value=\"n\">Netscape 2.x .HTML
-<option value=\"n\">Netscape 3.x .HTML
-<option value=\"l\">Netscape 4.x .LDIF
-<option value=\"w\">Eudora 2.x
-<option value=\"m\">Eudora 3.x
-<option value=\"m\">Eudora 4.x
-<option value=\"o\" selected>Outlook Express .CSV
-<option value=\"p\">Pine (Unix)
-<option value=\"e\">Elm (Unix)
-<option value=\"b\">Berkeley Mail (Unix)
+<option value=\"n\">Netscape 2.x .HTML</option>
+<option value=\"n\">Netscape 3.x .HTML</option>
+<option value=\"l\">Netscape 4.x .LDIF</option>
+<option value=\"w\">Eudora 2.x</option>
+<option value=\"m\">Eudora 3.x</option>
+<option value=\"m\">Eudora 4.x</option>
+<option value=\"o\" selected=\"selected\">Outlook Express .CSV</option>
+<option value=\"p\">Pine (Unix)</option>
+<option value=\"e\">Elm (Unix)</option>
+<option value=\"b\">Berkeley Mail (Unix)</option>
 </select>
 
-<br>
+<br />
 
 <label for=\"email\">Your e-mail address:&nbsp;</label>
-<input type=\"text\" name=\"email\" size=\"25\" value=\"\" id=\"email\">
+<input type=\"text\" name=\"email\" size=\"25\" value=\"\" id=\"email\" />
 (for logging purposes only)
 
-<br>
+<br />
 
-<input type=\"submit\" value=\"Download\">
-</form><p>\n\n";
+<input type=\"submit\" value=\"Download\" />
+</form>\n\n";
 
 } else { # implicit opt_i
     print OUTFILE @lines;
