@@ -2,7 +2,7 @@
 #     FILE: aid_util.pm
 #   AUTHOR: Michael J. Radwin
 #    DESCR: perl library routines for the Alumni Internet Directory
-#      $Id: aid_util.pm,v 6.3 2003/08/25 05:34:45 mradwin Exp mradwin $
+#      $Id: aid_util.pm,v 6.4 2003/08/25 06:06:45 mradwin Exp mradwin $
 #
 #   Copyright (c) 2003  Michael J. Radwin
 #
@@ -58,18 +58,18 @@ die "NO CONFIG DEFINED!!" unless defined %aid_util::config;
 
 %aid_util::parent_page_name =
 (
- '1',  'Alphabetically',
- '2',  'Graduating Classes',
- '20', 'Join or Modify Your Listing',
- '26', 'Search',
+  '1' => 'Alphabetically',
+  '2' => 'Graduating Classes',
+ '20' => 'Join or Modify Your Listing',
+ '26' => 'Search',
 );
 
 %aid_util::parent_page_path =
 (
- '1',  $aid_util::config{'master_path'} . 'alpha/',
- '2',  $aid_util::config{'master_path'} . 'class/',
- '20', $aid_util::config{'master_path'} . 'add/'  ,
- '26', $aid_util::config{'search_cgi'}            ,
+  '1' => $aid_util::config{'master_path'} . 'alpha/',
+  '2' => $aid_util::config{'master_path'} . 'class/',
+ '20' => $aid_util::config{'master_path'} . 'add/'  ,
+ '26' => $aid_util::config{'search_cgi'}            ,
 );
 
 $aid_util::copyright_path = $aid_util::config{'master_path'} .
@@ -86,29 +86,29 @@ $aid_util::EPOCH       = 815130000; # Tue Oct 31 09:00:00 GMT 1995
 
 %aid_util::field_descr =
     (
-    'id',	'[numerical userid]',
-    'v',	'[valid bit describing status]',
-    'sn',	'Last Name/Maiden Name',
-    'mn',	'Married Last Name',
-    'gn',	'First Name',
-    'q',	'[type of quarterly emailing]',
-    'r',	'[bit for reunion email request]',
-    'b',	'[unix time - first bounce (0 if none)]',
-    'c',	'[unix time - record creation]',
-    'u',	'[unix time - last update]',
-    'f',	'[unix time - last successful verification]',
-    'yr',	'Graduation Year or Affiliation',
-    'e',	'E-mail Address',
-    'w',	'Personal Web Page',
-    'l',	'Location',
-    'h',	'[REMOTE_HOST of last update]',
-    'mi',	'Middle Initial',
-    'eu',	'[unix time - last update to email]',
-    'eo',	'Previous E-mail Address',
-    'a',	'[alias (a.k.a. nickname)]',
-    'n',	'What\'s New? note',
-    'lm',	'[unix time - last time mailing was sent]',
-    'iu',	'Image URL',
+    'id' =>	'[numerical userid]',
+    'v' =>	'[valid bit describing status]',
+    'sn' =>	'Last Name/Maiden Name',
+    'mn' =>	'Married Last Name',
+    'gn' =>	'First Name',
+    'q' =>	'[type of quarterly emailing]',
+    'r' =>	'[bit for reunion email request]',
+    'b' =>	'[unix time - first bounce (0 if none)]',
+    'c' =>	'[unix time - record creation]',
+    'u' =>	'[unix time - last update]',
+    'f' =>	'[unix time - last successful verification]',
+    'yr' =>	'Graduation Year or Affiliation',
+    'e' =>	'E-mail Address',
+    'w' =>	'Personal Web Page',
+    'l' =>	'Location',
+    'h' =>	'[REMOTE_HOST of last update]',
+    'mi' =>	'Middle Initial',
+    'eu' =>	'[unix time - last update to email]',
+    'eo' =>	'Previous E-mail Address',
+    'a' =>	'[alias (a.k.a. nickname)]',
+    'n' =>	'What\'s New? note',
+    'lm' =>	'[unix time - last time mailing was sent]',
+    'iu' =>	'Image URL',
     );
 
 @aid_util::edit_field_names = # in the order we'd like to edit them
@@ -147,20 +147,11 @@ $aid_util::blank_entry{'n'}  = '';
 
 my %image_tag =
     (
-     'new',
-     "<b class=\"nu\">*NEW*</b>",
-
-     'updated',
-     "<b class=\"nu\">*UPDATED*</b>",
-
-     'vcard',
-     'View vCard',
-
-     'info',
-     "<b class=\"i\">[i]</b>",
-
-     'blank',
-     "<b>&nbsp;&nbsp;&nbsp;</b>",
+     'new'	=>	'<b class="nu">*NEW*</b>',
+     'updated'	=>	'<b class="nu">*UPDATED*</b>',
+     'vcard'	=>	'View vCard',
+     'info'	=>	'<b class="i">[i]</b>',
+     'blank'	=> 	'<b>&nbsp;&nbsp;&nbsp;</b>',
      );
 
 # give 'em back the configuration variable they need
