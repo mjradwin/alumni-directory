@@ -2,7 +2,7 @@
 #     FILE: aid_submit.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: submission form for Alumni Internet Directory
-#      $Id: aid_submit.pl,v 1.1 1999/04/06 17:04:36 mradwin Exp mradwin $
+#      $Id: aid_submit.pl,v 1.2 1999/04/06 17:21:12 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -32,7 +32,7 @@ sub aid_submit_body
     local(*rec_arg,$empty_fields) = @_;
     local(%rec) = &main'aid_html_entify_rec(*rec_arg); #'#
     local(@school_checked) = ('', '', '', '');
-    local(@reqchk,$i,$reunion_chk,@empty_fields,$prev_email);
+    local(@reqradio,$i,$reunion_chk,@empty_fields,$prev_email);
 
     $prev_email = defined $rec{'pe'} ? 
 	$rec{'pe'} : $rec{'e'};
@@ -45,9 +45,14 @@ sub aid_submit_body
 	$rec{'r'} = $blank_entry{'r'};
     }
 
-    for ($i = 0; $i < 5; $i++) {
-	$reqchk[$i] = ($rec{'q'} == $i) ? ' checked' : '';
+    for ($i = 0; $i <= $#req_descr_long; $i++) 
+    {
+	$reqradio[$i] = "
+  &nbsp;&nbsp;&nbsp;&nbsp;<input type=\"radio\" name=\"q\" id=\"q$i\"
+  value=\"$i\"" . (($rec{'q'} == $i) ? ' checked' : '') .
+  "><label for=\"q$i\">&nbsp;\n  $req_descr_long[$i]</label><br>\n";
     }
+
     $reunion_chk = ($rec{'r'} == 1) ? ' checked' : '';
     $school_checked[$rec{'s'}] = ' checked';
 
@@ -98,7 +103,7 @@ are required.  All other fields are optional.</p>
     $body .= "/new" if $rec{'id'} == -1;
     $body .= "\">\n\n" . $instr . "\n\n";
     
-    $body . "<table border=\"0\" cellspacing=\"7\">
+    $body .= "<table border=\"0\" cellspacing=\"7\">
 
 <tr><td colspan=\"3\" bgcolor=\"#$header_bg\">
 <font size=\"+1\"><strong>1. Full Name</strong></font>
@@ -214,27 +219,15 @@ are required.  All other fields are optional.</p>
   <a href=\"" . $config{'master_path'} . "etc/faq.html#mailings\">send 
   an updated copy</a> of the Directory to my e-mail address<br>
   every February, May, August and November:<br>
+";
 
-  &nbsp;&nbsp;&nbsp;&nbsp;<input type=\"radio\" name=\"q\" id=\"q4\"
-  value=\"4\"$reqchk[4]><label for=\"q4\">&nbsp;
-  $req_descr_long[4]</label><br>
+    $body .= $reqradio[4];
+    $body .= $reqradio[3];
+    $body .= $reqradio[2] if $rec{'q'} == 2;
+    $body .= $reqradio[1] if $rec{'q'} == 1;
+    $body .= $reqradio[0];
 
-  &nbsp;&nbsp;&nbsp;&nbsp;<input type=\"radio\" name=\"q\" id=\"q3\"
-  value=\"3\"$reqchk[3]><label for=\"q3\">&nbsp;
-  $req_descr_long[3]</label><br>
-
-  &nbsp;&nbsp;&nbsp;&nbsp;<input type=\"radio\" name=\"q\" id=\"q2\"
-  value=\"2\"$reqchk[2]><label for=\"q2\">&nbsp;
-  $req_descr_long[2]</label><br>
-
-  &nbsp;&nbsp;&nbsp;&nbsp;<input type=\"radio\" name=\"q\" id=\"q1\"
-  value=\"1\"$reqchk[1]><label for=\"q1\">&nbsp;
-  $req_descr_long[1]</label><br>
-
-  &nbsp;&nbsp;&nbsp;&nbsp;<input type=\"radio\" name=\"q\" id=\"q0\"
-  value=\"0\"$reqchk[0]><label for=\"q0\">&nbsp;
-  $req_descr_long[0]</label>
-
+    $body . "
   <input type=\"hidden\" name=\"id\" value=\"$rec{'id'}\">
   <input type=\"hidden\" name=\"c\" value=\"$rec{'c'}\">
   <input type=\"hidden\" name=\"eu\" value=\"$rec{'eu'}\">

@@ -2,7 +2,7 @@
 #     FILE: aid_config.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: configuration variables for Alumni Internet Directory
-#      $Id: aid_config.pl,v 1.21 1999/04/07 02:04:00 mradwin Exp mradwin $
+#      $Id: aid_config.pl,v 1.22 1999/04/07 15:48:24 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -22,7 +22,7 @@
 #
 
 $aid_util'rcsid =
- '$Id: aid_config.pl,v 1.21 1999/04/07 02:04:00 mradwin Exp mradwin $';
+ '$Id: aid_config.pl,v 1.22 1999/04/07 15:48:24 mradwin Exp mradwin $';
 
 # radwin.org (FreeBSD 2.2.2) configuration
 %aid_util'config =   #'#
@@ -123,8 +123,8 @@ $aid_util'body_vlink = '990099'; #'#
      'No e-mail except for bi-yearly address verification.',
      'All alumni, sorted by name. [~ 65 kbytes]',
      'All alumni, sorted by graduating class. [~ 65 kbytes]',
-     'Only new and changed alumni entries. [~ 15 kbytes]',
-     'Only people from my graduating class.',
+     'New and updated alumni. [~ 15 kbytes]',
+     'Only alumni from my graduating class.',
      );
 
 @aid_util'req_descr =   #'#
@@ -132,8 +132,8 @@ $aid_util'body_vlink = '990099'; #'#
      'only address verification',
      'yes (sorted by name)',
      'yes (sorted by graduating class)',
-     'yes (new and changed entries)',
-     'yes (just my graduating class)',
+     'yes (new and updated alumni)',
+     'yes (only my graduating class)',
      );
 
 @aid_util'page_idx = #'#
