@@ -1,5 +1,5 @@
 Alumni Internet Directory README file
-$Id: README,v 5.8 2000/02/29 22:00:24 mradwin Exp mradwin $
+$Id: README,v 5.9 2000/05/31 00:30:16 mradwin Exp mradwin $
 
 ========================================================================
  Copyright (c) 1995-1999  Michael John Radwin
@@ -102,10 +102,16 @@ minutes or so and rebuids the HTML pages:
 # build alumni directories
 0-55/5 * * * * nice $HOME/mvhs/bin/aid_addname -q
 
+# ocassionally clean staging.db
+10 4 * * * nice $HOME/mvhs/bin/aid_staging_clean -q
+
 aid_addname reads the staging.db and modifies data/working.db, invokes
 'make all' to push out the new static HTML pages, and then invokes
 aid_welcome to e-mail the new members to tell them that their submission
 has been received.
+
+aid_staging_clean removes old entries that have been in staging.db for
+28 days or more and have not been verified.
 
 
 6. Send out quarterly digests and bi-yearly confirmation messages
