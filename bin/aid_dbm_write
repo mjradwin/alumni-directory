@@ -1,6 +1,6 @@
 #!/usr/bin/perl -w
 
-# $Id: aid_dbm_write,v 1.6 1999/02/05 19:12:24 mradwin Exp mradwin $
+# $Id: aid_dbm_write,v 1.7 1999/02/09 00:53:20 mradwin Exp mradwin $
 
 require 'aid_util.pl';
 require 'getopts.pl';
@@ -60,7 +60,7 @@ print STDERR ".";
 
 @class_ids = ();
 @years = sort keys %class_members;
-$DB{'__years__'} = pack("n*", @years);
+$DB{'__years__'} = pack("n*",grep(/\d+/,@years));
 
 foreach $ykey (@years)
 {
