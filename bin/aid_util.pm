@@ -2,7 +2,7 @@
 #     FILE: mv_util.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: perl library routines for the MVHS Alumni Internet Directory
-#      $Id: mv_util.pl,v 1.27 1997/07/30 19:49:15 mjr Exp mjr $
+#      $Id: mv_util.pl,v 1.28 1997/08/22 16:39:20 mjr Exp mjr $
 #
 
 CONFIG: {
@@ -17,6 +17,7 @@ CONFIG: {
 	 'admin_usmail', "2814 Cozumel Cir., Santa Clara, CA 95051",
 	 'admin_url',    "http://umop-ap.com/~mjr/",
 	 'master_url',   "http://umop-ap.com/~mjr/mvhs/",
+	 'master_path',  "/~mjr/mvhs/",
 	 'cgi_url',      "http://umop-ap.com/cgi-bin/cgiwrap/mjr/mvhsaid",
 	 'cgi_path',     "/cgi-bin/cgiwrap/mjr/mvhsaid",
 	 'index_page',	 "index.html",
@@ -28,13 +29,13 @@ CONFIG: {
 	 'mailsubj',	 "MVHSAID"
 	  );
 
-    @page_idx = ('Home,./',
-		 'Alphabetically,all.html',
-		 'Grad.&nbsp;Class,class.html',
-		 'Recent&nbsp;Additions,recent.html',
-		 'Web&nbsp;Pages,pages.html',
-		 'Get&nbsp;Listed!,add.html',
-		 'Acceptable&nbsp;Use,#disclaimer');
+    @page_idx = ("Home," . $config{'master_path'},
+		 "Alphabetically," . $config{'master_path'} . "all.html",
+		 "Grad.&nbsp;Class," . $config{'master_path'} . "class.html",
+		 "Recent&nbsp;Additions," . $config{'master_path'} . "recent.html",
+		 "Web&nbsp;Pages," . $config{'master_path'} . "pages.html",
+		 "Get&nbsp;Listed!," . $config{'master_path'} . "add.html",
+		 "Acceptable&nbsp;Use,#disclaimer");
 
     $pics_label = "<meta http-equiv=\"PICS-Label\" content='(PICS-1.1 \"http://www.rsac.org/ratingsv01.html\" l gen true comment \"RSACi North America Server\" by \"" . $config{'admin_email'} . "\" for \"" . $config{'master_url'} . "\" on \"1996.04.04T08:15-0500\" r (n 0 s 0 v 0 l 0))'>";
 
@@ -545,7 +546,7 @@ sub common_html_hdr {
     $h2 .= "</font>\n  </td>\n";
 
     $h3 = "  <td align=right valign=top bgcolor=\"#ffffcc\"><a href=\"./\"><img
-  src=\"title.gif\"
+  src=\"" . $config{'master_path'} . "title.gif\"
   alt=\"Mountain View High School Alumni Internet Directory\"
   align=bottom width=398 height=48 border=0></a>
   </td>
