@@ -2,7 +2,7 @@
 #     FILE: aid_util.pm
 #   AUTHOR: Michael J. Radwin
 #    DESCR: perl library routines for the Alumni Internet Directory
-#      $Id: aid_util.pm,v 6.2 2003/08/25 05:32:04 mradwin Exp mradwin $
+#      $Id: aid_util.pm,v 6.3 2003/08/25 05:34:45 mradwin Exp mradwin $
 #
 #   Copyright (c) 2003  Michael J. Radwin
 #
@@ -273,10 +273,10 @@ sub inorder_fullname
 	$rec->{'sn'};
     } else {
 	if ($rec->{'mn'} ne '') {
-	    sprintf('%s %s%s (now %s)',
+	    sprintf('%s%s %s (now %s)',
 		    $rec->{'gn'}, $mi, $rec->{'sn'}, $rec->{'mn'});
 	} else {
-	    sprintf('%s %s%s',
+	    sprintf('%s%s %s',
 		    $rec->{'gn'}, $mi, $rec->{'sn'});
 	}
     }
