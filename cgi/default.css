@@ -11,6 +11,12 @@ strong.newupd {
   background-color: #ffc;
 }
 
+.header {
+  width: 100%;
+  border: none;
+  background-color: #ff9;
+}
+
 div.about {
   border: none;
   color: black;
