@@ -2,7 +2,7 @@
 
 #
 # mails a welcome, update, confirm, or massmail message to members
-# $Id: aid_welcome,v 5.33 2002/06/17 19:58:37 mradwin Exp mradwin $
+# $Id: aid_welcome,v 5.34 2003/03/14 20:25:54 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -54,6 +54,22 @@ Mutually exclusive optional message types (instead of 'welcome' e-mail):
     -m <textfile> Massmail the contents of <textfile>.
     -s <textfile> Special massmail contents of <textfile>.
 ";
+
+@args = @ARGV;
+
+getopts('hd:r:ucm:l:as:') || die "$usage\n";
+$opt_h && die "$usage\n";
+$opt_h = $opt_h;                # avoid warning
+$a = $b = 0;                    # avoid warning
+die "$0: Too many mutually-exclusive options\n$usage\n"
+    if (($opt_c ? 1 : 0) + ($opt_u ? 1 : 0) + ($opt_m ? 1 : 0) +
+	($opt_s ? 1 : 0)) > 1;
+die "$0: No database file specified\n$usage\n" unless $ARGV[0];
+die "$0: No target ids specified\n$usage\n" unless ($ARGV[1] || $opt_a);
+die "$0: Option -m requires -r\n$usage\n" 
+    if defined($opt_m) && !defined($opt_r);
+die "$0: Option -a requires -r\n$usage\n" 
+    if defined($opt_a) && !defined($opt_r);
 
 $directory_name = &aid_config('short_school') . ' Alumni Internet Directory';
 
@@ -139,22 +155,6 @@ by visiting the above URL.
      'textfile'	=>	'',
      'closing'	=>	'',
      );
-
-@args = @ARGV;
-
-getopts('hd:r:ucm:l:as:') || die "$usage\n";
-$opt_h && die "$usage\n";
-$opt_h = $opt_h;                # avoid warning
-$a = $b = 0;                    # avoid warning
-die "$0: Too many mutually-exclusive options\n$usage\n"
-    if (($opt_c ? 1 : 0) + ($opt_u ? 1 : 0) + ($opt_m ? 1 : 0) +
-	($opt_s ? 1 : 0)) > 1;
-die "$0: No database file specified\n$usage\n" unless $ARGV[0];
-die "$0: No target ids specified\n$usage\n" unless ($ARGV[1] || $opt_a);
-die "$0: Option -m requires -r\n$usage\n" 
-    if defined($opt_m) && !defined($opt_r);
-die "$0: Option -a requires -r\n$usage\n" 
-    if defined($opt_a) && !defined($opt_r);
 
 %params = $opt_c ? %confirm_parameters : 
     $opt_u ? %update_parameters :
