@@ -2,7 +2,7 @@
 #     FILE: mv_util.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: perl library routines for the MVHS Alumni Internet Directory
-#      $Id: mv_util.pl,v 1.29 1997/08/22 16:58:15 mjr Exp mjr $
+#      $Id: mv_util.pl,v 1.30 1997/08/22 17:13:54 mjr Exp mjr $
 #
 
 CONFIG: {
@@ -369,9 +369,11 @@ sub about_text {
     require 'ctime.pl';
 
     local($retval) = '';
-    local($rawdata,$show_req_p,$do_html_p) = @_;
+    local($rawdata,$show_req_p,$do_html_p,$do_vcard_p) = @_;
     local($time,$id,$req,$last,$first,$married,
 	  $school,$year,$email,$homepage,$location) = split(/;/, $rawdata);
+
+    $do_vcard_p = 0 unless defined($do_vcard_p);
 
     $retval .= "<pre>\n" if $do_html_p;
     $retval .= "First Name        : ";
@@ -428,6 +430,14 @@ sub about_text {
 	 (($do_html_p) ? "</strong>" : "") .
 	 "\n");
 
+    if ($do_vcard_p && $do_html_p) {
+	$retval .= "vCard             : ";
+	$retval .= "<a href=\"$config{'cgi_path'}?vcard=$id\">";
+	$retval .= "<img src=\"$config{'master_path'}vcard.gif\" ";
+	$retval .= "height=32 width=32 border=0 align=top ";
+	$retval .= "alt=\"[vCard]\"></a>\n";
+    }
+
     if ($show_req_p) {
 	$retval .= "\n";
 	$retval .= "Send Email Updates: ";
@@ -440,6 +450,7 @@ sub about_text {
 	$retval .= "Last Updated      : ";
 	$retval .= do ctime($time);
     }
+
 
     $retval .= "</pre>\n" if $do_html_p;
 

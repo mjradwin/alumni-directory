@@ -4,7 +4,7 @@
 #     FILE: mvhsaid.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: MVHS Alumni Internet Directory CGI interface
-#      $Id: mvhsaid,v 1.21 1997/08/22 17:09:36 mjr Exp mjr $
+#      $Id: mvhsaid,v 1.22 1997/08/22 17:30:43 mjr Exp mjr $
 #
 
 require 'mv_util.pl';
@@ -22,7 +22,7 @@ $dbfile = &mv_config('wwwdir') . "mvhs.adr";
 if (defined($in{'version'})) {
     select(STDOUT);  $| = 1;
     print "Content-type: text/plain\n\n";
-    print '$Id: mvhsaid,v 1.21 1997/08/22 17:09:36 mjr Exp mjr $', "\n";
+    print '$Id: mvhsaid,v 1.22 1997/08/22 17:30:43 mjr Exp mjr $', "\n";
     exit(0);
 }
 
@@ -198,7 +198,7 @@ sub send_about {
     print "<br>\n";
     print &tableheader(&inorder_fullname($first,$last,$married),
 		       1, "ffff99", 1);
-    print &about_text($_[0],0,1), "\n";
+    print &about_text($_[0],0,1,1), "\n";
     print &common_html_ftr(-1);
 }
 
@@ -235,9 +235,9 @@ sub send_upd_list {
 	  $school,$year,$email,$homepage,$location);
 
     local($info_gif) =
-	"<img src=\"/~mjr/mvhs/info.gif\" height=12 width=12 hspace=4 border=0 alt=\"[i]\">";
+	"<img src=\"" . &mv_config('master_path') . "info.gif\" height=12 width=12 hspace=4 border=0 alt=\"[i]\">";
     local($blank_gif) =
-	"<img src=\"/~mjr/mvhs/blank.gif\" height=12 width=12 hspace=4 border=0 alt=\"\">";
+	"<img src=\"" . &mv_config('master_path') . "blank.gif\" height=12 width=12 hspace=4 border=0 alt=\"\">";
     local($cgi) = &mv_config('cgi_path');
 
     select(STDOUT);  $| = 1;

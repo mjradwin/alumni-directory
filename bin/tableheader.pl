@@ -3,21 +3,27 @@
 #   AUTHOR: Michael J. Radwin
 #    DESCR: generates small-caps HTML headers with colored tables
 #     DATE: Mon Nov 11 23:52:52 EST 1996
-#      $Id: tableheader.pl,v 1.3 1997/03/23 04:30:08 mjr Exp $
+#      $Id: tableheader.pl,v 1.3 1997/03/23 20:56:39 mjr Exp mjr $
 #
 
 
-# data is a text string
-# size is an integer
-# color is a six-char rgb value
-# wide is a binary value (0 or 1)
+# parameters:
+#  data     - text string           - text to display
+#  size     - integer               - how much to increase font size by
+#  color    - six-char rgb value    - background color of table
+#  wide     - binary value (0 or 1) - should the table be full page width?
+#  align    - align= html tag       - table alignment
+#  valign   - valign= html tag      - table alignment
+#  pretext  - string                - literal html code inserted before
+#  posttext - string                - literal html code inserted after
+#
 sub tableheader {
     package tableheader;
 
     local($[) = 0;
     local($_);
-    local($last, $result, $fn_size, $bgcolor, $width);
-    local($data, $size, $color, $wide) = @_;
+    local($last,$result,$fn_size,$bgcolor,$width);
+    local($data,$size,$color,$wide,$align,$valign,$pretext,$posttext) = @_;
 
     @array = unpack('C*', $data);
     $last = pop(@array);   # the last char is a special case
@@ -26,6 +32,8 @@ sub tableheader {
     $bgcolor = "bgcolor=\"#$color\"";
     $fn_size = "size=\"+$size\"";
     $width = " width=\"100%\"" if $wide;
+    $align = "center" if $align eq '';
+    $valign = "middle" if $valign eq '';
    
     for (@array) {
 	if ($_ == 32) {
@@ -59,8 +67,8 @@ sub tableheader {
     <td bgcolor=\"#000000\" align=center>
     <table cellspacing=0 cellpadding=5 border=0 width=\"100%\">
       <tr>
-        <td $bgcolor align=center valign=middle>
-        <strong>$result</strong>
+        <td $bgcolor align=$align valign=$valign>
+        $pretext<strong>$result</strong>$posttext
         </td>
       </tr>
     </table>
