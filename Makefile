@@ -2,7 +2,7 @@
 #     FILE: Makefile
 #   AUTHOR: Michael J. Radwin
 #    DESCR: Makefile for building the Alumni Internet Directory
-#      $Id: Makefile,v 3.65 1999/03/05 00:32:30 mradwin Exp mradwin $
+#      $Id: Makefile,v 3.66 1999/03/05 00:55:21 mradwin Exp mradwin $
 #
 
 WWWROOT=/home/web/radwin.org
@@ -59,9 +59,9 @@ SNAPSHOTFILES= \
 all:	index submit \
 	addupdate reunions links faq copyright \
 	recent multi_class multi_alpha \
-	pages class awalt goners download books2 \
+	pages class awalt goners download \
 	stats $(CGIDIR)/nph-mvhsaid \
-	vcard
+	vcard pine_book
 
 $(CGIDIR)/nph-mvhsaid: $(CGIDIR)/mvhsaid
 	$(CP) $(CGIDIR)/mvhsaid $(CGIDIR)/nph-mvhsaid
@@ -212,12 +212,11 @@ $(BOOKS):	$(DBFILE) $(BIN_BOOK)
 		$(DBFILE)
 	$(RM) $(WWWDIR)/books/pine.txt.lu
 
-BOOKS2=$(WWWDIR)/books/pine.txt
-books2:	$(BOOKS2)
-$(BOOKS2):	$(DBFILE) $(BIN_BOOK)
-	mkdir -p $(WWWDIR)/books
-	$(BIN_BOOK) -p $(WWWDIR)/books/pine.txt $(DBFILE)
-	$(RM) $(WWWDIR)/books/pine.txt.lu
+PINE_BOOK=$(HOME)/.addressbook-mvhs
+pine_book:	$(PINE_BOOK)
+$(PINE_BOOK):	$(DBFILE) $(BIN_BOOK)
+	$(BIN_BOOK) -p $(PINE_BOOK) $(DBFILE)
+	$(RM) $(PINE_BOOK).lu
 
 alpha.txt:	$(DBFILE) $(BIN_ALPHA)
 	$(BIN_ALPHA) -t $(DBFILE) alpha.txt
