@@ -4,7 +4,7 @@
 #     FILE: mvhsaid.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: MVHS Alumni Internet Directory CGI interface
-#      $Id: mvhsaid,v 1.16 1997/07/30 19:08:19 mjr Exp mjr $
+#      $Id: mvhsaid,v 1.17 1997/07/30 19:38:07 mjr Exp mjr $
 #
 
 require 'mv_util.pl';
@@ -31,7 +31,7 @@ close(SUBMIT_FTR);
 # debugging: what version is installed?
 if (defined($in{'version'})) {
     print "Content-type: text/plain\n\n";
-    print '$Id: mvhsaid,v 1.16 1997/07/30 19:08:19 mjr Exp mjr $', "\n";
+    print '$Id: mvhsaid,v 1.17 1997/07/30 19:38:07 mjr Exp mjr $', "\n";
     exit(0);
 }
 
@@ -213,10 +213,13 @@ sub send_vcard {
     local($time,$id,$req,$last,$first,$married,
 	  $school,$year,$email,$homepage,$location) = split(/;/, $_[0]);
 
+    $long_last  = $last;
+    $long_last .= " $married" if $married ne '';
+
     print "Content-type: text/x-vCard\n\n";
     print "Begin:vCard\n";
     print "ORG:$school $year\n";
-    print "FN:", &inorder_fullname($first,$last,$married), "\n";
+    print "FN: $first $long_last\n";
     print "N:$last;$first;$married\n";
     print "EMAIL;PREF;INTERNET:$email\n";
     print "ADR:$location\n" if $location ne '';
