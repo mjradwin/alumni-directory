@@ -2,7 +2,7 @@
 #     FILE: mv_util.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: perl library routines for the MVHS Alumni Internet Directory
-#      $Id: mv_util.pl,v 1.65 1997/12/20 21:34:13 mjr Exp mjr $
+#      $Id: mv_util.pl,v 1.66 1997/12/20 22:46:24 mjr Exp mjr $
 #
 
 CONFIG: {
@@ -20,6 +20,7 @@ CONFIG: {
 	 'cgi_path',     "/cgi-bin/cgiwrap/mjr/mvhsaid",
 	 'index_page',	 "index.html",
 	 'wwwdir',       "/home/divcom/mjr/public_html/mvhs/",
+	 'newsdir',      "/home/divcom/mjr/public_html/mvhs/whatsnew/",
 	 'mvhsdir',      "/home/divcom/mjr/mvhs/",
 	 'sendmail',     "/usr/lib/sendmail",
 	 'mailprog',     "/usr/ucb/mail",
@@ -49,7 +50,7 @@ CONFIG: {
     @page_idx = 
 	("Home,"                  . $config{'master_path'},
 	 "Alphabetically,"        . $config{'master_path'} . "all.html",
-	 "Grad.&nbsp;Class,"      . $config{'master_path'} . "class.html",
+	 "Grad.&nbsp;Class,"      . $config{'master_path'} . "class/",
 	 "Awalt&nbsp;Alumni,"     . $config{'master_path'} . "awalt.html",
 	 "Recent&nbsp;Additions," . $config{'master_path'} . "recent.html",
 	 "Web&nbsp;Pages,"        . $config{'master_path'} . "pages.html",
@@ -135,8 +136,8 @@ sub affiliate {
     $len   = 2;
 
     if ($year =~ /^\d+$/) {
-	$affil .= "<a href=\"" . $config{'master_path'} . "class.html" .
-	    "#grad${year}\">" if $do_html_p;
+	$affil .= "<a href=\"" . $config{'master_path'} . 
+	    "class/${year}.html\">" if $do_html_p;
 
 	$year %= 100;
 	if ($school eq 'Awalt') {
@@ -153,8 +154,8 @@ sub affiliate {
 	$affil .= "</a>" if $do_html_p;
 
     } else {
-	$affil .= "<a href=\"" . $config{'master_path'} . "class.html" .
-	    "#fac_staff\">" if $do_html_p;
+	$affil .= "<a href=\"" . $config{'master_path'} . 
+	    "class/other.html\">" if $do_html_p;
 	$affil .= "[$school $year]";
 	$len   += length("[$school $year]");
 	$affil .= "</a>" if $do_html_p;
@@ -233,7 +234,7 @@ sub mv_get_usertext {
     local($text,$inFile,*TEXTFILE);
 
     $text = '';
-    $inFile = $config{'wwwdir'} . "news/raw/${id}.txt";
+    $inFile = $config{'newsdir'} . "${id}.txt";
 
     if (-r $inFile) {
 	open(TEXTFILE,$inFile) || die "Can't open $inFile: $!\n";

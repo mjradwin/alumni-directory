@@ -6,8 +6,6 @@ require 'mv_util.pl';
 require 'tableheader.pl';
 require 'getopts.pl';
 
-$htmlname = "class.html";
-
 $usage = 'usage: mv_class_html [-hta] infile.adr outfile
     -h        Display usage information.
     -t        Output text only
@@ -23,7 +21,7 @@ open(DATAPRE,$ARGV[0]) || die "Can't open $ARGV[0]: $!\n";
 open(FMTOUT,">$ARGV[1]") || die "Can't open $ARGV[1]: $!\n";
 
 if (!$opt_t) {
-    print FMTOUT &common_html_hdr(($opt_a ? 3 : 2),1);
+    print FMTOUT &common_html_hdr(($opt_a ? 3 : -1),1);
     print FMTOUT "<br>";
     $title  = $opt_a ? 'Awalt ' : '';
     $title .= "Alumni Listed by Graduating Class";
@@ -53,7 +51,8 @@ alumnus.</p>
 		$first_fac_staff = 1;
 	    } else {
 		$hashYear = 'grad' . $year;
-		print FMTOUT "<a href=\"#$hashYear\">$lastYear</a>\n";
+		print FMTOUT "<a href=\"#$hashYear\">" . 
+		    $year % 100 . "</a>\n";
 	    }
 	}
     }
@@ -125,6 +124,6 @@ while(<DATA>) {
 }
 
 $opt_t || print FMTOUT "</pre>\n";
-$opt_t || print FMTOUT &common_html_ftr(($opt_a ? 3 : 2));
+$opt_t || print FMTOUT &common_html_ftr($opt_a ? 3 : -1);
 
 exit(0);

@@ -27,16 +27,17 @@ chop;
 ($time,$id,$req,$last,$first,$married,
  $school,$year,$email,$alias,$homepage,$location) = &mv_parse($_);
 
+@years = ();
+
 # main loop
 for(;;) {
     $currentYear = $year;
+    push(@years, (($year =~ /^\d+$/) ? $year : "other"));
     $outFile = &mv_config('wwwdir') . "class/" .
 	(($year =~ /^\d+$/) ? $year : "other") . ".html";
-    print "working on $outFile\n";
-
     open(FMTOUT,">$outFile") || die "Can't open $outFile: $!\n";
 
-    print FMTOUT &common_html_hdr(18,1);
+    print FMTOUT &common_html_hdr(-1,1);
     print FMTOUT "<br>";
     $title  = ($year =~ /^\d+$/) ? "Class of $year" : "Faculty and Staff";
     print FMTOUT &tableheader($title, 1, 'ffff99', '000000', 1);
@@ -54,11 +55,40 @@ for(;;) {
 	last if (($year ne $currentYear) && ($currentYear =~ /^\d+$/));
 	&write_entry(*FMTOUT,$_);
     }
-    print FMTOUT &common_html_ftr(18);
+    print FMTOUT &common_html_ftr(-1);
     close(FMTOUT);
 
     last if eof(DATA);
 }
+
+$outFile = &mv_config('wwwdir') . "class/index.html";
+open(FMTOUT,">$outFile") || die "Can't open $outFile: $!\n";
+
+print FMTOUT &common_html_hdr(2,1);
+print FMTOUT "<br>";
+print FMTOUT &tableheader('Alumni Listed by Graduating Class',
+			  1, 'ffff99', '000000', 1);
+print FMTOUT "<p><center><font size=\"+1\">";
+print FMTOUT "Compact&nbsp;Form:<br>\n";
+print FMTOUT "<a href=\"" . &mv_config('master_path') . "class.html\">";
+print FMTOUT "All&nbsp;Alumni</a> |\n";
+print FMTOUT "<a href=\"" . &mv_config('master_path') . "awalt.html\">";
+print FMTOUT "Awalt&nbsp;Alumni</a>\n";
+print FMTOUT "<p>Expanded&nbsp;Form</a>:<br>\n";
+
+foreach $year (@years) {
+    print FMTOUT "<a href=\"" . &mv_config('master_path');
+    print FMTOUT "class/${year}.html\">";
+    print FMTOUT ($year eq 'other') ? "Faculty/Staff" : $year % 100;
+    print FMTOUT "</a>";
+    print FMTOUT " |" unless $year eq 'other';
+    print FMTOUT "\n";
+}
+print FMTOUT "</font></center><p>\n";
+
+print FMTOUT &common_html_ftr(2);
+close(FMTOUT);
+
 exit(0);
 
 sub write_entry {
