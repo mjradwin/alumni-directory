@@ -2,7 +2,7 @@
 #     FILE: Makefile
 #   AUTHOR: Michael J. Radwin
 #    DESCR: Makefile for building the Alumni Internet Directory
-#      $Id: Makefile,v 3.80 1999/05/19 00:42:00 mradwin Exp mradwin $
+#      $Id: Makefile,v 3.81 1999/05/19 00:52:29 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -26,7 +26,8 @@ WWWDIR=$(WWWROOT)/docs/mvhs-alumni
 CGIDIR=$(WWWROOT)/cgi-bin
 AID_UTIL_PL=$(CGIDIR)/aid_util.pl
 AID_SUBMIT_PL=$(CGIDIR)/aid_submit.pl
-AIDDIR=/home/users/mradwin/mvhs
+DATADIR=$(HOME)/mvhs/data
+BINDIR=$(HOME)/mvhs/bin
 TAR_AIDDIR=mvhs
 TAR_IMGDIR=web/images
 TAR_WWWDIR=web/mvhs-alumni
@@ -35,20 +36,20 @@ RM=/bin/rm -f
 MV=/bin/mv -f
 CP=/bin/cp -pf
 
-ADR_MASTER=$(AIDDIR)/data/master.adr
+ADR_MASTER=$(DATADIR)/master.adr
 
-BIN_MULTI_ALPHA=$(AIDDIR)/bin/aid_multi_alpha_html
-BIN_ALPHA=$(AIDDIR)/bin/aid_alpha_html
-BIN_BOOK=$(AIDDIR)/bin/aid_book
-BIN_CLASS=$(AIDDIR)/bin/aid_class_html
-BIN_GONERS=$(AIDDIR)/bin/aid_goners_html
-BIN_HOME=$(AIDDIR)/bin/aid_home_html
-BIN_RECENT=$(AIDDIR)/bin/aid_shortlist_html
-BIN_MULTI_CLASS=$(AIDDIR)/bin/aid_multi_class_html
-BIN_PAGES=$(AIDDIR)/bin/aid_class_html
-BIN_STATS=$(AIDDIR)/bin/aid_stats
-BIN_DBM_WRITE=$(AIDDIR)/bin/aid_dbm_write
-BIN_VCARD=$(AIDDIR)/bin/aid_write_vcards
+BIN_MULTI_ALPHA=$(BINDIR)/aid_multi_alpha_html
+BIN_ALPHA=$(BINDIR)/aid_alpha_html
+BIN_BOOK=$(BINDIR)/aid_book
+BIN_CLASS=$(BINDIR)/aid_class_html
+BIN_GONERS=$(BINDIR)/aid_goners_html
+BIN_HOME=$(BINDIR)/aid_home_html
+BIN_RECENT=$(BINDIR)/aid_shortlist_html
+BIN_MULTI_CLASS=$(BINDIR)/aid_multi_class_html
+BIN_PAGES=$(BINDIR)/aid_class_html
+BIN_STATS=$(BINDIR)/aid_stats
+BIN_DBM_WRITE=$(BINDIR)/aid_dbm_write
+BIN_VCARD=$(BINDIR)/aid_write_vcards
 
 TARFILES= \
 	$(TAR_AIDDIR)/README \
@@ -78,11 +79,7 @@ all:	index submit \
 	addupdate reunions links faq copyright \
 	recent multi_class multi_alpha \
 	pages awalt goners download \
-	stats $(CGIDIR)/nph-mvhsaid \
-	vcard pine_book
-
-$(CGIDIR)/nph-mvhsaid: $(CGIDIR)/mvhsaid
-	$(CP) $(CGIDIR)/mvhsaid $(CGIDIR)/nph-mvhsaid
+	stats vcard pine_book
 
 DBFILE=$(WWWDIR)/master.db
 dbfile:	$(DBFILE)
@@ -92,7 +89,7 @@ $(DBFILE):	$(ADR_MASTER) $(BIN_DBM_WRITE) $(AID_UTIL_PL)
 	$(RM) $(DBFILE)
 	$(MV) ./master.db $(DBFILE)
 	chmod 0444 $(DBFILE)
-	$(AIDDIR)/bin/aid_dbm_read -u ./data/master.u $(DBFILE)
+	$(BINDIR)/aid_dbm_read -u ./data/master.u $(DBFILE)
 
 VCARD_TS=$(WWWDIR)/vcard/.created
 vcard:	$(VCARD_TS)
@@ -141,44 +138,44 @@ $(MULTI_CLASS):	$(DBFILE) $(BIN_MULTI_CLASS)
 INDEX=$(WWWDIR)/index.html
 INDEX_TS=$(WWWDIR)/.index.html
 index:	$(INDEX_TS)
-$(INDEX_TS):	$(AIDDIR)/data/index.include $(BIN_HOME) $(DBFILE)
-	$(BIN_HOME) -p0 -i $(AIDDIR)/data/index.include \
+$(INDEX_TS):	$(DATADIR)/index.include $(BIN_HOME) $(DBFILE)
+	$(BIN_HOME) -p0 -i $(DATADIR)/index.include \
 		-t '' \
 		$(INDEX)
 
 REUNIONS=$(WWWDIR)/etc/reunions.html
 REUNIONS_TS=$(WWWDIR)/etc/.reunions.html
 reunions:	$(REUNIONS_TS)
-$(REUNIONS_TS):	$(AIDDIR)/data/reunions.include $(BIN_HOME)
+$(REUNIONS_TS):	$(DATADIR)/reunions.include $(BIN_HOME)
 	mkdir -p $(WWWDIR)/etc
-	$(BIN_HOME) -p11 -i $(AIDDIR)/data/reunions.include \
+	$(BIN_HOME) -p11 -i $(DATADIR)/reunions.include \
 		-t 'Reunion Information' \
 		$(REUNIONS)
 
 LINKS=$(WWWDIR)/etc/links.html
 LINKS_TS=$(WWWDIR)/etc/.links.html
 links:	$(LINKS_TS)
-$(LINKS_TS):	$(AIDDIR)/data/links.include $(BIN_HOME)
+$(LINKS_TS):	$(DATADIR)/links.include $(BIN_HOME)
 	mkdir -p $(WWWDIR)/etc
-	$(BIN_HOME) -p12 -i $(AIDDIR)/data/links.include \
+	$(BIN_HOME) -p12 -i $(DATADIR)/links.include \
 		-t 'Other MVHS and Awalt Resources' \
 		$(LINKS)
 
 FAQ=$(WWWDIR)/etc/faq.html
 FAQ_TS=$(WWWDIR)/etc/.faq.html
 faq:	$(FAQ_TS)
-$(FAQ_TS):	$(AIDDIR)/data/faq.include $(BIN_HOME)
+$(FAQ_TS):	$(DATADIR)/faq.include $(BIN_HOME)
 	mkdir -p $(WWWDIR)/etc
-	$(BIN_HOME) -p14 -i $(AIDDIR)/data/faq.include \
+	$(BIN_HOME) -p14 -i $(DATADIR)/faq.include \
 		-t 'Frequently Asked Questions' \
 		$(FAQ)
 
 COPYRIGHT=$(WWWDIR)/etc/copyright.html
 COPYRIGHT_TS=$(WWWDIR)/etc/.copyright.html
 copyright:	$(COPYRIGHT_TS)
-$(COPYRIGHT_TS):	$(AIDDIR)/data/copyright.include $(BIN_HOME)
+$(COPYRIGHT_TS):	$(DATADIR)/copyright.include $(BIN_HOME)
 	mkdir -p $(WWWDIR)/etc
-	$(BIN_HOME) -p16 -i $(AIDDIR)/data/copyright.include \
+	$(BIN_HOME) -p16 -i $(DATADIR)/copyright.include \
 		-t 'Acceptable Use, Privacy Statement, Copyright' \
 		$(COPYRIGHT)
 	ln -sf $(COPYRIGHT) $(WWWDIR)/etc/privacy.html
@@ -201,9 +198,9 @@ $(SUBMIT_TS):	$(BIN_HOME) $(AID_SUBMIT_PL)
 ADDUPDATE=$(WWWDIR)/add/index.html
 ADDUPDATE_TS=$(WWWDIR)/add/.index.html
 addupdate:	$(ADDUPDATE_TS)
-$(ADDUPDATE_TS):	$(AIDDIR)/data/add.include $(BIN_HOME)
+$(ADDUPDATE_TS):	$(DATADIR)/add.include $(BIN_HOME)
 	mkdir -p $(WWWDIR)/add
-	$(BIN_HOME) -p10 -i $(AIDDIR)/data/add.include \
+	$(BIN_HOME) -p10 -i $(DATADIR)/add.include \
 		-t 'Add or Update Your Listing' \
 		$(ADDUPDATE)
 
