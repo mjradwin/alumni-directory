@@ -2,7 +2,7 @@
 #     FILE: aid_util.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: perl library routines for the Alumni Internet Directory
-#      $Id: aid_util.pl,v 5.100 2002/01/25 03:57:48 mradwin Exp mradwin $
+#      $Id: aid_util.pl,v 5.101 2002/06/16 18:08:12 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -1409,7 +1409,7 @@ sub aid_write_reunion_hash
 	    print FH &main::aid_url_escape(" Class of")
 		if ($key =~ /^\d+$/);
 	    print FH &main::aid_url_escape(" $key Reunion");
-	    printf FH "&amp;ST=%4d%02d%02d", ($year+1900), ($mon+1), $mday;
+	    printf FH "&amp;ST=%4d%02d%02d", $year, $mon, $mday;
 	    print FH "&amp;VIEW=d\" target=\"_calendar\">Add\n",
 	    "This Event To My Personal Yahoo! Calendar</a></dd>\n";
 	}
