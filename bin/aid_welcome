@@ -2,7 +2,7 @@
 
 #
 # mails a welcome or update note to everyone in targets.adr
-# $Id: aid_welcome,v 1.31 1998/01/27 21:05:19 mjr Exp mjr $
+# $Id: aid_welcome,v 1.32 1998/03/24 23:30:07 mjr Exp mjr $
 #
 
 require 'aid_util.pl';
@@ -40,8 +40,9 @@ $subject = $opt_c ? 'Confirming your MVHS Alumni Internet Directory entry' :
 
 $today = &ctime(time);
 chop $today;
-$logfile = &aid_config('aiddir') . 
-    ($opt_m ? "logs/inform.log" : "logs/welcome.log");
+$logfile = &aid_config('aiddir') . "logs/" .
+    ($opt_m ? "inform" : $opt_c ? "confirm" : $opt_u ? "update" : "welcome") .
+    ".log";
 
 $textfile = '';
 if ($opt_m) {
