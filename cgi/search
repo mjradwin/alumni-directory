@@ -4,7 +4,7 @@
 #     FILE: search.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: Alumni Internet Directory CGI search
-#      $Id: search,v 5.20 2000/06/26 21:45:13 mradwin Exp mradwin $
+#      $Id: search,v 5.21 2001/09/16 16:58:27 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -80,7 +80,7 @@ $query =~ s/\bor\b//ig;
 foreach (@alpha_ids)
 {
     %rec = &aid_db_unpack_rec($_,$DB{$_});
-    $fullname = &aid_inorder_fullname(*rec) . $rec{'e'};
+    $fullname = &aid_inorder_fullname(*rec);
     $key = "\L$rec{'sn'}\0$rec{'gn'}\0$rec{'mi'}\0$rec{'mn'}\0$rec{'yr'}\E\0$rec{'id'}";
 
     if (defined $in{'y'} && $in{'y'} ne '')
@@ -176,11 +176,7 @@ else
 	    "\">$fullname</a> $affil";
 	}
 
-	if ($rec{'v'})
-	{
-	    print " (<code>$rec{'e'}</code>)";
-	}
-	else
+	if (! $rec{'v'})
 	{
 	    print " <em>(invalid e-mail address)</em>";
 	}
