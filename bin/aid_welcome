@@ -2,7 +2,7 @@
 
 #
 # mails a welcome or update note to everyone in targets.adr
-# $Id: aid_welcome,v 3.16 1998/11/03 17:13:10 mradwin Exp mradwin $
+# $Id: aid_welcome,v 3.17 1998/12/26 18:18:50 mradwin Exp mradwin $
 #
 
 require 'aid_util.pl';
@@ -188,7 +188,10 @@ $params{'intro'}
 The Directory (which produced this form letter) shows the
 following information about you:
 
-$about$denied
+------------------------------------------------------------
+$about
+------------------------------------------------------------
+$denied
 If any of the above information is incorrect or out of date,
 update your entry online at:\n\n" .
 
