@@ -2,7 +2,7 @@
 #     FILE: Makefile
 #   AUTHOR: Michael J. Radwin
 #    DESCR: Makefile for building the Alumni Internet Directory
-#      $Id: Makefile,v 3.72 1999/04/06 16:42:00 mradwin Exp mradwin $
+#      $Id: Makefile,v 3.73 1999/04/06 17:12:13 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -75,6 +75,7 @@ SNAPSHOTFILES= \
 	$(TAR_IMGDIR)/vcard.gif \
 	$(TAR_WWWDIR)/default.css \
 	$(TAR_WWWDIR)/*.gif \
+	$(TAR_WWWDIR)/.htaccess \
 	$(TAR_WWWDIR)/master.db
 
 all:	index submit \
