@@ -1,5 +1,5 @@
 Alumni Internet Directory README file
-$Id: README,v 5.2 1999/06/01 19:56:03 mradwin Exp mradwin $
+$Id: README,v 5.3 1999/06/24 22:35:47 mradwin Exp mradwin $
 
 ------------------------------------------------------------------------
  Copyright (c) 1995-1999  Michael John Radwin
@@ -41,7 +41,7 @@ data/*.include:
 
 data/working.db:
   You'll need to create this file, but there's no script to do it
-  automatically.  I'd suggest run these commands:
+  automatically.  I'd suggest running these commands:
     $ perl -e 'dbmopen(%DB,"data/working",0666); dbmclose(%DB);'
     $ ./bin/aid_edit_entry data/working.db -1
 
@@ -53,6 +53,7 @@ data/working.db:
     * gn [given name]
     * e [email address]
     * yr [graduation year]
+  You also might put an URL the 'w' key (complete with leading "http://").
 
 After editing Makefile and the .pl configuration files appropriately, do
 a 'make symlinks' to set up symbolic links from the web's cgi-bin
