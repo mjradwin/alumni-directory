@@ -4,7 +4,7 @@
 #     FILE: mvhsaid.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: MVHS Alumni Internet Directory CGI interface
-#      $Id: mvhsaid,v 1.63 1998/03/10 19:13:22 mjr Exp mjr $
+#      $Id: mvhsaid,v 1.64 1998/03/20 04:12:58 mjr Exp mjr $
 #
 
 require 'aid_util.pl';
@@ -24,7 +24,7 @@ if (defined($ENV{'PATH_INFO'}) && $ENV{'PATH_INFO'} =~ m,^/vcard/,) {
     $in{'vcard'} =~ s,^/vcard/(\d+).*$,$1,;
 }
 
-$rcsid = '$Id: mvhsaid,v 1.63 1998/03/10 19:13:22 mjr Exp mjr $'; #'fnt
+$rcsid = '$Id: mvhsaid,v 1.64 1998/03/20 04:12:58 mjr Exp mjr $'; #'fnt
 
 # special flags: version, update, vcard, about
 #
@@ -97,6 +97,11 @@ foreach $key (keys(%in)) {
     $in{$key} = '' if $in{$key} =~ m|^\(none\)$|i;
 }
 
+foreach $key (keys(%in)) {
+    next if $key eq 'message';
+    $in{$key} =~ s/;/,/g;   # can't handle ; because it's field delim
+}
+
 # remove apostropies and add a leading year to gradyear field
 $in{'year'} =~ s/^class\s+of\s*//i;
 $in{'year'} =~ s/^\'(\d\d)$/$1/;
@@ -143,7 +148,7 @@ $in{'last'} = "\L$in{'last'}\E"
 $in{'married'} = "\L$in{'married'}\E" 
     if ($in{'married'} eq "\U$in{'married'}\E");
 
-# capitalize those lazy names
+# initial capitalize those lazy names
 $in{'first'} = "\u$in{'first'}";
 $in{'last'} = "\u$in{'last'}";
 $in{'married'} = "\u$in{'married'}";
