@@ -4,7 +4,7 @@
 #     FILE: about.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: Alumni Internet Directory CGI "About" page generation
-#      $Id: about,v 5.4 1999/06/08 18:49:07 mradwin Exp $
+#      $Id: about,v 5.4 1999/06/08 19:39:27 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -87,7 +87,7 @@ sub send_about
 
     print &aid_common_html_hdr(-1,$fullname,1,$rec{'u'});
     print "<p>Here is more detailed information about $html_name.\n<br />";
-    print "To update this listing, please click the button below.</p>\n\n";
+    print "To modify this listing, please click the button below.</p>\n\n";
     print &aid_about_text(*rec,0,1,1), "\n";
 
     print "
@@ -95,7 +95,7 @@ sub send_about
 
 <form method=\"get\" action=\"" . &aid_config('update_cgi') . "/$rec{'id'}\">
 <input type=\"hidden\" name=\"upd\" value=\"$rec{'id'}\" />
-<input type=\"submit\" value=\"Update $html_name\" />
+<input type=\"submit\" value=\"Modify $html_name\" />
 </form>
 
 <p>To avoid malicious modification by other people passing through, we
