@@ -1,6 +1,6 @@
 #!/usr/bin/perl -w
 
-# $Id: aid_dbm_write,v 1.1 1999/01/21 16:40:17 mradwin Exp mradwin $
+# $Id: aid_dbm_write,v 1.2 1999/02/05 00:13:27 mradwin Exp mradwin $
 
 require 'aid_util.pl';
 
@@ -14,8 +14,15 @@ for (@db)
     %rec = &aid_split($_);
 
     $DB{$rec{'id'}} = 
-	pack("C3N4", $rec{'valid'}, $rec{'request'}, $rec{'reunion'},
-	     $rec{'bounce'}, $rec{'created'}, $rec{'time'}, $rec{'fresh'}) .
+	pack("C3N4",
+	     $rec{'valid'},
+	     $rec{'request'},
+	     $rec{'reunion'},
+	     $rec{'bounce'},
+	     $rec{'created'},
+	     $rec{'time'},
+	     $rec{'fresh'}
+	     ) .
 	join("\0",
 	     $rec{'last'},
 	     $rec{'married'},
@@ -30,4 +37,33 @@ for (@db)
 
     $DB{$rec{'email'}} = $rec{'id'};
 }
+
+# an alphabetically sorted list
+@alpha_ids = ();
+@db = &aid_alpha_db($dbFile);
+for (@db)
+{
+    next unless defined($_) && $_ ne '';
+    %rec = &aid_split($_);
+
+    push(@alpha_ids, $rec{'id'});
+}
+
+$DB{'__alpha__'} = pack("n$#alpha_ids", @alpha_ids);
+
+
+# an class sorted list
+@class_ids = ();
+@db = &aid_class_db($dbFile);
+for (@db)
+{
+    next unless defined($_) && $_ ne '';
+    %rec = &aid_split($_);
+
+    push(@class_ids, $rec{'id'});
+}
+
+$DB{'__class__'} = pack("n$#class_ids", @class_ids);
+
+
 dbmclose(DB);
