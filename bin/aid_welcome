@@ -2,7 +2,7 @@
 
 #
 # mails a welcome, update, confirm, or massmail message to members
-# $Id: aid_welcome,v 3.43 1999/04/05 23:00:02 mradwin Exp mradwin $
+# $Id: aid_welcome,v 3.44 1999/04/12 16:10:07 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -189,6 +189,7 @@ if ($opt_a)
 	    }
 
 	    &mail_user(*rec);
+	    sleep $params{'sleep'} if $params{'sleep'} > 0;
 	}
     }
 }
