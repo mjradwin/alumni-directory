@@ -20,6 +20,7 @@ $opt_h && die "$usage\n";
 ($opt_c && $opt_u) && die "$usage\n";
 $ARGV[0] || die "$usage\n";
 
+$ENV{'TZ'} = 'EST';
 $today = &ctime(time);
 chop $today;
 
