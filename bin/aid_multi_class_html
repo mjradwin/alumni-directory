@@ -2,7 +2,7 @@
 
 #
 # does the html multi_class pages
-# $Id: aid_multi_class_html,v 6.9 2005/01/17 20:13:52 mradwin Exp mradwin $
+# $Id: aid_multi_class_html,v 6.10 2005/01/17 20:18:05 mradwin Exp mradwin $
 #
 # Copyright (c) 2003  Michael J. Radwin.
 # All rights reserved.
@@ -274,12 +274,13 @@ foreach $year (@years)
 	my $e = email_name(\%rec);
 	$e .= " &lt;" . aid_util::protect_email($rec{'e'}) . "&gt;";
 	my $subject = aid_util::config('short_school') . " Alumni";
+	my $name_affil = aid_util::html_entify_str($name . $affil);
 
 	print FMTOUT2 <<_EOHTML_;
 <p>&nbsp;</p>
 <hr>
 <a name="msg"></a>
-<h2>Send a message to $name$affil</h2>
+<h2>Send a message to $name_affil</h2>
 <p>
 <form method="post" action="$action/post">
 <input type="hidden" name="id" value="$id">
