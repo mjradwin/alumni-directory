@@ -2,7 +2,7 @@
 
 #
 # does the html multi_class pages
-# $Id: aid_multi_class_html,v 5.33 2003/07/14 15:32:47 mradwin Exp mradwin $
+# $Id: aid_multi_class_html,v 5.34 2003/07/17 19:04:15 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -253,7 +253,7 @@ foreach $year (@years)
 
     print FMTOUT &aid_common_html_ftr(2,$time);
     close(FMTOUT);
-    utime $time, $time, $outFile;
+#    utime $time, $time, $outFile;
 }
 
 die "corrupt/missing _t key!" unless defined $DB{'_t'} && $DB{'_t'} ne '';
