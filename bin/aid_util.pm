@@ -2,7 +2,7 @@
 #     FILE: aid_util.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: perl library routines for the Alumni Internet Directory
-#      $Id: aid_util.pl,v 4.78 1999/04/05 16:04:01 mradwin Exp mradwin $
+#      $Id: aid_util.pl,v 4.79 1999/04/05 18:03:54 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -22,7 +22,7 @@
 #
 
 $aid_util'rcsid =
- '$Id: aid_util.pl,v 4.78 1999/04/05 16:04:01 mradwin Exp mradwin $';
+ '$Id: aid_util.pl,v 4.79 1999/04/05 18:03:54 mradwin Exp mradwin $';
 
 # ----------------------------------------------------------------------
 # CONFIGURATION
@@ -1174,13 +1174,10 @@ sub aid_about_text
     if ($rec{'u'} ne '' && $rec{'u'} != 0 &&
 	$rec{'c'} ne '' && $rec{'c'} != 0) {
 	$retval .= "\n";
-	$retval .= "Joined Directory   : ";
-        $retval .= &main'aid_caldate($rec{'c'}) . "\n"; #'#
-    }
-
-    if ($rec{'u'} ne '' && $rec{'u'} != 0) {
 	$retval .= "Last Updated       : ";
 	$retval .= &main'aid_caldate($rec{'u'}) . "\n"; #'#
+	$retval .= "Joined Directory   : ";
+        $retval .= &main'aid_caldate($rec{'c'}) . "\n"; #'#
     }
 
     $rec{'n'} = &main'aid_get_usertext($rec{'id'}) #'#
