@@ -4,7 +4,7 @@
 #     FILE: mvhsaid.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: Alumni Internet Directory CGI interface
-#      $Id: mvhsaid,v 3.72 1999/03/03 22:54:44 mradwin Exp mradwin $
+#      $Id: mvhsaid,v 3.73 1999/03/04 00:04:23 mradwin Exp mradwin $
 #
 
 require 'aid_util.pl';
@@ -22,13 +22,12 @@ if ($ENV{'SCRIPT_NAME'} =~ m,/nph-,)
 # configuration
 $mailprog = &aid_config('mailprog');
 $dbmfile = &aid_config('wwwdir') . 'master';
-$rcsid = '$Id: mvhsaid,v 3.72 1999/03/03 22:54:44 mradwin Exp mradwin $'; #'fnt
+$rcsid = '$Id: mvhsaid,v 3.73 1999/03/04 00:04:23 mradwin Exp mradwin $'; #'fnt
 
-$listing_upd_title = 'Step 1: Update Your Directory Listing';
+$listing_upd_title = 'Update Your Directory Listing';
 $listing_upl_title = 'Select a Listing to Update';
-$listing_add_title = 'Step 1: Add Your Listing to the Directory';
-$listing_sub_title = 'Step 2: Review and Confirm Your Listing';
-$listing_cnf_title = 'Thank You! Your Listing is Queued';
+$listing_add_title = 'Add Your Listing to the Directory';
+$listing_sub_title = 'Review and Confirm Your Listing';
 
 &CgiDie(&aid_config('short_school') . " Alumni: Script Error",
 	"The database is unreadable.\n" .
@@ -386,10 +385,12 @@ $message_bot
 EOM
 ");
 
-    print "Content-Type: text/html\015\012\015\012";
-    print &common_html_hdr(-1,$listing_cnf_title,1);
-
     $fullname = &inorder_fullname(*in);
+
+    print "Content-Type: text/html\015\012\015\012";
+    print &common_html_hdr(-1,"Welcome, $fullname!",1);
+
+    $fullname = &aid_html_escape($fullname);
     print "
 
 <p>The listing for <strong>$fullname</strong> has been added

@@ -2,7 +2,7 @@
 #     FILE: Makefile
 #   AUTHOR: Michael J. Radwin
 #    DESCR: Makefile for building the Alumni Internet Directory
-#      $Id: Makefile,v 3.60 1999/02/27 08:08:01 mradwin Exp mradwin $
+#      $Id: Makefile,v 3.61 1999/02/27 08:11:46 mradwin Exp mradwin $
 #
 
 WWWROOT=/home/web/radwin.org
@@ -164,7 +164,7 @@ SUBMIT_TS=$(WWWDIR)/add/.new.html
 submit:	$(SUBMIT_TS)
 $(SUBMIT_TS):	$(BIN_HOME) $(AID_UTIL_PL)
 	$(BIN_HOME) -s -p20 \
-		-t 'Step 1: Add Your Listing to the Directory' \
+		-t 'Add Your Listing to the Directory' \
 		$(SUBMIT)
 
 ADDUPDATE=$(WWWDIR)/add/index.html

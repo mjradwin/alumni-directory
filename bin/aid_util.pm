@@ -2,11 +2,11 @@
 #     FILE: aid_util.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: perl library routines for the Alumni Internet Directory
-#      $Id: aid_util.pl,v 4.35 1999/03/03 22:54:52 mradwin Exp mradwin $
+#      $Id: aid_util.pl,v 4.36 1999/03/04 00:04:23 mradwin Exp mradwin $
 #
 
 $aid_util'rcsid =
- '$Id: aid_util.pl,v 4.35 1999/03/03 22:54:52 mradwin Exp mradwin $';
+ '$Id: aid_util.pl,v 4.36 1999/03/04 00:04:23 mradwin Exp mradwin $';
 
 # ----------------------------------------------------------------------
 # CONFIGURATION
@@ -674,7 +674,7 @@ $instr
 </tr>
 
 <tr><td colspan=3 bgcolor=\"#$header_bg\">
-<font size=\"+1\"><strong>2. Graduating Class</font>
+<font size=\"+1\"><strong>2. Graduating Class while at $config{'short_school'}/Awalt</font>
 </td></tr>
 <tr>
   <td valign=top align=right><strong>High School:</strong></td>
