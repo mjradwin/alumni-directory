@@ -4,7 +4,7 @@
 #     FILE: msg.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: Alumni Internet Directory update redirector
-#      $Id: msg,v 6.1 2003/08/25 06:01:07 mradwin Exp mradwin $
+#      $Id: msg,v 6.2 2003/08/25 06:13:07 mradwin Exp mradwin $
 #
 #   Copyright (c) 2003  Michael John Radwin
 #
@@ -110,7 +110,7 @@ elsif (defined($in{'id'}) && $in{'id'} =~ /^\d+$/ && $in{'hash'} &&
 	print <<_EOHTML_;
 <p><font color=\"red\">Your e-mail address
 <b>$h</b> appears to be invalid.</font>
-<br>It must be in the form of <code>user\@isp.net</code>.
+<br>It must be in the form of <code>user\@example.com</code>.
 _EOHTML_
 
 	my $name = email_name();
@@ -123,6 +123,12 @@ _EOHTML_
 
     my $name = email_name();
     my $school = aid_util::config('short_school');
+
+    $message .= "
+
+----
+Sent via $school Web Form from IP address $ENV{'REMOTE_ADDR'}
+Please report abuse to " . aid_util::config('admin_email') . "\n";
 
     my $status = 0;
     for (my $i = 0; $status == 0 && $i < 3; $i++) {
