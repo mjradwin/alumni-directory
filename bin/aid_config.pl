@@ -2,7 +2,7 @@
 #     FILE: aid_config.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: configuration variables for Alumni Internet Directory
-#      $Id: aid_config.pl,v 1.44 1999/05/31 18:43:22 mradwin Exp mradwin $
+#      $Id: aid_config.pl,v 5.1 1999/05/31 21:20:48 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -76,11 +76,11 @@ $aid_util'copyright_path = $aid_util'config{'master_path'} .
     "etc/copyright.html";
 
 $aid_util'pics_label = #'#
-"  <meta http-equiv=\"PICS-Label\" content='(PICS-1.1 " . 
+"<meta http-equiv=\"PICS-Label\" content='(PICS-1.1 " . 
 "\"http://www.rsac.org/ratingsv01.html\" l gen true " . 
 "on \"1998.03.10T11:49-0800\" r (n 0 s 0 v 0 l 0))' />"; #"#
 
-$aid_util'noindex = "  <meta name=\"robots\"  content=\"noindex\" />"; #'#
+$aid_util'noindex = "<meta name=\"robots\" content=\"noindex\" />"; #'#
 %aid_util'aid_aliases = ();   #'# global alias hash repository 
 
 $aid_util'EPOCH       = 815130000; #'# Tue Oct 31 09:00:00 GMT 1995
@@ -174,19 +174,19 @@ $aid_util'blank_entry{'n'}  = '';      #'#
 %aid_util'image_tag = #'#
     (
      'new',
-     "<strong class=\"nu\">*NEW*</strong>",
+     "<b class=\"nu\">*NEW*</b>",
 
      'updated',
-     "<strong class=\"nu\">*UPDATED*</strong>",
+     "<b class=\"nu\">*UPDATED*</b>",
 
      'vcard',
      'View vCard',
 
      'info',
-     "<strong class=\"i\">[i]</strong>",
+     "<b class=\"i\">[i]</b>",
 
      'blank',
-     "<strong>&nbsp;&nbsp;&nbsp;</strong>",
+     "<b>&nbsp;&nbsp;&nbsp;</b>",
      );
 
 sub aid_caldate

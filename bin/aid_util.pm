@@ -2,7 +2,7 @@
 #     FILE: aid_util.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: perl library routines for the Alumni Internet Directory
-#      $Id: aid_util.pl,v 4.116 1999/05/31 18:54:56 mradwin Exp mradwin $
+#      $Id: aid_util.pl,v 5.1 1999/05/31 21:20:48 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -735,30 +735,28 @@ sub aid_common_link_table
     local($page) = @_;
     local($html,$name,$url,$idx);
 
-    $html  = "    <!-- nav begin -->\n";
-    $html .= "    <p align=\"center\"><small>";
+    $html = "<p align=\"center\"><small>";
 
     foreach $idx (0 .. $#page_idx) {
 	($name, $url) = split(/,/, $page_idx[$idx]);
         if ($idx == $page) {
-	    $html .= "\n      <strong>$name</strong>";
+	    $html .= "\n<strong>$name</strong>";
         } else {
-            $html .= "<a\n      href=\"$url\">$name</a>";
+            $html .= "<a\nhref=\"$url\">$name</a>";
         }
 	$html .= ' - ' unless $idx == $#page_idx;
     }
-    $html .= "\n      <br />";
+    $html .= "\n<br />";
     foreach $idx (0 .. $#second_idx) {
 	($name, $url) = split(/,/, $second_idx[$idx]);
         if ($idx == ($page - 10)) {
-	    $html .= "\n      <strong>$name</strong>";
+	    $html .= "\n<strong>$name</strong>";
         } else {
-            $html .= "<a\n      href=\"$url\">$name</a>";
+            $html .= "<a\nhref=\"$url\">$name</a>";
         }
 	$html .= ' - ' unless $idx == $#second_idx;
     }
-    $html .= "\n    </small></p>\n";
-    $html .= "    <!-- nav end -->\n";
+    $html .= "\n</small></p>\n";
     
     $html;
 }
@@ -773,18 +771,17 @@ sub aid_common_html_ftr
     local($ftr);
     local($year) = (localtime(time))[5] + 1900;
 
-    $ftr  = "\n<!-- ftr begin -->\n";
-    $ftr .= "<hr noshade=\"noshade\" size=\"1\" />\n";
+    $ftr  = "\n<hr noshade=\"noshade\" size=\"1\" />\n";
 
-    $ftr .= "\n<div class=\"about\">\n";
+    $ftr .= "\n<div class=\"about\">";
     $ftr .= &main'aid_common_link_table($page); #'#
     $ftr .="</div>\n";
 
     $ftr .= "\n<small>\n" . $disclaimer . "\n<br /><br />\n";
 
     $ftr .= "<a href=\"" . $copyright_path . "\">" .
-	"Copyright\n&copy; $year " . $config{'admin_name'} . "</a>\n</small>\n" .
-	"<!-- ftr end -->\n\n</body>\n</html>\n";
+	"Copyright\n&copy; $year " . $config{'admin_name'} . "</a>\n</small>" .
+	"\n\n</body>\n</html>\n";
 
     $ftr;
 }
@@ -806,13 +803,12 @@ sub aid_common_html_hdr
 #    $hour  = 12 if $hour == 0;
 #    $timestamp = sprintf("%s %2d:%02d%s",
 #			 &main'aid_caldate($pagetime), $hour, $min, $ampm);
-    $timestamp = &main'aid_caldate($pagetime);
+    $timestamp = &main'aid_caldate($pagetime); #'#
 
     $tablehdr = $title eq '' ? '' :
-	"    <!-- \"$title\" --><strong>" .
-	&main'tableheader_internal($title,1,$cell_fg) . #'#
+	'<strong>' . &main'tableheader_internal($title,1,$cell_fg) . #'#
 	    "</strong>\n";
-    $tablehdr .= "    <br />$subtitle\n" if defined $subtitle && $subtitle ne '';
+    $tablehdr .= "<br />$subtitle\n" if defined $subtitle && $subtitle ne '';
     $tablehdr .= "\n";
 
     $titletag = ($page == 0) ?
@@ -824,10 +820,10 @@ sub aid_common_html_hdr
 	"\t\"http://www.w3.org/TR/REC-html40/loose.dtd\">\n" .
 	"<html xmlns=\"http://www.w3.org/TR/xhtml1\">\n" .
 	"<head>\n" .
-	"  <title>" . $titletag . "</title>\n" . 
+	"<title>" . $titletag . "</title>\n" . 
 	    $pics_label . "\n" . $author_meta . "\n" . $navigation_meta . "\n";
 
-    $hdr .= "  <link rel=\"stylesheet\" type=\"text/css\" href=\"http://";
+    $hdr .= "<link rel=\"stylesheet\" type=\"text/css\" href=\"http://";
     $hdr .= $config{'master_srv'} . $config{'master_path'};;
     $hdr .= "default.css\" />\n";
 
@@ -842,37 +838,21 @@ sub aid_common_html_hdr
 
     $hdr .= "\n</head>\n\n";
     
-    $hdr .= "<!-- hdr begin -->\n";
-
     $hdr .= "<body bgcolor=\"#$body_bg\" text=\"#$body_fg\" link=\"#$body_link\" vlink=\"#$body_vlink\">\n";
     
     $hdr .= "
 <table cellspacing=\"0\" cellpadding=\"6\" border=\"0\" width=\"100%\">
-  <tr>
-    <td bgcolor=\"#$header_bg\" valign=\"middle\">
-    <p align=\"left\"><a
-    href=\"$config{'master_path'}\"><font color=\"#$header_fg\"
-    size=\"+2\"><strong><tt>$config{'school'}
-    Alumni Internet Directory</tt></strong></font></a></p>
-    <p align=\"right\"><font color=\"#$header_fg\"><small>
-    $timestamp
-    </small></font></p>
-    </td>
-  </tr>
-  <tr>
-    <td bgcolor=\"#$cell_bg\" align=\"center\" valign=\"middle\">
-$tablehdr";
-    $hdr .= &main'aid_common_link_table($page); #'#
-    $hdr .= "    </td>
-  </tr>
-</table>
-
-<!-- discourage www.roverbot.com -->
-<!--BAD-DOG-->
-
+<tr><td bgcolor=\"#$header_bg\">
+<p><a href=\"$config{'master_path'}\"><font color=\"#$header_fg\"
+size=\"+2\"><strong><tt>$config{'school'}
+Alumni Internet Directory</tt></strong></font></a></p>
+<p align=\"right\"><font color=\"#$header_fg\"><small>
+$timestamp</small></font></p>
+</td></tr>
+<tr><td bgcolor=\"#$cell_bg\" align=\"center\">
 ";
-
-    $hdr .= "<!-- hdr end -->\n\n";
+    $hdr .= $tablehdr . &main'aid_common_link_table($page); #'#
+    $hdr .= "</td></tr>\n</table>\n\n<!--BAD-DOG-->\n\n";
 
     $hdr;
 }
