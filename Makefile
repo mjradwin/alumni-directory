@@ -2,9 +2,9 @@
 #     FILE: Makefile
 #   AUTHOR: Michael J. Radwin
 #    DESCR: Makefile for building the Alumni Internet Directory
-#      $Id: Makefile,v 5.33 2003/11/12 20:20:51 mradwin Exp mradwin $
+#      $Id: Makefile,v 1.9 2004/02/17 03:44:37 mradwin Exp mradwin $
 #
-# Copyright (c) 2003  Michael J. Radwin.
+# Copyright (c) 2005  Michael J. Radwin.
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or
@@ -71,7 +71,7 @@ SNAPSHOTFILES= $(TAR_AIDDIR)
 all:	index submit \
 	addupdate reunions links faq copyright \
 	recent multi_class multi_alpha \
-	pages goners download stats pine_book rss db_dump
+	pages goners stats pine_book rss db_dump
 
 install:
 	$(MKDIR) logs
@@ -129,7 +129,7 @@ MULTI_CLASS=$(WWWDIR)/class/.index.html
 multi_class:	$(MULTI_CLASS)
 $(MULTI_CLASS):	$(DBFILE) $(BINDIR)/aid_multi_class_html
 	$(MKDIR) $(WWWDIR)/class
-	$(BINDIR)/aid_multi_class_html $(QUIET) -i "$(MOD_KEYS)" \
+	$(BINDIR)/aid_multi_class_html -d $(QUIET) -i "$(MOD_KEYS)" \
 		$(DBFILE) $(WWWDIR)/reunions.db
 
 INDEX=$(WWWDIR)/index.html
@@ -208,15 +208,6 @@ $(ADDUPDATE_TS):	$(DATADIR)/add.include $(BINDIR)/aid_home_html
 		$(QUIET) -t 'Join or Modify Your Listing' \
 		$(ADDUPDATE)
 
-DOWNLOAD=$(WWWDIR)/download/index.html
-DOWNLOAD_TS=$(WWWDIR)/download/.index.html
-download:	$(DOWNLOAD_TS)
-$(DOWNLOAD_TS):	$(BINDIR)/aid_home_html $(DBFILE)
-	$(MKDIR) $(WWWDIR)/download
-	$(BINDIR)/aid_home_html -d -p13 -i "$(MOD_KEYS)" \
-		$(QUIET) -t 'Download Nickname and Address Book Files' \
-		$(DOWNLOAD)
-
 PINE_BOOK=$(HOME)/.addressbook-$(SCHOOL)
 pine_book:	$(PINE_BOOK)
 $(PINE_BOOK):	$(DBFILE) $(BINDIR)/aid_book
@@ -252,5 +243,4 @@ clean:
 	$(COPYRIGHT_TS) \
 	$(SUBMIT_TS) \
 	$(ADDUPDATE_TS) \
-	$(DOWNLOAD_TS) \
 	$(RSS_TS)
