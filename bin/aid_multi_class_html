@@ -2,7 +2,7 @@
 
 #
 # does the html multi_class pages
-# $Id: aid_multi_class_html,v 3.36 1999/05/24 18:55:52 mradwin Exp mradwin $
+# $Id: aid_multi_class_html,v 3.37 1999/05/28 20:19:53 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -88,10 +88,11 @@ foreach $year (@years)
 <center>
 <form method=\"post\" action=\"http://minder.netmind.com/mindit.shtml\">
 <input type=\"submit\"
- value=\"Receive e-mail when $title changes (courtesy of NetMind)\">
+ value=\"Receive e-mail when $title changes (courtesy of NetMind)\" />
+<input type=\"hidden\" name=\"UPDATE_PERIOD\" value=\"7\" />
 <input type=\"hidden\" name=\"URL\"
  value=\"http://" .  &aid_config('master_srv') . &aid_config('master_path') . 
-"class/${year}.html\">
+"class/${year}.html\" />
 </form>
 </center>
 ";
