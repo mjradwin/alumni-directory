@@ -2,7 +2,7 @@
 #     FILE: aid_submit.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: submission form for Alumni Internet Directory
-#      $Id: aid_submit.pl,v 5.14 2000/12/07 22:10:52 mradwin Exp mradwin $
+#      $Id: aid_submit.pl,v 5.15 2000/12/07 22:28:41 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -63,6 +63,16 @@ sub aid_submit_body
 		 "appears to be invalid.</font>\n" .
 		 "<br>It must be no later than " .
 		 $config{'max_gradyear'} .
+		 ".</strong></p>\n\n";
+
+	$empty_fields =~ s/\byr\b//g;
+    }
+    elsif ($rec{'yr'} =~ /^\d+$/ && $rec{'yr'} < 1900)
+    {
+	$body .= "<p><strong><font color=\"red\">Your graduating class\n" .
+		 "(<code>" . $rec{'yr'} . "</code>)\n" .
+		 "appears to be invalid.</font>\n" .
+		 "<br>It must be no earlier than 1900" .
 		 ".</strong></p>\n\n";
 
 	$empty_fields =~ s/\byr\b//g;
