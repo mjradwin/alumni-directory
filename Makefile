@@ -2,7 +2,7 @@
 #     FILE: Makefile
 #   AUTHOR: Michael J. Radwin
 #    DESCR: Makefile for building the Alumni Internet Directory
-#      $Id: Makefile,v 3.62 1999/03/04 00:11:42 mradwin Exp mradwin $
+#      $Id: Makefile,v 3.63 1999/03/04 17:35:03 mradwin Exp mradwin $
 #
 
 WWWROOT=/home/web/radwin.org
@@ -28,6 +28,7 @@ BIN_MULTI_CLASS=$(MVHSDIR)/bin/aid_multi_class_html
 BIN_PAGES=$(MVHSDIR)/bin/aid_class_html
 BIN_STATS=$(MVHSDIR)/bin/aid_stats
 BIN_DBM_WRITE=$(MVHSDIR)/bin/aid_dbm_write
+BIN_VCARD=$(MVHSDIR)/bin/aid_write_vcards
 
 TARFILES= \
 	mvhs/README \
@@ -53,11 +54,12 @@ SNAPSHOTFILES= \
 	web/mvhs-alumni/*.gif \
 	web/mvhs-alumni/master.db
 
-all:	$(CGIDIR)/nph-mvhsaid \
-	stats index submit \
+all:	index submit \
 	addupdate reunions links faq copyright \
-	recent multi_class multi_alpha \
-	pages class awalt goners download books2
+	recent multi_class multi_alpha vcard \
+	pages class awalt goners download books2 \
+	stats $(CGIDIR)/nph-mvhsaid
+
 
 $(CGIDIR)/nph-mvhsaid: $(CGIDIR)/mvhsaid
 	$(CP) $(CGIDIR)/mvhsaid $(CGIDIR)/nph-mvhsaid
@@ -70,10 +72,17 @@ $(DBFILE):	$(ADR_MASTER) $(BIN_DBM_WRITE) $(AID_UTIL_PL)
 	$(MV) ./master.db $(DBFILE)
 	chmod 0444 $(DBFILE)
 
+VCARD_TS=$(WWWDIR)/vcard/.created
+vcard:	$(VCARD_TS)
+$(VCARD_TS):	$(DBFILE) $(BIN_VCARD)
+	mkdir -p $(WWWDIR)/vcard
+	$(BIN_VCARD) $(DBFILE) $(WWWDIR)/vcard
+
 MULTI_ALPHA=$(WWWDIR)/alpha/a-index.html
 MULTI_ALPHA_TS=$(WWWDIR)/alpha/.z-index.html
 multi_alpha:	$(MULTI_ALPHA_TS)
 $(MULTI_ALPHA_TS):	$(DBFILE) $(BIN_MULTI_ALPHA)
+	mkdir -p $(WWWDIR)/alpha
 	$(BIN_MULTI_ALPHA) $(DBFILE)
 
 CLASS=$(WWWDIR)/class/all.html
