@@ -2,7 +2,7 @@
 
 #
 # does the html multi_class pages
-# $Id: aid_multi_class_html,v 5.20 2001/03/06 19:52:50 mradwin Exp mradwin $
+# $Id: aid_multi_class_html,v 5.21 2001/05/15 05:31:24 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -164,7 +164,7 @@ foreach $year (@years)
 	    my($date,$html) = split(/\0/, $r{$key}, 2);
 	    my($yr,$mon,$mday) = split(/\//, $date, 3);
 	    my($t) = &Time::Local::timelocal(59,59,23,$mday,$mon-1,$yr-1900);
-	    my($long_date) = strftime("%A, %B %d, %Y", localtime($t));
+	    my($long_date) = &POSIX::strftime("%A, %B %e, %Y", localtime($t));
 
 	    if ($key =~ /^\d+$/)
 	    {

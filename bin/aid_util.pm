@@ -2,7 +2,7 @@
 #     FILE: aid_util.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: perl library routines for the Alumni Internet Directory
-#      $Id: aid_util.pl,v 5.87 2001/02/01 21:13:35 mradwin Exp mradwin $
+#      $Id: aid_util.pl,v 5.88 2001/05/05 00:39:11 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -1331,9 +1331,7 @@ sub aid_write_reunion_hash
     {
 	my($date,$html) = split(/\0/, $entries->{$key}, 2);
 	my($year,$mon,$mday) = split(/\//, $date, 3);
-
-	my($t) =
-	    &Time::Local::timelocal(59,59,23,$mday,$mon-1,$year-1900,0,0,0);
+	my($t) = &Time::Local::timelocal(59,59,23,$mday,$mon-1,$year-1900);
 
 	if ($first)
 	{
@@ -1365,7 +1363,7 @@ sub aid_write_reunion_hash
 	}
 
 	print FH "</b></dt>\n",
-	"<dd>Date: ", &POSIX::strftime("%A, %B %d, %Y", localtime($t)),
+	"<dd>Date: ", &POSIX::strftime("%A, %B %e, %Y", localtime($t)),
 	"</dd>\n",
 	$html, "\n";
 

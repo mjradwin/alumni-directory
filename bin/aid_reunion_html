@@ -3,7 +3,7 @@
 #
 # generates reunion info page
 #
-# $Id: aid_reunion_html,v 1.9 2000/05/30 16:28:38 mradwin Exp mradwin $
+# $Id: aid_reunion_html,v 1.10 2000/07/13 20:31:32 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -84,7 +84,7 @@ while (($key,$val) = each(%DB))
     my($date,$html) = split(/\0/, $val, 2);
     my($year,$mon,$mday) = split(/\//, $date, 3);
 
-    my($t) = &Time::Local::timelocal(59,59,23,$mday,$mon-1,$year-1900,0,0,0);
+    my($t) = &Time::Local::timelocal(59,59,23,$mday,$mon-1,$year-1900);
     if ($t > time)
     {
 	$upcoming{$key} = $val;
