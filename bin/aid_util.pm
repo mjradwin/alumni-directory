@@ -2,7 +2,7 @@
 #     FILE: mv_util.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: perl library routines for the MVHS Alumni Internet Directory
-#      $Id: mv_util.pl,v 1.15 1997/03/24 16:02:20 mjr Exp $
+#      $Id: mv_util.pl,v 1.17 1997/03/25 21:11:47 mjr Exp $
 #
 
 CONFIG: {
@@ -23,6 +23,7 @@ CONFIG: {
 #	 'cgi_url',      "http://www.cs.brown.edu/cgi-bin/mjr-mvhs.cgi",
 	 'cgi_path',     "/cgi-bin/cgiwrap/mjr/mvhsaid",
 #	 'cgi_path',     "/cgi-bin/mjr-mvhs.cgi",
+	 'index_page',	 "index.html",
 	 'wwwdir',       "/home/divcom/mjr/public_html/mvhs/",
 #	 'wwwdir',       "/pro/web/web/people/mjr/mvhs/",
 	 'mvhsdir',      "/home/divcom/mjr/mvhs/",
@@ -201,9 +202,13 @@ sub submit_body {
     local($mvhs_checked,$awalt_checked,$other_checked) = ('', '', '');
     local($time,$id,$req,$last,$first,$married,
 	  $school,$year,$email,$homepage,$location) = split(/;/, $rawdata);
+    local(@reqchk,$i);
 
     $homepage = 'http://' if $homepage eq '';
-    $req = ($req) ? ' checked' : '';
+
+    for ($i = 0; $i < 3; $i++) {
+	$reqchk[$i] = ($req == $i) ? ' checked' : '';
+    }
 
     if ($school eq 'MVHS' || $school eq '') {
 	$mvhs_checked = ' checked';
@@ -300,8 +305,16 @@ All other fields are optional.";
       value=\"$location\"></td>
 </tr>
 <tr>
-  <td colspan=3><input type=checkbox name=\"request\"$req> Please send
-  me updated alumni addresses through email (about 3-4 times a year).</td>
+  <td colspan=3>Please send an updated copy of the Directory to my
+  email address every 3-4 months:<br>
+  &nbsp;&nbsp;&nbsp;&nbsp;<input type=radio name=\"request\"
+  value=\"1\"$reqchk[1]>&nbsp;Sorted by name.<br>
+  &nbsp;&nbsp;&nbsp;&nbsp;<input type=radio name=\"request\" 
+  value=\"2\"$reqchk[2]>&nbsp;Sorted by graduating class.<br>
+  &nbsp;&nbsp;&nbsp;&nbsp;<input type=radio name=\"request\"
+  value=\"0\"$reqchk[0]>&nbsp;No, please do not send me copies
+  of the Directory.
+  </td>
 </tr>
 <input type=\"hidden\" name=\"id\" value=\"$id\">
 </table>
