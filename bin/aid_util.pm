@@ -2,7 +2,7 @@
 #     FILE: aid_util.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: perl library routines for the Alumni Internet Directory
-#      $Id: aid_util.pl,v 5.33 1999/07/12 16:13:48 mradwin Exp mradwin $
+#      $Id: aid_util.pl,v 5.34 1999/07/23 18:49:36 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -790,7 +790,8 @@ sub aid_common_html_hdr
     $srv_nowww =~ s/^www\.//i;
 
     $hdr .=
-	"<div class=\"navbar\"><small>\n<a href=\"/\">$srv_nowww</a> -&gt;\n";
+	"<table border=\"0\" width=\"100%\" cellpadding=\"0\" class=\"navbar\">
+<tr valign=\"top\"><td><small>\n<a href=\"/\">$srv_nowww</a> -&gt;\n";
     $hdr .= "<a href=\"$config{'master_path'}\">" unless $page == 0;
     $hdr .= $config{'short_school'} . ' Alumni';
     if ($page == 0)
@@ -812,7 +813,8 @@ sub aid_common_html_hdr
 
     $hdr .=
 "($timestamp)<br${main'ht_empty_close_tag}<br${main'ht_empty_close_tag}
-</small></div>
+</small></td><td align=\"right\"><small>
+<a href=\"$config{'search_cgi'}\">Search</a></small></td></tr></table>
 
 <table cellspacing=\"0\" cellpadding=\"6\" border=\"0\" width=\"100%\">
 <tr><td bgcolor=\"#$header_bg\">
