@@ -4,7 +4,7 @@
 #     FILE: mvhsaid.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: Alumni Internet Directory CGI interface
-#      $Id: mvhsaid,v 3.92 1999/03/27 03:43:53 mradwin Exp mradwin $
+#      $Id: mvhsaid,v 3.93 1999/03/27 03:53:02 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -40,7 +40,7 @@ $mailprog = &aid_config('mailprog');
 $dbmfile = &aid_config('dbmfile');
 $dbmfile =~ s/\.db$//;
 
-$rcsid = '$Id: mvhsaid,v 3.92 1999/03/27 03:43:53 mradwin Exp mradwin $'; #'fnt
+$rcsid = '$Id: mvhsaid,v 3.93 1999/03/27 03:53:02 mradwin Exp mradwin $'; #'fnt
 
 $listing_upd_title = 'Update Your Directory Listing';
 $listing_upl_title = 'Select a Listing to Update';
@@ -160,14 +160,14 @@ if (defined($in{'version'})) {
     if (! &is_email_okay($in{'email'}))
     {
 	print "Content-Type: text/html\015\012\015\012";
-	print &common_html_hdr(-1, (($in{'email'} =~ /^\s*$/) ? 'Blank' :
+	print &aid_common_html_hdr(-1, (($in{'email'} =~ /^\s*$/) ? 'Blank' :
 				    'Invalid') . ' E-mail Address',1);
 	print "\n";
 	print "<p>You must submit a valid, non-blank e-mail address to ";
 	print "download address books.\n";
 	print "<p>Please <a href=\"" . &aid_config('master_path') .
 	    "download/\">try again</a>.</p>\n";
-	print &common_html_ftr(-1);
+	print &aid_common_html_ftr(-1);
     }
     elsif (defined $in{'format'} && defined $in{'year'})
     {
@@ -312,10 +312,10 @@ exit(0);
 
 sub confirm_submission {
     print "Content-Type: text/html\015\012\015\012";
-    print &common_html_hdr(-1,$listing_sub_title,1);
+    print &aid_common_html_hdr(-1,$listing_sub_title,1);
 
     print "<form method=post action=\"", &aid_config('confirm_cgi'), "\">\n";
-    %newrec = &rec_html_entify(*in);
+    %newrec = &aid_html_entify_rec(*in);
     foreach (keys %newrec) {
 	print "<input type=hidden name=\"$_\"";
 	print "\n" if $_ eq 'message';
@@ -349,7 +349,7 @@ to edit your listing.
 <tr><td>
 ";
 
-    print &about_text(*in,1,1,0), "\n";
+    print &aid_about_text(*in,1,1,0), "\n";
 
     print "
 </td></tr>
@@ -358,7 +358,7 @@ to edit your listing.
 </form>
 ";
 
-    print &common_html_ftr(-1);
+    print &aid_common_html_ftr(-1);
 }
 
 sub queue_submission {
@@ -413,15 +413,15 @@ $mailbody
 EOM
 ");
 
-    $fullname = &inorder_fullname(*in);
+    $fullname = &aid_inorder_fullname(*in);
 
     print "Content-Type: text/html\015\012\015\012";
-    print &common_html_hdr(-1,
+    print &aid_common_html_hdr(-1,
 			   (($in{'id'} == -1 ? 'Welcome, ' : 'Thank You, ') .
 			    $fullname . '!'),
 			   1);
 
-    $fullname = &aid_html_escape($fullname);
+    $fullname = &aid_html_entify_str($fullname);
     print "
 
 <p>The listing for <strong>$fullname</strong> has been added
@@ -439,7 +439,7 @@ for behind-the-scenes details.</p>
 ";
 
     print &aid_config('html_ad');
-    print &common_html_ftr(-1);
+    print &aid_common_html_ftr(-1);
 }
 
 
@@ -448,30 +448,30 @@ sub send_upd_real {
 
     print "Content-Type: text/html\015\012\015\012";
 
-    print &common_html_hdr(-1,
+    print &aid_common_html_hdr(-1,
 			   (($rec{'id'} == -1) ? 
 			    $listing_add_title : $listing_upd_title),
 			   1,
 			   defined $rec{'time'} ? $rec{'time'} : undef);
 
-    print &submit_body(*rec,$empty_fields);
-    print &common_html_ftr(-1);
+    print &aid_submit_body(*rec,$empty_fields);
+    print &aid_common_html_ftr(-1);
 }
 
 sub send_about {
     local(*rec) = @_;
-    local($fullname) = &inorder_fullname(*rec);
-    local($html_name) = &aid_html_escape($fullname);
+    local($fullname) = &aid_inorder_fullname(*rec);
+    local($html_name) = &aid_html_entify_str($fullname);
 
     print "Last-Modified: ", &aid_http_date($rec{'time'}), "\015\012";
     print "Content-Type: text/html\015\012\015\012";
 
-    print &common_html_hdr(-1,$fullname,1,$rec{'time'});
+    print &aid_common_html_hdr(-1,$fullname,1,$rec{'time'});
     print "<p>Here is more detailed information about $html_name.\n<br>";
     print "To update this listing, please click the button below.</p>\n\n";
-    print &about_text(*rec,0,1,1), "\n";
+    print &aid_about_text(*rec,0,1,1), "\n";
     print &modify_button($rec{'id'}, $html_name);
-    print &common_html_ftr(-1);
+    print &aid_common_html_ftr(-1);
 }
 
 sub modify_button {
@@ -561,7 +561,7 @@ sub send_upd_notfound {
     local($_);
 
     print "Content-Type: text/html\015\012\015\012";
-    print &common_html_hdr(-1,$listing_upd_title,1);
+    print &aid_common_html_hdr(-1,$listing_upd_title,1);
     print "\n";
     print "<p>Sorry, a listing with the address\n";
     print "<code><strong>$notfound</strong></code>\n";
@@ -569,7 +569,7 @@ sub send_upd_notfound {
     print "<p>Please check the spelling and <a href=\""
 	. &aid_config('master_path') .  "add/\">try again</a>.</p>\n";
 
-    print &common_html_ftr(-1);
+    print &aid_common_html_ftr(-1);
 }
 
 sub send_upd_list {
@@ -594,7 +594,7 @@ sub send_upd_list {
     }
 
     print "Content-Type: text/html\015\012\015\012";
-    print &common_html_hdr(-1,$listing_upl_title,1);
+    print &aid_common_html_hdr(-1,$listing_upl_title,1);
     print "\n";
     
     print "<p>Please select an alumnus to update from the list below.\nThe list is quite long, so it may take a while to display all alumni.</p>\n";
@@ -614,8 +614,8 @@ sub send_upd_list {
 	    $anchor = '';
 	}
 
-	$fullname = &fullname(*rec);
-	($affil,$len) = &affiliate(*rec,0);
+	$fullname = &aid_fullname(*rec);
+	($affil,$len) = &aid_affiliate(*rec,0);
 
 	print "<a$anchor href=\"", &aid_config('update_cgi'), 
   	  "?update=$rec{'id'}\">", $fullname, "</a>", $affil, "\n";
@@ -623,7 +623,7 @@ sub send_upd_list {
     dbmclose(%DB);
 
     print "</pre>\n\n";
-    print &common_html_ftr(-1);
+    print &aid_common_html_ftr(-1);
 
     1;
 }

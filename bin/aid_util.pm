@@ -2,7 +2,7 @@
 #     FILE: aid_util.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: perl library routines for the Alumni Internet Directory
-#      $Id: aid_util.pl,v 4.73 1999/03/26 17:10:29 mradwin Exp mradwin $
+#      $Id: aid_util.pl,v 4.74 1999/03/26 19:42:57 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -22,14 +22,14 @@
 #
 
 $aid_util'rcsid =
- '$Id: aid_util.pl,v 4.73 1999/03/26 17:10:29 mradwin Exp mradwin $';
+ '$Id: aid_util.pl,v 4.74 1999/03/26 19:42:57 mradwin Exp mradwin $';
 
 # ----------------------------------------------------------------------
 # CONFIGURATION
 #
 # to revise the AID for another school, you should edit the 
 # *aid_util'variables in this configuration section, and the
-# subroutines submit_body() and affiliate()
+# subroutines aid_submit_body() and aid_affiliate()
 # ----------------------------------------------------------------------
 
 require 'aid_config.pl';
@@ -88,17 +88,6 @@ $aid_util'config{'admin_email'} .
 
 $aid_util'noindex = "  <meta name=\"robots\"  content=\"noindex\">"; #'#
 %aid_util'aid_aliases = ();   #'# global alias hash repository 
-
-$aid_util'header_bg  = 'ffff99'; #'#
-$aid_util'header_fg  = '000000'; #'#
-
-$aid_util'cell_bg    = 'ffffcc'; #'#
-$aid_util'star_fg    = 'ff0000'; #'#
-
-$aid_util'body_bg    = 'ffffff'; #'#
-$aid_util'body_fg    = '000000'; #'#
-$aid_util'body_link  = '0000cc'; #'#
-$aid_util'body_vlink = '990099'; #'#
 
 $aid_util'FIELD_SEP   = ";";   #'# character that separates fields in DB
 $aid_util'ID_INDEX    = 0;     #'# position that the ID key is in datafile
@@ -244,7 +233,8 @@ sub aid_vdate {
 
 # is the GMT less than one month ago?
 # 2678400 = 31 days * 24 hrs * 60 mins * 60 secs
-sub is_new {
+sub aid_is_new
+{
     package aid_util;
 
     local($time,$months) = @_;
@@ -254,9 +244,10 @@ sub is_new {
 }
 
 
-# is the GMT more than one year ago?
+# is the GMT more than 6 months ago?
 # 15724800 = 182 days * 24 hrs * 60 mins * 60 secs
-sub is_old {
+sub aid_is_old
+{
     package aid_util;
 
     local($[) = 0;
@@ -270,9 +261,9 @@ sub aid_is_new_html
 
     local(*rec) = @_;
 
-    if (&main'is_new($rec{'time'})) #')#
+    if (&main'aid_is_new($rec{'time'})) #')#
     {
-	if (&main'is_new($rec{'created'})) #')#
+	if (&main'aid_is_new($rec{'created'})) #')#
         {
 	    ' ' . $image_tag{'new'};
 	}
@@ -287,7 +278,8 @@ sub aid_is_new_html
     }
 }
 
-sub fullname {
+sub aid_fullname
+{
     package aid_util;
 
     local(*rec) = @_;
@@ -305,7 +297,8 @@ sub fullname {
 }
 
 
-sub inorder_fullname {
+sub aid_inorder_fullname
+{
     package aid_util;
 
     local(*rec) = @_;
@@ -323,7 +316,8 @@ sub inorder_fullname {
 }
 
 
-sub affiliate {
+sub aid_affiliate
+{
     package aid_util;
 
     local(*rec,$do_html_p) = @_;
@@ -371,7 +365,8 @@ sub affiliate {
 
 
 # remove punctuation, hyphens, parentheses, and quotes.
-sub mangle {
+sub aid_mangle
+{
     package aid_util;
 
     local($name) = @_;
@@ -434,11 +429,11 @@ sub aid_parse {
 	return %rec;
     }
 
-    $mangledFirst = &main'mangle($rec{'first'}); #'#
+    $mangledFirst = &main'aid_mangle($rec{'first'}); #'#
     if ($rec{'married'} ne '') {
-	$mangledLast = &main'mangle($rec{'married'});   #'#
+	$mangledLast = &main'aid_mangle($rec{'married'});   #'#
     } else {
-	$mangledLast = &main'mangle($rec{'last'});   #'#
+	$mangledLast = &main'aid_mangle($rec{'last'});   #'#
     }
 
 #    $alias = substr($mangledFirst, 0, 1) . substr($mangledLast, 0, 7);
@@ -500,26 +495,6 @@ sub aid_alpha_db {
 
     @db[sort bydatakeys $[..$#db];
 }
-
-sub aid_class_db {
-    package aid_util;
-
-    local($filename) = @_;
-    local(@db) = &main'aid_create_db($filename);   #'#
-    local(%rec);
-    local($[) = 0;
-    local($_);
-
-    @datakeys = ();
-
-    foreach (@db) {
-	%rec = &main'aid_split($_);  #'#
-	push(@datakeys, "\L$rec{'year'},$rec{'last'},$rec{'first'},$rec{'married'}\E");
-    }
-
-    @db[sort bydatakeys $[..$#db];
-}
-
 
 sub aid_vcard_path {
     package aid_util;
@@ -633,7 +608,8 @@ sub aid_get_usertext {
     $text;
 }
 
-sub aid_html_escape {
+sub aid_html_entify_str
+{
     package aid_util;
 
     local($_) = @_;
@@ -647,7 +623,8 @@ sub aid_html_escape {
     $_;
 }
 
-sub rec_html_entify {
+sub aid_html_entify_rec
+{
     package aid_util;
 
     local(*rec_arg) = @_;
@@ -666,7 +643,8 @@ sub rec_html_entify {
     %rec;
 }
 
-sub submit_body {
+sub aid_submit_body
+{
     package aid_util;
 
     local($[) = 0;
@@ -674,7 +652,7 @@ sub submit_body {
     local($body,$instr);
     local($star) = "<font color=\"#$star_fg\">*</font>";
     local(*rec_arg,$empty_fields) = @_;
-    local(%rec) = &main'rec_html_entify(*rec_arg); #'#
+    local(%rec) = &main'aid_html_entify_rec(*rec_arg); #'#
     local(@school_checked) = ('', '', '', '');
     local(@reqchk,$i,$reunion_chk,@empty_fields,$prev_email);
 
@@ -908,7 +886,8 @@ Please review the above information and click the
 }
 
 
-sub sendmail {
+sub aid_sendmail
+{
     package aid_util;
 
     local($to,$name,$return_path,$from,$subject,$body) = @_;
@@ -940,7 +919,8 @@ Subject: $subject\
 }
 
 
-sub message_footer {
+sub aid_message_footer
+{
     package aid_util;
 
     "\n-- \n" . $config{'admin_name'} . "\n" . $config{'admin_school'};
@@ -958,9 +938,9 @@ sub aid_verbose_entry {
     $rec_arg{'message'} = &main'aid_get_usertext($rec_arg{'id'}) #'#
 	unless defined($rec_arg{'message'});
 
-    %rec = &main'rec_html_entify(*rec_arg);
+    %rec = &main'aid_html_entify_rec(*rec_arg);
 
-    $fullname = &main'inorder_fullname(*rec); #'#
+    $fullname = &main'aid_inorder_fullname(*rec); #'#
 
     $retval .= "<dl compact>\n";
 
@@ -1081,12 +1061,13 @@ sub aid_vcard_text {
 }
 
 
-sub about_text {
+sub aid_about_text
+{
     package aid_util;
 
     local($retval) = '';
     local(*rec_arg,$show_req_p,$do_html_p,$do_vcard_p) = @_;
-    local(%rec) = $do_html_p ? &main'rec_html_entify(*rec_arg) : %rec_arg; #'#
+    local(%rec) = $do_html_p ? &main'aid_html_entify_rec(*rec_arg) : %rec_arg; #'#
 
     $do_vcard_p = 0 unless defined($do_vcard_p);
 
@@ -1236,7 +1217,8 @@ sub about_text {
     $retval;
 }
 
-sub common_intro_para {
+sub aid_common_intro_para
+{
     package aid_util;
 
     local($[) = 0;
@@ -1256,7 +1238,8 @@ sub common_intro_para {
     "e-mail addresses</a> page.\n</p>\n\n";
 }
 
-sub common_link_table {
+sub aid_common_link_table
+{
     package aid_util;
 
     local($[) = 0;
@@ -1292,7 +1275,8 @@ sub common_link_table {
 }
 
 
-sub common_html_ftr {
+sub aid_common_html_ftr
+{
     package aid_util;
 
     local($[) = 0;
@@ -1304,7 +1288,7 @@ sub common_html_ftr {
 
     $ftr  = "\n<!-- ftr begin -->\n";
     $ftr .= "<hr noshade size=\"1\">\n";
-#    $ftr .= &main'common_link_table($page); #'#
+#    $ftr .= &main'aid_common_link_table($page); #'#
     $ftr .= "\n<small>" . $disclaimer . "</small><br>\n\n";
 
     $ftr .= "\n<br><small><a href=\"" . $copyright . "\">" .
@@ -1315,7 +1299,8 @@ sub common_html_ftr {
 }
 
 
-sub common_html_hdr {
+sub aid_common_html_hdr
+{
     require 'ctime.pl';
     require 'tableheader.pl';
     package aid_util;
@@ -1377,7 +1362,7 @@ sub common_html_hdr {
   <tr>
     <td bgcolor=\"#$cell_bg\" align=center valign=middle>
 $tablehdr";
-    $hdr .= &main'common_link_table($page); #'#
+    $hdr .= &main'aid_common_link_table($page); #'#
     $hdr .= "    </td>
   </tr>
 </table>
@@ -1704,23 +1689,22 @@ if ($^W && 0)
     &aid_book_write_prefix();
     &aid_class_jump_bar();
     &aid_build_yearlist();
-    &about_text();
+    &aid_about_text();
     &aid_verbose_entry();
-    &aid_html_escape();
-    &aid_class_db();
+    &aid_html_entify_str();
     &aid_alpha_db();
     &aid_parse();
     &aid_join();
-    &affiliate();
+    &aid_affiliate();
     &aid_image_tag();
-    &common_html_hdr();
-    &common_html_ftr();
-    &common_intro_para();
-    &fullname();
-    &is_old();
-    &message_footer();
-    &sendmail();
-    &submit_body();
+    &aid_common_html_hdr();
+    &aid_common_html_ftr();
+    &aid_common_intro_para();
+    &aid_fullname();
+    &aid_is_old();
+    &aid_message_footer();
+    &aid_sendmail();
+    &aid_submit_body();
     &aid_db_unpack_rec();
     &aid_db_pack_rec();
     $aid_util'rcsid = '';
