@@ -2,11 +2,11 @@
 #     FILE: aid_util.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: perl library routines for the Alumni Internet Directory
-#      $Id: aid_util.pl,v 3.17 1998/05/19 22:26:50 mradwin Exp mradwin $
+#      $Id: aid_util.pl,v 3.18 1998/05/21 16:27:59 mradwin Exp mradwin $
 #
 
 $aid_util'rcsid =
- '$Id: aid_util.pl,v 3.17 1998/05/19 22:26:50 mradwin Exp mradwin $';
+ '$Id: aid_util.pl,v 3.18 1998/05/21 16:27:59 mradwin Exp mradwin $';
 
 # ----------------------------------------------------------------------
 # CONFIGURATION
@@ -108,9 +108,9 @@ $aid_util'config{'admin_email'} .
 "\" r (SS~~000 1 SS~~100 1))'>"; #"#
 
 $aid_util'site_tags = #'#
-"<meta name=\"keywords\" content=\"Mountain View High School, Alumni, MVHS, Awalt High School, Mountain View, Los Altos, California, reunion, Radwin\">\n<meta name=\"description\" content=\"Alumni email and web page directory for Mountain View High School (MVHS) and Awalt High School in Mountain View, CA. Updated $aid_util'caldate.\">\n<link rev=made href=\"mailto:" . $aid_util'config{'admin_email'} . "\">\n<link rel=start href=\"http://" . $aid_util'config{'master_srv'} . $aid_util'config{'master_path'} . "\">\n<link rel=contents href=\"http://" . $aid_util'config{'master_srv'} . $aid_util'config{'master_path'} . "\">";
+"<meta name=\"keywords\"    content=\"Mountain View High School, Alumni, MVHS, Awalt High School, Mountain View, Los Altos, California, reunion, Radwin\">\n<meta name=\"description\" content=\"Alumni email and web page directory for Mountain View High School (MVHS) and Awalt High School in Mountain View, CA. Updated $aid_util'caldate.\">\n<meta name=\"author\"  content=\"$aid_util'config{'admin_name'}\">\n<link rev=\"made\"     href=\"mailto:" . $aid_util'config{'admin_email'} . "\">\n<link rel=\"start\"    href=\"http://" . $aid_util'config{'master_srv'} . $aid_util'config{'master_path'} . "\">\n<link rel=\"contents\" href=\"http://" . $aid_util'config{'master_srv'} . $aid_util'config{'master_path'} . "\">";
 
-$aid_util'noindex = "<meta name=\"robots\" content=\"noindex\">"; #'#
+$aid_util'noindex = "<meta name=\"robots\"  content=\"noindex\">"; #'#
 %aid_util'aid_aliases = ();   #'# global alias hash repository 
 
 $aid_util'disclaimer = #'#
@@ -1002,7 +1002,7 @@ sub common_html_hdr {
 	"<!--  " . $config{'rcsid'} . " -->\n" .
 	"<html>\n<head>\n" .
 	"<title>" . $titletag .
-	"</title>\n" . $site_tags . "\n" . $pics_label . "\n";
+	"</title>\n" . $pics_label . "\n" . $site_tags . "\n";
     $hdr .= "$noindex\n" if $norobots;
     $hdr .= "</head>\n\n";
     
