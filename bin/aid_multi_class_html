@@ -2,7 +2,7 @@
 
 #
 # does the html multi_class pages
-# $Id: aid_multi_class_html,v 3.35 1999/05/19 01:36:09 mradwin Exp mradwin $
+# $Id: aid_multi_class_html,v 3.36 1999/05/24 18:55:52 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -82,6 +82,19 @@ foreach $year (@years)
 
 	print FMTOUT &aid_verbose_entry(*rec);
     }
+
+    print FMTOUT "<hr noshade=\"noshade\" size=\"1\" />
+
+<center>
+<form method=\"post\" action=\"http://minder.netmind.com/mindit.shtml\">
+<input type=\"submit\"
+ value=\"Receive e-mail when $title changes (courtesy of NetMind)\">
+<input type=\"hidden\" name=\"URL\"
+ value=\"http://" .  &aid_config('master_srv') . &aid_config('master_path') . 
+"class/${year}.html\">
+</form>
+</center>
+";
 
     print FMTOUT &aid_common_html_ftr(2);
     close(FMTOUT);
