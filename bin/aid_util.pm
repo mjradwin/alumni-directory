@@ -2,7 +2,7 @@
 #     FILE: mv_util.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: perl library routines for the MVHS Alumni Internet Directory
-#      $Id: mv_util.pl,v 1.20 1997/03/29 17:41:56 mjr Exp mjr $
+#      $Id: mv_util.pl,v 1.21 1997/04/12 03:30:20 mjr Exp mjr $
 #
 
 CONFIG: {
@@ -469,8 +469,7 @@ sub modify_html {
 
     return "
 <!-- borrowed from gamelan -->
-To update the entry for this person or any of his/her resource
-entries, please click the button below.
+To update the entry for this person, please click the button below.
 
 <form method=get action=\"$cgi\">
 <center><input type=hidden name=\"update\" value=\"$id\">
@@ -478,11 +477,10 @@ entries, please click the button below.
 </center>
 </form>
 
-<strong>Note:</strong> To avoid malicious modification by other
-people passing through, we mail the original user about the change
-(plus the new user if the email changes). The honor system has worked
-for us so far; please don't abuse it and force us to install an
-annoying password door.<p>
+To avoid malicious modification by other people passing through, we
+mail the original user about the change (plus the new user if the
+email changes). The honor system has worked for us so far; please
+don't abuse it and force us to install a password door.<p>
 ";
 }
 
