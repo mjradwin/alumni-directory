@@ -1,6 +1,6 @@
 #!/usr/local/bin/perl -w
 
-# $Id: aid_bounce,v 6.1 2003/08/25 04:10:32 mradwin Exp mradwin $
+# $Id: aid_bounce,v 6.2 2003/08/25 05:32:04 mradwin Exp mradwin $
 #
 #   Copyright (c) 2003  Michael J. Radwin
 #
@@ -19,9 +19,14 @@
 #   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #
 
-use FindBin;
-use lib $FindBin::Bin;
-use lib "/pub/m/r/mradwin/private/lib/perl5/site_perl";
+BEGIN {
+  if ($0 =~ m,(.*[/\\]),) {
+    unshift @INC, $1;
+  } else {
+    unshift @INC, '.';
+  }
+}
+use lib "/home/mradwin/local/share/perl";
 
 use DB_File::Lock;
 use Getopt::Std;

@@ -2,7 +2,7 @@
 #     FILE: aid_util.pm
 #   AUTHOR: Michael J. Radwin
 #    DESCR: perl library routines for the Alumni Internet Directory
-#      $Id: aid_util.pm,v 6.5 2003/08/27 23:12:31 mradwin Exp mradwin $
+#      $Id: aid_util.pm,v 6.6 2003/09/14 20:09:58 mradwin Exp mradwin $
 #
 #   Copyright (c) 2003  Michael J. Radwin
 #
@@ -21,15 +21,21 @@
 #   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #
 
-use lib "/pub/m/r/mradwin/private/lib/perl5/site_perl";
+use lib "/home/mradwin/local/share/perl";
+use lib "/home/mradwin/local/share/perl/site_perl";
 
 use MIME::QuotedPrint;
 use Net::SMTP; 
 use Time::Local;
 use POSIX qw(strftime);
 
-use FindBin;
-use lib $FindBin::Bin;
+BEGIN {
+  if ($0 =~ m,(.*[/\\]),) {
+    unshift @INC, $1;
+  } else {
+    unshift @INC, '.';
+  }
+}
 require 'school_config.pl';
 
 use strict;
