@@ -3,7 +3,7 @@
 #
 # generates reunion info page
 #
-# $Id: aid_reunion_html,v 1.15 2002/04/03 00:24:47 mradwin Exp mradwin $
+# $Id: aid_reunion_html,v 1.16 2002/11/05 00:35:07 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -55,7 +55,9 @@ $time = unpack("N",$DB{'_t'});
 
 print FMTOUT &aid_common_html_hdr(11,'Reunion Information',0,$time);
 
-$admin = aid_protect_email(&aid_config('admin_email'));
+$admin = aid_config('admin_email');
+$admin =~ s/@/\&#64;/g;
+$admin =~ s/\./\&#46;/g;
 
 print FMTOUT <<END_OF_HTML;
 <h2>Alumni: help keep this page up-to-date!</h2>
