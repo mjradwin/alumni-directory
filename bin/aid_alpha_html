@@ -8,9 +8,8 @@ require 'getopts.pl';
 
 $htmlname = "all.html";
 
-$usage = 'usage: mv_alpha_html [-t] infile.adr outfile
+$usage = 'usage: mv_alpha_html [-ht] infile.adr outfile
     -h        Display usage information.
-
     -t        Output text only
 ';
 
