@@ -1,6 +1,6 @@
 #!/usr/local/bin/perl5 -w
 
-# $Id: aid_multi_class_txt,v 5.7 2000/02/29 21:55:00 mradwin Exp mradwin $
+# $Id: aid_multi_class_txt,v 5.8 2000/06/05 17:01:11 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -60,10 +60,10 @@ die "$0: $class_exe: $!\n" unless -x $class_exe;
 
 foreach (@years)
 {
-    print "$class_exe -qtc $_ $dbmfile ${output_dir}/${_}.txt\n"
+    print "$class_exe -qdtc $_ $dbmfile ${output_dir}/${_}.txt\n"
 	unless $opt_q;
     system $class_exe,
-    	'-qtc', $_,
+    	'-qdtc', $_,
     	$dbmfile,
     	$output_dir . '/' . $_ . '.txt';
     &aid_die_if_failure();

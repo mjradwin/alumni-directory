@@ -2,7 +2,7 @@
 
 #
 # does the html version of the grad-date address list
-# $Id: aid_class_html,v 5.17 2000/06/05 17:01:11 mradwin Exp mradwin $
+# $Id: aid_class_html,v 5.18 2000/06/05 17:11:17 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -31,20 +31,20 @@ require 'aid_util.pl';
 require 'getopts.pl';
 
 $0 =~ s,.*/,,;  # basename
-$usage = "usage: $0 [-hqtw] [-c class] [-i <keys>] infile.db outfile
+$usage = "usage: $0 [-hqtwd] [-c class] [-i <keys>] infile.db outfile
     -h        Display usage information.
     -q        Quiet.
     -t        Output text only.
     -w        Web page mode.
+    -d        Add email disclaimer.
     -c class  Only people from <class>.
     -i <keys> Incremental update only for list of keys.
 ";
 
-&Getopts('hqtwc:i:') || die "$usage\n";
+&Getopts('hqtwc:i:d') || die "$usage\n";
 $opt_h && die "$usage\n";
 $ARGV[0] || die "$usage\n";
 $ARGV[1] || die "$usage\n";
-$opt_h = $opt_h;		# avoid warning
 
 @incremental = ($opt_i ? split(/[,\s]+/, $opt_i) : ());
 
@@ -98,6 +98,17 @@ if (!$opt_t) {
     print FMTOUT &aid_common_html_hdr($pageno,$title,1,$time);
     print FMTOUT &aid_common_intro_para(0);
     print FMTOUT &aid_class_jump_bar('#grad','',*years,1);
+}
+
+if ($opt_d)
+{
+    print FMTOUT "The following information is provided solely for the
+information of the " . &aid_config('school') . " community.
+Any redistribution outside of this community, or
+solicitation of business or contributions
+from individuals listed below is forbidden.
+
+";
 }
 
 if ($opt_c)
@@ -198,3 +209,8 @@ open(TS,">$ts") && close(TS);
 utime $now, $now, $ts;
 
 exit(0);
+
+if ($^W && 0)
+{
+    $opt_h = $opt_d = 0;	# avoid warning
+}

@@ -4,7 +4,7 @@
 # does a short list, either compact or verbose, sorted by graduating
 # class with a jump bar
 #
-# $Id: aid_shortlist_html,v 5.7 1999/12/22 23:36:47 mradwin Exp mradwin $
+# $Id: aid_shortlist_html,v 5.8 2000/02/29 21:55:00 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -33,11 +33,12 @@ require 'aid_util.pl';
 require 'getopts.pl';
 
 $0 =~ s,.*/,,;  # basename
-$usage = "usage: $0 [-htve] {-w,-m <mos>} [-M <mos_descr>] infile.db outfile
+$usage = "usage: $0 [-htved] {-w,-m <mos>} [-M <mos_descr>] infile.db outfile
     -h        Display usage information.
     -t        Output text only.
     -v        Output verbose HTML.
     -e        Recency relative to email update ('eu') (default 'u')
+    -d        Add email disclaimer.
 
     -w        Alumni with web pages only.
     -m <mos>  Define 'recent' to mean <mos> months.
@@ -46,11 +47,8 @@ $usage = "usage: $0 [-htve] {-w,-m <mos>} [-M <mos_descr>] infile.db outfile
 Either -w or -m must be supplied.  They are mutually exclusive.
 ";
 
-&Getopts('htvwm:M:e') || die "$usage\n";
+&Getopts('htvwm:M:ed') || die "$usage\n";
 $opt_h && die "$usage\n";
-$opt_e = $opt_e;		# avoid warning
-$opt_h = $opt_h;		# avoid warning
-$opt_v = $opt_v;		# avoid warning
 
 die "$usage\n" unless $ARGV[0];
 die "$usage\n" unless $ARGV[1];
@@ -129,6 +127,17 @@ or updated their listings within the last $opt_M.</p>\n\n";
     print FMTOUT &aid_class_jump_bar('#grad','',*years,1);
 }
 
+if ($opt_d)
+{
+    print FMTOUT "The following information is provided solely for the
+information of the " . &aid_config('school') . " community.
+Any redistribution outside of this community, or
+solicitation of business or contributions
+from individuals listed below is forbidden.
+
+";
+}
+
 if (!$opt_v) {
     $opt_t || print FMTOUT "<pre>";
     print FMTOUT "Name and Graduation Year$blank_gif                  E-Mail\n";
@@ -193,3 +202,10 @@ open(TS,">$ts") && close(TS);
 utime $now, $now, $ts;
 
 exit(0);
+
+if ($^W && 0)
+{
+    $opt_h = $opt_d = 0;	# avoid warning
+    $opt_e = $opt_e;		# avoid warning
+    $opt_v = $opt_v;		# avoid warning
+}
