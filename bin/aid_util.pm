@@ -2,11 +2,11 @@
 #     FILE: aid_util.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: perl library routines for the Alumni Internet Directory
-#      $Id: aid_util.pl,v 1.92 1998/01/06 20:16:34 mjr Exp mjr $
+#      $Id: aid_util.pl,v 1.93 1998/01/06 23:23:59 mjr Exp mjr $
 #
 
 $aid_util'rcsid =
- '$Id: aid_util.pl,v 1.92 1998/01/06 20:16:34 mjr Exp mjr $';
+ '$Id: aid_util.pl,v 1.93 1998/01/06 23:23:59 mjr Exp mjr $';
 
 # ----------------------------------------------------------------------
 # CONFIGURATION
@@ -168,6 +168,7 @@ for ($i = 0; $i <= $#aid_util'field_names; $i++) { #'
 
 $aid_util'blank_entry{'id'}      = -1;
 $aid_util'blank_entry{'request'} = 2;
+$aid_util'blank_entry{'message'} = '';
 $aid_util'blank_entry{'school'}  = 'MVHS';  #'font-lock
 
 %aid_util'image_tag = #'font-lock
@@ -483,7 +484,7 @@ sub submit_body {
     local($_);
     local($tableh);
     local($star) = "<font color=\"#$star_fg\">*</font>";
-    local(*rec,$message,$blankp) = @_;
+    local(*rec,$blankp) = @_;
     local(%newrec) = &main'rec_html_entify(*rec);
     local($mvhs_checked,$awalt_checked,$other_checked) = ('', '', '');
     local(@reqchk,$i);
@@ -602,7 +603,7 @@ are required.  All other fields are optional.</p>\n\n";
   <br><strong>What's New?</strong> Tell us, in 100 words or less, what
   you've been up to recently.</font>
   $image_tag{'new'}<br>
-  <textarea name=\"message\" rows=10 cols=55 wrap>$message</textarea>
+  <textarea name=\"message\" rows=10 cols=55 wrap>$newrec{'message'}</textarea>
   </td>
 </tr>
 <tr>
@@ -674,7 +675,7 @@ sub about_text {
     package aid_util;
 
     local($retval) = '';
-    local(*rec,$message,$show_req_p,$do_html_p,$do_vcard_p) = @_;
+    local(*rec,$show_req_p,$do_html_p,$do_vcard_p) = @_;
     local(%newrec) = $do_html_p ? &main'rec_html_entify(*rec) : %rec; #'
 
     $do_vcard_p = 0 unless defined($do_vcard_p);
@@ -764,13 +765,15 @@ sub about_text {
 	$retval .= &main'ctime($newrec{'time'}); #'fnt
     }
 
-    $message = &main'aid_get_usertext($newrec{'id'}) if $message eq '';  #' fnt
-    if ($message ne '') {
+    $newrec{'message'} = &main'aid_get_usertext($newrec{'id'}) #'fnt
+	unless defined($newrec{'message'});
+
+    if ($newrec{'message'} ne '') {
 	$retval .= "\n";
 	$retval .= "What's New?        :\n";
 	$retval .= "</pre>\n" if $do_html_p;
 	$retval .= $do_html_p ? "<blockquote>\n" : "\"";
-	$retval .= $message;
+	$retval .= $newrec{'message'};
 	$retval .= $do_html_p ? "\n</blockquote>\n" : "\"\n";
     } else {
 	$retval .= "</pre>\n" if $do_html_p;
