@@ -4,7 +4,7 @@
 #     FILE: mvhsaid.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: MVHS Alumni Internet Directory CGI interface
-#      $Id: mvhsaid,v 3.43 1998/12/31 19:05:31 mradwin Exp mradwin $
+#      $Id: mvhsaid,v 3.44 1999/01/07 23:02:17 mradwin Exp mradwin $
 #
 
 require 'aid_util.pl';
@@ -28,9 +28,9 @@ if (defined($ENV{'PATH_INFO'}) && $ENV{'PATH_INFO'} =~ m,^/vcard/,) {
     $in{'vcard'} =~ s,^/vcard/(\d+).*$,$1,;
 }
 
-$rcsid = '$Id: mvhsaid,v 3.43 1998/12/31 19:05:31 mradwin Exp mradwin $'; #'fnt
+$rcsid = '$Id: mvhsaid,v 3.44 1999/01/07 23:02:17 mradwin Exp mradwin $'; #'fnt
 
-# special flags: version, update, vcard, about
+# look for special flags: version, update, vcard, about, download
 #
 # if any of these flags is set, we're sending back a dynamic page
 # instead of processing a form request.
@@ -129,11 +129,10 @@ if (defined($in{'version'})) {
 # no special flags, so this should be a submission-processing request.
 # did they access this with the right form?
 foreach (@required_headers) {
-    if (!defined($in{$_})) {
-	# wrong form
-	&send_upd_real(*aid_util'blank_entry,''); #'#
-	exit(0);
-    }
+    &CgiDie("MVHS Alumni: Script Error",
+	    "The required form data was not present or something is awry.\n" .
+	    "Please <a href=\"" . &aid_config('master_path') .
+	    "add/\">try again</a>.") unless defined($in{$_});
 }
 
 
@@ -540,14 +539,4 @@ sub jump_bar {
     }
  
     $retval;
-}
-
-sub panic {
-    local($[) = 0;
-
-    select(STDOUT);  $| = 1;
-    print "Content-type: text/plain\r\n\r\n";
-    print $_[0], "\r\n";
-
-    exit;
 }
