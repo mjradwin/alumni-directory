@@ -4,7 +4,7 @@
 #     FILE: form.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: Alumni Internet Directory CGI form-submission interface
-#      $Id: form,v 5.31 2000/06/06 20:41:26 mradwin Exp mradwin $
+#      $Id: form,v 5.32 2000/06/26 21:35:25 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -36,7 +36,7 @@ use CGI::Carp qw(fatalsToBrowser);
 # configuration
 $dbmfile = &aid_config('dbmfile');
 
-$rcsid = '$Id: form,v 5.31 2000/06/06 20:41:26 mradwin Exp mradwin $'; #'fnt
+$rcsid = '$Id: form,v 5.32 2000/06/26 21:35:25 mradwin Exp mradwin $'; #'fnt
 
 $listing_upd_title = 'Modify Your Directory Listing';
 $listing_add_title = 'Join the Directory';
@@ -300,10 +300,6 @@ sub confirm_submission
     }
 
     print "
-<table border=\"0\" cellspacing=\"7\" width=\"100%\">
-<tr><td bgcolor=\"#$aid_util::header_bg\"><font color=\"#$aid_util::header_fg\"><big><strong>7.
-Final Review</strong></big></font></td></tr></table>
-
 Here is what your listing will look like:
 <br><br>
 
@@ -440,18 +436,10 @@ http://" . &aid_config('master_srv') . &aid_config('master_path') . "\n";
 			"\">e-mail " . &aid_config('admin_name') . "</a>.");
 
     print "Content-Type: text/html\015\012\015\012";
-    print &aid_common_html_hdr(20,'Check your e-mail',1);
+    print &aid_common_html_hdr(20,'Final Step: verify e-mail address',1);
 
     print "
-<p>We sent a verification message to <b>$cgi{'e'}</b>.
-Check your e-mail for this message and then follow the
-instructions provided.</p>
-
-<table border=\"0\" cellspacing=\"7\" width=\"100%\">
-<tr><td bgcolor=\"#$aid_util::header_bg\"><font
-color=\"#$aid_util::header_fg\"><big><strong>8.
-Last Step: Verify your e-mail
-address</strong></big></font></td></tr></table>
+<p>We sent a verification message to <b>$cgi{'e'}</b>.</p>
 
 <p>Please check your e-mail and find the 8-letter
 verification code that was sent to you by the ",
