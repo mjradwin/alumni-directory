@@ -2,11 +2,11 @@
 #     FILE: aid_util.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: perl library routines for the Alumni Internet Directory
-#      $Id: aid_util.pl,v 3.82 1998/11/26 00:54:01 mradwin Exp mradwin $
+#      $Id: aid_util.pl,v 3.83 1998/12/01 23:27:18 mradwin Exp mradwin $
 #
 
 $aid_util'rcsid =
- '$Id: aid_util.pl,v 3.82 1998/11/26 00:54:01 mradwin Exp mradwin $';
+ '$Id: aid_util.pl,v 3.83 1998/12/01 23:27:18 mradwin Exp mradwin $';
 
 # ----------------------------------------------------------------------
 # CONFIGURATION
@@ -135,7 +135,7 @@ $aid_util'ID_INDEX    = 0;     #'# position that the ID key is in datafile
     (
     'id',	'',
     'valid',	'',
-    'last',	'Last/Maiden Name',
+    'last',	'Last Name/Maiden Name',
     'married',	'Married Last Name',
     'first',	'First Name',
     'request',	'',
@@ -641,8 +641,8 @@ are required.  All other fields are optional.</p>\n\n";
   value=\"$rec{'first'}\" id=\"first\"></td>
 </tr>
 <tr>
-  <td valign=top><font color=\"#$cell_fg\"><label for=\"last\">Last/Maiden
-  Name</label></font><br>
+  <td valign=top><font color=\"#$cell_fg\"><label for=\"last\">Last
+  Name/Maiden Name</label></font><br>
   <font color=\"#$cell_fg\" size=\"-1\">(your last name in high school)</font></td>
   <td>$star</td>
   <td valign=top><input type=text name=\"last\" size=35
