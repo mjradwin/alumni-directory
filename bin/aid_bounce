@@ -1,6 +1,6 @@
 #!/usr/local/bin/perl -w
 
-# $Id: aid_bounce,v 5.12 2001/11/01 20:08:28 mradwin Exp mradwin $
+# $Id: aid_bounce,v 5.13 2002/03/07 23:29:39 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -63,6 +63,7 @@ if ($opt_d)
     $mode = (stat($dbmfile))[2];
     chmod 0444, $dbmfile;
 
+    my(%DB);
     my($db) = tie(%DB, 'DB_File', $dbmfile, O_RDONLY, 0444, $DB_File::DB_HASH)
 	or die "$dbmfile: $!\n";
     my($fd) = $db->fd;
@@ -93,36 +94,38 @@ if ($opt_d)
 }
 elsif ($opt_f)
 {
-    my($db) = tie(%DB, 'DB_File', $dbmfile, O_RDWR|O_CREAT, 0644,
-		  $DB_File::DB_HASH)
+    my(%DB);
+    my($db) = tie(%DB, 'DB_File', $dbmfile, O_RDWR|O_CREAT, 0644, $DB_File::DB_HASH)
 	or die "$dbmfile: $!\n";
     my($fd) = $db->fd;
     open(DB_FH, "+<&=$fd") || die "dup $!";
     unless (flock (DB_FH, LOCK_EX)) { die "flock: $!" }
 
-    @freshness = &time_log($opt_f);
-    &freshen(@freshness);
+    my @freshness = time_log($opt_f);
+    freshen(\%DB, @freshness);
 
+    $db->sync;
     flock(DB_FH, LOCK_UN);
     undef $db;
-    untie(%DBS);
+    untie(%DB);
     close(DB_FH);
 }
 else
 {
-    my($db) = tie(%DB, 'DB_File', $dbmfile, O_RDWR|O_CREAT, 0644,
-		  $DB_File::DB_HASH)
+    my(%DB);
+    my($db) = tie(%DB, 'DB_File', $dbmfile, O_RDWR|O_CREAT, 0644, $DB_File::DB_HASH)
 	or die "$dbmfile: $!\n";
     my($fd) = $db->fd;
     open(DB_FH, "+<&=$fd") || die "dup $!";
     unless (flock (DB_FH, LOCK_EX)) { die "flock: $!" }
 
-    &bounce_args(@ARGV);
-    &aid_rebuild_secondary_keys(*DB,0);
+    bounce_args(\%DB, @ARGV);
+    aid_rebuild_secondary_keys(\%DB, 0);
 
+    $db->sync;
     flock(DB_FH, LOCK_UN);
     undef $db;
-    untie(%DBS);
+    untie(%DB);
     close(DB_FH);
 }
 
@@ -131,10 +134,10 @@ exit(0);
 # returns array[id] = time
 sub time_log
 {
-    local($log) = @_;
-    local($_,@log,*LOG);
+    my($log) = @_;
+    local($_,*LOG);
 
-    @log = ();
+    my @log = ();
     open(LOG,$log) || die "error: can't open $log: $!\n";
     while(<LOG>)
     {
@@ -154,10 +157,9 @@ sub time_log
 # freshness is less than the parameter.
 sub freshen
 {
-    local(@freshness) = @_;
-    local($_);
+    my($DB, @freshness) = @_;
 
-    while (($key,$val) = each %DB)
+    while (($key,$val) = each %{$DB})
     {
 	next unless $key =~ /^\d+$/;
 	%rec = &aid_db_unpack_rec($key,$val);
@@ -166,7 +168,7 @@ sub freshen
 	    $rec{'b'} == 0 && $rec{'f'} < $freshness[$rec{'id'}];
 
 	$rec{'f'} = $freshness[$rec{'id'}];
-	$DB{$rec{'id'}} = &aid_db_pack_rec(*rec);
+	$DB->{$rec{'id'}} = &aid_db_pack_rec(*rec);
     }
 
     1;
@@ -176,22 +178,22 @@ sub freshen
 # if the user has bounced, set freshness to time
 sub bounce_args
 {
-    local(@args) = @_;
-    local($time) = time;
+    my($DB, @args) = @_;
+    my($time) = time;
 
     for (@args) {
 	if (/^\d+$/) {
-	    if (defined $DB{$_}) {
-		%rec = &aid_db_unpack_rec($_,$DB{$_});
+	    if (defined $DB->{$_}) {
+		%rec = &aid_db_unpack_rec($_,$DB->{$_});
 	    } else {
 		warn "can't find id $_\n";
 		next;
 	    }
 	} else {
 	    $_ = "\L$_\E";
-	    if (defined $DB{$_} && $DB{$_} ne '') {
-		$_ = unpack("n*", $DB{$_});
-		%rec = &aid_db_unpack_rec($_,$DB{$_});
+	    if (defined $DB->{$_} && $DB->{$_} ne '') {
+		$_ = unpack("n*", $DB->{$_});
+		%rec = &aid_db_unpack_rec($_,$DB->{$_});
 	    } else {
 		warn "can't find e-mail addr $_\n";
 		next;
@@ -230,7 +232,7 @@ sub bounce_args
 	}
 	print "\n";
 
-	$DB{$rec{'id'}} = &aid_db_pack_rec(*rec);
+	$DB->{$rec{'id'}} = &aid_db_pack_rec(*rec);
     }
 
     1;

@@ -1,6 +1,6 @@
 #!/usr/local/bin/perl -w
 
-# $Id: aid_addname,v 5.31 2001/09/16 16:57:51 mradwin Exp mradwin $
+# $Id: aid_addname,v 5.32 2002/03/07 23:29:39 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -23,10 +23,9 @@ $dirname = $0;
 $dirname =~ s,/[^/]+$,,;
 unshift(@INC, $dirname);
 
+use Getopt::Std;
 use DB_File;
 use Fcntl qw(:DEFAULT :flock);
-
-use Getopt::Std;
 require 'aid_util.pl';
 
 $0 =~ s,.*/,,;  # basename
@@ -49,16 +48,16 @@ $make = &aid_config('make');
 -x $make || die "$0: $make is not executable!";
 $make .= " -s QUIET=-q" if $opt_q;
 
-@new_ids = ();
-@upd_ids = ();
-@mod_keys = ();
+my @new_ids = ();
+my @upd_ids = ();
+my @mod_keys = ();
 
 select(STDOUT); $| = 1;
-$status = &readspool();
+$status = readspool();
 if (!$opt_m && $status)
 {
-    &rebuild();
-    &mail_welcome() unless $opt_w;
+    rebuild();
+    mail_welcome() unless $opt_w;
 }
 
 exit(0);
@@ -71,16 +70,13 @@ sub readspool
     die "$staging: $!\n" unless -r $staging;
 
     my(%DBS);
-    my($db) = tie(%DBS, 'DB_File', $staging, O_CREAT|O_RDWR, 0644,
-		  $DB_File::DB_HASH)
+    my($dbs) = tie(%DBS, 'DB_File', $staging, O_CREAT|O_RDWR, 0644,
+		   $DB_File::DB_HASH)
 	or die "$staging: $!\n";
 
-    my($fd) = $db->fd;
-    open(DB_FH, "+<&=$fd") || die "dup $!";
-
-    unless (flock (DB_FH, LOCK_EX | LOCK_NB)) {
-	unless (flock (DB_FH, LOCK_EX)) { die "flock: $!" }
-    }
+    my($fd) = $dbs->fd;
+    open(DBS_FH, "+<&=$fd") || die "dup $!";
+    unless (flock (DBS_FH, LOCK_EX)) { die "flock: $!" }
 
     my(@vals) = ();
     if (defined $DBS{'_verified'})
@@ -123,13 +119,13 @@ sub readspool
 	}
 
 	delete $DBS{'_verified'};
-	$db->sync;
+	$dbs->sync;
     }
 
-    flock(DB_FH, LOCK_UN);
-    undef $db;
+    flock(DBS_FH, LOCK_UN);
+    undef $dbs;
     untie(%DBS);
-    close(DB_FH);
+    close(DBS_FH);
 
     my($val);
     foreach $val (@vals)
@@ -141,26 +137,24 @@ sub readspool
 	print STDOUT "addname - ", &aid_inorder_fullname(*rec), "\n"
 	    unless $opt_q;
 
-	&addname(*rec) || die "$0: can't add $rec{'id'} $rec{'e'}!\n";
+	addname(*rec) || die "$0: can't add $rec{'id'} $rec{'e'}!\n";
 	$success = 1;
     }
 
     if ($success)
     {
+	my(%DB);
 	my($db) = tie(%DB, 'DB_File', $dbmfile, O_CREAT|O_RDWR, 0644,
 		      $DB_File::DB_HASH)
 	    or die "$dbmfile: $!\n";
 
 	my($fd) = $db->fd;
 	open(DB_FH, "+<&=$fd") || die "dup $!";
+	unless (flock (DB_FH, LOCK_EX)) { die "flock: $!" }
 
-	unless (flock (DB_FH, LOCK_EX | LOCK_NB)) {
-	    unless (flock (DB_FH, LOCK_EX)) { die "flock: $!" }
-	}
+	@mod_keys = aid_rebuild_secondary_keys(\%DB,$opt_q,0,1);
 
-	@mod_keys = &aid_rebuild_secondary_keys(*DB,$opt_q,0,1);
 	$db->sync;
-
 	flock(DB_FH, LOCK_UN);
 	undef $db;
 	untie(%DB);
@@ -215,23 +209,22 @@ sub mail_welcome
 sub addname
 {
     local(*rec) = @_;
-    local(%DB,$logFile,%oldrec,*LOG);
-    local($key_name,$key_email,%id_by_email,%id_by_name,$email);
+
+    local(*LOG,%oldrec);
+    my($logFile,$key_name,$key_email,%id_by_email,%id_by_name,$email);
 
     %aid_util::aid_aliases = ();   # reset global alias hash repository 
 
     $logFile = &aid_config('aiddir') . "logs/additions.log";
 
+    my(%DB);
     my($db) = tie(%DB, 'DB_File', $dbmfile, O_CREAT|O_RDWR, 0644,
 		  $DB_File::DB_HASH)
 	or die "$dbmfile: $!\n";
 
     my($fd) = $db->fd;
-    open(DB_FH2, "+<&=$fd") || die "dup $!";
-
-    unless (flock (DB_FH2, LOCK_EX | LOCK_NB)) {
-	unless (flock (DB_FH2, LOCK_EX)) { die "flock: $!" }
-    }
+    open(DB_FH, "+<&=$fd") || die "dup $!";
+    unless (flock (DB_FH, LOCK_EX)) { die "flock: $!" }
 
     while (($key,$val) = each %DB)
     {
@@ -329,11 +322,10 @@ sub addname
     $DB{"\L$email\E"} = pack('n', $rec{'id'});
 
     $db->sync;
-
-    flock(DB_FH2, LOCK_UN);
+    flock(DB_FH, LOCK_UN);
     undef $db;
     untie(%DB);
-    close(DB_FH2);
+    close(DB_FH);
 
     local($joined) = &aid_ampersand_join(*rec);
     print     $joined, "\n"

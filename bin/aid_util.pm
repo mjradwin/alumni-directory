@@ -2,7 +2,7 @@
 #     FILE: aid_util.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: perl library routines for the Alumni Internet Directory
-#      $Id: aid_util.pl,v 5.109 2003/02/21 19:26:38 mradwin Exp mradwin $
+#      $Id: aid_util.pl,v 5.110 2003/03/14 20:52:19 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -1046,7 +1046,6 @@ sub aid_http_date
     &POSIX::strftime("%a, %d %b %Y %H:%M:%S GMT", gmtime($time));
 }
 
-
 sub aid_db_pack_rec
 {
     package aid_util;
@@ -1131,7 +1130,7 @@ sub aid_rebuild_secondary_keys
 {
     package aid_util;
 
-    local(*DB,$quiet,$debug,$preserve_nextid) = @_;
+    my($DB,$quiet,$debug,$preserve_nextid) = @_;
     my(%old_db,%new_db);
     my($key,$val,$id);
     my(@diffs) = ();
@@ -1147,12 +1146,12 @@ sub aid_rebuild_secondary_keys
     my(%alpha_members) = ();
     my(%alpha_latest) = ();
     my($maxval) = -1;
-    my($old_nextid) = $DB{'_nextid'};
+    my($old_nextid) = $DB->{'_nextid'};
 
     # first pass -- gather all names with alpha data
     select(STDOUT); $| = 1;
     print STDOUT "$0: building index..." unless $quiet;
-    while(($key,$val) = each(%DB))
+    while(($key,$val) = each(%{$DB}))
     {
 	if ($key =~ /^\d+$/)
 	{
@@ -1171,7 +1170,7 @@ sub aid_rebuild_secondary_keys
     # can't delete while iterating, so do it now
     while(($key,$val) = each(%old_db))
     {
-	delete $DB{$key};
+	delete $DB->{$key};
     }
 
     # now sort by alpha
@@ -1187,7 +1186,7 @@ sub aid_rebuild_secondary_keys
     # second pass - timestamps and lists
     foreach $id (@alpha_ids)
     {
-	%rec = &main::aid_db_unpack_rec($id,$DB{$id});
+	%rec = &main::aid_db_unpack_rec($id,$DB->{$id});
 
 	if ($rec{'v'})
 	{
@@ -1242,48 +1241,48 @@ sub aid_rebuild_secondary_keys
     }
     print STDOUT "." unless $quiet;
 
-    $DB{'_alpha'} = pack("n*", @alpha_ids);
+    $DB->{'_alpha'} = pack("n*", @alpha_ids);
 
     @class_ids = ();
     @years = sort keys %class_members;
-    $DB{'_years'} = pack("n*",grep(/\d+/,@years));
+    $DB->{'_years'} = pack("n*",grep(/\d+/,@years));
 
     foreach $ykey (@years)
     {
 	@alpha_ids = split(/ /, $class_members{$ykey});
-	$DB{"_${ykey}"} = pack("n*", @alpha_ids);
-	$DB{"_t_${ykey}"} = pack("N", $class_latest{$ykey});
+	$DB->{"_${ykey}"} = pack("n*", @alpha_ids);
+	$DB->{"_t_${ykey}"} = pack("N", $class_latest{$ykey});
 	$new_db{"_${ykey}"} = $new_db{"_t_${ykey}"} = 1;
 	push(@class_ids, @alpha_ids);
     }
     print STDOUT "." unless $quiet;
 
-    $DB{'_class'} = pack("n*", @class_ids);
+    $DB->{'_class'} = pack("n*", @class_ids);
 
     # now do years, but only for www
     @years = sort keys %www_class_members;
-    $DB{'_www_years'} = pack("n*",grep(/\d+/,@years));
+    $DB->{'_www_years'} = pack("n*",grep(/\d+/,@years));
     foreach $ykey (@years)
     {
-	$DB{"_www_${ykey}"} = pack("n*", split(/ /, $www_class_members{$ykey}));
+	$DB->{"_www_${ykey}"} = pack("n*", split(/ /, $www_class_members{$ykey}));
 	$new_db{"_www_${ykey}"} = 1;
     }
     print STDOUT "." unless $quiet;
 
-    $DB{'_t'} = pack("N", $latest);
-    $DB{'_t_www'} = pack("N", $latest_www);
-    $DB{'_t_goner'} = pack("N", $latest_goner);
-    $DB{'_nextid'}  = $preserve_nextid ? $old_nextid: $maxval + 1;
+    $DB->{'_t'} = pack("N", $latest);
+    $DB->{'_t_www'} = pack("N", $latest_www);
+    $DB->{'_t_goner'} = pack("N", $latest_goner);
+    $DB->{'_nextid'}  = $preserve_nextid ? $old_nextid: $maxval + 1;
 
     while (($key,$val) = each(%alpha_members))
     {
-	$DB{"_a_${key}"} = pack("n*", split(/ /, $val));
+	$DB->{"_a_${key}"} = pack("n*", split(/ /, $val));
 	$new_db{"_a_${key}"} = 1;
     }
 
     while (($key,$val) = each(%alpha_latest))
     {
-	$DB{"_t_${key}"} = pack("N", $val);
+	$DB->{"_t_${key}"} = pack("N", $val);
 	$new_db{"_t_${key}"} = 1;
     }
     print STDOUT ".\n" unless $quiet;
@@ -1294,7 +1293,7 @@ sub aid_rebuild_secondary_keys
 	    $new_db{'_t'} = $new_db{'_t_www'} =
 		$new_db{'_t_goner'} = $new_db{'_nextid'} = 1;
 
-    while (($key,$val) = each(%DB))
+    while (($key,$val) = each(%{$DB}))
     {
 	next unless $key =~ /^_/;
 	die "invariant failed: key=$key in DB but not in new_db"

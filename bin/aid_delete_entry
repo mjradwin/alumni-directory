@@ -1,6 +1,6 @@
 #!/usr/local/bin/perl -w
 
-# $Id: aid_delete_entry,v 1.7 2001/09/16 16:57:51 mradwin Exp mradwin $
+# $Id: aid_delete_entry,v 1.8 2002/03/07 23:29:39 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -42,7 +42,7 @@ defined $ARGV[0] || die "$usage\n";
 defined $ARGV[1] || die "$usage\n";
 
 $dbmfile = shift;
-tie(%DB, 'DB_File', $dbmfile, O_RDWR|O_CREAT, 0644, $DB_File::DB_HASH)
+$db = tie(%DB, 'DB_File', $dbmfile, O_RDWR|O_CREAT, 0644, $DB_File::DB_HASH)
     or die "$dbmfile: $!\n";
 
 $id = shift;
@@ -79,8 +79,9 @@ warn "$0: deleting $joined\n";
 # rebuilding the secondary keys will reconstruct _nextid.  Let's keep it
 # so we don't have duplicate people with the same id
 $prevnextid = $DB{'_nextid'};
-local(@diffs) = &aid_rebuild_secondary_keys(*DB,0);
+my @diffs = &aid_rebuild_secondary_keys(\%DB,0);
 $DB{'_nextid'} = $prevnextid;
+$db->sync;
 
 if ($opt_d)
 {
@@ -91,6 +92,7 @@ if ($opt_d)
 }
 
 warn "$0: delete successful\n";
+undef $db;
 untie(%DB);
 exit 0;
 

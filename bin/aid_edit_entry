@@ -1,6 +1,6 @@
 #!/usr/local/bin/perl -w
 
-# $Id: aid_edit_entry,v 5.18 2001/09/16 16:57:51 mradwin Exp mradwin $
+# $Id: aid_edit_entry,v 5.19 2002/03/07 23:29:39 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -48,11 +48,11 @@ defined $ARGV[1] || die "$usage\n";
 $dbmfile = shift;
 die "$0: $dbmfile: $!\n" unless -r $dbmfile;
 if (-w $dbmfile) {
-    tie(%DB, 'DB_File', $dbmfile, O_RDWR|O_CREAT, 0644, $DB_File::DB_HASH)
+    $db = tie(%DB, 'DB_File', $dbmfile, O_RDWR|O_CREAT, 0644, $DB_File::DB_HASH)
 	or die "$dbmfile: $!\n";
     $mode = 0644;
 } else {
-    tie(%DB, 'DB_File', $dbmfile, O_RDONLY, 0444, $DB_File::DB_HASH)
+    $db = tie(%DB, 'DB_File', $dbmfile, O_RDONLY, 0444, $DB_File::DB_HASH)
 	or die "$dbmfile: $!\n";
     $mode = 0444;
 }
@@ -104,7 +104,7 @@ $note_end_str = '_AID_END_NOTE_';
 $tmpfile = '/tmp/aid_edit_entry.' . $$;
 
 open(TMPFILE,">$tmpfile") || die "$tmpfile: $!\n";
-print TMPFILE '# $Id: aid_edit_entry,v 5.18 2001/09/16 16:57:51 mradwin Exp mradwin $', "\n";
+print TMPFILE '# $Id: aid_edit_entry,v 5.19 2002/03/07 23:29:39 mradwin Exp mradwin $', "\n";
 print TMPFILE "# record last touched: ",
  (($rec{'f'} > $rec{'b'}) ? &ctime($rec{'f'}) : &ctime($rec{'b'}));
 
@@ -211,7 +211,9 @@ elsif ($changed == 1)
 	$DB{"\L$email\E"} = pack('n', $newrec{'id'});
     }
 
-    local(@diffs) = &aid_rebuild_secondary_keys(*DB,0);
+    my @diffs = &aid_rebuild_secondary_keys(\%DB,0);
+    $db->sync;
+
     if ($opt_d)
     {
 	foreach (@diffs)
@@ -223,6 +225,7 @@ elsif ($changed == 1)
     warn "$0: update successful\n";
 }
 
+undef $db;
 untie(%DB);
 exit(0);
 

@@ -1,6 +1,6 @@
 #!/usr/local/bin/perl -w
 
-# $Id: aid_staging_clean,v 1.5 2001/11/26 21:11:09 mradwin Exp mradwin $
+# $Id: aid_staging_clean,v 1.6 2002/03/07 23:29:39 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -48,21 +48,19 @@ my($dbmfile) = &aid_config('staging');
 warn "creating $dbmfile...\n" unless (-e $dbmfile);
 #die "$dbmfile: $!\n" unless -r $dbmfile;
 
-#my($db) = tie(%DB, 'DB_File', $dbmfile, O_RDWR, 0644, $DB_File::DB_HASH)
+my(%DB);
 my($db) = tie(%DB, 'DB_File', $dbmfile, O_RDWR|O_CREAT,
 	      0666, $DB_File::DB_HASH)
     or die "$dbmfile: $!\n";
 my($fd) = $db->fd;
 
 open(DB_FH, "+<&=$fd") || die "dup $!";
-unless (flock (DB_FH, LOCK_EX | LOCK_NB)) {
-    unless (flock (DB_FH, LOCK_EX)) { die "flock: $!" }
-}
+unless (flock (DB_FH, LOCK_EX)) { die "flock: $!" }
 
 my(%verif) = ();
-if (defined $DBS{'_verified'})
+if (defined $DB{'_verified'})
 {
-    foreach (split(/\0/, $DBS{'_verified'}))
+    foreach (split(/\0/, $DB{'_verified'}))
     {
 	$verif{$_} = 1;
     }
@@ -89,12 +87,12 @@ while (($key,$val) = each %DB)
 		{
 		    delete $DB{"\L$rec{'e'}\E"};
 		}
-		$db->sync;
 	    }
 	}
     }
 }
 
+$db->sync;
 flock(DB_FH, LOCK_UN);
 undef $db;
 untie(%DB);
