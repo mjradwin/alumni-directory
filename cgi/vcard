@@ -4,7 +4,7 @@
 #     FILE: vcard.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: Alumni Internet Directory CGI vCard generation
-#      $Id: vcard,v 5.5 2000/02/29 21:02:09 mradwin Exp mradwin $
+#      $Id: vcard,v 5.6 2000/04/25 00:42:01 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -29,6 +29,7 @@ unshift(@INC, $dirname);
 
 require 'aid_util.pl';
 use DB_File;
+use Fcntl qw(:DEFAULT :flock);
 use CGI;
 use CGI::Carp qw(fatalsToBrowser);
 
@@ -46,12 +47,24 @@ if ($ENV{'PATH_INFO'} =~ m,/(\d+)\.vcf$,i ||
     $dbmfile = &aid_config('dbmfile');
     die "$dbmfile: $!\n" unless -r $dbmfile;
 
-    tie(%DB, 'DB_File', $dbmfile, O_RDONLY, 0444, $DB_File::DB_HASH)
+    my($db) = tie(%DB, 'DB_File', $dbmfile, O_RDONLY, 0444, $DB_File::DB_HASH)
 	or die "$dbmfile: $!\n";
+
+    my($fd) = $db->fd;
+    open(DB_FH, "<&=$fd") || die "dup $!";
+
+    unless (flock (DB_FH, LOCK_SH | LOCK_NB)) {
+	unless (flock (DB_FH, LOCK_SH)) { die "flock: $!" }
+    }
+
     if (defined $DB{$id})
     {
 	$val = $DB{$id};
+
+	flock(DB_FH, LOCK_UN);
+	undef $db;
 	untie(%DB);
+	close(DB_FH);
 
 	%rec = &aid_db_unpack_rec($id,$val);
 
@@ -64,7 +77,10 @@ if ($ENV{'PATH_INFO'} =~ m,/(\d+)\.vcf$,i ||
     }
     else
     {
+	flock(DB_FH, LOCK_UN);
+	undef $db;
 	untie(%DB);
+	close(DB_FH);
     }
 }
 

@@ -4,7 +4,7 @@
 #     FILE: alumni.txt.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: Address Book/Nicknames Downloading module
-#      $Id: alumni.txt,v 5.6 2000/04/25 00:42:01 mradwin Exp mradwin $
+#      $Id: alumni.txt,v 5.7 2000/04/25 17:30:08 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -29,6 +29,7 @@ unshift(@INC, $dirname);
 
 require 'aid_util.pl';
 use DB_File;
+use Fcntl qw(:DEFAULT :flock);
 use CGI;
 use CGI::Carp qw(fatalsToBrowser);
 
@@ -100,8 +101,16 @@ sub send_address_book {
 	$minyr = $maxyr = $year;
     }
 
-    tie(%DB, 'DB_File', $dbmfile, O_RDONLY, 0444, $DB_File::DB_HASH)
+    my($db) = tie(%DB, 'DB_File', $dbmfile, O_RDONLY, 0444, $DB_File::DB_HASH)
 	or die "$dbmfile: $!\n";
+
+    my($fd) = $db->fd;
+    open(DB_FH, "<&=$fd") || die "dup $!";
+
+    unless (flock (DB_FH, LOCK_SH | LOCK_NB)) {
+	unless (flock (DB_FH, LOCK_SH)) { die "flock: $!" }
+    }
+
     defined $DB{'_class'} || die "$dbmfile: missing _class\n";
 
     @class_ids = unpack("n*",$DB{'_class'});
@@ -117,7 +126,10 @@ sub send_address_book {
 
 	&aid_book_write_entry(*STDOUT,$format,*rec);
     }
+    flock(DB_FH, LOCK_UN);
+    undef $db;
     untie(%DB);
+    close(DB_FH);
 
     &aid_book_write_suffix(*STDOUT,$format);
 }
@@ -134,6 +146,12 @@ sub is_email_okay
     {
 	0;
     }
+}
+
+# avoid stupid warnings
+if ($^W && 0)
+{
+    %in = ();
 }
 
 1;

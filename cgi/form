@@ -4,7 +4,7 @@
 #     FILE: form.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: Alumni Internet Directory CGI form-submission interface
-#      $Id: form,v 5.22 2000/04/25 18:37:59 mradwin Exp mradwin $
+#      $Id: form,v 5.23 2000/05/12 22:12:42 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -29,13 +29,14 @@ unshift(@INC, $dirname);
 
 require 'aid_util.pl';
 use DB_File;
+use Fcntl qw(:DEFAULT :flock);
 use CGI;
 use CGI::Carp qw(fatalsToBrowser);
 
 # configuration
 $dbmfile = &aid_config('dbmfile');
 
-$rcsid = '$Id: form,v 5.22 2000/04/25 18:37:59 mradwin Exp mradwin $'; #'fnt
+$rcsid = '$Id: form,v 5.23 2000/05/12 22:12:42 mradwin Exp mradwin $'; #'fnt
 
 $listing_upd_title = 'Modify Your Directory Listing';
 $listing_upl_title = 'Select a Listing to Modify';
@@ -72,8 +73,17 @@ elsif (defined($cgi{'update'}) || defined($cgi{'upd'}))
 
     if ($key =~ /^\d+$/)
     {
-	tie(%DB, 'DB_File', $dbmfile, O_RDONLY, 0444, $DB_File::DB_HASH)
+	my($db) = tie(%DB, 'DB_File', $dbmfile, O_RDONLY, 0444,
+		      $DB_File::DB_HASH)
 	    or die "$dbmfile: $!\n";
+
+	my($fd) = $db->fd;
+	open(DB_FH, "<&=$fd") || die "dup $!";
+
+	unless (flock (DB_FH, LOCK_SH | LOCK_NB)) {
+	    unless (flock (DB_FH, LOCK_SH)) { die "flock: $!" }
+	}
+
 	if (defined $DB{$key})
 	{
 	    %updateme = &aid_db_unpack_rec($key,$DB{$key});
@@ -83,8 +93,10 @@ elsif (defined($cgi{'update'}) || defined($cgi{'upd'}))
 	{
 	    &send_upd_real(*aid_util::blank_entry,'');
 	}
+	flock(DB_FH, LOCK_UN);
+	undef $db;
 	untie(%DB);
-
+	close(DB_FH);
     }
     elsif ($key =~ /^\s*[^@]+@[^\.]+\./) 
     {
@@ -92,23 +104,40 @@ elsif (defined($cgi{'update'}) || defined($cgi{'upd'}))
 	$key =~ s/\s*$//;
 	$key = "\L$key\E";
 
-	tie(%DB, 'DB_File', $dbmfile, O_RDONLY, 0444, $DB_File::DB_HASH)
+	my($db) = tie(%DB, 'DB_File', $dbmfile, O_RDONLY, 0444,
+		      $DB_File::DB_HASH)
 	    or die "$dbmfile: $!\n";
+
+	my($fd) = $db->fd;
+	open(DB_FH, "<&=$fd") || die "dup $!";
+
+	unless (flock (DB_FH, LOCK_SH | LOCK_NB)) {
+	    unless (flock (DB_FH, LOCK_SH)) { die "flock: $!" }
+	}
+
 	if (defined $DB{$key})
 	{
 	    $id = unpack("n",$DB{$key});
 	    if ($id > 0)
 	    {
 		%updateme = &aid_db_unpack_rec($id,$DB{$id});
+
+		flock(DB_FH, LOCK_UN);
+		undef $db;
 		untie(%DB);
+		close(DB_FH);
+
 		&send_upd_real(*updateme,'');
 		close(STDOUT);
 		exit(0);
 	    }
 	}
 	&send_upd_notfound($key);
-	untie(%DB);
 
+	flock(DB_FH, LOCK_UN);
+	undef $db;
+	untie(%DB);
+	close(DB_FH);
     }
     elsif ($key =~ /^\s*$/)
     {
@@ -440,8 +469,16 @@ sub send_upd_list {
     local($initial,$anchor);
     local(%rec);
 
-    tie(%DB, 'DB_File', $dbmfile, O_RDONLY, 0444, $DB_File::DB_HASH)
+    my($db) = tie(%DB, 'DB_File', $dbmfile, O_RDONLY, 0444, $DB_File::DB_HASH)
 	or die "$dbmfile: $!\n";
+
+    my($fd) = $db->fd;
+    open(DB_FH, "<&=$fd") || die "dup $!";
+
+    unless (flock (DB_FH, LOCK_SH | LOCK_NB)) {
+	unless (flock (DB_FH, LOCK_SH)) { die "flock: $!" }
+    }
+
     defined $DB{'_alpha'} || die "$dbmfile: missing _alpha\n";
 
     @alpha_ids = unpack("n*",$DB{'_alpha'});
@@ -473,7 +510,10 @@ sub send_upd_list {
 	print "<a$anchor href=\"", &aid_config('update_cgi'), 
   	  "/$rec{'id'}?upd=$rec{'id'}\">", $fullname, "</a>", $affil, "\n";
     }
+    flock(DB_FH, LOCK_UN);
+    undef $db;
     untie(%DB);
+    close(DB_FH);
 
     print "</pre>\n\n";
     print &aid_common_html_ftr(20);
@@ -529,6 +569,7 @@ if ($^W && 0)
 {
     $aid_util::header_bg = '';
     $aid_util::header_fg = '';
+    %in = ();
 }
 
 1;
