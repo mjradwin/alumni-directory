@@ -2,11 +2,11 @@
 #     FILE: aid_util.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: perl library routines for the Alumni Internet Directory
-#      $Id: aid_util.pl,v 3.70 1998/11/02 21:53:06 mradwin Exp mradwin $
+#      $Id: aid_util.pl,v 3.71 1998/11/03 01:28:01 mradwin Exp mradwin $
 #
 
 $aid_util'rcsid =
- '$Id: aid_util.pl,v 3.70 1998/11/02 21:53:06 mradwin Exp mradwin $';
+ '$Id: aid_util.pl,v 3.71 1998/11/03 01:28:01 mradwin Exp mradwin $';
 
 # ----------------------------------------------------------------------
 # CONFIGURATION
@@ -45,24 +45,25 @@ $aid_util'rcsid =
      );
 
 @aid_util'page_idx = #'#
-    (
-     "Home,"                  . $aid_util'config{'master_path'},                 #'#
-     "Alphabetically,"        . $aid_util'config{'master_path'} . "alpha/a-index.html",    #'#
-     "Grad.&nbsp;Class,"      . $aid_util'config{'master_path'} . "class/",      #'#
-     "Awalt&nbsp;Alumni,"     . $aid_util'config{'master_path'} . "class/awalt.html",  #'#
-     "Web&nbsp;Pages,"        . $aid_util'config{'master_path'} . "pages.html",  #'#
-     "Recent&nbsp;Additions," . $aid_util'config{'master_path'} . "recent.html", #'#
-     );
+(
+ "Home,"             . $aid_util'config{'master_path'},
+ "Alphabetically,"   . $aid_util'config{'master_path'} . "alpha/a-index.html",
+ "Grad.&nbsp;Class," . $aid_util'config{'master_path'} . "class/",
+ "Awalt,"            . $aid_util'config{'master_path'} . "class/awalt.html",
+ "Web&nbsp;Pages,"   . $aid_util'config{'master_path'} . "pages.html",
+ "Recent&nbsp;Additions," . $aid_util'config{'master_path'} . "recent.html",
+);
 
 @aid_util'second_idx = #'#
-    (
-     "Add/Update,"          . $aid_util'config{'master_path'} . "add/", #'#
-     "Reunions,"            . $aid_util'config{'master_path'} . "etc/reunions.html", #'#
-     "Links,"               . $aid_util'config{'master_path'} . "etc/links.html",    #'#
-     "Download,"            . $aid_util'config{'master_path'} . "books/",        #'#
-     "FAQ,"                 . $aid_util'config{'master_path'} . "etc/faq.html",     #'#
-     "Acceptable&nbsp;Use," . $aid_util'config{'master_path'} . "etc/copyright.html", #'#
-     );
+(
+ "Add/Update," . $aid_util'config{'master_path'} . "add/", #'#
+ "Reunions,"   . $aid_util'config{'master_path'} . "etc/reunions.html", #'#
+ "Links,"      . $aid_util'config{'master_path'} . "etc/links.html",    #'#
+ "Download,"   . $aid_util'config{'master_path'} . "books/",        #'#
+ "FAQ,"        . $aid_util'config{'master_path'} . "etc/faq.html",     #'#
+ "Acceptable&nbsp;Use/Privacy,"
+               . $aid_util'config{'master_path'} . "etc/copyright.html", #'#
+);
 
 @aid_util'MoY = #'#
     ('Jan','Feb','Mar','Apr','May','Jun',
