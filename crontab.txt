@@ -1,0 +1,16 @@
+# $Id$
+
+# build alumni directories every 5 minutes
+0-55/5 * * * * nice $HOME/alumni/mvhs/bin/aid_addname -q
+2-57/5 * * * * nice $HOME/alumni/awalt/bin/aid_addname -q
+
+# clean staging.db at 4:10am
+10 4 * * * nice $HOME/alumni/mvhs/bin/aid_staging_clean -q -d 60
+15 4 * * * nice $HOME/alumni/awalt/bin/aid_staging_clean -q -d 60
+
+# back up database at 5:10am
+10 5 * * * nice /usr/bin/ci -q -m'daily checkin' -l $HOME/alumni/mvhs/data/master.ini $HOME/alumni/awalt/data/master.ini
+
+# quarterly emails at 2:15am on the first of the month
+15 2 1 2,5,8,11 * nice $HOME/alumni/awalt/bin/aid_quarterly
+15 3 1 2,5,8,11 * nice $HOME/alumni/mvhs/bin/aid_quarterly
