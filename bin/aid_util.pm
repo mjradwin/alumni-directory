@@ -2,7 +2,7 @@
 #     FILE: mv_util.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: perl library routines for the MVHS Alumni Internet Directory
-#      $Id: mv_util.pl,v 1.57 1997/11/12 17:57:24 mjr Exp mjr $
+#      $Id: mv_util.pl,v 1.58 1997/12/03 00:52:56 mjr Exp mjr $
 #
 
 CONFIG: {
@@ -203,6 +203,27 @@ sub mv_create_db {
 }
 
 
+sub mv_get_usertext {
+    package mv_util;
+
+    local($id) = @_;
+    local($[) = 0;
+    local($_);
+    local($text,$inFile,*TEXTFILE);
+
+    $text = '';
+    $inFile = $config{'wwwdir'} . "news/raw/${id}.txt";
+
+    if (-r $inFile) {
+	open(TEXTFILE,$inFile) || die "Can't open $inFile: $!\n";
+	while(<TEXTFILE>) { $text .= $_; }
+	close(TEXTFILE);
+    }
+    
+    return $text;
+}
+
+
 sub submit_body {
     package mv_util;
     require 'tableheader.pl';
@@ -314,7 +335,7 @@ All other fields are optional.";
 </tr>
 <tr>
   <td valign=top><font color=\"#000000\">E-mail address</font><br>
-  <font color=\"#000000\" size=\"-1\">(such as albert@aol.com)</font></td>
+  <font color=\"#000000\" size=\"-1\">(such as albert\@aol.com)</font></td>
   <td>$star</td>
   <td valign=top><input type=text name=\"mail\" size=35
   value=\"$email\"></td>
@@ -491,7 +512,15 @@ sub about_text {
     }
 
 
-    $retval .= "</pre></font></td></tr></table>\n" if $do_html_p;
+    $retval .= "</pre>\n" if $do_html_p;
+
+    if ($do_vcard_p && $do_html_p) {
+	$rawdata = &'mv_get_usertext($id);  #' fnt
+	$retval .= "<tt>News (experimental):</tt>\n" if $rawdata ne '';
+	$retval .= "<blockquote>\n$rawdata\n</blockquote>\n" if $rawdata ne '';
+    }
+
+    $retval .= "</font></td></tr></table>\n" if $do_html_p;
 
     if ($do_html_p && $time ne '') {
 	$retval .= &'modify_html($id,&'inorder_fullname($first,$last,$married));
