@@ -3,7 +3,7 @@
 #   AUTHOR: Michael J. Radwin
 #    DESCR: generates small-caps HTML headers with colored tables
 #     DATE: Mon Nov 11 23:52:52 EST 1996
-#      $Id: tableheader.pl,v 1.7 1998/01/03 11:37:47 mjr Exp mradwin $
+#      $Id: tableheader.pl,v 1.8 1998/04/02 20:24:28 mjr Exp mradwin $
 #
 
 
