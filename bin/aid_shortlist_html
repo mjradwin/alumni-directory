@@ -4,7 +4,7 @@
 # does a short list, either compact or verbose, sorted by graduating
 # class with a jump bar
 #
-# $Id: aid_shortlist_html,v 1.19 1999/03/27 04:25:18 mradwin Exp mradwin $
+# $Id: aid_shortlist_html,v 1.20 1999/04/05 16:26:17 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -66,7 +66,12 @@ for (@class)
 {
     %rec = &aid_db_unpack_rec($_,$DB{$_});
     next unless $rec{'v'};
-    $opt_m && next unless &aid_is_new($rec{'u'}, $opt_m);
+    if ($opt_m)
+    {
+	next unless &aid_is_new($rec{'u'}, $opt_m);
+#	next unless &aid_is_new($rec{'eu'}, $opt_m) ||
+#	    ($rec{'eu'} == 0 && &aid_is_new($rec{'u'}, $opt_m));
+    }
     $opt_w && next unless $rec{'w'} ne '';
 
     push(@ids,$_);
