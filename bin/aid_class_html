@@ -2,13 +2,13 @@
 
 #
 # does the html version of the grad-date address list
-# $Id: aid_class_html,v 3.19 1999/02/03 19:06:02 mradwin Exp mradwin $
+# $Id: aid_class_html,v 3.20 1999/02/03 21:57:02 mradwin Exp mradwin $
 #
 
 require 'aid_util.pl';
 require 'getopts.pl';
 
-$usage = 'usage: aid_class_html [-hta] [-c class] infile.adr outfile
+$usage = 'usage: aid_class_html [-hta] [-c class] infile.db outfile
     -h        Display usage information.
     -t        Output text only.
     -a        Awalt mode.
@@ -20,27 +20,31 @@ $opt_h && die "$usage\n";
 $ARGV[0] || die "$usage\n";
 $ARGV[1] || die "$usage\n";
 $opt_h = $opt_h;		# avoid warning
-$opt_c = $opt_c;		# avoid warning
 
 $info_gif = &aid_image_tag('info');
 $blank_gif = ($opt_t) ? "" : &aid_image_tag('blank');
 
-open(DATA,$ARGV[0]) || die "Can't open $ARGV[0]: $!\n";
-open(FMTOUT,">$ARGV[1]") || die "Can't open $ARGV[1]: $!\n";
+$ARGV[0] =~ s/\.db$//;
+die "can't open $ARGV[0].db\n" unless -r "$ARGV[0].db";
+dbmopen(DB,$ARGV[0],0444);
 
-@years = ();
-@db = ();
+$prefix = $opt_a ? 'awalt_' : '';
 
-while(<DATA>) {
-    chop;
-    next if /^\s*$/;		# skip blank lines
-    %rec = &aid_split($_);
-    next unless $rec{'valid'};
-    next if defined $opt_c && $rec{'year'} ne $opt_c;
-
-    push(@db,$_);
-    &aid_build_yearlist(*years, $rec{'year'});
+if ($opt_c)
+{
+    die "no __${prefix}${opt_c}__ key!\n"
+	unless defined $DB{"__${prefix}${opt_c}__"};
+    @years = ($opt_c);
 }
+else
+{
+    die "no __${prefix}years__ key!\n"
+	unless defined $DB{"__${prefix}years__"};
+    @years = unpack("n*",$DB{"__${prefix}years__"});
+    push(@years, 'other');
+}
+
+open(FMTOUT,">$ARGV[1]") || die "Can't open $ARGV[1]: $!\n";
 
 if (!$opt_t) {
     $title  = $opt_a ? 'Awalt Alumni' : 'Listed by Graduating Class';
@@ -54,57 +58,66 @@ print FMTOUT "Name$blank_gif                                     E-Mail\n";
 print FMTOUT "---------------------------------------------------------------------------";
 
 $prev = '1900';
-while (defined($_ = shift(@db))) {
-    %rec = &aid_parse($_);
+foreach $year (@years)
+{
+    print STDERR ".";
+    @ids = unpack("n*",$DB{"__${prefix}${year}__"});
 
-    if ($prev ne $rec{'year'}) {
+    print FMTOUT "\n";
+    if ($year =~ /^\d+$/)
+    {
+	$opt_t || print FMTOUT "<a name=\"grad${year}\" " .
+	    "href=\"" . &aid_config('master_path') . "class/${year}.html\">";
+	print FMTOUT "Class of $year";
+	$opt_t || print FMTOUT "</a>  (<a href=\"#top\">top</a>)";
 	print FMTOUT "\n";
-	if ($rec{'year'} =~ /^\d+$/) {
-            $opt_t || print FMTOUT "<a name=\"grad$rec{'year'}\" " .
-                "href=\"" . &aid_config('master_path') .
-		"class/$rec{'year'}.html\">";
-	    print FMTOUT "Class of $rec{'year'}";
-	    $opt_t || print FMTOUT "</a>  (<a href=\"#top\">top</a>)";
-	    print FMTOUT "\n";
+	$prev = $year;
+    }
+    else
+    {
+	$opt_t || print FMTOUT "<a name=\"gradother\">" if $prev =~ /^\d+$/;
+	print FMTOUT "Faculty/Staff";
+	$opt_t || print FMTOUT "</a>" if $prev =~ /^\d+$/;
+	print FMTOUT ' ' x (13 - length("Faculty/Staff"));
+	$opt_t || print FMTOUT "  (<a href=\"#top\">top</a>)";
+	print FMTOUT "\n";
+	$prev = $year;
+    }
 
+    foreach $id (@ids)
+    {
+	%rec = &aid_db_unpack_rec($id,$DB{$id});
+	next unless $rec{'valid'};
+
+	$fullname = &fullname(*rec);
+	$regschool = ($opt_a) ? 'Awalt' : 'MVHS';
+
+	if ($rec{'school'} ne $regschool && $rec{'school'} ne '') {
+	    $affil     = "  [$rec{'school'}]";
 	} else {
-	    $opt_t || print FMTOUT "<a name=\"gradother\">" if $prev =~ /^\d+$/;
-	    print FMTOUT $rec{'year'};
-	    $opt_t || print FMTOUT "</a>" if $prev =~ /^\d+$/;
-	    print FMTOUT ' ' x (13 - length($rec{'year'}));
-	    $opt_t || print FMTOUT "  (<a href=\"#top\">top</a>)";
-	    print FMTOUT "\n";
+	    $affil     = "";
 	}
 
-	$prev = $rec{'year'};
+	print FMTOUT ' ';
+	$opt_t || print FMTOUT "<a href=\"" . &aid_about_path(*rec) . "\">$info_gif</a>"; #'#
+	$opt_t || print FMTOUT "<a name=\"$rec{'alias'}\"";
+	$opt_t || print FMTOUT " href=\"$rec{'www'}\"" if $rec{'www'} ne '';
+	$opt_t || print FMTOUT ">";
+	print FMTOUT $fullname;
+	$opt_t || print FMTOUT "</a>";
+	print FMTOUT $affil;
+	print FMTOUT ' ', ' ' x (39 - (length($fullname) + length($affil)));
+	$opt_t || print FMTOUT "<a href=\"mailto:", $rec{'email'}, "\">";
+	print FMTOUT $rec{'email'};
+	$opt_t || print FMTOUT "</a>";
+	$opt_t || print FMTOUT " " . &aid_image_tag('new_anchored') if &is_new($rec{'time'});
+	print FMTOUT "\n";
     }
-
-    $fullname = &fullname(*rec);
-    $regschool = ($opt_a) ? 'Awalt' : 'MVHS';
-
-    if ($rec{'school'} ne $regschool && $rec{'school'} ne '') {
-	$affil     = "  [$rec{'school'}]";
-    } else {
-	$affil     = "";
-    }
-
-    print FMTOUT ' ';
-    $opt_t || print FMTOUT "<a href=\"" . &aid_about_path(*rec) . "\">$info_gif</a>"; #'#
-    $opt_t || print FMTOUT "<a name=\"$rec{'alias'}\"";
-    $opt_t || print FMTOUT " href=\"$rec{'www'}\"" if $rec{'www'} ne '';
-    $opt_t || print FMTOUT ">";
-    print FMTOUT $fullname;
-    $opt_t || print FMTOUT "</a>";
-    print FMTOUT $affil;
-    print FMTOUT ' ', ' ' x (39 - (length($fullname) + length($affil)));
-    $opt_t || print FMTOUT "<a href=\"mailto:", $rec{'email'}, "\">";
-    print FMTOUT $rec{'email'};
-    $opt_t || print FMTOUT "</a>";
-    $opt_t || print FMTOUT " " . &aid_image_tag('new_anchored') if &is_new($rec{'time'});
-    print FMTOUT "\n";
 }
+print STDERR "\n";
 
 $opt_t || print FMTOUT "</pre>\n";
 $opt_t || print FMTOUT &common_html_ftr($opt_a ? 3 : -1);
 
+dbmclose(DB);
 exit(0);
