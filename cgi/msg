@@ -4,7 +4,7 @@
 #     FILE: msg.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: Alumni Internet Directory update redirector
-#      $Id: msg,v 6.2 2003/08/25 06:13:07 mradwin Exp mradwin $
+#      $Id: msg,v 6.3 2003/08/25 06:18:38 mradwin Exp mradwin $
 #
 #   Copyright (c) 2003  Michael John Radwin
 #
@@ -30,11 +30,19 @@ use lib "/pub/m/r/mradwin/private/lib/perl5/site_perl";
 use DB_File::Lock;
 use Digest::MD5  qw(md5_hex);
 use Email::Valid;
-use CGI;
+use CGI qw(-no_xhtml);
 use CGI::Carp qw(fatalsToBrowser);
 use aid_util;
+use strict;
 
-CGI::ReadParse();
+my %in;
+my($q) = new CGI;
+foreach my $key ($q->param())
+{
+    my($val) = $q->param($key);
+    $val = '' unless defined $val;
+    $in{$key} = $val;
+}
 
 my $dbmfile = aid_util::config('dbmfile');
 die "$dbmfile: $!\n" unless -r $dbmfile;
@@ -51,9 +59,9 @@ if (defined($in{'to'}) && $in{'to'} =~ /^\d+$/)
 
     bail() unless $val;
 
-    %rec = aid_util::db_unpack_rec($id,$val);
+    my %rec = aid_util::db_unpack_rec($id,$val);
     my $hash = md5_hex($rec{'e'});
-    my $name = email_name();
+    my $name = email_name(\%rec);
     my $e = "$name &lt;" . aid_util::protect_email($rec{'e'}) . "&gt;";
 
     print "Content-Type: text/html\015\012\015\012";
@@ -78,21 +86,21 @@ elsif (defined($in{'id'}) && $in{'id'} =~ /^\d+$/ && $in{'hash'} &&
 
     bail() unless $val;
 
-    %rec = aid_util::db_unpack_rec($id,$val);
+    my %rec = aid_util::db_unpack_rec($id,$val);
     my $hash = md5_hex($rec{'e'});
     bail() unless ($hash eq $in{'hash'});
 
     my $from = $in{'from'};
-    check_blank("e-mail address",$from,$id,$hash);
+    check_blank(\%rec,"e-mail address",$from,$id,$hash);
 
     my $subject = $in{'subject'};
-    check_blank("subject",$subject,$id,$hash);
+    check_blank(\%rec,"subject",$subject,$id,$hash);
 
     $subject =~ s/[\015\012]/ /g;
     $subject = substr($subject, 0, 80);
 
     my $message = $in{'message'};
-    check_blank("message body",$message,$id,$hash);
+    check_blank(\%rec,"message body",$message,$id,$hash);
 
     chomp($from);
     if ($from =~ /^[^<]*<([^>]+)>/) {
@@ -113,7 +121,7 @@ elsif (defined($in{'id'}) && $in{'id'} =~ /^\d+$/ && $in{'hash'} &&
 <br>It must be in the form of <code>user\@example.com</code>.
 _EOHTML_
 
-	my $name = email_name();
+	my $name = email_name(\%rec);
 	my $e = "$name &lt;" . aid_util::protect_email($rec{'e'}) . "&gt;";
 	form($e,$id,$hash,$from,$subject,$message);
 
@@ -121,7 +129,7 @@ _EOHTML_
 	exit(0);
     }
 
-    my $name = email_name();
+    my $name = email_name(\%rec);
     my $school = aid_util::config('short_school');
 
     $message .= "
@@ -168,12 +176,13 @@ else
 
 sub email_name
 {
-    my $name = $rec{'gn'};
-    $name .= " $rec{'mi'}."
-	if defined $rec{'mi'} && $rec{'mi'} ne '';
-    $name .= " $rec{'sn'}";
-    $name .= " $rec{'mn'}"
-	if defined $rec{'mn'} && $rec{'mn'} ne '';
+    my($recp) = @_;
+    my $name = $recp->{'gn'};
+    $name .= " $recp->{'mi'}."
+	if defined $recp->{'mi'} && $recp->{'mi'} ne '';
+    $name .= " $recp->{'sn'}";
+    $name .= " $recp->{'mn'}"
+	if defined $recp->{'mn'} && $recp->{'mn'} ne '';
     $name =~ s/\"/\'/g;
 
     $name;
@@ -181,10 +190,10 @@ sub email_name
 
 sub check_blank
 {
-    my($title,$val,$id,$hash) = @_;
+    my($recp,$title,$val,$id,$hash) = @_;
 
-    my $name = email_name();
-    my $e = "$name &lt;" . aid_util::protect_email($rec{'e'}) . "&gt;";
+    my $name = email_name($recp);
+    my $e = "$name &lt;" . aid_util::protect_email($recp->{'e'}) . "&gt;";
     my $from = $in{'from'};
     my $subject = $in{'subject'};
     my $message = $in{'message'};

@@ -4,7 +4,7 @@
 #     FILE: form.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: Alumni Internet Directory CGI form-submission interface
-#      $Id: form,v 5.46 2003/08/25 01:22:44 mradwin Exp mradwin $
+#      $Id: form,v 6.1 2003/08/25 06:01:07 mradwin Exp mradwin $
 #
 #   Copyright (c) 2003  Michael J. Radwin
 #
@@ -27,28 +27,36 @@ use FindBin;
 use lib $FindBin::Bin;
 use lib "/pub/m/r/mradwin/private/lib/perl5/site_perl";
 
-use CGI;
+use CGI qw(-no_xhtml);
 use CGI::Carp qw(fatalsToBrowser);
 use DB_File::Lock;
 use Email::Valid;
 use aid_util;
 use aid_submit;
+use strict;
 
 # configuration
 my $dbmfile = aid_util::config('dbmfile');
 
-$rcsid = '$Id: form,v 5.46 2003/08/25 01:22:44 mradwin Exp mradwin $'; #'fnt
+my $rcsid = '$Id: form,v 6.1 2003/08/25 06:01:07 mradwin Exp mradwin $'; #'fnt
 
-$listing_upd_title = 'Modify Your Directory Listing';
-$listing_add_title = 'Join the Directory';
-$listing_sub_title = 'Review and Confirm Your Listing';
+my $listing_upd_title = 'Modify Your Directory Listing';
+my $listing_add_title = 'Join the Directory';
+my $listing_sub_title = 'Review and Confirm Your Listing';
 
 die "$dbmfile: $!\n" unless -r $dbmfile;
 
-@form_required = ('id', 'gn', 'sn', 'yr', 'e');
+my @form_required = ('id', 'gn', 'sn', 'yr', 'e');
 
-CGI::ReadParse();
-%cgi = %in;
+my %cgi;
+my($q) = new CGI;
+foreach my $key ($q->param())
+{
+    my($val) = $q->param($key);
+    $val = '' unless defined $val;
+    $cgi{$key} = $val;
+}
+
 if (! keys %cgi)
 {
     send_upd_real(\%aid_util::blank_entry,'');
@@ -69,7 +77,7 @@ if (defined($cgi{'version'})) {
 }
 elsif (defined($cgi{'update'}) || defined($cgi{'upd'}))
 {
-    $key = defined($cgi{'update'}) ? $cgi{'update'} : $cgi{'upd'};
+    my $key = defined($cgi{'update'}) ? $cgi{'update'} : $cgi{'upd'};
 
     if ($key =~ /^\d+$/)
     {
@@ -101,7 +109,7 @@ elsif (defined($cgi{'update'}) || defined($cgi{'upd'}))
 
 	if (defined $DB{$key})
 	{
-	    $id = unpack("n",$DB{$key});
+	    my $id = unpack("n",$DB{$key});
 	    if ($id > 0)
 	    {
 		my %updateme = aid_util::db_unpack_rec($id,$DB{$id});
@@ -139,7 +147,7 @@ foreach (@form_required) {
 
 
 # okay, we've got the right form.  clean up the input.
-foreach $key (keys(%cgi)) {
+foreach my $key (keys(%cgi)) {
     $cgi{$key} =~ s/^\s*//;  # get rid of leading and trailing whitespace
     $cgi{$key} =~ s/\s*$//;
 
@@ -149,7 +157,7 @@ foreach $key (keys(%cgi)) {
     $cgi{$key} = '' if $cgi{$key} =~ m|^\(blank\)$|i;
 }
 
-foreach $key (keys(%cgi)) {
+foreach my $key (keys(%cgi)) {
     next if $key eq 'n';
     $cgi{$key} =~ s/;/,/g;   # can't handle ; because it's field delim
 }
@@ -162,9 +170,9 @@ $cgi{'yr'} = '0' . $cgi{'yr'} if $cgi{'yr'} =~ /^\d$/;
 # find the right century for a 2-digit year
 if ($cgi{'yr'} =~ /^\d\d$/) {
     # localtime() returns number of years since 1900
-    $this_year = (localtime(time))[5] + 1900;
+    my $this_year = (localtime(time))[5] + 1900;
 
-    $fourdigit = substr($this_year,0,2) . $cgi{'yr'};
+    my $fourdigit = substr($this_year,0,2) . $cgi{'yr'};
     $fourdigit = ((substr($this_year,0,2) - 1) . $cgi{'yr'})
 	if ($fourdigit > $this_year + 4);
 
@@ -204,7 +212,7 @@ $cgi{'mn'} = '' if defined $cgi{'mn'} &&
      $cgi{'mn'} eq $cgi{'sn'});
 
 # did they have non-empty entries for all the required fields?
-$empty_fields = '';
+my $empty_fields = '';
 foreach (@form_required) 
 {
     $empty_fields .= $_ . "\t"
@@ -212,20 +220,20 @@ foreach (@form_required)
 }
 
 # lowercase the hostname portion of the email address
-$mangled_e = $cgi{'e'};
+my $mangled_e = $cgi{'e'};
 $mangled_e =~ s/\s//g;
-if (&is_email_okay($mangled_e))
+if (is_email_okay($mangled_e))
 {
-    ($mail_user,$mail_addr) = split(/\@/, $mangled_e);
+    my($mail_user,$mail_addr) = split(/\@/, $mangled_e);
 	
     # test for initial-cap, rest lower user
-    $lower_user = "\L$mail_user\E";
+    my $lower_user = lc($mail_user);
     $mail_user = $lower_user if $mail_user eq "\u$lower_user";
 
     # test for all-caps user
-    $mail_user = $lower_user if $mail_user eq "\U$mail_user\E";
+    $mail_user = $lower_user if $mail_user eq uc($mail_user);
 
-    $cgi{'e'} = $mail_user . '@' . "\L$mail_addr\E";
+    $cgi{'e'} = $mail_user . '@' . lc($mail_addr);
 }
 elsif ($empty_fields !~ /\be\b/)
 {
@@ -271,7 +279,7 @@ sub confirm_submission
     print "/$cgi{'id'}" if $cgi{'id'} != -1;
     print "/new" if $cgi{'id'} == -1;
     print "\">\n";
-    %newrec = aid_util::html_entify_rec(\%cgi);
+    my %newrec = aid_util::html_entify_rec(\%cgi);
     foreach (keys %newrec) {
 	print "<input type=\"hidden\" name=\"$_\"";
 	print "\n" if $_ eq 'n';
@@ -363,7 +371,7 @@ sub queue_submission {
 
 	untie(%DBW);
 
-	$fullname = aid_util::inorder_fullname(\%cgi);
+	my $fullname = aid_util::inorder_fullname(\%cgi);
 
 	print "Content-Type: text/html\015\012\015\012";
 	print aid_util::common_html_hdr(20,'Submission Queued',1);
@@ -585,11 +593,3 @@ sub encode_key
 
     $retval;
 }
-
-# avoid stupid warnings
-if ($^W && 0)
-{
-    %in = ();
-}
-
-1;

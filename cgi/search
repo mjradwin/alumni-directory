@@ -4,7 +4,7 @@
 #     FILE: search.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: Alumni Internet Directory CGI search
-#      $Id: search,v 5.23 2003/05/15 00:20:18 mradwin Exp mradwin $
+#      $Id: search,v 6.1 2003/08/25 06:01:35 mradwin Exp mradwin $
 #
 #   Copyright (c) 2003  Michael J. Radwin
 #
@@ -28,18 +28,27 @@ use lib $FindBin::Bin;
 use lib "/pub/m/r/mradwin/private/lib/perl5/site_perl";
 
 use DB_File::Lock;
-use CGI;
+use CGI qw(-no_xhtml);
 use CGI::Carp qw(fatalsToBrowser);
 use aid_util;
+use strict;
 
-$dbmfile = aid_util::config('dbmfile');
+my $dbmfile = aid_util::config('dbmfile');
 die "$dbmfile: $!\n" unless -r $dbmfile;
 
 my(%DB);
 tie(%DB, 'DB_File::Lock', $dbmfile, O_RDONLY, 0444, $DB_HASH, 'read')
     or die "$dbmfile: $!\n";
 
-CGI::ReadParse();
+my %in;
+my($q) = new CGI;
+foreach my $key ($q->param())
+{
+    my($val) = $q->param($key);
+    $val = '' unless defined $val;
+    $in{$key} = $val;
+}
+
 if (!defined($in{'q'}) || $in{'q'} =~ /^[^\w]*$/)
 {
     print "Content-Type: text/html\015\012\015\012";
@@ -55,23 +64,23 @@ if (!defined($in{'q'}) || $in{'q'} =~ /^[^\w]*$/)
 }
 
 defined $DB{'_alpha'} || die "$dbmfile: missing _alpha\n";
-@alpha_ids = unpack("n*",$DB{'_alpha'});
+my @alpha_ids = unpack("n*",$DB{'_alpha'});
 
-$query_save = $in{'q'};
+my $query_save = $in{'q'};
 $query_save =~ s/^\s*//;
 $query_save =~ s/\s*$//;
-$query = $query_save;
+my $query = $query_save;
 $query =~ s/[^\w]/ /g; #'#
 $query =~ s/\band\b//ig;
 $query =~ s/\bor\b//ig;
-@search_terms = split(/\s+/, $query);
+my @search_terms = split(/\s+/, $query);
 
-%results = ();
+my %results;
 foreach (@alpha_ids)
 {
     my %rec = aid_util::db_unpack_rec($_,$DB{$_});
-    $fullname = aid_util::inorder_fullname(\%rec);
-    $key = "\L$rec{'sn'}\0$rec{'gn'}\0$rec{'mi'}\0$rec{'mn'}\0$rec{'yr'}\E\0$rec{'id'}";
+    my $fullname = aid_util::inorder_fullname(\%rec);
+    my $key = "\L$rec{'sn'}\0$rec{'gn'}\0$rec{'mi'}\0$rec{'mn'}\0$rec{'yr'}\E\0$rec{'id'}";
 
     if (defined $in{'y'} && $in{'y'} ne '')
     {
@@ -80,7 +89,7 @@ foreach (@alpha_ids)
     }
 
     $results{$key} = 1;
-    foreach $term (@search_terms)
+    foreach my $term (@search_terms)
     {
 	if ($fullname !~ /$term/i)
 	{
@@ -93,7 +102,7 @@ undef @alpha_ids;
 
 print "Content-Type: text/html\015\012\015\012";
 
-@results = sort keys %results;
+my @results = sort keys %results;
 undef %results;
 
 $query_save = aid_util::html_entify_str($query_save);
@@ -146,10 +155,10 @@ else
     print "\n<ul>\n";
     foreach (@results)
     {
-	($ign,$ign,$ign,$ign,$ign,$id) = split(/\0/);
+	my(undef,undef,undef,undef,undef,$id) = split(/\0/);
 	my %rec = aid_util::db_unpack_rec($id,$DB{$id});
-	$fullname = aid_util::inorder_fullname(\%rec);
-	($affil,$ign) = aid_util::affiliate(\%rec,0);
+	my $fullname = aid_util::inorder_fullname(\%rec);
+	my($affil,undef) = aid_util::affiliate(\%rec,0);
 	
 	print "<li>";
 	if (!$rec{'v'} || $in{'upd'})
