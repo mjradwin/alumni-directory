@@ -4,7 +4,7 @@
 #     FILE: msg.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: Alumni Internet Directory update redirector
-#      $Id: msg,v 6.9 2003/09/12 17:41:29 mradwin Exp mradwin $
+#      $Id: msg,v 6.10 2003/09/12 17:43:30 mradwin Exp mradwin $
 #
 #   Copyright (c) 2003  Michael John Radwin
 #
@@ -200,13 +200,6 @@ _EOHTML_
 	exit(0);
     }
 
-    if (defined $LIMIT{$key}) {
-	$LIMIT{$key}++;
-    } else {
-	$LIMIT{$key} = 1;
-    }
-    untie(%LIMIT);
-
     my $name = email_name(\%rec);
     my $school = aid_util::config('short_school');
 
@@ -230,7 +223,9 @@ Please report abuse to " . aid_util::config('admin_email') . "\n";
 	 $rec{'e'});
     }
 
-    aid_util::cgi_die('ERROR: Unable to send e-mail',
+    if ($status == 0) {
+	untie(%LIMIT);
+        aid_util::cgi_die('ERROR: Unable to send e-mail',
 		 "We're sorry, we were unable to send e-mail to\n" .
 		 "<b>" . aid_util::protect_email($rec{'e'}) . "</b>.\n" .
 		 "<p>This may be a problem with our\n" .
@@ -238,8 +233,15 @@ Please report abuse to " . aid_util::config('admin_email') . "\n";
 		 "Please try again in a few minutes.<p>If you continue\n" .
 		 "to get this error, please send e-mail to <a\n" .
 		 "href=\"mailto:" . aid_util::config('admin_email') .
-		 "\">" . aid_util::config('admin_email') . "</a>\n")
-	if $status == 0;
+		 "\">" . aid_util::config('admin_email') . "</a>\n");
+    }
+
+    if (defined $LIMIT{$key}) {
+	$LIMIT{$key}++;
+    } else {
+	$LIMIT{$key} = 1;
+    }
+    untie(%LIMIT);
 
     print "Content-Type: text/html\015\012\015\012";
     print aid_util::common_html_hdr(9, 'Message Sent', 1);
