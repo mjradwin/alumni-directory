@@ -21,7 +21,6 @@ exit(0);
 
 sub readspool {
     local($spoolFile) = @_;
-    local($newsdir) = &mv_config('wwwdir') . "news/raw";
     local($[) = 0;
     local($_);
     local($id,$newsFile,*NEWSOUT,*SPOOL);
@@ -40,7 +39,7 @@ sub readspool {
 	while(<SPOOL>) {
 	    last if /^The kind soul who submitted it/;
 	    if (/^_MVHSAID_BEGIN_MESSAGE_/) {
-		$newsFile = "${newsdir}/${id}.txt";
+		$newsFile = &mv_config('newsdir') . "${id}.txt";
 		open(NEWSOUT, ">$newsFile") ||
 		    die "Can't open $newsFile: $!\n";
 		print "MESSAGE $newsFile\n";
