@@ -2,7 +2,7 @@
 
 #
 # does the html version of just home pages
-# $Id: aid_home_html,v 3.18 1999/02/03 19:17:00 mradwin Exp mradwin $
+# $Id: aid_home_html,v 3.19 1999/02/05 18:49:28 mradwin Exp mradwin $
 #
 
 require 'aid_util.pl';
@@ -49,16 +49,13 @@ if ($opt_s) {
     print OUTFILE &submit_body(*blank_entry,'');
 
 } elsif ($opt_d) {
+    dbmopen(DB,&aid_config('wwwdir') . 'master',0444);
+    die "no __years__ key!\n" unless defined $DB{'__class__'};
 
-    @class_db = &aid_class_db(&aid_config('aiddir') . 'data/master.adr');
-    @years = ();
-    foreach (@class_db)
-    {
-	next unless defined $_ && $_ ne '';
-	%rec = &aid_split($_);
-	next unless $rec{'valid'};
-	&aid_build_yearlist(*years,$rec{'year'});
-    }
+    @years = unpack("n*",$DB{'__years__'});
+    push(@years, 'other');
+    dbmclose(DB);
+
     print OUTFILE "<p>Before downloading nickname and address book files
 for your e-mail program, please read the
 <a href=\"", &aid_config('master_path'), "etc/copyright.html\">Acceptable
