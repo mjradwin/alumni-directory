@@ -2,11 +2,11 @@
 #     FILE: aid_util.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: perl library routines for the Alumni Internet Directory
-#      $Id: aid_util.pl,v 3.74 1998/11/05 17:24:45 mradwin Exp mradwin $
+#      $Id: aid_util.pl,v 3.75 1998/11/09 02:39:32 mradwin Exp mradwin $
 #
 
 $aid_util'rcsid =
- '$Id: aid_util.pl,v 3.74 1998/11/05 17:24:45 mradwin Exp mradwin $';
+ '$Id: aid_util.pl,v 3.75 1998/11/09 02:39:32 mradwin Exp mradwin $';
 
 # ----------------------------------------------------------------------
 # CONFIGURATION
@@ -311,7 +311,7 @@ sub affiliate {
     if ($rec{'year'} =~ /^\d+$/) {
 	$affil .= "<a href=\"" . &main'aid_about_path(*rec,1) . "\">" #'#
 	    if $do_html_p;
-	$year = $rec{'year'} % 100;
+	$year = sprintf("%02d", $rec{'year'} % 100);
 	if ($rec{'school'} eq 'Awalt') {
 	    $affil  .= "A'$year";
 	    $len    += length("A'$year");
@@ -921,11 +921,12 @@ sub about_text {
     } else {
 	$retval .= "Affiliation        : ";
     }
-    $retval .= "<strong>" .
-	"<a href=\"" . &main'aid_about_path(*rec) . "\">" #'#
+    $retval .= "<strong>" if $do_html_p;
+    $retval .= "<a href=\"" . &main'aid_about_path(*rec) . "\">" #'#
 	    if $do_html_p && !$show_req_p;
     $retval .= $rec{'year'};
     $retval .= "</a></strong>" if $do_html_p && !$show_req_p;
+    $retval .= "</strong>" if $do_html_p;
     $retval .= "\n";
 
     $retval .= "\n";
