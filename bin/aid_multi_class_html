@@ -2,7 +2,7 @@
 
 #
 # does the html multi_class pages
-# $Id: aid_multi_class_html,v 5.22 2001/05/15 05:35:30 mradwin Exp mradwin $
+# $Id: aid_multi_class_html,v 5.23 2001/09/16 16:57:51 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -191,6 +191,32 @@ foreach $year (@years)
 	}
 	print FMTOUT "</ul>\n<hr noshade=\"noshade\" size=\"1\">\n\n";
     }
+
+    my @recent;
+    foreach $id (@ids)
+    {
+	%rec = &aid_db_unpack_rec($id,$DB{$id});
+	next unless $rec{'v'};
+
+	if (&aid_is_new($rec{'u'}))
+	{
+	    push(@recent, $id);
+	}
+    }
+    if (@recent)
+    {
+	print FMTOUT "<h3>New and Updated</h3>\n<ul>\n";
+	foreach $id (@recent)
+	{
+	    %rec = &aid_db_unpack_rec($id,$DB{$id});
+	    print FMTOUT "<li><a href=\"#id-$id\">", 
+	    	&aid_inorder_fullname(*rec), "</a> (",
+	    	&aid_is_new_html(*rec), " ",
+	    	&aid_caldate($rec{'u'}), ")\n";
+	}
+	print FMTOUT "</ul>\n<hr noshade=\"noshade\" size=\"1\">\n\n";
+    }
+
 
     foreach $id (@ids)
     {
