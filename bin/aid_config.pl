@@ -2,7 +2,7 @@
 #     FILE: aid_config.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: configuration variables for Alumni Internet Directory
-#      $Id: aid_config.pl,v 5.17 2000/12/07 22:23:45 mradwin Exp mradwin $
+#      $Id: aid_config.pl,v 5.18 2000/12/29 16:32:54 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -65,7 +65,6 @@ $aid_util::pics_label =
 "\"http://www.rsac.org/ratingsv01.html\" l gen true " . 
 "on \"1998.03.10T11:49-0800\" r (n 0 s 0 v 0 l 0))'>"; #"#
 
-$aid_util::noindex = "<meta name=\"robots\" content=\"noindex,nofollow\">";
 %aid_util::aid_aliases = ();   # global alias hash repository 
 
 $aid_util::EPOCH       = 815130000; # Tue Oct 31 09:00:00 GMT 1995
@@ -182,7 +181,6 @@ if ($^W && 0)
     $aid_util::pack_len = ''; # line 227.
     $aid_util::pack_format = ''; # line 226.
     $aid_util::aid_aliases = ''; # line 174.
-    $aid_util::noindex = ''; # line 173.
     @aid_util::req_descr = (); # line 130.
     @aid_edit_field_names = ();
     $aid_util::EPOCH       = '';
