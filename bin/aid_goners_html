@@ -1,9 +1,6 @@
 #!/usr/local/bin/perl
 
-# does the html version of the recent address list
-#
-
-
+# does the html version of the invalid address list
 
 require 'mv_util.pl';
 require 'tableheader.pl';
@@ -34,7 +31,13 @@ while(<MVHS>) {
     $fullname = &fullname($first,$last,$married);
     $affil = &affiliate($year,$school);
 
+    print FMTOUT "<a href=\"", &mv_config('cgi_path'), "?";
+    print FMTOUT "id=$id&request=$req&first=$first&last=$last&";
+    print FMTOUT "married=$married&school=$school&grad=$year&";
+    print FMTOUT "mail=$email&homepage=$homepage&location=$location&";
+    print FMTOUT "revise\">";
     print FMTOUT $fullname;
+    print FMTOUT "</a>";
     print FMTOUT $affil;
     print FMTOUT ' ', ' ' x (41 - (length($fullname) + length($affil)));
     print FMTOUT $email;
