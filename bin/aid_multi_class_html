@@ -2,7 +2,7 @@
 
 #
 # does the html multi_class pages
-# $Id: aid_multi_class_html,v 5.25 2002/01/07 01:52:02 mradwin Exp mradwin $
+# $Id: aid_multi_class_html,v 5.26 2002/03/07 23:29:39 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -226,7 +226,7 @@ foreach $year (@years)
 	print FMTOUT &aid_verbose_entry(*rec);
     }
 
-    print FMTOUT "<hr noshade=\"noshade\" size=\"1\">
+#    print FMTOUT "<hr noshade=\"noshade\" size=\"1\">
 
 <center>
 <form method=\"post\" action=\"http://minder.netmind.com/mindit.shtml\">

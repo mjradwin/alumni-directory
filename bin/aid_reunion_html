@@ -3,7 +3,7 @@
 #
 # generates reunion info page
 #
-# $Id: aid_reunion_html,v 1.12 2001/09/16 16:57:51 mradwin Exp mradwin $
+# $Id: aid_reunion_html,v 1.13 2002/03/07 23:29:39 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -102,7 +102,7 @@ print FMTOUT "<h2>Upcoming reunions</h2>\n";
 print FMTOUT "<h2>Past reunions</h2>\n";
 &aid_write_reunion_hash(*FMTOUT, \%past);
 
-print FMTOUT "<hr noshade=\"noshade\" size=\"1\">
+#print FMTOUT "<hr noshade=\"noshade\" size=\"1\">
 <center>
 <form method=\"post\" action=\"http://minder.netmind.com/mindit.shtml\">
 <input type=\"submit\"
