@@ -5,11 +5,8 @@
 
 @INC=('/u/mjr/doc/mvhs', '/usr/local/lib/perl');
 require 'mv_util.pl';
-require 'ctime.pl';
 
-$now = time;
-$today = &ctime(time);
-chop $today;
+$today = localtime;
 
 die "Usage: mv_goners_html infile.adr outfile.html\n" if !$ARGV[0] || !$ARGV[1];
 open(MVHS,$ARGV[0]) || die "Can't open $ARGV[0]: $!\n";

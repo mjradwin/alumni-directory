@@ -6,7 +6,6 @@
 @INC=('/u/mjr/doc/mvhs', '/usr/local/lib/perl');
 require 'mv_util.pl';
 require 'getopts.pl';
-require 'ctime.pl';
 
 $usage = 'usage: mv_home_html [-h] -i|-s
     -h        Display usage information.

@@ -5,12 +5,10 @@
 
 @INC=('/u/mjr/doc/mvhs', '/usr/local/lib/perl');
 require 'mv_util.pl';
-require 'ctime.pl';
 require 'getopts.pl';
 
 $htmlname = "all.html";
-$today = &ctime(time);
-chop $today;
+$today = localtime;
 
 $usage = 'usage: mv_alpha_html [-t] infile.adr outfile
     -h        Display usage information.
