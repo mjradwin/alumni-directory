@@ -1,6 +1,6 @@
 #!/usr/bin/perl -w
 
-# $Id: aid_bounce,v 5.1 1999/05/31 21:20:48 mradwin Exp mradwin $
+# $Id: aid_bounce,v 5.2 1999/06/01 05:42:12 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -27,7 +27,7 @@ require 'getopts.pl';
 require 'aid_util.pl';
 
 $0 =~ s,.*/,,;  # basename
-$usage = "usage: $0 [-hv] [-f <log>] [ids...]
+$usage = "usage: $0 [-hvud] [-f <log>] inoutfile.db [ids...]
     -h        Display usage information.
     -v        Invalidate ids (clear valid bit).
     -u        Revalidate ids (zero bounce field and set valid bit).
@@ -36,28 +36,31 @@ $usage = "usage: $0 [-hv] [-f <log>] [ids...]
               unless an entry has non-zero bounce or freshness is
               later than time in <log> file.
 
-Bumps up the bounce field for every id or e-mail address listed on the
-command line.
-";
+Unless -d or -f is specified, sets the bounce/updated field for every id
+or e-mail address listed on the command line.  The valid bit is untouched
+unless -v or -u is specified.";
 
 &Getopts('hvf:du') || die "$usage\n";
 $opt_h && die "$usage\n";
 $opt_h = $opt_h;                # avoid warning
 
-die "$usage\n" unless $opt_d || $opt_f || @ARGV;
-die "$usage\n" if $opt_v && $opt_u;
-die "$usage\n" if $opt_f && ($opt_d || $opt_u || $opt_v);
+die "$0: Too many mutually-exclusive options\n$usage\n"
+    if (($opt_d ? 1 : 0) + ($opt_f ? 1 : 0) +
+	($opt_v ? 1 : 0) + ($opt_u ? 1 : 0)) > 1;
+die "$0: No database file specified\n$usage\n" unless $ARGV[0];
+die "$0: No target ids specified\n$usage\n"
+    unless ($opt_d || $opt_f || $ARGV[1]);
 
-$cp   = &aid_config('cp');
--x $cp   || die "error: $cp is not executable!";
-
-$dbmfile = &aid_config('aiddir') . "data/working.db";
+$dbmfile = shift;
 $dbmfile =~ s/\.db$//;
 
 if ($opt_d)
 {
     die "can't open ${dbmfile}.db for reading\n"
 	unless -r "${dbmfile}.db";
+
+    $mode = (stat("${dbmfile}.db"))[2];
+    chmod 0444, "${dbmfile}.db";
     dbmopen(%DB,$dbmfile,0444);
 
     while (($key,$val) = each %DB)
@@ -75,6 +78,7 @@ if ($opt_d)
     }
 
     dbmclose(%DB);
+    chmod $mode, "${dbmfile}.db";
     exit(0);
 }
 elsif ($opt_f)
@@ -94,13 +98,12 @@ else
 	unless -r "${dbmfile}.db" && -w "${dbmfile}.db";
     dbmopen(%DB,$dbmfile,0644);
 
-    &bounce_argv();
+    &bounce_args(@ARGV);
     &aid_rebuild_secondary_keys(*DB,0);
 
     dbmclose(%DB);
 }
 
-dbmclose(%DB);
 exit(0);
 
 # returns array[id] = time
@@ -149,11 +152,12 @@ sub freshen
 
 # if the user has never bounced, set firstbounce to time.
 # if the user has bounced, set freshness to time
-sub bounce_argv
+sub bounce_args
 {
+    local(@args) = @_;
     local($time) = time;
 
-    for (@ARGV) {
+    for (@args) {
 	if (/^\d+$/) {
 	    if (defined $DB{$_}) {
 		%rec = &aid_db_unpack_rec($_,$DB{$_});

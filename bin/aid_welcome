@@ -2,7 +2,7 @@
 
 #
 # mails a welcome, update, confirm, or massmail message to members
-# $Id: aid_welcome,v 5.2 1999/05/31 21:52:48 mradwin Exp mradwin $
+# $Id: aid_welcome,v 5.4 1999/05/31 22:59:31 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -164,6 +164,8 @@ $dbmfile = shift;
 $dbmfile =~ s/\.db$//;
 die "can't open ${dbmfile}.db\n" unless -r "${dbmfile}.db";
 
+$mode = (stat("${dbmfile}.db"))[2];
+chmod 0444, "${dbmfile}.db";
 dbmopen(%DB,$dbmfile,0444);
 die "invalid DB: ${dbmfile}.db\n" unless defined $DB{'_class'};
 
@@ -220,6 +222,7 @@ else
 
 close(LOG);
 dbmclose(%DB);
+chmod $mode, "${dbmfile}.db";
 exit(0);
 
 
