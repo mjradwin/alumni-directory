@@ -1,6 +1,6 @@
 #!/usr/bin/perl -w
 
-# $Id: aid_edit_entry,v 1.1 1999/03/26 23:38:39 mradwin Exp mradwin $
+# $Id: aid_edit_entry,v 1.2 1999/04/05 16:26:17 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -23,7 +23,7 @@ require 'aid_util.pl';
 require 'getopts.pl';
 
 $0 =~ s,.*/,,;  # basename
-$usage = "usage: $0 [-h] infile.db userid key1=value1 [key2=value2 ...]
+$usage = "usage: $0 [-h] infile.db userid
     -h        Display usage information.
 ";
 
@@ -32,14 +32,13 @@ $opt_h && die "$usage\n";
 $opt_h = $opt_h;		# avoid warning
 $ARGV[0] || die "$usage\n";
 $ARGV[1] || die "$usage\n";
-$ARGV[2] || die "$usage\n";
 
 $dbmfile = shift;
 $dbmfile =~ s/\.db$//;
 die "$0: ${dbmfile}.db: $!\n" unless -r "${dbmfile}.db";
-die "$0: ${dbmfile}.db: $!\n" unless -w "${dbmfile}.db";
 
-dbmopen(%DB,$dbmfile,0644) || die "$0: ${dbmfile}.db: $!\n";
+$mode = (-w "${dbmfile}.db") ? 0644 : 0444;
+dbmopen(%DB,$dbmfile,$mode) || die "$0: ${dbmfile}.db: $!\n";
 
 $id = shift;
 if ($id =~ /^\d+$/)
@@ -57,30 +56,72 @@ else
     %rec = &aid_db_unpack_rec($id,$DB{$id});
 }
 
-foreach (@ARGV)
+$note_beg_str = &aid_config('note_beg_str');
+$note_end_str = &aid_config('note_end_str');
+$tmpfile = '/tmp/aid_edit_entry.' . $$;
+
+open(TMPFILE,">$tmpfile") || die "$tmpfile: $!\n";
+print TMPFILE '# $Id$', "\n";
+foreach (@aid_edit_field_names)
 {
-    next unless /^[^=]+=/;
-    ($key,$val) = split(/=/);
-    $rec{"\L$key\E"} = $val;
+    print TMPFILE $_, '=', $rec{$_}, "\n";
+}
+print TMPFILE $note_beg_str, "\n", $rec{'n'}, $note_end_str, "\n";
+close(TMPFILE);
+
+$editor = (defined $ENV{'VISUAL'} ? $ENV{'VISUAL'} : 
+	   (defined $ENV{'EDITOR'} ? $ENV{'EDITOR'} : 'vi'));
+system "$editor $tmpfile" || die "$0: $editor: $!\n";
+
+%newrec = ();
+open(TMPFILE,$tmpfile) || die "$tmpfile: $!\n";
+unlink($tmpfile);
+$note = '';
+while(<TMPFILE>)
+{
+    if (/^$note_beg_str/o)
+    {
+	while(<TMPFILE>)
+	{
+	    last if /^$note_end_str/o;
+	    $note .= $_;
+	}
+    }
+    else
+    {
+	chop;
+	next if /^#/;
+	next if /^\s*$/;
+	warn "$0: $tmpfile: bad line $_\n" unless /^.+=.*$/;
+	($key,$val) = split(/=/, $_, 2);
+	$newrec{$key} = $val;
+    }
+}
+close(TMPFILE);
+
+# note is a special case
+$newrec{'n'} = ($note !~ /^\s*$/) ? $note : '';
+
+# assign the old value unless it was explicit in the edit
+while(($key,$val) = each(%rec))
+{
+    $newrec{$key} = $rec{$key} unless defined $newrec{$key};
 }
 
-$DB{$id} = &aid_db_pack_rec(*rec);
+if ($mode == 0444)
+{
+    print STDERR "$0: can't save changes (${dbmfile}.db not writable)\n";
+}
+else
+{
+    $DB{$id} = &aid_db_pack_rec(*newrec);
+    print STDERR "$0: update successful\n";
+}
+
 dbmclose(%DB);
-
-&display_entry(*rec);
-
 exit 0;
 
-sub display_entry
+if ($^W && 0)
 {
-    local(*rec) = @_;
-
-    foreach (@aid_util'field_names) #')
-    {
-	print $_, '=', $rec{$_}, "\n";
-    }
-    print 'a=', $rec{'a'}, "\n";
-#   print 'n=', $rec{'n'}, "\n";
-
-    1;
+    @aid_edit_field_names = ();
 }
