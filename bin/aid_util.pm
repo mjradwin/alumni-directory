@@ -2,7 +2,7 @@
 #     FILE: mv_util.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: perl library routines for the MVHS Alumni Internet Directory
-#      $Id: tableheader.pl,v 1.1 1996/11/23 17:47:15 mjr Exp $
+#      $Id: mv_util.pl,v 1.11 1997/01/20 18:19:24 mjr Exp mjr $
 #
 
 CONFIG: {
@@ -21,10 +21,10 @@ CONFIG: {
 #     %config = ('admin_email', "mjr\@acm.org",
 # 	       'admin_url',   "http://umop-ap.com/~mjr/",
 # 	       'master_url',  "http://umop-ap.com/~mjr/mvhs/",
-# 	       'cgi_url',     "http://umop-ap.com/~mjr/mvhs/cgi-bin/mvhsaid",
+# 	       'cgi_url',     "http://umop-ap.com/cgi-bin/cgiwrap/mjr/mvhsaid",
 # 	       'wwwdir',      "/home/divcom/mjr/public_html/mvhs/",
 # 	       'mvhsdir',     "/home/divcom/mjr/mvhs/",
-#	       'cgi_path',    "/~mjr/mvhs/cgi-bin/mvhsaid");
+#	       'cgi_path',    "/cgi-bin/cgiwrap/mjr/mvhsaid");
 
     @page_idx = ('Home,./',
 		 'Alphabetically,all.html',
