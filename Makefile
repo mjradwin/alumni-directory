@@ -2,15 +2,17 @@
 #     FILE: Makefile
 #   AUTHOR: Michael J. Radwin
 #    DESCR: Makefile for building the MVHS Alumni Internet Directory
-#      $Id: Makefile,v 1.19 1997/04/04 01:05:08 mjr Exp mjr $
+#      $Id: Makefile,v 1.20 1997/07/02 17:12:50 mjr Exp mjr $
 #
 
 WWWDIR=/home/divcom/mjr/public_html/mvhs
 CGIDIR=/home/divcom/mjr/public_html/cgi-bin
 BINDIR=/home/divcom/mjr/bin
 
+RM=/bin/rm -f
+
 TARFILES=Makefile mvhs.adr goners.adr mv_* tableheader.pl \
-	-C $(BINDIR) web_add \
+	-C $(BINDIR) web_add mv_make \
 	-C $(CGIDIR) mvhsaid cgi-lib.pl \
 	-C $(WWWDIR) .home.include .submit.hdr .submit.ftr
 
@@ -20,61 +22,61 @@ chmod:
 	( cd $(WWWDIR) ; chmod -R a+rX * )
 
 adrfile:	$(WWWDIR)/mvhs.adr
-$(WWWDIR)/mvhs.adr:	mvhs.adr
-	cp mvhs.adr $(WWWDIR)
+$(WWWDIR)/mvhs.adr:	data/mvhs.adr
+	cp data/mvhs.adr $(WWWDIR)
 
-mvhs.txt:	alpha.adr mv_alpha_html
-	./mv_alpha_html -t alpha.adr mvhs.txt
+mvhs.txt:	data/alpha.adr bin/mv_alpha_html
+	bin/mv_alpha_html -t data/alpha.adr mvhs.txt
 
-class.txt:	class.adr mv_class_html
-	./mv_class_html -t class.adr class.txt
+class.txt:	data/class.adr bin/mv_class_html
+	bin/mv_class_html -t data/class.adr class.txt
 
 alpha:	$(WWWDIR)/all.html
-$(WWWDIR)/all.html:	alpha.adr mv_alpha_html
-	./mv_alpha_html alpha.adr $(WWWDIR)/all.html
+$(WWWDIR)/all.html:	data/alpha.adr bin/mv_alpha_html
+	bin/mv_alpha_html data/alpha.adr $(WWWDIR)/all.html
 
 class:	$(WWWDIR)/class.html
-$(WWWDIR)/class.html:	class.adr mv_class_html
-	./mv_class_html class.adr $(WWWDIR)/class.html
+$(WWWDIR)/class.html:	data/class.adr bin/mv_class_html
+	bin/mv_class_html data/class.adr $(WWWDIR)/class.html
 
 new:	$(WWWDIR)/recent.html
-$(WWWDIR)/recent.html:	alpha.adr mv_new_html
-	./mv_new_html alpha.adr $(WWWDIR)/recent.html
+$(WWWDIR)/recent.html:	data/alpha.adr bin/mv_new_html
+	bin/mv_new_html data/alpha.adr $(WWWDIR)/recent.html
 
 goners:	$(WWWDIR)/invalid.html
-$(WWWDIR)/invalid.html:	gsort.adr mv_goners_html
-	./mv_goners_html gsort.adr $(WWWDIR)/invalid.html
+$(WWWDIR)/invalid.html:	data/gsort.adr bin/mv_goners_html
+	bin/mv_goners_html data/gsort.adr $(WWWDIR)/invalid.html
 
 pages:	$(WWWDIR)/pages.html
-$(WWWDIR)/pages.html:	alpha.adr mv_www_html
-	./mv_www_html alpha.adr $(WWWDIR)/pages.html
+$(WWWDIR)/pages.html:	data/alpha.adr bin/mv_www_html
+	bin/mv_www_html data/alpha.adr $(WWWDIR)/pages.html
 
 home:	$(WWWDIR)/index.html
-$(WWWDIR)/index.html:	$(WWWDIR)/.home.include mv_home_html
-	./mv_home_html -i
+$(WWWDIR)/index.html:	$(WWWDIR)/.home.include bin/mv_home_html
+	bin/mv_home_html -i
 
 submit:	$(WWWDIR)/add.html
-$(WWWDIR)/add.html:	mv_home_html mv_util.pl
-	./mv_home_html -s
+$(WWWDIR)/add.html:	bin/mv_home_html mv_util.pl
+	bin/mv_home_html -s
 
-books:	alpha.adr mv_book
-	./mv_book -p alpha.adr $(WWWDIR)/pine.txt
-	./mv_book -e alpha.adr $(WWWDIR)/elm.txt
-	./mv_book -b alpha.adr $(WWWDIR)/berkeley.txt
-	./mv_book -w alpha.adr $(WWWDIR)/eudora.txt
-	./mv_book -m alpha.adr $(WWWDIR)/eudorapro.txt
-	./mv_book -n alpha.adr $(WWWDIR)/address-book.html
-	./mv_book -v alpha.adr $(WWWDIR)/mvhs.vcf
+books:	data/alpha.adr bin/mv_book
+	bin/mv_book -p data/alpha.adr $(WWWDIR)/pine.txt
+	bin/mv_book -e data/alpha.adr $(WWWDIR)/elm.txt
+	bin/mv_book -b data/alpha.adr $(WWWDIR)/berkeley.txt
+	bin/mv_book -w data/alpha.adr $(WWWDIR)/eudora.txt
+	bin/mv_book -m data/alpha.adr $(WWWDIR)/eudorapro.txt
+	bin/mv_book -n data/alpha.adr $(WWWDIR)/address-book.html
+	bin/mv_book -v data/alpha.adr $(WWWDIR)/mvhs.vcf
 	touch books
 
-gsort.adr:	goners.adr
-	sort -t\; +3 -6 goners.adr > gsort.adr
+data/gsort.adr:	data/goners.adr
+	sort -t\; +3 -6 data/goners.adr > data/gsort.adr
 
-alpha.adr:	mvhs.adr
-	sort -t\; +3 -6 mvhs.adr > alpha.adr
+data/alpha.adr:	data/mvhs.adr
+	sort -t\; +3 -6 data/mvhs.adr > data/alpha.adr
 
-class.adr:	mvhs.adr
-	sort -t\; +7 -8 +3 -6 mvhs.adr > class.adr
+data/class.adr:	data/mvhs.adr
+	sort -t\; +7 -8 +3 -6 data/mvhs.adr > data/class.adr
 
 tar:
 	tar cf $(WWWDIR)/mvhs_db.tar $(TARFILES)
@@ -83,4 +85,5 @@ backup:
 	ci -l mv_* tableheader.pl Makefile
 
 clean:
-	$(RM) TAGS class.txt mvhs.txt class.adr alpha.adr
+	$(RM) TAGS class.txt mvhs.txt data/class.adr data/alpha.adr
+	$(RM) data/gsort.adr
