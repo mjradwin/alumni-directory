@@ -2,7 +2,7 @@
 #     FILE: aid_submit.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: submission form for Alumni Internet Directory
-#      $Id: aid_submit.pl,v 5.13 2000/08/29 04:20:38 mradwin Exp mradwin $
+#      $Id: aid_submit.pl,v 5.14 2000/12/07 22:10:52 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -108,12 +108,13 @@ Fields marked with a $star
 are required.  All other fields are optional.</p>
 ";
 
+    # special hack for MVHS
     $instr .= "<p><font color=\"red\">Are you an alumnus of Awalt High
 School?</font>
 Please add your listing  to the<br>
 <a href=\"/awalt/\">Awalt High School Alumni Internet Directory</a>
 instead.</p>
-" if $rec{'id'} == -1;
+" if $rec{'id'} == -1 && $config{'school'} eq 'Mountain View High School';
 
     $body .= "\n<form method=\"post\" action=\"" . $config{'submit_cgi'};
     $body .= "/$rec{'id'}" if $rec{'id'} != -1;
