@@ -1,0 +1,94 @@
+#!/usr/local/bin/perl
+
+#
+# mails everyone the nifty mvhs address list
+#
+@INC=('/u/mjr/doc/mvhs', '/usr/local/lib/perl');
+require 'ctime.pl';
+require 'mv_util.pl';
+$today = &ctime(time);
+chop $today;
+
+die "Usage: mv_welcome targets.adr\n" if !$ARGV[0];
+open(LOG,">>welcome.log") || die "Can't open welcome.log: $!\n";
+
+open(TARGET,$ARGV[0]) || die "Can't open $ARGV[0]: $!\n";
+while(<TARGET>) {
+    chop;
+    ($time,$id,$req,$last,$first,$school,$year,$email,$alias,$homepage) = &mv_parse($_);
+    next unless $email;
+#    next unless $req;
+    $homepage = '(none)' if $homepage eq '';
+
+    # this is our funky message
+    $denied = ($req) ? "" : "\nThis is the only email notice you will receive.\n";
+	
+    $message = &message_body($last, $first, $school, $year, $email, $homepage);
+
+    &sendmail($email, 'mjr@cs.brown.edu', 'Michael John Radwin',
+	      'Welcome to the MVHS Alumni Internet Directory', $message);
+    print LOG "$today $email\n";
+}
+
+exit(0);
+
+
+sub sendmail {
+    local($to,$return,$from,$subject,$body) = @_;
+    local(*F);
+    local($toline) = join(', ', split(/[ \t]+/, $to));
+    local($header) =
+"From: $return ($from)\
+Return-Path: $return\
+Subject: $subject\
+To: $toline\
+";
+
+    if (open(F, "|/usr/lib/sendmail $to")) {
+	print F $header;
+	print F $body;
+	close(F);
+
+    } else {
+	warn "cannot send mail\n";
+    }
+}
+
+sub message_body {
+    local($last, $first, $school, $year, $email) = @_;
+    
+    return "Dear $first,
+
+Your email address is listed in the Mountain View High School/Awalt High
+School Alumni Internet Directory.  The database (which produced this
+form letter) shows the following information about you:
+
+Name:           $last, $first
+Email Address:  $email
+High School:    $school
+Grad Year:      $year
+WWW page:       $homepage
+$denied
+If you feel as if you have received this email in error or do not want
+to be listed in the database, please let me know and I will remove your
+name from the database.  Or, if any of the above information is
+incorrect or out of date, I'll be happy to fix your entry.
+
+If everything you see above is correct, you're all set.  
+
+The complete database is visible from the World Wide Web at:
+http://www.cs.brown.edu/people/mjr/mvhs/
+
+Welcome!
+
+--
+Michael J. Radwin
+Mountain View High School, Class of '93
+
+Email     : mjr\@cs.brown.edu
+WWW       : http://www.cs.brown.edu/people/mjr/
+U.S. Mail : Brown University, P.O. Box 4505, Providence, RI, 02912-4505
+Phone     : 401-863-6418
+";
+
+}
