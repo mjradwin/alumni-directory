@@ -1,0 +1,120 @@
+#!/usr/bin/perl -w
+
+#
+# does a short list, either compact or verbose, sorted by graduating
+# class with a jump bar
+#
+# $Id: aid_shortlist_html,v 3.15 1998/10/15 22:51:57 mradwin Exp mradwin $
+#
+
+require 'aid_util.pl';
+require 'getopts.pl';
+
+$usage = 'usage: aid_shortlist_html [-htc] {-w,-m <mos>} infile.adr outfile
+    -h        Display usage information.
+    -t        Output text only.
+    -v        Output verbose HTML.
+
+    -w        Alumni with web pages only.
+    -m <mos>  Define "recent" to mean <mos> months (default 1).
+
+Either -w or -s must be supplied.  They are mutuallly exclusive.
+';
+
+&Getopts('htvwm:') || die "$usage\n";
+$opt_h && die "$usage\n";
+$opt_h = $opt_h;		# avoid warning
+$opt_v = $opt_v;		# avoid warning
+
+die "$usage\n" unless $ARGV[0];
+die "$usage\n" unless $ARGV[1];
+die "$usage\n" unless ($opt_m || $opt_w);
+die "$usage\n" if     ($opt_m && $opt_w);
+
+$info_gif = &aid_image_tag('info');
+$blank_gif = $opt_t ? '' : &aid_image_tag('blank');
+
+open(DATA,$ARGV[0]) || die "Can't open $ARGV[0]: $!\n";
+open(FMTOUT,">$ARGV[1]") || die "Can't open $ARGV[1]: $!\n";
+
+@years = ();
+@db = ();
+
+while(<DATA>) {
+    chop;
+    %rec = &aid_split($_);
+    next unless $rec{'valid'};
+    $opt_m && next unless &is_new($rec{'time'}, $opt_m);
+    $opt_w && next unless $rec{'www'} ne '';
+
+    push(@db,$_);
+    &aid_build_yearlist(*years, $rec{'year'});
+}
+
+if (!$opt_t) {
+    if ($opt_w) {
+	print FMTOUT &common_html_hdr(4,'Alumni with Web Pages',1);
+	print FMTOUT &common_intro_para(1);
+
+    } elsif ($opt_m) {
+	print FMTOUT &common_html_hdr(5,'Recent Additions to the Directory',1);
+	print FMTOUT
+"<p>All entries on this page have been added to the Directory within the
+last month.</p>\n\n";
+    }
+
+    print FMTOUT &aid_class_jump_bar('#grad','',*years,1);
+}
+
+if (!$opt_v) {
+    $opt_t || print FMTOUT "<pre>";
+    print FMTOUT "Name and Graduation Year$blank_gif                  Email\n";
+    print FMTOUT "---------------------------------------------------------------------------\n";
+
+    $prev = '1900';
+    while (defined($_ = shift(@db))) {
+	%rec = &aid_parse($_);
+
+	$fullname = &fullname(*rec);
+	($affil,$len) = &affiliate(*rec,!$opt_t);
+
+	$opt_t || print FMTOUT "<a href=\"" . &aid_about_path(*rec) . "\">$info_gif</a>";
+	$opt_t || print FMTOUT "<a";
+	if (!$opt_t && $prev ne $rec{'year'} && $prev ne 'other') {
+	    $prev = ($rec{'year'} =~ /^\d+$/) ? $rec{'year'} : 'other';
+	    print FMTOUT " name=\"grad${prev}\"";
+	}
+	$opt_t || print FMTOUT " href=\"$rec{'www'}\"" if $rec{'www'} ne '';
+	$opt_t || print FMTOUT ">";
+	print FMTOUT $fullname;
+	$opt_t || print FMTOUT "</a>";
+	print FMTOUT $affil;
+	print FMTOUT ' ', ' ' x (41 - (length($fullname) + $len));
+	$opt_t || print FMTOUT "<a href=\"mailto:", $rec{'email'}, "\">";
+	print FMTOUT $rec{'email'};
+	$opt_t || print FMTOUT "</a>";
+	$opt_t || $opt_m || 
+	    print FMTOUT " " . &aid_image_tag('new_anchored') if &is_new($rec{'time'});
+	print FMTOUT "\n";
+    }
+
+    $opt_t || print FMTOUT "</pre>";
+
+} else {
+
+    $prev = '1900';
+    while (defined($_ = shift(@db))) {
+	%rec = &aid_parse($_);
+
+	if ($prev ne $rec{'year'} && $prev ne 'other') {
+	    $prev = ($rec{'year'} =~ /^\d+$/) ? $rec{'year'} : 'other';
+	    print FMTOUT "<a name=\"grad${prev}\"> </a>\n";
+	}
+
+	print FMTOUT &aid_verbose_entry(*rec,1,1);
+    }
+}
+
+$opt_t || print FMTOUT &common_html_ftr(5);
+
+exit(0);
