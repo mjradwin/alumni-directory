@@ -2,7 +2,7 @@
 #     FILE: aid_util.pm
 #   AUTHOR: Michael J. Radwin
 #    DESCR: perl library routines for the Alumni Internet Directory
-#      $Id: aid_util.pm,v 6.8 2003/10/30 17:56:04 mradwin Exp mradwin $
+#      $Id: aid_util.pm,v 6.9 2003/10/30 19:59:16 mradwin Exp mradwin $
 #
 # Copyright (c) 2003  Michael J. Radwin.
 # All rights reserved.
@@ -60,7 +60,7 @@ use strict;
 
 package aid_util;
 
-my($VERSION) = '$Revision: 1.152 $$';
+my($VERSION) = '$Revision: 6.9 $$';
 if ($VERSION =~ /(\d+)\.(\d+)/) {
     $VERSION = "$1.$2";
 }
@@ -466,11 +466,19 @@ sub yahoo_abook_path
 
 sub about_path
 {
-    my($rec,$suppress_anchor_p) = @_;
-    my($page) = ($rec->{'yr'} =~ /^\d+$/) ? $rec->{'yr'} : 'other';
-    my($anchor) = ($suppress_anchor_p) ? '' : "#id-$rec->{'id'}";
+    my($rec,$class_page) = @_;
 
-    "$aid_util::config{'master_path'}class/${page}.html${anchor}";
+    if ($class_page)
+    {
+	my($page) = ($rec->{'yr'} =~ /^\d+$/) ? $rec->{'yr'} : 'other';
+
+	"$aid_util::config{'master_path'}class/${page}.html";
+    }
+    else
+    {
+	sprintf("%s%s/%06d.html",
+		$aid_util::config{'master_path'}, "detail", $rec->{'id'});
+    }
 }
 
 sub html_entify_str
@@ -881,14 +889,14 @@ sub common_html_ftr
 
 sub common_html_hdr
 {
-    my($page,$title,$norobots,$time,$subtitle,$extra_meta) = @_;
+    my($page,$title,$norobots,$time,$subtitle,$extra_meta,$nohtmlize) = @_;
     my($hdr,$titletag,$srv_nowww,$descr);
     my($timestamp) =
 	caldate((defined $time && $time ne '') ? $time : time); 
 
-    $title = html_entify_str($title);
+    $title = html_entify_str($title) unless $nohtmlize;
     $subtitle = html_entify_str($subtitle)
-	if defined $subtitle;
+	if defined $subtitle && !$nohtmlize;
 
     $titletag = ($page == 0) ?
 	($aid_util::config{'school'} . " Alumni Internet Directory") :
