@@ -1,22 +1,22 @@
 b.nu {
   color: black;
-  background: #ffffcb;
+  background: #ffffcc;
 }
 
 strong.nu {
   color: black;
-  background: #ffffcb;
+  background: #ffffcc;
 }
 
 b.i {
   color: black;
-  background: #ffffcb;
+  background: #ffffcc;
   text-decoration: none;
 }
 
 strong.i {
   color: black;
-  background: #ffffcb;
+  background: #ffffcc;
   text-decoration: none;
 }
 
@@ -24,7 +24,7 @@ strong.i {
   border: none;
   width: 100%;
   color: black;
-  background: #ffffcb;
+  background: #ffffcc;
   text-align: center;
 }
 
@@ -45,14 +45,14 @@ div.about {
   border: none;
   color: black;
   width: 100%;
-  background: #ffffcb;
+  background: #ffffcc;
 }
 
 pre.about {
   color: black;
   margin-left: 1em;
   margin-right: 1em;
-  background: #ffffcb;
+  background: #ffffcc;
 }
 
 .alert {
