@@ -1,15 +1,16 @@
 #!/usr/bin/perl -w
 
-# $Id: aid_addname,v 3.16 1998/11/03 17:13:10 mradwin Exp mradwin $
+# $Id: aid_addname,v 3.17 1998/11/19 18:15:37 mradwin Exp mradwin $
 
 require 'getopts.pl';
 require 'aid_util.pl';
 
-$usage = 'usage: aid_addname [-hwm] [mailspoolfile]
+$0 =~ s,.*/,,;  # basename
+$usage = "usage: $0 [-hwm] [mailspoolfile]
     -h        Display usage information.
-    -w        Don\'t mail welcome messages.
-    -m        Manual operation (don\'t rebuild or mail welcome messages).
-';
+    -w        Don't mail welcome messages.
+    -m        Manual operation (don't rebuild or mail welcome messages).
+";
 
 &Getopts('hmw') || die "$usage\n";
 $opt_h && die "$usage\n";

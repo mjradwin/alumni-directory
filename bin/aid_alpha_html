@@ -2,16 +2,17 @@
 
 #
 # does the html version of the alphabetical address list
-# $Id: aid_alpha_html,v 3.19 1999/02/03 19:06:02 mradwin Exp mradwin $
+# $Id: aid_alpha_html,v 3.20 1999/02/16 18:13:16 mradwin Exp mradwin $
 #
 
 require 'aid_util.pl';
 require 'getopts.pl';
 
-$usage = 'usage: aid_alpha_html [-ht] infile.db outfile
+$0 =~ s,.*/,,;  # basename
+$usage = "usage: $0 [-ht] infile.db outfile
     -h        Display usage information.
     -t        Output text only
-';
+";
 
 &Getopts('ht') || die "$usage\n";
 $opt_h && die "$usage\n";

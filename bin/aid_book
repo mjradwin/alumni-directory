@@ -2,13 +2,14 @@
 
 #
 # generates address books in several formats
-# $Id: aid_book,v 3.19 1998/11/26 00:51:51 mradwin Exp mradwin $
+# $Id: aid_book,v 3.20 1999/02/16 18:21:50 mradwin Exp mradwin $
 #
 
 require 'aid_util.pl';
 require 'getopts.pl';
 
-$usage = 'usage: aid_book [-h] infile.db -{p,e,b,w,m,n,l,v,o} outfile
+$0 =~ s,.*/,,;  # basename
+$usage = "usage: $0 [-h] infile.db -{p,e,b,w,m,n,l,v,o} outfile
     -h        Display usage information.
 
     -p        Pine address book
@@ -20,7 +21,7 @@ $usage = 'usage: aid_book [-h] infile.db -{p,e,b,w,m,n,l,v,o} outfile
     -l        Netscape4 .ldif address book
     -v        vCard book
     -o        Outlook Express .csv
-';
+";
 
 # get the command-line options and die if there is a bad option or
 # there are no filenames
