@@ -4,7 +4,7 @@
 #     FILE: aid_rss_summary.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: creates an RDF Site Summary for the Directory
-#      $Id: aid_rss_summary,v 1.14 2002/11/20 18:06:21 mradwin Exp mradwin $
+#      $Id: aid_rss_summary,v 1.15 2002/12/24 07:12:02 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -117,7 +117,7 @@ foreach my $i (sort {$id_by_ts{$b} <=> $id_by_ts{$a}} keys %id_by_ts)
 }
 
 foreach my $i (@ids) {
-    my %rec = &aid_db_unpack_rec($i,$DB{$i});
+    %rec = &aid_db_unpack_rec($i,$DB{$i});
     print FMTOUT
 "<item>
 <title>" .  &aid_html_entify_str(&aid_inorder_fullname(*rec)) .
