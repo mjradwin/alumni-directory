@@ -4,7 +4,7 @@
 #     FILE: mvhsaid.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: MVHS Alumni Internet Directory CGI interface
-#      $Id: mvhsaid,v 1.59 1998/01/03 13:16:26 mjr Exp mjr $
+#      $Id: mvhsaid,v 1.60 1998/01/05 20:58:32 mjr Exp mjr $
 #
 
 require 'aid_util.pl';
@@ -24,7 +24,7 @@ if (defined($ENV{'PATH_INFO'}) && $ENV{'PATH_INFO'} =~ m,^/vcard/,) {
     $in{'vcard'} =~ s,^/vcard/(\d+).*$,$1,;
 }
 
-$rcsid = '$Id: mvhsaid,v 1.59 1998/01/03 13:16:26 mjr Exp mjr $'; #'fnt
+$rcsid = '$Id: mvhsaid,v 1.60 1998/01/05 20:58:32 mjr Exp mjr $'; #'fnt
 
 # special flags: version, update, vcard, about
 #
@@ -41,10 +41,11 @@ if (defined($in{'version'})) {
 	@db = &aid_create_db($dbfile);
 	if (defined($db[$in{'update'}])) {
 	    %updateme = &aid_split($db[$in{'update'}]);
-	    &send_upd_real(*updateme,
-			   &aid_get_usertext($in{'update'}),0);
+	    $updateme{'message'} = &aid_get_usertext($in{'update'});
+	    &send_upd_real(*updateme,0);
+
 	} else {
-	    &send_upd_real(*aid_util'blank_entry,'',0);
+	    &send_upd_real(*aid_util'blank_entry,0);
 	}
     } else {
 	&send_upd_list();
@@ -57,10 +58,10 @@ if (defined($in{'version'})) {
 	if (defined($db[$in{'vcard'}])) {
 	    &send_vcard($db[$in{'vcard'}]);
 	} else {
-	    &send_upd_real(*aid_util'blank_entry,'',0);
+	    &send_upd_real(*aid_util'blank_entry,0);
 	}
     } else {
-	&send_upd_real(*aid_util'blank_entry,'',0);
+	&send_upd_real(*aid_util'blank_entry,0);
     }
     exit(0);
 
@@ -69,7 +70,7 @@ if (defined($in{'version'})) {
     if (defined($db[$in{'about'}])) {
 	&send_about($db[$in{'about'}]);
     } else {
-	&send_upd_real(*aid_util'blank_entry,'',0);
+	&send_upd_real(*aid_util'blank_entry,0);
     }
     exit(0);
 }
@@ -80,7 +81,7 @@ if (defined($in{'version'})) {
 foreach (@required_headers) {
     if (!defined($in{$_})) {
 	# wrong form
-	&send_upd_real(*aid_util'blank_entry,'',0);
+	&send_upd_real(*aid_util'blank_entry,0);
 	exit(0);
     }
 }
@@ -147,19 +148,10 @@ $in{'first'} = "\u$in{'first'}";
 $in{'last'} = "\u$in{'last'}";
 $in{'married'} = "\u$in{'married'}";
 
-# their personal message
-$in{'message'} =~ s/^\s*//;
-$in{'message'} =~ s/\s*$//;
-$in{'message'} =~ s/&/&amp;/g;
-$in{'message'} =~ s/</&lt;/g;
-$in{'message'} =~ s/>/&gt;/g;
-$in{'message'} =~ s/\"/&quot;/g;
-$in{'message'} =~ s/\s+/ /g;           # make multiple spaces a single space
-
 # did they check the "other" box for school, but not fill in any text?
 if ($in{'school'} eq 'Other') {
     $in{'time'} = '';
-    &send_upd_real(*in,$in{'message'},1);
+    &send_upd_real(*in,1);
     exit(0);
 }
 
@@ -167,7 +159,7 @@ if ($in{'school'} eq 'Other') {
 foreach (@required_headers) {
     if ($in{$_} =~ /^\s*$/) {
 	$in{'time'} = '';
-	&send_upd_real(*in,$in{'message'},1);
+	&send_upd_real(*in,1);
 	exit(0);
     }
 }
@@ -177,7 +169,7 @@ foreach (@required_headers) {
 
 if (defined($in{'revise'})) {
     $in{'time'} = '';
-    &send_upd_real(*in,$in{'message'},0);
+    &send_upd_real(*in,0);
 } elsif (defined($in{'confirmed'})) {
     &queue_submission();
 } else {
@@ -200,7 +192,6 @@ sub confirm_submission {
     print "<br>\n";
     print &aid_tableheader('Please confirm your submission');
     print "
-
 <p>Please confirm that all of the below information is correct.  If you
 have made any mistakes, select the <strong>&lt;&nbsp;Back</strong> button
 to edit your entry.  If everything is correct, please hit the
@@ -213,7 +204,7 @@ to edit your entry.  If everything is correct, please hit the
     }
 
     print "<table border=0><tr><td>\n";
-    print &about_text(*in,$in{'message'},1,1), "\n";
+    print &about_text(*in,1,1,0), "\n";
     print "</td></tr>\n";
     print "<tr><td align=right>\n";
     print "<input type=submit name=\"revise\" value=\"&lt; Back\">\n";
@@ -281,13 +272,13 @@ EOM
 
 
 sub send_upd_real {
-    local(*rec,$message,$blankp) = @_;
+    local(*rec,$blankp) = @_;
 
     select(STDOUT);  $| = 1;
     print "Content-type: text/html\n\n";
 
     print &common_html_hdr(-1,1);
-    print &submit_body(*rec,$message,$blankp);
+    print &submit_body(*rec,$blankp);
     print &common_html_ftr(-1);
 }
 
@@ -295,6 +286,8 @@ sub send_about {
     local($rawdata) = @_;
     local(%rec) = &aid_split($rawdata);
     local($fullname) = &inorder_fullname(*rec);
+
+    $rec{'message'} = &aid_get_usertext($rec{'id'});
 
     select(STDOUT);  $| = 1;
     print "Content-type: text/html\n\n";
@@ -310,7 +303,7 @@ sub send_about {
     print "plugin installed.  To learn more about vCard, check out the\n";
     print "<a href=\"http://www.imc.org/pdi/\">Internet Mail Consortium</a>'s";
     print " website.\n\n";
-    print &about_text(*rec,'',0,1,1), "\n";
+    print &about_text(*rec,0,1,1), "\n";
     print &common_html_ftr(-1);
 }
 

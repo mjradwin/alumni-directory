@@ -2,7 +2,7 @@
 
 #
 # mails a welcome or update note to everyone in targets.adr
-# $Id: aid_welcome,v 1.26 1998/01/03 11:38:28 mjr Exp mjr $
+# $Id: aid_welcome,v 1.27 1998/01/03 11:46:50 mjr Exp mjr $
 #
 
 require 'aid_util.pl';
@@ -53,7 +53,7 @@ sub message_body {
     local($denied) = ($rec{'request'}) ? '' :
 	"\nSince you asked not to receive the Alumni Internet Directory via email,\nthis is the only notice you will receive.\n";
 
-    local($about) = &about_text(*rec,'',1,0);
+    local($about) = &about_text(*rec,1,0,0);
     local($confirming) = ($opt_c) ? 
 "\nAs a service to alumni who do not have Web access, I will email a copy
 of the most current Internet Directory to everyone listed in it

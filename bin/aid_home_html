@@ -2,7 +2,7 @@
 
 #
 # does the html version of just home pages
-# $Id: aid_home_html,v 1.18 1998/01/03 11:32:52 mradwin Exp $
+# $Id: aid_home_html,v 1.17 1998/01/03 11:38:28 mjr Exp mjr $
 #
 
 require 'aid_util.pl';
@@ -46,7 +46,7 @@ if ($opt_t) {
 }
 
 if ($opt_s) {
-    print OUTFILE &submit_body(*blank_entry,'',0);
+    print OUTFILE &submit_body(*blank_entry,0);
 } else {
     print OUTFILE @lines;
 }
