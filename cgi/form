@@ -4,7 +4,7 @@
 #     FILE: mvhsaid.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: MVHS Alumni Internet Directory CGI interface
-#      $Id: mvhsaid,v 1.60 1998/01/05 20:58:32 mjr Exp mjr $
+#      $Id: mvhsaid,v 1.61 1998/01/07 18:59:23 mjr Exp mjr $
 #
 
 require 'aid_util.pl';
@@ -24,7 +24,7 @@ if (defined($ENV{'PATH_INFO'}) && $ENV{'PATH_INFO'} =~ m,^/vcard/,) {
     $in{'vcard'} =~ s,^/vcard/(\d+).*$,$1,;
 }
 
-$rcsid = '$Id: mvhsaid,v 1.60 1998/01/05 20:58:32 mjr Exp mjr $'; #'fnt
+$rcsid = '$Id: mvhsaid,v 1.61 1998/01/07 18:59:23 mjr Exp mjr $'; #'fnt
 
 # special flags: version, update, vcard, about
 #
@@ -297,12 +297,13 @@ sub send_about {
     print "<p>Here is more detailed information about $fullname.  To see\n";
     print "<a href=\"" . &aid_config('cgi_path') . "/vcard/$rec{'id'}.vcf\">";
     print "$rec{'first'}'s vCard</a>,\n";
-    print "you must be using Netscape 4 or have the \n";
+    print "you must be using Netscape Communicator 4.x or have the \n";
     print "<a href=\"http://www.nowsoft.com/plugins/about_people.html\">";
     print "About People</a>\n";
-    print "plugin installed.  To learn more about vCard, check out the\n";
-    print "<a href=\"http://www.imc.org/pdi/\">Internet Mail Consortium</a>'s";
-    print " website.\n\n";
+    print "plugin installed (i.e. if you use Netscape 3, IE3, or IE4).\n";
+    print "To learn more about vCard, check out the\n";
+    print "<a href=\"http://www.imc.org/pdi/vcardoverview.html\">Internet\n";
+    print "Mail Consortium</a>'s website.<p>\n\n";
     print &about_text(*rec,0,1,1), "\n";
     print &common_html_ftr(-1);
 }
