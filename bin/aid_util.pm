@@ -2,7 +2,7 @@
 #     FILE: aid_util.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: perl library routines for the Alumni Internet Directory
-#      $Id: aid_util.pl,v 5.39 1999/08/05 17:18:28 mradwin Exp mradwin $
+#      $Id: aid_util.pl,v 5.40 1999/08/05 19:03:25 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -1121,7 +1121,7 @@ sub aid_rebuild_secondary_keys
 {
     package aid_util;
 
-    local(*DB,$quiet,$debug) = @_;
+    local(*DB,$quiet,$debug,$preserve_nextid) = @_;
     local(%old_db,%new_db);
     local($key,$val,$id);
     local(@diffs) = ();
@@ -1137,6 +1137,7 @@ sub aid_rebuild_secondary_keys
     local(%alpha_members) = ();
     local(%alpha_latest) = ();
     local($maxval) = -1;
+    local($old_nextid) = $DB{'_nextid'};
 
     # first pass -- gather all names with alpha data
     select(STDOUT); $| = 1;
@@ -1262,7 +1263,7 @@ sub aid_rebuild_secondary_keys
     $DB{'_t'} = pack("N", $latest);
     $DB{'_t_www'} = pack("N", $latest_www);
     $DB{'_t_goner'} = pack("N", $latest_goner);
-    $DB{'_nextid'}  = $maxval + 1;
+    $DB{'_nextid'}  = $preserve_nextid ? $old_nextid: $maxval + 1;
 
     while (($key,$val) = each(%alpha_members))
     {
