@@ -1,20 +1,23 @@
 #!/usr/bin/perl -w
 
-# $Id: aid_bounce,v 3.10 1998/05/17 05:18:53 mradwin Exp mradwin $
+# $Id: aid_bounce,v 3.11 1998/05/17 17:12:41 mradwin Exp mradwin $
 
+require 'ctime.pl';
 require 'getopts.pl';
 require 'aid_util.pl';
 
-$usage = 'usage: aid_bounce [-h] [ids...]
+$usage = 'usage: aid_bounce [-hv] [ids...]
     -h        Display usage information.
+    -v        Invalidate ids.
 
 Bumps up the bounce field for every id or email address listed on the
 command line.
 ';
 
-&Getopts('h') || die "$usage\n";
+&Getopts('hv') || die "$usage\n";
 $opt_h && die "$usage\n";
 $opt_h = $opt_h;                # avoid warning
+$opt_v = $opt_v;                # avoid warning
 
 exit(0) unless (@ARGV);
 
@@ -31,14 +34,12 @@ for (@db) {
     $addrs{"\L$rec{'email'}\E"} = $rec{'id'};
 }
 
+$time = time;
+
 for (@ARGV) {
     if (/^\d+$/) {
 	if (defined @db[$_]) {
 	    %rec = &aid_split(@db[$_]);
-	    print "$rec{'email'} ($_) was $rec{'bounces'}, now ";
-	    $rec{'bounces'}++;
-	    print "$rec{'bounces'}\n";
-	    $db[$_] = &aid_join(*rec);
 	} else {
 	    warn "can't find id $_\n";
 	    next;
@@ -47,15 +48,21 @@ for (@ARGV) {
 	$_ = "\L$_\E";
 	if (defined $addrs{$_}) {
 	    %rec = &aid_split(@db[$addrs{$_}]);
-	    print "$_ ($addrs{$_}) was $rec{'bounces'}, now ";
-	    $rec{'bounces'}++;
-	    print "$rec{'bounces'}\n";
-	    $db[$addrs{$_}] = &aid_join(*rec);
 	} else {
 	    warn "can't find email addr $_\n";
 	    next;
 	}
     }
+
+    print "$rec{'email'} ($rec{'id'}) was ";
+    if ($rec{'bounces'} == 0) {
+	print "blank\n";
+    } else {
+	print &ctime($rec{'bounces'});
+    }
+    $rec{'bounces'} = $time;
+    $rec{'valid'} = 0 if $opt_v;
+    $db[$rec{'id'}] = &aid_join(*rec);
 }
 
 $tmpFile = "/tmp/aid_add.$$";
