@@ -2,11 +2,11 @@
 #     FILE: aid_util.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: perl library routines for the Alumni Internet Directory
-#      $Id: aid_util.pl,v 2.19 1998/05/16 01:55:16 mradwin Exp mradwin $
+#      $Id: aid_util.pl,v 2.20 1998/05/16 01:57:36 mradwin Exp mradwin $
 #
 
 $aid_util'rcsid =
- '$Id: aid_util.pl,v 2.19 1998/05/16 01:55:16 mradwin Exp mradwin $';
+ '$Id: aid_util.pl,v 2.20 1998/05/16 01:57:36 mradwin Exp mradwin $';
 
 # ----------------------------------------------------------------------
 # CONFIGURATION
@@ -614,7 +614,7 @@ are required.  All other fields are optional.</p>\n\n";
   <td colspan=3><font color=\"#$cell_fg\">
   <br><strong>What's New?</strong> Write a paragraph about what
   you've been up to recently.</font><br>
-  <textarea name=\"message\" rows=10 cols=55 wrap>$newrec{'message'}</textarea>
+  <textarea name=\"message\" rows=10 cols=55 wrap=soft>$newrec{'message'}</textarea>
   </td>
 </tr>
 <tr>
@@ -979,7 +979,7 @@ sub common_html_hdr {
 	($config{'school'} . " Alumni Internet Directory") :
 	($config{'short_school'} . " Alumni: " . $title);
 
-    $hdr  = "<!DOCTYPE HTML PUBLIC \"-//IETF//DTD HTML//EN\">\n" .
+    $hdr  = "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 3.2 Final//EN\">\n" .
 	"<html>\n<head>\n" .
 	"<title>" . $titletag .
 	"</title>\n" . $site_tags . "\n" . $pics_label . "\n";
