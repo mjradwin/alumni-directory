@@ -2,7 +2,7 @@
 
 #
 # does the html multi_class pages
-# $Id: aid_multi_class_html,v 5.6 1999/06/11 16:23:29 mradwin Exp mradwin $
+# $Id: aid_multi_class_html,v 5.7 1999/06/14 22:55:16 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -48,7 +48,7 @@ dbmopen(%DB,$ARGV[0],0444);
 die "no _years key!\n" unless defined $DB{'_years'};
 
 @years = unpack("n*",$DB{'_years'});
-push(@years, 'other');
+push(@years, 'other') if defined $DB{'_other'};
 
 %class_prev = ();
 %class_next = ();

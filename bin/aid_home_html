@@ -2,7 +2,7 @@
 
 #
 # does the html version of just home pages
-# $Id: aid_home_html,v 5.7 1999/06/11 20:14:01 mradwin Exp mradwin $
+# $Id: aid_home_html,v 5.8 1999/06/11 20:23:15 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -105,7 +105,7 @@ if ($opt_s) {
 } elsif ($opt_d) {
     die "no _years key!\n" unless defined $DB{'_years'};
     @years = unpack("n*",$DB{'_years'});
-    push(@years, 'other');
+    push(@years, 'other') if defined $DB{'_other'};
 
     print OUTFILE "<p>Before downloading nickname and address book files
 for your e-mail program, please read the
