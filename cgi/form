@@ -4,7 +4,7 @@
 #     FILE: mvhsaid.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: MVHS Alumni Internet Directory CGI interface
-#      $Id: mvhsaid,v 3.25 1998/10/13 23:16:33 mradwin Exp mradwin $
+#      $Id: mvhsaid,v 3.26 1998/10/14 21:33:59 mradwin Exp mradwin $
 #
 
 require 'aid_util.pl';
@@ -24,7 +24,7 @@ if (defined($ENV{'PATH_INFO'}) && $ENV{'PATH_INFO'} =~ m,^/vcard/,) {
     $in{'vcard'} =~ s,^/vcard/(\d+).*$,$1,;
 }
 
-$rcsid = '$Id: mvhsaid,v 3.25 1998/10/13 23:16:33 mradwin Exp mradwin $'; #'fnt
+$rcsid = '$Id: mvhsaid,v 3.26 1998/10/14 21:33:59 mradwin Exp mradwin $'; #'fnt
 
 # special flags: version, update, vcard, about
 #
@@ -62,10 +62,13 @@ if (defined($in{'version'})) {
 		exit(0);
 	    }
 	}
-	&send_upd_list($in{'update'});
+	&send_upd_notfound($in{'update'});
+
+    } elsif ($in{'update'} =~ /^\s*$/) {
+	&send_upd_list();
 
     } else {
-	&send_upd_list($in{'update'});
+	&send_upd_notfound($in{'update'});
 
     }
     exit(0);
@@ -376,8 +379,23 @@ sub send_vcard {
 }
 
 
+sub send_upd_notfound {
+    local($notfound) = @_;
+    local($_);
+
+    select(STDOUT);  $| = 1;
+    print "Content-type: text/html\n\n";
+    print &common_html_hdr(-1,'Update Your Directory Entry',1);
+    print "\n";
+    print "<p>Unable to find existing entry with email address\n";
+    print "<code><strong>$notfound</strong></code>.</p>\n";
+    print "<p>Please check the spelling and <a href=\""
+	. &aid_config('master_path') .  "add.html\">try again</a>.</p>\n";
+
+    print &common_html_ftr(-1);
+}
+
 sub send_upd_list {
-    local($nofind) = @_;
     local($_);
     local(@db) = &aid_alpha_db($dbfile);
     local($fullname,$affil,$len);
@@ -389,13 +407,7 @@ sub send_upd_list {
     print &common_html_hdr(-1,'Update Your Directory Entry',1);
     print "\n";
     
-    if (defined $nofind && $nofind ne '') {
-	$nofind = "Unable to find existing entry with email address <code><strong>$nofind</strong></code>.\n";
-    } else {
-	$nofind = '';
-    }
-
-    print "<p>${nofind}Please select an entry to update from the list below.</p>\n";
+    print "<p>Please select an entry to update from the list below.</p>\n";
     print "<p>\n", &jump_bar(), "</p>\n\n";
     print "<pre>";
     print "Name and Graduation Year                  Email\n";
