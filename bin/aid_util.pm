@@ -2,7 +2,7 @@
 #     FILE: aid_util.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: perl library routines for the Alumni Internet Directory
-#      $Id: aid_util.pl,v 5.111 2003/03/14 23:30:26 mradwin Exp mradwin $
+#      $Id: aid_util.pl,v 5.112 2003/04/22 00:47:29 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -1423,6 +1423,8 @@ sub aid_write_reunion_hash
 
 	    print FH POSIX::strftime("%A, %B %e, %Y", localtime($t));
 	}
+
+	$html =~ s/\@/&#64;/g;	# protect email addresses
 
 	print FH "</dd>\n",
 	$html, "\n";
