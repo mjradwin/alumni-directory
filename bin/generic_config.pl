@@ -2,7 +2,7 @@
 #     FILE: generic_config.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: configuration variables for Alumni Internet Directory
-#      $Id: generic_config.pl,v 1.1 1999/05/24 18:13:55 mradwin Exp mradwin $
+#      $Id: generic_config.pl,v 1.2 1999/05/24 18:14:19 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -22,14 +22,15 @@
 #
 
 $aid_util'rcsid =
- '$Id: generic_config.pl,v 1.1 1999/05/24 18:13:55 mradwin Exp mradwin $';
+ '$Id: generic_config.pl,v 1.2 1999/05/24 18:14:19 mradwin Exp mradwin $';
 
 # Generic HS on bogus-domain.org (FreeBSD 2.2.2) configuration
 %aid_util'config =   #'#
-    ('admin_name',   'Jane Smith',
-     'admin_email',  "ghs-alumni-admin\@bogus-domain.org",
+    (
      'school',       'Generic High School',
      'short_school', 'GHS',
+     'admin_name',   'Jane Smith',
+     'admin_email',  "ghs-alumni-admin\@bogus-domain.org",
      'admin_school', "Generic High School, Class of '93",
      'admin_url',    'http://www.bogus-domain.org/~jsmith/',
      'master_srv',   'www.bogus-domain.org',
@@ -77,14 +78,16 @@ $aid_util'navigation_meta = #'#
     " Alumni Internet Directory\" />";
 
 $aid_util'descr_meta = #'#
-"  <meta name=\"keywords\"    content=\"Generic High School, Anytown, California, reunion, alumni, directory\" />\n  <meta name=\"description\" content=\"Alumni e-mail and web page directory for Generic High School in Anytown, CA. Updated __DATE__.\" />";
+"  <meta name=\"keywords\"    content=\"" . $aid_util'config{'school'} . ", " .
+$aid_util'config{'short_school'} . ", Anytown, California, reunion, alumni, directory\" />\n  <meta name=\"description\" content=\"Alumni e-mail and web page directory for " . $aid_util'config{'school'} . " in Anytown, CA. Updated __DATE__.\" />";
 
 $aid_util'disclaimer = #'#
 "<a name=\"disclaimer\">Acceptable use:</a> the Alumni Internet
-Directory is provided solely for the information of the Generic High
-School community.  Any redistribution outside of this community, or
-solicitation of business or contributions from individuals listed in
-this publication is forbidden.";
+Directory is provided solely for the information of the
+" . $aid_util'config{'school'} . " community.
+Any redistribution outside of this community, or solicitation of
+business or contributions from individuals listed in this publication is
+forbidden.";
 
 # colors
 $aid_util'header_bg  = '99ccff'; #'#
