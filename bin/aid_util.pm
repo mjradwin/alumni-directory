@@ -2,7 +2,7 @@
 #     FILE: aid_util.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: perl library routines for the Alumni Internet Directory
-#      $Id: aid_util.pl,v 5.93 2001/09/16 19:15:38 mradwin Exp mradwin $
+#      $Id: aid_util.pl,v 5.94 2001/11/26 21:55:00 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -517,11 +517,11 @@ sub aid_verbose_entry {
     $retval .= "<dl compact=\"compact\">\n";
 
     $retval .= "<dt><big>";
-    $retval .= "<strong>";
+    $retval .= "<b>";
     $retval .= "<a name=\"id-$rec{'id'}\" id=\"id-$rec{'id'}\">";
     $retval .=  $fullname;
     $retval .= "</a>";
-    $retval .= "</strong>";
+    $retval .= "</b>";
     $retval .= "</big>\n";
     $retval .= &main::aid_is_new_html(*rec) unless $suppress_new; 
     $retval .= "</dt>\n";
@@ -540,31 +540,31 @@ sub aid_verbose_entry {
 
     if ($rec{'yr'} =~ /^\d+$/) {
 	if ($display_year) {
-	    $retval .= "<dt>Year: <strong><a\n" .
+	    $retval .= "<dt>Year: <b><a\n" .
 		"href=\"" . &main::aid_about_path(*rec,1) . "\">" . 
-		    $rec{'yr'} . "</a></strong></dt>\n";
+		    $rec{'yr'} . "</a></b></dt>\n";
 	}
     } else {
-	$retval .= "<dt>Affiliation: <strong><a\n" .
+	$retval .= "<dt>Affiliation: <b><a\n" .
 	    "href=\"" . &main::aid_about_path(*rec,1) . "\">" . 
-		$rec{'yr'} . "</a></strong></dt>\n";
+		$rec{'yr'} . "</a></b></dt>\n";
     }
 
-    $retval .= "<dt>E-mail: <code><strong>";
+    $retval .= "<dt>E-mail: <tt><b>";
     $retval .= "<a\nhref=\"mailto:$rec{'e'}\">" if $rec{'v'};
     $retval .= $rec{'e'};
     $retval .= "</a>" if $rec{'v'};
     $retval .= "\n<em>(invalid address)</em>" unless $rec{'v'};
-    $retval .= "</strong></code></dt>\n";
+    $retval .= "</b></tt></dt>\n";
 
-    $retval .= "<dt>Web Page: <code><strong><a\n" . 
-	"href=\"$rec{'w'}\">$rec{'w'}</a></strong></code></dt>\n"
+    $retval .= "<dt>Web Page: <tt><b><a\n" . 
+	"href=\"$rec{'w'}\">$rec{'w'}</a></b></tt></dt>\n"
 	    if $rec{'w'} ne '';
-    $retval .= "<dt>Location: <strong>$rec{'l'}</strong></dt>\n"
+    $retval .= "<dt>Location: <b>$rec{'l'}</b></dt>\n"
 	if $rec{'l'} ne '';
     $retval .= "<dt>Updated: ";
     $date = &main::aid_caldate($rec{'u'}); 
-    $retval .= "<strong>$date</strong></dt>\n";
+    $retval .= "<b>$date</b></dt>\n";
 
     if ($rec{'n'} ne '') {
 	$retval .= "<dt>What's New?</dt>\n";
@@ -773,7 +773,7 @@ sub aid_common_html_hdr
 
     $hdr .=
 	"<table width=\"100%\" class=\"navbar\">
-<tr><td><small>\n<strong><a href=\"/\">$srv_nowww</a></strong> <tt>-&gt;</tt>\n";
+<tr><td><small>\n<b><a href=\"/\">$srv_nowww</a></b> <tt>-&gt;</tt>\n";
     $hdr .= "<a href=\"$config{'master_path'}\">" unless $page == 0;
     $hdr .= $config{'short_school'} . ' Alumni';
     if ($page == 0)
@@ -805,8 +805,8 @@ href=\"$config{'search_cgi'}\">Search</a></small></td></tr></table>
     }
     else
     {
-	$hdr .= "<p class=\"overline\"><strong>$config{'short_school'}\n";
-	$hdr .= "Alumni Internet Directory:</strong></p>\n";
+	$hdr .= "<p class=\"overline\"><b>$config{'short_school'}\n";
+	$hdr .= "Alumni Internet Directory:</b></p>\n";
 	$hdr .= "<h1>$title";
 	$hdr .= "\n- <small>$subtitle</small>"
 	    if defined $subtitle && $subtitle ne '';
