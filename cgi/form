@@ -4,7 +4,7 @@
 #     FILE: mvhsaid.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: Alumni Internet Directory CGI interface
-#      $Id: mvhsaid,v 3.67 1999/02/26 23:31:42 mradwin Exp mradwin $
+#      $Id: mvhsaid,v 3.68 1999/02/27 01:13:21 mradwin Exp mradwin $
 #
 
 require 'aid_util.pl';
@@ -22,7 +22,7 @@ if ($ENV{'SCRIPT_NAME'} =~ m,/nph-,)
 # configuration
 $mailprog = &aid_config('mailprog');
 $dbmfile = &aid_config('wwwdir') . 'master';
-$rcsid = '$Id: mvhsaid,v 3.67 1999/02/26 23:31:42 mradwin Exp mradwin $'; #'fnt
+$rcsid = '$Id: mvhsaid,v 3.68 1999/02/27 01:13:21 mradwin Exp mradwin $'; #'fnt
 
 $listing_upd_title = 'Step 1: Update Your Directory Listing';
 $listing_upl_title = 'Select a Listing to Update';
@@ -70,12 +70,12 @@ if (defined($in{'version'})) {
 	dbmopen(DB,$dbmfile,0444);
 	if (defined $DB{$in{'update'}}) {
 	    %updateme = &aid_db_unpack_rec($in{'update'},$DB{$in{'update'}});
-	    dbmclose(DB);
 	    &send_upd_real(*updateme,'');
 
 	} else {
 	    &send_upd_real(*aid_util'blank_entry,'');  #'#
 	}
+	dbmclose(DB);
 
     } elsif ($in{'update'} =~ /^\s*[^@]+@[^\.]+\./) {
 	$in{'update'} =~ s/^\s*//;
@@ -95,6 +95,7 @@ if (defined($in{'version'})) {
 	    }
 	}
 	&send_upd_notfound($in{'update'});
+	dbmclose(DB);
 
     } elsif ($in{'update'} =~ /^\s*$/) {
 	&send_upd_list();
@@ -111,11 +112,12 @@ if (defined($in{'version'})) {
 	dbmopen(DB,$dbmfile,0444);
 	if (defined $DB{$in{'vcard'}}) {
 	    %rec = &aid_db_unpack_rec($in{'vcard'},$DB{$in{'vcard'}});
-	    dbmclose(DB);
 	    &send_vcard(*rec);
 	} else {
 	    &send_upd_real(*aid_util'blank_entry,''); #'#
 	}
+	dbmclose(DB);
+
     } else {
 	&send_upd_real(*aid_util'blank_entry,''); #'#
     }
@@ -126,11 +128,11 @@ if (defined($in{'version'})) {
     dbmopen(DB,$dbmfile,0444);
     if (defined $DB{$in{'about'}}) {
 	%rec = &aid_db_unpack_rec($in{'about'},$DB{$in{'about'}});
-	dbmclose(DB);
 	&send_about(*rec);
     } else {
 	&send_upd_real(*aid_util'blank_entry,''); #'#
     }
+    dbmclose(DB);
     close(STDOUT);
     exit(0);
 
