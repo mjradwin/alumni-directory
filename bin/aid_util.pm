@@ -2,7 +2,7 @@
 #     FILE: aid_util.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: perl library routines for the Alumni Internet Directory
-#      $Id: aid_util.pl,v 4.82 1999/04/06 17:09:36 mradwin Exp mradwin $
+#      $Id: aid_util.pl,v 4.83 1999/04/06 17:21:12 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -314,52 +314,52 @@ sub aid_yahoo_abook_path {
     local(*rec) = @_;
     local($url) = 'http://address.yahoo.com/yab?A=da&au=a';
 
-    $url .= '&fn=' . &url_escape($rec{'gn'});
+    $url .= '&fn=' . &main'aid_url_escape($rec{'gn'});
     if ($rec{'mn'} ne '')
     {
-	$url .= '&mn=' . &url_escape($rec{'sn'});
-	$url .= '&ln=' . &url_escape($rec{'mn'});
+	$url .= '&mn=' . &main'aid_url_escape($rec{'sn'});
+	$url .= '&ln=' . &main'aid_url_escape($rec{'mn'});
     }
     else
     {
-	$url .= '&mn=' . &url_escape($rec{'mi'});
-	$url .= '&ln=' . &url_escape($rec{'sn'});
+	$url .= '&mn=' . &main'aid_url_escape($rec{'mi'});
+	$url .= '&ln=' . &main'aid_url_escape($rec{'sn'});
     }
     $url .= '&c=Unfiled';
-    $url .= '&nn=' . &url_escape($rec{'a'});
-    $url .= '&e='  . &url_escape($rec{'e'});
+    $url .= '&nn=' . &main'aid_url_escape($rec{'a'});
+    $url .= '&e='  . &main'aid_url_escape($rec{'e'});
     $url .= '&yid=&wp=&pg=&pp=0&ti=';
     $url .= '&co=' . $school_name[$rec{'s'}];
     if ($rec{'yr'} =~ /^\d+$/) {
 	$url .= '+Class+of+' . $rec{'yr'};
     } else {
-	$url .= '+' . &url_escape($rec{'yr'});
+	$url .= '+' . &main'aid_url_escape($rec{'yr'});
     }
     $url .= '&f=';
-    $url .= '&pu=' . &url_escape($rec{'w'});
+    $url .= '&pu=' . &main'aid_url_escape($rec{'w'});
     $url .= '&af=d&wa1=';
 
     if ($rec{'l'} =~ /^(.*),\s+(\w\w)$/)
     {
-	$url .= '&hc=' . &url_escape($1);
+	$url .= '&hc=' . &main'aid_url_escape($1);
 	$url .= '&hs=' . $2;
 	$url .= '&hz=';
     }
     elsif ($rec{'l'} =~ /^(.*),\s+(\w\w)\s+(\d\d\d\d\d)$/)
     {
-	$url .= '&hc=' . &url_escape($1);
+	$url .= '&hc=' . &main'aid_url_escape($1);
 	$url .= '&hs=' . $2;
 	$url .= '&hz=' . $3;
     }
     else
     {
-	$url .= '&hc=' . &url_escape($rec{'l'});
+	$url .= '&hc=' . &main'aid_url_escape($rec{'l'});
 	$url .= '&hs=&hz=';
     }
     $url .= '&hco=&mb=&op=&e1=&c1=';
 
     $url .= '&.done=';
-    $url .= &url_escape('http://' .
+    $url .= &main'aid_url_escape('http://' .
 			$config{'master_srv'} . $config{'master_path'});
 
     $url;
@@ -1176,16 +1176,22 @@ sub aid_db_unpack_rec
     %rec;
 };
 
-sub aid_util'url_escape
+sub aid_url_escape
 {
+    package aid_util;
+
     local($_) = @_;
     local($res) = '';
 
     foreach (split(//))
     {
-	if (/[^a-zA-Z0-9_.-]/)
+	if (/ /)
 	{
-	    $res .= "\U" . sprintf("%%%02x", ord($_)) . "\E";
+	    $res .= '+';
+	}
+	elsif (/[^a-zA-Z0-9_.-]/)
+	{
+	    $res .= sprintf("%%%02X", ord($_));
 	}
 	else
 	{
@@ -1250,7 +1256,7 @@ if ($^W && 0)
     &aid_db_unpack_rec();
     &aid_db_pack_rec();
     &aid_yahoo_abook_path();
-    &aid_util'url_escape();
+    &aid_url_escape();
 
     $aid_util'ID_INDEX = '';
     $aid_util'body_vlink = '';

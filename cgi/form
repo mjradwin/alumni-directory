@@ -4,7 +4,7 @@
 #     FILE: mvhsaid.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: Alumni Internet Directory CGI interface
-#      $Id: mvhsaid,v 3.102 1999/04/06 16:53:14 mradwin Exp mradwin $
+#      $Id: mvhsaid,v 3.103 1999/04/06 17:21:12 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -40,7 +40,7 @@ $mailprog = &aid_config('mailprog');
 $dbmfile = &aid_config('dbmfile');
 $dbmfile =~ s/\.db$//;
 
-$rcsid = '$Id: mvhsaid,v 3.102 1999/04/06 16:53:14 mradwin Exp mradwin $'; #'fnt
+$rcsid = '$Id: mvhsaid,v 3.103 1999/04/06 17:21:12 mradwin Exp mradwin $'; #'fnt
 
 $listing_upd_title = 'Update Your Directory Listing';
 $listing_upl_title = 'Select a Listing to Update';
@@ -327,13 +327,13 @@ sub confirm_submission {
     print "Content-Type: text/html\015\012\015\012";
     print &aid_common_html_hdr(-1,$listing_sub_title,1);
 
-    print "<form method=post action=\"", &aid_config('confirm_cgi');
+    print "<form method=\"post\" action=\"", &aid_config('confirm_cgi');
     print "/$in{'id'}" if $in{'id'} != -1;
     print "/new" if $in{'id'} == -1;
     print "\">\n";
     %newrec = &aid_html_entify_rec(*in);
     foreach (keys %newrec) {
-	print "<input type=hidden name=\"$_\"";
+	print "<input type=\"hidden\" name=\"$_\"";
 	print "\n" if $_ eq 'n';
 	print " value=\"$newrec{$_}\">\n";
     }
@@ -381,11 +381,11 @@ sub queue_submission {
     require 'ctime.pl';
 
     # set the times and then update the db.
-    $in{'u'} = time;
-    $in{'f'} = $in{'u'};
+    $in{'u'} = time unless defined $in{'u'};
+    $in{'f'} = $in{'u'} unless defined $in{'f'};
     $in{'c'} = $in{'c'} ne '' ? $in{'c'} : $in{'u'};
-    $in{'h'} = $ENV{'REMOTE_HOST'};
-    $in{'b'} = 0;
+    $in{'h'} = $ENV{'REMOTE_HOST'} unless defined $in{'h'};
+    $in{'b'} = 0 unless defined $in{'b'};
     $in{'n'} =~ s/\015\012/\n/g;
 
     if (($in{'id'} != -1) && ($in{'pe'} ne $in{'e'}))
@@ -504,9 +504,9 @@ sub modify_button {
     "
 <!-- borrowed from gamelan -->
 
-<form method=get action=\"" . &aid_config('update_cgi') . "/$rec{'id'}\">
-<input type=hidden name=\"upd\" value=\"$id\">
-<input type=submit value=\"Update $name\">
+<form method=\"get\" action=\"" . &aid_config('update_cgi') . "/$rec{'id'}\">
+<input type=\"hidden\" name=\"upd\" value=\"$id\">
+<input type=\"submit\" value=\"Update $name\">
 </form>
 
 <p>To avoid malicious modification by other people passing through, we
