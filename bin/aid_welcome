@@ -2,7 +2,7 @@
 
 #
 # mails a welcome, update, confirm, or massmail message to members
-# $Id: aid_welcome,v 5.21 2000/04/21 23:39:47 mradwin Exp mradwin $
+# $Id: aid_welcome,v 5.22 2000/04/26 00:56:51 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -265,8 +265,9 @@ sub mail_user
     }
 
     $message = &message_body(*rec) . $params{'textfile'} .
-	"\n-- \n" . &aid_config('admin_name') . "\n" . 
-	    &aid_config('admin_school');
+	"\n-- \n" . &aid_config('short_school') . 
+	" Alumni Internet Directory\n" .
+	"http://" . &aid_config('master_srv') . &aid_config('master_path');
 
     $name  = $rec{'gn'};
     $name .= " $rec{'mi'}."
@@ -284,7 +285,8 @@ sub mail_user
     }
 
     $status =
-	&aid_sendmail(&aid_config('admin_email'), &aid_config('admin_name'),
+	&aid_sendmail(&aid_config('admin_email'),
+		      &aid_config('short_school') . ' Alumni Robot',
 		  $params{'subject'} .
 		  ' [' . &aid_config('short_school') . '-' . $rec{'id'} . ']',
 		  $message,@mailto);
@@ -301,18 +303,16 @@ sub message_body
 {
     local($[) = 0;
     local(*rec) = @_;
+    local($about) = &aid_about_text(*rec,1,0,0);
     local($denied) = $rec{'q'} == 0 ?
 	"
 Since you asked not to receive quarterly Directory
 digests via e-mail, you will only receive bi-yearly
 address verification messages.
 " : '';
-    local($srv_prefix) = "http://" . &aid_config('master_srv');
-    local($about) = &aid_about_text(*rec,1,0,0);
 
-    return &aid_inorder_fullname(*rec) . ",\n\n" .
-	&aid_config('mail_intro') . "\n\n" .
-	'  ' . $srv_prefix . &aid_config('master_path') . "
+    return &aid_inorder_fullname(*rec) . ",
+
 $params{'intro'}
 You are listed in the Directory as follows:
 -------------------------------------------------------
@@ -321,9 +321,7 @@ $denied
 If any of the above information is incorrect or out
 of date, please update your listing online at:
 
-  " .
-
-$srv_prefix . &aid_config('go_cgi') . "/$rec{'id'}
+  http://" . &aid_config('master_srv') . &aid_config('go_cgi') . "/$rec{'id'}
 
 If you have received this e-mail in error, or you do
 not want to be listed in the Directory, please let

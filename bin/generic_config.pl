@@ -2,7 +2,7 @@
 #     FILE: generic_config.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: configuration variables for Alumni Internet Directory
-#      $Id: generic_config.pl,v 5.15 2000/05/30 23:13:55 mradwin Exp mradwin $
+#      $Id: generic_config.pl,v 5.16 2000/05/30 23:45:15 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -22,7 +22,7 @@
 #
 
 $aid_util::rcsid =
- '$Id: generic_config.pl,v 5.15 2000/05/30 23:13:55 mradwin Exp mradwin $';
+ '$Id: generic_config.pl,v 5.16 2000/05/30 23:45:15 mradwin Exp mradwin $';
 
 # Generic HS on bogus-domain.org (FreeBSD 2.2.2) configuration
 %aid_util::config =  
@@ -58,9 +58,6 @@ $aid_util::rcsid =
      'mailto',       "generic-submissions\@bogus-domain.org",
      'spoolfile',    '/var/mail/jsmith',
      'rcsid',        "$aid_util::rcsid",
-     'mail_intro',   
-        "This e-mail was sent to you by the Generic High\n" .
-        "School Alumni Internet Directory:",
      'html_ad', '',
      'descr_long',  'The Generic School Alumni Internet Directory is an e-mail/web page listing of alumni, faculty and staff from Generic High School in Anytown, California.',
      'max_gradyear', ((localtime(time))[5] + 1904),
