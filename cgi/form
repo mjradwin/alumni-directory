@@ -4,7 +4,7 @@
 #     FILE: mvhsaid.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: MVHS Alumni Internet Directory CGI interface
-#      $Id: mvhsaid,v 1.29 1997/09/25 22:24:26 mjr Exp mjr $
+#      $Id: mvhsaid,v 1.30 1997/10/06 15:31:04 mjr Exp $
 #
 
 require 'mv_util.pl';
@@ -22,7 +22,7 @@ $dbfile = &mv_config('wwwdir') . "mvhs.adr";
 if (defined($in{'version'})) {
     select(STDOUT);  $| = 1;
     print "Content-type: text/plain\n\n";
-    print '$Id: mvhsaid,v 1.29 1997/09/25 22:24:26 mjr Exp mjr $', "\n";
+    print '$Id: mvhsaid,v 1.30 1997/10/06 15:31:04 mjr Exp $', "\n";
     exit(0);
 }
 
@@ -117,8 +117,49 @@ foreach (@required_headers) {
     }
 }
 
-&queue_submission;
+if (defined($in{'revise'})) {
+    &send_upd_real(";$in{'id'};$in{'request'};$in{'last'};$in{'first'};$in{'married'};$in{'school'};$in{'grad'};$in{'mail'};$in{'homepage'};$in{'location'}",1,0);
+} elsif (defined($in{'confirmed'})) {
+    &queue_submission;
+} else {
+    &confirm_submission;
+}
+
 exit(0);
+
+sub confirm_submission {
+    require 'tableheader.pl';
+    local($cgi_path) = &mv_config('cgi_path');
+
+    # a little more cleanup and then update the db.
+    $in{'homepage'} = '' if $in{'homepage'} eq 'http://';
+
+    select(STDOUT);  $| = 1;
+    print "Content-type: text/html\n\n";
+    print &common_html_hdr(-1,1);
+
+    print "<br>\n";
+    print &tableheader("Please confirm your information", 1, "ffff99", 1);
+    print "
+<p>Please confirm that all of the below information is correct.  If you
+have made any mistakes, select the <strong>Revise</strong> button to edit
+your entry.  If everything is correct, please hit the
+<strong>Done</strong> button.</p>\n";
+
+    print "<p>\n";
+    print "<form method=post action=\"$cgi_path\">\n";
+    foreach (keys %in) {
+	print "<input type=hidden name=\"$_\" value=\"$in{$_}\">\n";
+    }
+    print "<input type=submit name=\"revise\" value=\"Revise\">\n";
+    print "<input type=submit name=\"confirmed\" value=\"Done\">\n";
+    print "</form>\n";
+    print "</p>\n";
+
+    print &about_text(";;$in{'request'};$in{'last'};$in{'first'};$in{'married'};$in{'school'};$in{'grad'};$in{'mail'};$in{'homepage'};$in{'location'}",1,1), "\n";
+
+    print &common_html_ftr(-1);
+}
 
 sub queue_submission {
     require 'tableheader.pl';
