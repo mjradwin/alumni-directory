@@ -4,7 +4,7 @@
 #     FILE: aid_rss_summary.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: creates an RDF Site Summary for the Directory
-#      $Id: aid_rss_summary,v 1.6 1999/07/23 16:35:25 mradwin Exp mradwin $
+#      $Id: aid_rss_summary,v 1.7 1999/12/22 23:36:47 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -27,6 +27,8 @@ $dirname = $0;
 $dirname =~ s,/[^/]+$,,;
 unshift(@INC, $dirname);
 
+use DB_File;
+
 require 'aid_util.pl';
 require 'ctime.pl';
 require 'getopts.pl';
@@ -42,9 +44,9 @@ $ARGV[0] || die "$usage\n";
 $ARGV[1] || die "$usage\n";
 $opt_h = $opt_h;		# avoid warning
 
-$ARGV[0] =~ s/\.db$//;
-die "can't open $ARGV[0].db\n" unless -r "$ARGV[0].db";
-dbmopen(%DB,$ARGV[0],0444);
+$dbmfile = shift;
+tie(%DB, 'DB_File', $dbmfile, O_RDONLY, 0444, $DB_File::DB_HASH)
+    or die "$dbmfile: $!\n";
 
 die "corrupt/missing _t key!" unless defined $DB{'_t'} && $DB{'_t'} ne '';
 $time = unpack("N",$DB{'_t'});
@@ -87,7 +89,7 @@ foreach (reverse sort keys %upd)
     last;
 }
 
-$outfile = $ARGV[1];
+$outfile = shift;
 open(FMTOUT,">$outfile") || die "Can't open $outfile: $!\n";
 
 print FMTOUT
@@ -144,7 +146,7 @@ print FMTOUT
 </rdf:RDF>
 ";
 
-dbmclose(%DB);
+untie(%DB);
 
 close(FMTOUT);
 utime $time, $time, $outfile;

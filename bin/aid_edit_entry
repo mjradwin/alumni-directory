@@ -1,6 +1,6 @@
 #!/usr/local/bin/perl5 -w
 
-# $Id: aid_edit_entry,v 5.8 1999/08/04 19:36:28 mradwin Exp mradwin $
+# $Id: aid_edit_entry,v 5.9 1999/12/22 23:36:47 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -23,6 +23,8 @@ $dirname = $0;
 $dirname =~ s,/[^/]+$,,;
 unshift(@INC, $dirname);
 
+use DB_File;
+
 require 'aid_util.pl';
 require 'getopts.pl';
 require 'ctime.pl';
@@ -42,27 +44,32 @@ defined $ARGV[0] || die "$usage\n";
 defined $ARGV[1] || die "$usage\n";
 
 $dbmfile = shift;
-$dbmfile =~ s/\.db$//;
-die "$0: ${dbmfile}.db: $!\n" unless -r "${dbmfile}.db";
-
-$mode = (-w "${dbmfile}.db") ? 0644 : 0444;
-dbmopen(%DB,$dbmfile,$mode) || die "$0: ${dbmfile}.db: $!\n";
+die "$0: $dbmfile: $!\n" unless -r $dbmfile;
+if (-w $dbmfile) {
+    tie(%DB, 'DB_File', $dbmfile, O_RDWR|O_CREAT, 0644, $DB_File::DB_HASH)
+	or die "$dbmfile: $!\n";
+    $mode = 0644;
+} else {
+    tie(%DB, 'DB_File', $dbmfile, O_RDONLY, 0444, $DB_File::DB_HASH)
+	or die "$dbmfile: $!\n";
+    $mode = 0444;
+}
 
 $id = shift;
 if ($id =~ /^\d+$/)
 {
-    die "$0: no key $id in ${dbmfile}.db\n"
+    die "$0: no key $id in $dbmfile\n"
 	unless defined $DB{$id} && $DB{$id} ne '';
     %rec = &aid_db_unpack_rec($id,$DB{$id});
 }
 elsif ($id =~ /\@/)
 {
     $email = "\L$id\E";
-    die "$0: no key \L$id\E in ${dbmfile}.db\n"
+    die "$0: no key \L$id\E in $dbmfile\n"
 	unless defined $DB{$email} && $DB{$email} ne '';
 
     $id = unpack("n*", $DB{$email});
-    die "$0: no key $id in ${dbmfile}.db\n"
+    die "$0: no key $id in $dbmfile\n"
 	unless defined $DB{$id} && $DB{$id} ne '';
 
     %rec = &aid_db_unpack_rec($id,$DB{$id});
@@ -84,7 +91,7 @@ $note_end_str = &aid_config('note_end_str');
 $tmpfile = '/tmp/aid_edit_entry.' . $$;
 
 open(TMPFILE,">$tmpfile") || die "$tmpfile: $!\n";
-print TMPFILE '# $Id: aid_edit_entry,v 5.8 1999/08/04 19:36:28 mradwin Exp mradwin $', "\n"; #'#
+print TMPFILE '# $Id: aid_edit_entry,v 5.9 1999/12/22 23:36:47 mradwin Exp mradwin $', "\n"; #'#
 print TMPFILE "# record last touched: ",
  (($rec{'f'} > $rec{'b'}) ? &ctime($rec{'f'}) : &ctime($rec{'b'}));
 
@@ -157,7 +164,7 @@ while(($key,$val) = each(%rec))
 
 if ($mode == 0444)
 {
-    warn "$0: can't save changes (${dbmfile}.db not writable)\n"
+    warn "$0: can't save changes ($dbmfile not writable)\n"
 	if $changed == 1;
 }
 elsif ($changed == 1)
@@ -193,8 +200,8 @@ elsif ($changed == 1)
     warn "$0: update successful\n";
 }
 
-dbmclose(%DB);
-exit 0;
+untie(%DB);
+exit(0);
 
 if ($^W && 0)
 {

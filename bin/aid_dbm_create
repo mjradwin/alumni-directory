@@ -1,6 +1,6 @@
 #!/usr/local/bin/perl5 -w
 
-# $Id: aid_dbm_create,v 1.1 1999/08/11 01:38:39 mradwin Exp mradwin $
+# $Id: aid_dbm_create,v 1.2 1999/12/22 23:36:47 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -23,6 +23,8 @@ $dirname = $0;
 $dirname =~ s,/[^/]+$,,;
 unshift(@INC, $dirname);
 
+use DB_File;
+
 require 'aid_util.pl';
 require 'getopts.pl';
 
@@ -37,11 +39,13 @@ $opt_h && die "$usage\n";
 defined $ARGV[0] || die "$usage\n";
 defined $ARGV[1] || die "$usage\n";
 
-$ARGV[0] =~ s/\.db$//;
-dbmopen(%DB,$ARGV[0],0666) || die "$0: $ARGV[0].db: $!\n";
-die "$0: $ARGV[0].db: $!\n" unless -e "$ARGV[0].db";
+$dbmfile = shift;
 
-open(URLS,$ARGV[1]) || die "$0: $ARGV[1]: $!\n";
+tie(%DB, 'DB_File', $dbmfile, O_RDWR|O_CREAT, 0644, $DB_File::DB_HASH)
+    or die "$dbmfile: $!\n";
+
+$infile = shift;
+open(URLS,$infile) || die "$0: $infile: $!\n";
 
 $j = 0;
 if (!$opt_q)
@@ -77,7 +81,7 @@ while(<URLS>)
 
     if (! defined $in{'id'})
     {
-	warn "$ARGV[1]:$j: missing id\n";
+	warn "$infile:$j: missing id\n";
 	next;
     }
 
@@ -92,7 +96,7 @@ close(URLS);
 print STDOUT "\n" unless $opt_q;
 
 &aid_rebuild_secondary_keys(*DB,$opt_q,0,0);
-dbmclose(%DB);
+untie(%DB);
 
 print STDOUT "$0: build successful\n" unless $opt_q;
 exit(0);

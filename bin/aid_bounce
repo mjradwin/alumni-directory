@@ -1,6 +1,6 @@
 #!/usr/local/bin/perl5 -w
 
-# $Id: aid_bounce,v 5.5 1999/06/29 01:08:09 mradwin Exp mradwin $
+# $Id: aid_bounce,v 5.6 1999/12/22 23:36:47 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -22,6 +22,8 @@
 $dirname = $0;
 $dirname =~ s,/[^/]+$,,;
 unshift(@INC, $dirname);
+
+use DB_File;
 
 require 'getopts.pl';
 require 'aid_util.pl';
@@ -52,17 +54,16 @@ die "$0: No target ids specified\n$usage\n"
     unless ($opt_d || $opt_f || $ARGV[1]);
 
 $dbmfile = shift;
-$dbmfile =~ s/\.db$//;
 
 if ($opt_d)
 {
-    die "can't open ${dbmfile}.db for reading\n"
-	unless -r "${dbmfile}.db";
+    die "$dbmfile: $!\n" unless -r $dbmfile;
 
-    $mode = (stat("${dbmfile}.db"))[2];
-    chmod 0444, "${dbmfile}.db";
-    dbmopen(%DB,$dbmfile,0444);
+    $mode = (stat($dbmfile))[2];
+    chmod 0444, $dbmfile;
 
+    tie(%DB, 'DB_File', $dbmfile, O_RDONLY, 0444, $DB_File::DB_HASH)
+	or die "$dbmfile: $!\n";
     while (($key,$val) = each %DB)
     {
 	next unless $key =~ /^\d+$/;
@@ -76,32 +77,30 @@ if ($opt_d)
 	    if $rec{'f'} > $rec{'b'};
 	print "\n";
     }
+    untie(%DB);
 
-    dbmclose(%DB);
-    chmod $mode, "${dbmfile}.db";
+    chmod $mode, $dbmfile;
     exit(0);
 }
 elsif ($opt_f)
 {
-    die "can't open ${dbmfile}.db for reading/writing\n"
-	unless -r "${dbmfile}.db" && -w "${dbmfile}.db";
-    dbmopen(%DB,$dbmfile,0644);
+    tie(%DB, 'DB_File', $dbmfile, O_RDWR|O_CREAT, 0644, $DB_File::DB_HASH)
+	or die "$dbmfile: $!\n";
 
     @freshness = &time_log($opt_f);
     &freshen(@freshness);
 
-    dbmclose(%DB);
+    untie(%DB);
 }
 else
 {
-    die "can't open ${dbmfile}.db for reading/writing\n"
-	unless -r "${dbmfile}.db" && -w "${dbmfile}.db";
-    dbmopen(%DB,$dbmfile,0644);
+    tie(%DB, 'DB_File', $dbmfile, O_RDWR|O_CREAT, 0644, $DB_File::DB_HASH)
+	or die "$dbmfile: $!\n";
 
     &bounce_args(@ARGV);
     &aid_rebuild_secondary_keys(*DB,0);
 
-    dbmclose(%DB);
+    untie(%DB);
 }
 
 exit(0);

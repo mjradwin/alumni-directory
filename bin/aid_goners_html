@@ -2,7 +2,7 @@
 
 #
 # does the html version of the invalid address list
-# $Id: aid_goners_html,v 5.6 1999/06/29 01:08:09 mradwin Exp mradwin $
+# $Id: aid_goners_html,v 5.7 1999/12/22 23:36:47 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -24,6 +24,8 @@
 $dirname = $0;
 $dirname =~ s,/[^/]+$,,;
 unshift(@INC, $dirname);
+
+use DB_File;
 
 require 'aid_util.pl';
 require 'getopts.pl';
@@ -48,16 +50,17 @@ if (@incremental && (! grep(/_t_goner/, @incremental)))
     exit(0);
 }
 
-$ARGV[0] =~ s/\.db$//;
-die "can't open $ARGV[0].db\n" unless -r "$ARGV[0].db";
-dbmopen(%DB,$ARGV[0],0444);
+$dbmfile = shift;
+tie(%DB, 'DB_File', $dbmfile, O_RDONLY, 0444, $DB_File::DB_HASH)
+    or die "$dbmfile: $!\n";
 
 die "corrupt/missing _alpha key!"
     unless defined $DB{'_alpha'} && $DB{'_alpha'} ne '';
 die "corrupt/missing _t_goner key!"
     unless defined $DB{'_t_goner'} && $DB{'_t_goner'} ne '';
 
-open(FMTOUT,">$ARGV[1]") || die "Can't open $ARGV[1]: $!\n";
+$outfile = shift;
+open(FMTOUT,">$outfile") || die "Can't open $outfile: $!\n";
 
 $time = unpack("N",$DB{'_t_goner'});
 print FMTOUT &aid_common_html_hdr(-1,'Alumni with Invalid Addresses',1,$time);
@@ -93,13 +96,13 @@ foreach $id (@alpha_ids)
 print FMTOUT "</pre>\n";
 print FMTOUT &aid_common_html_ftr(-1,$time);
 
-dbmclose(%DB);
+untie(%DB);
 close(FMTOUT);
-utime $time, $time, $ARGV[1];
+utime $time, $time, $outfile;
 
 # touch timestamp
 $now = time;
-$ts = $ARGV[1];
+$ts = $outfile;
 $ts =~ s,([^/]+)$,\.$1,;
 open(TS,">$ts") && close(TS);
 utime $now, $now, $ts;

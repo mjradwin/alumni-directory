@@ -2,7 +2,7 @@
 
 #
 # does the html version of just home pages
-# $Id: aid_home_html,v 5.11 1999/06/29 01:08:09 mradwin Exp mradwin $
+# $Id: aid_home_html,v 5.12 1999/12/22 23:36:47 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -24,6 +24,8 @@
 $dirname = $0;
 $dirname =~ s,/[^/]+$,,;
 unshift(@INC, $dirname);
+
+use DB_File;
 
 require 'aid_util.pl';
 require 'getopts.pl';
@@ -62,10 +64,9 @@ if (@incremental && $opt_d && (! grep(/_years/, @incremental)))
 }
 
 $infile = $opt_f;
-$outfile = $ARGV[0];
+$outfile = shift;
 
 $dbmfile = &aid_config('dbmfile');
-$dbmfile =~ s/\.db$//;
 
 if ($opt_f)
 {
@@ -80,21 +81,22 @@ elsif ($opt_s)
 }
 else
 {
-    die "can't open ${dbmfile}.db\n" unless -r "${dbmfile}.db";
-    dbmopen(%DB,$dbmfile,0444);
+    tie(%DB, 'DB_File', $dbmfile, O_RDONLY, 0444, $DB_File::DB_HASH)
+	or die "$dbmfile: $!\n";
 
     die "corrupt/missing _t key!" unless defined $DB{'_t'} && $DB{'_t'} ne '';
     $time = unpack("N",$DB{'_t'});
+    # don't untie(%DB);
 }
 
 if ($opt_f && $opt_p == 0)
 {
-    die "can't open ${dbmfile}.db\n" unless -r "${dbmfile}.db";
-    dbmopen(%DB,$dbmfile,0444);
+    tie(%DB, 'DB_File', $dbmfile, O_RDONLY, 0444, $DB_File::DB_HASH)
+	or die "$dbmfile: $!\n";
 
     die "corrupt/missing _t key!" unless defined $DB{'_t'} && $DB{'_t'} ne '';
     $time = unpack("N",$DB{'_t'});
-    dbmclose(%DB);
+    untie(%DB);
 }
 
 open(OUTFILE,">$outfile") || die "Can't open $outfile: $!\n";
@@ -179,7 +181,7 @@ years after mine.</label>
 }
 print OUTFILE &aid_common_html_ftr($opt_p,$time);
 
-dbmclose(%DB) unless $opt_f || $opt_s;
+untie(%DB) unless $opt_f || $opt_s;
 close(OUTFILE);
 utime $time, $time, $outfile;
 

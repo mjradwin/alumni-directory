@@ -4,7 +4,7 @@
 # does a short list, either compact or verbose, sorted by graduating
 # class with a jump bar
 #
-# $Id: aid_shortlist_html,v 5.6 1999/08/11 01:16:20 mradwin Exp mradwin $
+# $Id: aid_shortlist_html,v 5.7 1999/12/22 23:36:47 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -26,6 +26,8 @@
 $dirname = $0;
 $dirname =~ s,/[^/]+$,,;
 unshift(@INC, $dirname);
+
+use DB_File;
 
 require 'aid_util.pl';
 require 'getopts.pl';
@@ -58,14 +60,15 @@ die "$usage\n" if     ($opt_m && $opt_w);
 $info_gif = &aid_image_tag('info');
 $blank_gif = $opt_t ? '' : &aid_image_tag('blank');
 
-$ARGV[0] =~ s/\.db$//;
-die "can't open $ARGV[0].db\n" unless -r "$ARGV[0].db";
-dbmopen(%DB,$ARGV[0],0444);
+$dbmfile = shift;
+tie(%DB, 'DB_File', $dbmfile, O_RDONLY, 0444, $DB_File::DB_HASH)
+    or die "$dbmfile: $!\n";
 
 die "corrupt/missing _class key!"
     unless defined $DB{'_class'} && $DB{'_class'} ne '';
 
-open(FMTOUT,">$ARGV[1]") || die "Can't open $ARGV[1]: $!\n";
+$outfile = shift;
+open(FMTOUT,">$outfile") || die "Can't open $outfile: $!\n";
 
 @ids = ();
 @class = unpack("n*", $DB{'_class'});
@@ -178,13 +181,13 @@ if (!$opt_v) {
 
 $opt_t || print FMTOUT &aid_common_html_ftr(5,$time);
 
-dbmclose(%DB);
+untie(%DB);
 close(FMTOUT);
-utime $time, $time, $ARGV[1] unless $opt_t;
+utime $time, $time, $outfile unless $opt_t;
 
 # touch timestamp
 $now = time;
-$ts = $ARGV[1];
+$ts = $outfile;
 $ts =~ s,([^/]+)$,\.$1,;
 open(TS,">$ts") && close(TS);
 utime $now, $now, $ts;

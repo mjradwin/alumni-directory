@@ -2,7 +2,7 @@
 
 #
 # mails a welcome, update, confirm, or massmail message to members
-# $Id: aid_welcome,v 5.17 1999/12/22 23:36:47 mradwin Exp mradwin $
+# $Id: aid_welcome,v 5.18 1999/12/23 00:26:15 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -25,6 +25,8 @@
 $dirname = $0;
 $dirname =~ s,/[^/]+$,,;
 unshift(@INC, $dirname);
+
+use DB_File;
 
 require 'aid_util.pl';
 require 'getopts.pl';
@@ -167,16 +169,17 @@ if ($opt_m) {
 $params{'sleep'} = $opt_d if defined $opt_d;
 
 $dbmfile = shift;
-$dbmfile =~ s/\.db$//;
-die "$0: ${dbmfile}.db: $!\n" unless -r "${dbmfile}.db";
-if (-w "${dbmfile}.db") {
-    dbmopen(%DB,$dbmfile,0666);
+die "$0: $dbmfile: $!\n" unless -r $dbmfile;
+if (-w $dbmfile) {
+    tie(%DB, 'DB_File', $dbmfile, O_RDWR|O_CREAT, 0644, $DB_File::DB_HASH)
+	or die "$dbmfile: $!\n";
 } else {
-    warn "$0: warning: ${dbmfile}.db not writeable\n";
-    dbmopen(%DB,$dbmfile,0444);
+    warn "$0: warning: $dbmfile not writeable\n";
+    tie(%DB, 'DB_File', $dbmfile, O_RDONLY, 0444, $DB_File::DB_HASH)
+	or die "$dbmfile: $!\n";
 }
 
-die "invalid DB: ${dbmfile}.db\n" unless defined $DB{'_class'};
+die "invalid DB: $dbmfile\n" unless defined $DB{'_class'};
 
 open(LOG,">>$logfile") || die "$0: Can't open $logfile: $!\n";
 select(LOG); $| = 1; select(STDOUT);
@@ -221,7 +224,7 @@ foreach (@ARGV)
     
     unless (defined $DB{$_})
     {
-	warn "$0: skipping target `$_' (missing from ${dbmfile}.db)\n";
+	warn "$0: skipping target `$_' (missing from $dbmfile)\n";
 	next;
     }
 
@@ -230,12 +233,12 @@ foreach (@ARGV)
     &mail_user($time, *rec);
     $rec{'lm'} = $time;
     $DB{$rec{'id'}} = &aid_db_pack_rec(*rec) 
-	if -w "${dbmfile}.db";
+	if -w $dbmfile;
     sleep($params{'sleep'}) if $params{'sleep'} > 0;
 }
 
 close(LOG);
-dbmclose(%DB);
+untie(%DB);
 exit(0);
 
 

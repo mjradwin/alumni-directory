@@ -1,6 +1,6 @@
 #!/usr/local/bin/perl5 -w
 
-# $Id: aid_multi_class_welcome,v 5.7 1999/11/29 19:32:02 mradwin Exp mradwin $
+# $Id: aid_multi_class_welcome,v 5.8 1999/12/22 23:36:47 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -23,6 +23,8 @@ $dirname = $0;
 $dirname =~ s,/[^/]+$,,;
 unshift(@INC, $dirname);
 
+use DB_File;
+
 require 'aid_util.pl';
 require 'getopts.pl';
 
@@ -40,10 +42,8 @@ $opt_h = $opt_h;		# avoid warning
 $opt_q = $opt_q;		# avoid warning
 
 $dbmfile = shift;
-$dbmfile =~ s/\.db$//;
-die "$0: ${dbmfile}.db: $!\n" unless -r "${dbmfile}.db";
-
-dbmopen(%DB,$dbmfile,0444) || die "$0: ${dbmfile}.db: $!\n";
+tie(%DB, 'DB_File', $dbmfile, O_RDONLY, 0444, $DB_File::DB_HASH)
+    or die "$dbmfile: $!\n";
 
 die "corrupt/missing _years key!"
     unless defined $DB{'_years'} && $DB{'_years'} ne '';
@@ -82,7 +82,7 @@ foreach (@years)
 	@mail_ids = sort { $a <=> $b } @mail_ids;
 
 	print "$welcome_exe -l logs/massmail-$date-4.log -r4 ",
-	      "-m ${dir}/${_}.txt ${dbmfile}.db ", join(' ', @mail_ids), "\n"
+	      "-m ${dir}/${_}.txt $dbmfile ", join(' ', @mail_ids), "\n"
 		  unless $opt_q;
 
 	system
@@ -90,13 +90,13 @@ foreach (@years)
     	    '-l', 'logs/massmail-' . $date . '-4.log',
 	    '-r4',
 	    '-m', $dir . '/' . $_ . '.txt',
-    	    $dbmfile . '.db',
+    	    $dbmfile,
 	    @mail_ids;
     }
 }
 
-dbmclose(%DB);
-exit 0;
+untie(%DB);
+exit(0);
 
 
 if ($^W && 0)

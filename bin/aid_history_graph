@@ -1,6 +1,6 @@
 #!/usr/local/bin/perl5 -w
 
-# $Id: aid_history_graph,v 5.5 1999/06/29 01:08:09 mradwin Exp mradwin $
+# $Id: aid_history_graph,v 5.6 1999/12/22 23:36:47 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -23,6 +23,8 @@ $dirname = $0;
 $dirname =~ s,/[^/]+$,,;
 unshift(@INC, $dirname);
 
+use DB_File;
+
 require 'aid_util.pl';
 require 'ctime.pl';
 require 'getopts.pl';
@@ -38,14 +40,15 @@ $ARGV[0] || die "$usage\n";
 $ARGV[1] || die "$usage\n";
 $opt_h = $opt_h;		# avoid warning
 
-$ARGV[0] =~ s/\.db$//;
-die "can't open $ARGV[0].db\n" unless -r "$ARGV[0].db";
-dbmopen(%DB,$ARGV[0],0444);
+$dbmfile = shift;
+tie(%DB, 'DB_File', $dbmfile, O_RDONLY, 0444, $DB_File::DB_HASH)
+    or die "$dbmfile: $!\n";
 
 die "corrupt/missing _class key!"
     unless defined $DB{'_class'} && $DB{'_class'} ne '';
 
-open(FMTOUT,">$ARGV[1]") || die "Can't open $ARGV[1]: $!\n";
+$outfile = shift;
+open(FMTOUT,">$outfile") || die "Can't open $outfile: $!\n";
 
 ($i,$i,$i,$i,$i,$epoch_year,$i,$epoch_yday,$i) =
     localtime($aid_util'EPOCH); #'#);#
@@ -76,7 +79,8 @@ for ($i = 0; $i <= $#members; $i++)
 }
 
 close(FMTOUT);
-dbmclose(%DB);
+untie(%DB);
+exit(0);
 
 # avoid warnings
 if ($^W && 0)

@@ -2,7 +2,7 @@
 
 #
 # does the html multi_class pages
-# $Id: aid_multi_class_html,v 5.12 1999/08/25 20:29:33 mradwin Exp mradwin $
+# $Id: aid_multi_class_html,v 5.13 1999/12/22 23:36:47 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -25,6 +25,8 @@ $dirname = $0;
 $dirname =~ s,/[^/]+$,,;
 unshift(@INC, $dirname);
 
+use DB_File;
+
 require 'aid_util.pl';
 require 'getopts.pl';
 
@@ -41,9 +43,9 @@ $opt_h = $opt_h;		# avoid warning
 
 @incremental = ($opt_i ? split(/[,\s]+/, $opt_i) : ());
 
-$ARGV[0] =~ s/\.db$//;
-die "can't open $ARGV[0].db\n" unless -r "$ARGV[0].db";
-dbmopen(%DB,$ARGV[0],0444);
+$dbmfile = shift;
+tie(%DB, 'DB_File', $dbmfile, O_RDONLY, 0444, $DB_File::DB_HASH)
+    or die "$dbmfile: $!\n";
 
 die "corrupt/missing _years key!"
     unless defined $DB{'_years'} && $DB{'_years'} ne '';
@@ -148,7 +150,7 @@ foreach $year (@years)
 
 die "corrupt/missing _t key!" unless defined $DB{'_t'} && $DB{'_t'} ne '';
 $time = unpack("N",$DB{'_t'});
-dbmclose(%DB);
+untie(%DB);
 print STDOUT "\n";
 
 # index page

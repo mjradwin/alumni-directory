@@ -2,7 +2,7 @@
 
 #
 # generates address books in several formats
-# $Id: aid_book,v 5.3 1999/06/28 23:36:24 mradwin Exp mradwin $
+# $Id: aid_book,v 5.4 1999/12/22 23:36:47 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -24,6 +24,8 @@
 $dirname = $0;
 $dirname =~ s,/[^/]+$,,;
 unshift(@INC, $dirname);
+
+use DB_File;
 
 require 'aid_util.pl';
 require 'getopts.pl';
@@ -55,9 +57,9 @@ die "$usage\n" unless
     $opt_p || $opt_e || $opt_b || $opt_w || 
     $opt_m || $opt_n || $opt_l || $opt_v || $opt_o;
 
-$ARGV[0] =~ s/\.db$//;
-die "can't open $ARGV[0].db\n" unless -r "$ARGV[0].db";
-dbmopen(%DB,$ARGV[0],0444);
+$dbmfile = shift;
+tie(%DB, 'DB_File', $dbmfile, O_RDONLY, 0444, $DB_File::DB_HASH)
+    or die "$dbmfile: $!\n";
 
 die "no _alpha key!" unless defined $DB{'_alpha'};
 
@@ -99,7 +101,7 @@ foreach $id (@alpha_ids)
 
 }
 
-dbmclose(%DB);
+untie(%DB);
 
 $opt_p && &aid_book_write_suffix(*BOOKp,'p');
 $opt_e && &aid_book_write_suffix(*BOOKe,'e');

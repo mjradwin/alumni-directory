@@ -1,6 +1,6 @@
 #!/usr/local/bin/perl5 -w
 
-# $Id: aid_grep_bounce,v 5.6 1999/11/30 22:11:33 mradwin Exp mradwin $
+# $Id: aid_grep_bounce,v 5.7 1999/12/22 23:36:47 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -23,14 +23,18 @@ $dirname = $0;
 $dirname =~ s,/[^/]+$,,;
 unshift(@INC, $dirname);
 
+use DB_File;
+
 require 'aid_util.pl';
+
+$spoolfile = $ARGV[0] ? $ARGV[0] : &aid_config('spoolfile');
 
 $directory_name = &aid_config('short_school') . ' Alumni Internet Directory';
 $from_pattern = &aid_config('admin_name') .
     ' <' . &aid_config('admin_email') . '>';
 
 %bouncers = ();
-&readspool(($ARGV[0]) ? $ARGV[0] : &aid_config('spoolfile'));
+&readspool($spoolfile);
 foreach(sort keys %bouncers)
 {
     print $_, " ";
