@@ -1,6 +1,6 @@
 #!/usr/bin/perl -w
 
-# $Id: aid_stats,v 1.16 1999/03/26 22:17:36 mradwin Exp mradwin $
+# $Id: aid_stats,v 1.17 1999/04/05 16:26:17 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -57,7 +57,7 @@ $update_time_sum = 0;
 $join_time_sum = 0;
 @join_times = ();
 
-$num_never_updated = 0;
+$num_never_updated = $nweek = $nmonth = 0;
 
 while (($key,$val) = each %DB)
 {
@@ -92,6 +92,8 @@ while (($key,$val) = each %DB)
     push(@join_times, $rec{'c'});
 
     $num_never_updated++ if $rec{'u'} == $rec{'c'};
+    $nweek++ if &aid_is_new($rec{'c'}, 0.25);
+    $nmonth++ if &aid_is_new($rec{'c'}, 1);
 }
 
 $nlegit = $nvalid + $ndubious;
@@ -148,7 +150,11 @@ printf FMTOUT "median  tenure           : %.0f weeks\n", $median_tenure_weeks;
 printf FMTOUT "average time since update: %.0f weeks\n", $avg_update_weeks;
 printf FMTOUT "median  time since update: %.0f weeks\n", $median_update_weeks;
 
-printf FMTOUT "entries never updated    : %.0f%% (%d of %d)\n",
+printf FMTOUT "\njoined during past week  : %2.0f%% (%4d of %4d)\n",
+    ((100.0 * $nweek) / $nlegit), $nweek, $nlegit;
+printf FMTOUT "joined during past month : %2.0f%% (%4d of %4d)\n",
+    ((100.0 * $nmonth) / $nlegit), $nmonth, $nlegit;
+printf FMTOUT "entries never updated    : %.0f%% (%4d of %4d)\n",
     ((100.0 * $num_never_updated) / $nlegit), $num_never_updated, $nlegit;
 
 print FMTOUT "\n------------------------------------------------------------------------\n";
