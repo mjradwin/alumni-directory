@@ -2,7 +2,7 @@
 #     FILE: aid_util.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: perl library routines for the Alumni Internet Directory
-#      $Id: aid_util.pl,v 5.5 1999/06/03 17:10:34 mradwin Exp mradwin $
+#      $Id: aid_util.pl,v 5.6 1999/06/03 17:35:19 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -383,7 +383,7 @@ sub aid_verbose_entry {
     $retval .= "</big>\n";
 
     $retval .= "&nbsp;<small>[";
-    $retval .= "<a href=\"" . &main'aid_vcard_path(*rec) . "\">"; #'#
+    $retval .= "<a href=\"" . &main'aid_vcard_path(*rec_arg) . "\">"; #'#
     $retval .= "vCard</a>";
     $retval .= "&nbsp;|&nbsp;";
     $retval .= "<a\ntarget=\"_address\" href=\"" .
@@ -582,7 +582,7 @@ sub aid_about_text
 
     if ($do_vcard_p && $do_html_p && $rec{'v'}) {
 	$retval .= "vCard              : ";
-	$retval .= "<a href=\"" . &main'aid_vcard_path(*rec) . "\">"; #'#
+	$retval .= "<a href=\"" . &main'aid_vcard_path(*rec_arg) . "\">"; #'#
 	$retval .= $image_tag{'vcard'};
 	$retval .= "</a>\n";
 
