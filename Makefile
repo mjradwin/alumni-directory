@@ -2,7 +2,7 @@
 #     FILE: Makefile
 #   AUTHOR: Michael J. Radwin
 #    DESCR: Makefile for building the Alumni Internet Directory
-#      $Id: Makefile,v 3.41 1998/11/26 01:01:19 mradwin Exp mradwin $
+#      $Id: Makefile,v 3.42 1998/12/31 19:22:53 mradwin Exp mradwin $
 #
 
 WWWROOT=/home/web/radwin.org
@@ -28,6 +28,7 @@ BIN_HOME=$(MVHSDIR)/bin/aid_home_html
 BIN_RECENT=$(MVHSDIR)/bin/aid_shortlist_html
 BIN_MULTI_CLASS=$(MVHSDIR)/bin/aid_multi_class_html
 BIN_PAGES=$(MVHSDIR)/bin/aid_shortlist_html
+BIN_STATS=$(MVHSDIR)/bin/aid_stats
 
 TARFILES=mvhs/README \
 	mvhs/Makefile \
@@ -43,7 +44,7 @@ SNAPSHOTFILES=mvhs \
 
 all:	adrfile index submit addupdate reunions links faq copyright \
 	recent multi_class multi_alpha \
-	pages class awalt goners download books2
+	pages class awalt goners download books2 stats
 
 ADRFILE=$(WWWDIR)/master.adr
 adrfile:	$(ADRFILE)
@@ -127,9 +128,14 @@ $(FAQ):	$(MVHSDIR)/data/faq.include $(BIN_HOME)
 COPYRIGHT=$(WWWDIR)/etc/copyright.html
 copyright:	$(COPYRIGHT)
 $(COPYRIGHT):	$(MVHSDIR)/data/copyright.include $(BIN_HOME)
-	$(BIN_HOME) -p15 -i $(MVHSDIR)/data/copyright.include \
+	$(BIN_HOME) -p16 -i $(MVHSDIR)/data/copyright.include \
 		-t 'Acceptable Use - Privacy Statement - Copyright' \
 		$(COPYRIGHT)
+
+STATS=$(WWWDIR)/etc/stats.txt
+stats:	$(STATS)
+$(STATS):	$(BIN_STATS) $(ADR_MASTER)
+	$(BIN_STATS) > $(STATS)
 
 SUBMIT=$(WWWDIR)/add/new.html
 submit:	$(SUBMIT)
