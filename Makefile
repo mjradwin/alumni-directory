@@ -2,7 +2,7 @@
 #     FILE: Makefile
 #   AUTHOR: Michael J. Radwin
 #    DESCR: Makefile for building the Alumni Internet Directory
-#      $Id: Makefile,v 3.70 1999/03/27 04:39:39 mradwin Exp mradwin $
+#      $Id: Makefile,v 3.71 1999/04/05 16:46:52 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -151,7 +151,7 @@ REUNIONS_TS=$(WWWDIR)/etc/.reunions.html
 reunions:	$(REUNIONS_TS)
 $(REUNIONS_TS):	$(AIDDIR)/data/reunions.include $(BIN_HOME)
 	$(BIN_HOME) -p11 -i $(AIDDIR)/data/reunions.include \
-		-t 'Reunions' \
+		-t 'Reunion Information' \
 		$(REUNIONS)
 
 LINKS=$(WWWDIR)/etc/links.html
