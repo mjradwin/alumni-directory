@@ -2,7 +2,7 @@
 #     FILE: mv_util.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: perl library routines for the MVHS Alumni Internet Directory
-#      $Id: mv_util.pl,v 1.24 1997/07/02 17:15:26 mjr Exp mjr $
+#      $Id: mv_util.pl,v 1.25 1997/07/02 17:58:58 mjr Exp mjr $
 #
 
 CONFIG: {
@@ -69,13 +69,6 @@ sub is_new {
     package mv_util;
 
     return ((time - $_[0]) < 2419200) ? 1 : 0;
-}
-
-
-sub cannonize_email {
-    package mv_util;
-    local($usr, $dom) = split(/\@/, $_[0]);
-    return $usr . '@' . "\L$dom\E";
 }
 
 
