@@ -1,6 +1,6 @@
 #!/usr/bin/perl -w
 
-# $Id: aid_dbm_read,v 5.7 1999/06/25 00:25:56 mradwin Exp mradwin $
+# $Id: aid_dbm_read,v 5.8 1999/06/29 01:08:09 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -28,8 +28,9 @@ require 'getopts.pl';
 require 'ctime.pl';
 
 $0 =~ s,.*/,,;  # basename
-$usage = "usage: $0 [-hofac] [-u file | -d year] infile.db [key]
+$usage = "usage: $0 [-hofacg] [-u file | -d year] infile.db [key]
     -h        Display usage information.
+    -g        Display goners candidates (bounces >= 6 months ago).
     -o        Display old users (fresh < 6 months ago).
     -f        Display users whose upd time is within 2 weeks of creation time.
     -a        Display all valid, sorted by alpha.
@@ -38,14 +39,14 @@ $usage = "usage: $0 [-hofac] [-u file | -d year] infile.db [key]
     -d year   Display alumni from <year> that don't want reunion email.
 ";
 
-&Getopts('hofacu:d:') || die "$usage\n";
+&Getopts('hofacu:d:g') || die "$usage\n";
 $opt_h && die "$usage\n";
 $ARGV[0] || die "$usage\n";
-$opt_h = $opt_h;		# avoid warning
-$opt_c = $opt_c;		# avoid warning
-$opt_a = $opt_a;		# avoid warning
-$opt_f = $opt_f;		# avoid warning
-$opt_o = $opt_o;		# avoid warning
+
+die "$0: Too many mutually-exclusive options\n$usage\n"
+    if (($opt_c ? 1 : 0) + ($opt_a ? 1 : 0) + ($opt_u ? 1 : 0) +
+	($opt_d ? 1 : 0) + ($opt_g ? 1 : 0) +
+	($opt_f ? 1 : 0) + ($opt_o ? 1 : 0)) > 1;
 
 $ARGV[0] =~ s/\.db$//;
 die "can't open $ARGV[0].db\n" unless -r "$ARGV[0].db";
@@ -104,6 +105,22 @@ elsif ($opt_o)
 	next unless &aid_is_old($rec{'f'});
 	($affil,$i) = &aid_affiliate(*rec,0);
 	print $rec{'id'}, ' - ', $rec{'sn'}, ', ', $rec{'gn'}, $affil, "\n";
+    }
+}
+elsif ($opt_g)
+{
+    while (($key,$val) = each(%DB))
+    {
+	next unless $key =~ /^\d+$/;
+	%rec = &aid_db_unpack_rec($key,$val);
+
+	next unless $rec{'v'};
+	next if $rec{'b'} eq '0';
+	next unless $rec{'b'} < (time - (180 * 24 * 60 * 60));
+	next unless $rec{'f'} > $rec{'b'};
+
+	print "$rec{'id'} - $rec{'e'} - bounce ", &aid_caldate($rec{'b'}),
+   	      " - fresh ", &aid_caldate($rec{'f'}), "\n";
     }
 }
 elsif ($opt_f)
@@ -242,4 +259,5 @@ sub display_key_val
 if ($^W && 0)
 {
     $a = $b;
+    $opt_h = $opt_h;		# avoid warning
 }
