@@ -2,7 +2,7 @@
 
 #
 # mails a welcome or update note to everyone in targets.adr
-# $Id: aid_welcome,v 1.28 1998/01/07 18:59:23 mjr Exp mjr $
+# $Id: aid_welcome,v 1.29 1998/01/12 17:32:35 mjr Exp mjr $
 #
 
 require 'aid_util.pl';
@@ -72,14 +72,15 @@ The directory (which produced this form letter) shows the following
 information about you:
 
 $about$denied
-If you feel as if you have received this email in error or do not want
-to be listed in the directory, please let me know and I will remove your
-entry.  If any of the above information is incorrect or out of date, you
-can update your entry online at:\n\n" .
+If you have received this email in error or do not want to be listed in
+the Directory, please let me know and I will remove your entry.  If any
+of the above information is incorrect or out of date, you can update
+your entry online at:\n\n" .
 
 "http://" . &aid_config('master_srv') . &aid_config('cgi_path') . "?update=$rec{'id'}
 
-If you don't have web access, just email me corrections and I'll be happy
-to fix your entry.  If everything you see above is correct, you're all set.\n";
+If you don't have web access, just email me corrections and I'll be
+happy to fix your entry.  If everything you see above is correct, you're
+all set.\n";
 
 }
