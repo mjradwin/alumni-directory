@@ -2,11 +2,11 @@
 #     FILE: aid_util.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: perl library routines for the Alumni Internet Directory
-#      $Id: aid_util.pl,v 3.94 1999/01/20 19:06:49 mradwin Exp mradwin $
+#      $Id: aid_util.pl,v 3.95 1999/01/20 19:23:07 mradwin Exp mradwin $
 #
 
 $aid_util'rcsid =
- '$Id: aid_util.pl,v 3.94 1999/01/20 19:06:49 mradwin Exp mradwin $';
+ '$Id: aid_util.pl,v 3.95 1999/01/20 19:23:07 mradwin Exp mradwin $';
 
 # ----------------------------------------------------------------------
 # CONFIGURATION
@@ -747,8 +747,8 @@ are required.  All other fields are optional.</p>\n\n";
   for=\"reunion\">&nbsp;My class officers may notify me of
   reunion information via e-mail.</label><br><br>Please 
   <a href=\"" . $config{'master_path'} . "etc/faq.html#mailings\">send 
-  an updated copy</a> of the Directory to my e-mail address every 3 
-  months:<br>
+  an updated copy</a> of the Directory to my e-mail address every
+  February, May, August and November:<br>
 
   &nbsp;&nbsp;&nbsp;&nbsp;<input type=radio name=\"request\" id=\"request4\"
   value=\"4\"$reqchk[4]><label for=\"request4\">&nbsp;

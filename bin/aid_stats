@@ -1,6 +1,6 @@
 #!/usr/bin/perl -w
 
-# $Id$
+# $Id: aid_stats,v 1.1 1999/01/21 16:45:33 mradwin Exp mradwin $
 
 require 'aid_util.pl';
 
@@ -25,5 +25,5 @@ for (@db)
 
 print "$ntotal total users, $nvalid valid\n";
 print "", ($nreq[1] + $nreq[2] + $nreq[3] + $nreq[4]),
-    " requesting updates\n";
+    " requesting updates ";
 print "(", join(', ', @nreq), ")\n";
