@@ -32,7 +32,7 @@ $sum = $opt_p + $opt_e + $opt_b + $opt_w + $opt_m + $opt_n + $opt_l +
     $opt_v;
 die "$usage\n" unless $sum == 1;
 
-open(MVHS,$ARGV[0]) || die "Can't open $ARGV[0]: $!\n";
+open(DATA,$ARGV[0]) || die "Can't open $ARGV[0]: $!\n";
 open(BOOK,">$ARGV[1]") || die "Can't open $ARGV[1]: $!\n";
 
 # special case for netscape
@@ -47,7 +47,7 @@ Do Not Edit! -->
 <DL><p>\n";
 }
 
-while(<MVHS>) {
+while(<DATA>) {
     chop;
     ($time,$id,$req,$last,$first,$married,
      $school,$year,$email,$alias,$homepage,$location) = &mv_parse($_);
@@ -97,7 +97,7 @@ while(<MVHS>) {
 }
 
 $opt_n && print BOOK "</DL><p>\n";
-close(MVHS);
+close(DATA);
 close(BOOK);
 
 exit(0);

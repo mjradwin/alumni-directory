@@ -2,7 +2,7 @@
 #     FILE: mv_util.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: perl library routines for the MVHS Alumni Internet Directory
-#      $Id: mv_util.pl,v 1.58 1997/12/03 00:52:56 mjr Exp mjr $
+#      $Id: mv_util.pl,v 1.59 1997/12/06 00:37:10 mjr Exp $
 #
 
 CONFIG: {
@@ -50,17 +50,18 @@ CONFIG: {
 	("Home,"                  . $config{'master_path'},
 	 "Alphabetically,"        . $config{'master_path'} . "all.html",
 	 "Grad.&nbsp;Class,"      . $config{'master_path'} . "class.html",
+	 "Awalt&nbsp;Alumni,"     . $config{'master_path'} . "awalt.html",
 	 "Recent&nbsp;Additions," . $config{'master_path'} . "recent.html",
 	 "Web&nbsp;Pages,"        . $config{'master_path'} . "pages.html",
-	 "Get&nbsp;Listed!,"      . $config{'master_path'} . "add.html",
-	 "Acceptable&nbsp;Use,#disclaimer");
+	 "Get&nbsp;Listed!,"      . $config{'master_path'} . "add.html");
 
     @second_idx = 
 	("Listings,"              . $config{'master_path'} . "listings.html",
 	 "Reunions,"              . $config{'master_path'} . "reunions.html",
 	 "Links,"                 . $config{'master_path'} . "links.html",
 	 "Nicknames,"             . $config{'master_path'} . "nicknames.html",
-	 "Tech&nbsp;Notes,"       . $config{'master_path'} . "tech.html");
+	 "Tech&nbsp;Notes,"       . $config{'master_path'} . "tech.html",
+	 "Acceptable&nbsp;Use,#disclaimer");
 
     $pics_label = "<meta http-equiv=\"PICS-Label\" content='(PICS-1.1 \"http://www.rsac.org/ratingsv01.html\" l gen true comment \"RSACi North America Server\" by \"" . $config{'admin_email'} . "\" for \"http://" . $config{'master_srv'} . $config{'master_path'} . "\" on \"1996.04.04T08:15-0500\" r (n 0 s 0 v 0 l 0))'>";
 
@@ -127,19 +128,38 @@ sub inorder_fullname {
 
 sub affiliate {
     package mv_util;
-    local($year, $school) = @_;
-    local($affil);
+    local($year, $school,$do_html_p) = @_;
+    local($affil,$len);
+
+    $affil = '  ';
+    $len   = 2;
 
     if ($year =~ /^\d+$/) {
-	$affil  = "  $school '$year";
-	$affil  = "  A'$year" if $school eq 'Awalt';
-	$affil  = "  '$year"  if $school eq 'MVHS' || $school eq '';
+	$affil .= "<a href=\"" . $config{'master_path'} . "class.html" .
+	    "#grad${year}\">" if $do_html_p;
+
+	if ($school eq 'Awalt') {
+	    $affil  .= "A'$year";
+	    $len    += length("A'$year");
+	} elsif ($school eq 'MVHS' || $school eq '') {
+	    $affil  .= "'$year";
+	    $len    += length("'$year");
+	} else {
+	    $affil  .= "$school '$year";
+	    $len    += length("$school '$year");
+	}
+
+	$affil .= "</a>" if $do_html_p;
 
     } else {
-	$affil  = "  [$school $year]";
+	$affil .= "<a href=\"" . $config{'master_path'} . "class.html" .
+	    "#fac_staff\">" if $do_html_p;
+	$affil .= "[$school $year]";
+	$len   += length("[$school $year]");
+	$affil .= "</a>" if $do_html_p;
     }
 
-    return $affil;
+    return ($affil,$len);
 }
 
 

@@ -8,24 +8,26 @@ require 'getopts.pl';
 
 $htmlname = "class.html";
 
-$usage = 'usage: mv_class_html [-ht] infile.adr outfile
+$usage = 'usage: mv_class_html [-hta] infile.adr outfile
     -h        Display usage information.
     -t        Output text only
+    -a        Awalt mode.
 ';
 
-&Getopts('ht') || die "$usage\n";
+&Getopts('hta') || die "$usage\n";
 $opt_h && die "$usage\n";
 $ARGV[0] || die "$usage\n";
 $ARGV[1] || die "$usage\n";
 
-open(MVHSPRE,$ARGV[0]) || die "Can't open $ARGV[0]: $!\n";
+open(DATAPRE,$ARGV[0]) || die "Can't open $ARGV[0]: $!\n";
 open(FMTOUT,">$ARGV[1]") || die "Can't open $ARGV[1]: $!\n";
 
 if (!$opt_t) {
-    print FMTOUT &common_html_hdr(2,1);
+    print FMTOUT &common_html_hdr(($opt_a ? 3 : 2),1);
     print FMTOUT "<br>";
-    print FMTOUT &tableheader("Alumni Listed by Graduating Class", 1,
-'ffff99', '000000', 1);
+    print FMTOUT &tableheader(
+      ($opt_a ? "Awalt Alumni" : "Alumni Listed by Graduating Class"),
+			      1, 'ffff99', '000000', 1);
     print FMTOUT '
 <p>Any entries marked with <img src="new.gif" alt="[new]" width="28"
 height="11"> have been added to the Directory within the last month.
@@ -37,7 +39,7 @@ alumnus.</p>
 
     $lastYear = '00';
     $first_fac_staff = 0;
-    while(<MVHSPRE>) {
+    while(<DATAPRE>) {
 	chop;
 
 	($time,$id,$req,$last,$first,$married,
@@ -55,7 +57,7 @@ alumnus.</p>
 	    }
 	}
     }
-    close(MVHSPRE);
+    close(DATAPRE);
     print FMTOUT "</tt></p>\n\n<pre>";
 }
 
@@ -67,10 +69,10 @@ $cgi = &mv_config('cgi_path');
 print FMTOUT "Name$blank_gif                                     Email\n";
 print FMTOUT "---------------------------------------------------------------------------";
 
-open(MVHS,$ARGV[0]) || die "Can't open $ARGV[0]: $!\n";
+open(DATA,$ARGV[0]) || die "Can't open $ARGV[0]: $!\n";
 $lastYear = '00';
 $first_fac_staff = 0;
-while(<MVHS>) {
+while(<DATA>) {
     chop;
     ($time,$id,$req,$last,$first,$married,
      $school,$year,$email,$alias,$homepage,$location) = &mv_parse($_);
@@ -98,8 +100,9 @@ while(<MVHS>) {
     }
 
     $fullname = &fullname($first,$last,$married);
+    $regschool = ($opt_a) ? 'Awalt' : 'MVHS';
 
-    if ($school ne 'MVHS' && $school ne '') {
+    if ($school ne $regschool && $school ne '') {
 	$affil     = "  [$school]";
     } else {
 	$affil     = "";
@@ -122,6 +125,6 @@ while(<MVHS>) {
 }
 
 $opt_t || print FMTOUT "</pre>\n";
-$opt_t || print FMTOUT &common_html_ftr(2);
+$opt_t || print FMTOUT &common_html_ftr(($opt_a ? 3 : 2));
 
 exit(0);

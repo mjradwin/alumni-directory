@@ -6,14 +6,14 @@ require 'mv_util.pl';
 require 'tableheader.pl';
 
 die "Usage: mv_new_html infile.adr outfile.html\n" if !$ARGV[0] || !$ARGV[1];
-open(MVHS,$ARGV[0]) || die "Can't open $ARGV[0]: $!\n";
+open(DATA,$ARGV[0]) || die "Can't open $ARGV[0]: $!\n";
 open(FMTOUT,">$ARGV[1]") || die "Can't open $ARGV[1]: $!\n";
 
 $info_gif = "<img src=\"info.gif\" height=12 width=12 hspace=4 border=0 alt=\"[i]\">";
 $blank_gif = "<img src=\"blank.gif\" height=12 width=12 hspace=4 border=0 alt=\"\">";
 $cgi = &mv_config('cgi_path');
 
-print FMTOUT &common_html_hdr(3,1);
+print FMTOUT &common_html_hdr(4,1);
 print FMTOUT "<br>";
 print FMTOUT &tableheader("Recent Additions to the Directory", 1,
 'ffff99', '000000', 1);
@@ -28,14 +28,14 @@ print FMTOUT "<pre>";
 print FMTOUT "Name and Graduation Year$blank_gif                  Email\n";
 print FMTOUT "---------------------------------------------------------------------------\n";
 
-while(<MVHS>) {
+while(<DATA>) {
     chop;
     ($time,$id,$req,$last,$first,$married,
      $school,$year,$email,$alias,$homepage,$location) = &mv_parse($_);
     next unless &is_new($time);
 
     $fullname = &fullname($first,$last,$married);
-    $affil = &affiliate($year,$school);
+    ($affil,$len) = &affiliate($year,$school,1);
 
     print FMTOUT "<a href=\"$cgi?about=$id\">$info_gif</a>";
     print FMTOUT "<a name=\"$alias\"";
@@ -44,12 +44,12 @@ while(<MVHS>) {
     print FMTOUT $fullname;
     print FMTOUT "</a>";
     print FMTOUT $affil;
-    print FMTOUT ' ', ' ' x (41 - (length($fullname) + length($affil)));
+    print FMTOUT ' ', ' ' x (41 - (length($fullname) + $len));
     print FMTOUT "<a href=\"mailto:", $email, "\">", $email, "</a>";
     print FMTOUT "\n";
 }
 
 print FMTOUT "</pre>\n";
-print FMTOUT &common_html_ftr(3);
+print FMTOUT &common_html_ftr(4);
 
 exit(0);
