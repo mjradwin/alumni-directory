@@ -1,6 +1,6 @@
 #!/usr/bin/perl -w
 
-# $Id: aid_addname,v 3.20 1999/03/05 00:56:52 mradwin Exp mradwin $
+# $Id: aid_addname,v 3.21 1999/03/08 23:32:49 mradwin Exp mradwin $
 
 require 'getopts.pl';
 require 'aid_util.pl';
@@ -151,8 +151,8 @@ sub addname {
     # email address before
     if ($rec{'id'} == -1)
     {
-	$key_email = "\L$oldrec{'email'}$oldrec{'last'}$oldrec{'first'}\E";
-	$key_name = "\L$oldrec{'last'}$oldrec{'first'}$oldrec{'middle'}$oldrec{'year'}\E";
+	$key_email = "\L$rec{'email'}$rec{'last'}$rec{'first'}\E";
+	$key_name = "\L$rec{'last'}$rec{'first'}$rec{'middle'}$rec{'year'}\E";
 
 	if (defined $id_by_email{$key_email})
 	{
