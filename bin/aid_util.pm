@@ -2,11 +2,11 @@
 #     FILE: aid_util.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: perl library routines for the Alumni Internet Directory
-#      $Id: aid_util.pl,v 2.13 1998/05/15 19:58:56 mradwin Exp mradwin $
+#      $Id: aid_util.pl,v 2.14 1998/05/15 20:16:03 mradwin Exp mradwin $
 #
 
 $aid_util'rcsid =
- '$Id: aid_util.pl,v 2.13 1998/05/15 19:58:56 mradwin Exp mradwin $';
+ '$Id: aid_util.pl,v 2.14 1998/05/15 20:16:03 mradwin Exp mradwin $';
 
 # ----------------------------------------------------------------------
 # CONFIGURATION
@@ -38,7 +38,7 @@ $aid_util'rcsid =
      'cat',          '/bin/cat',
      'cp',           '/bin/cp',
      'make',         '/usr/bin/make',
-     'mailto',       "mradwin\@localhost",
+     'mailto',       "mvhs-submissions\@radwin.org",
      'mailsubj',     'MVHSAID',
      'spoolfile',    '/var/mail/mradwin',
      'rcsid',        "$aid_util'rcsid",
@@ -947,8 +947,10 @@ sub common_html_ftr {
     $ftr .= &main'common_link_table($page); #'#
     
     $ftr .= "\n" . $disclaimer . "\n\n<hr noshade size=1>\n" .
+	"\n<font size=\"-1\">" .
+	"Copyright &copy; 1998 " . $config{'admin_name'} . " &lt;" .
 	"<a\nhref=\"mailto:" . $config{'admin_email'} . 
-	"\"><tt>" . $config{'admin_email'} . "</tt></a>\n\n" .
+	"\"><tt>" . $config{'admin_email'} . "</tt></a>&gt;</font>\n\n" .
 	"<!-- end common_html_ftr -->\n\n</body>\n</html>\n";
 
     $ftr;
