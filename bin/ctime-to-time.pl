@@ -1,3 +1,5 @@
+#!/usr/local/bin/perl -w
+
 # Thu Mar 19 21:18:14 1998
 
 require 'timelocal.pl';
