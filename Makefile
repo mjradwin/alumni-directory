@@ -2,7 +2,7 @@
 #     FILE: Makefile
 #   AUTHOR: Michael J. Radwin
 #    DESCR: Makefile for building the Alumni Internet Directory
-#      $Id: Makefile,v 3.48 1999/02/09 00:55:14 mradwin Exp mradwin $
+#      $Id: Makefile,v 3.49 1999/02/09 01:00:45 mradwin Exp mradwin $
 #
 
 WWWROOT=/home/web/radwin.org
@@ -52,7 +52,8 @@ SNAPSHOTFILES=mvhs \
 	web/mvhs-alumni/*.gif \
 	web/mvhs-alumni/whatsnew
 
-all:	adrfile stats index submit \
+all:	$(CGIDIR)/nph-mvhsaid \
+	adrfile stats index submit \
 	addupdate reunions links faq copyright \
 	recent multi_class multi_alpha \
 	pages class awalt goners download books2
@@ -62,6 +63,8 @@ DBFILE=$(WWWDIR)/master.db
 adrfile:	$(ADRFILE) $(DBFILE)
 $(ADRFILE):	$(ADR_MASTER)
 	$(CP) $(ADR_MASTER) $(WWWDIR)
+
+$(CGIDIR)/nph-mvhsaid: $(CGIDIR)/mvhsaid
 	$(CP) $(CGIDIR)/mvhsaid $(CGIDIR)/nph-mvhsaid
 
 $(DBFILE):	$(ADR_MASTER) $(BIN_DBM_WRITE) $(AID_UTIL_PL)
@@ -103,9 +106,9 @@ $(PAGES):	$(ADR_CLASS) $(BIN_PAGES)
 
 MULTI_CLASS=$(WWWDIR)/class/index.html
 multi_class:	$(MULTI_CLASS)
-$(MULTI_CLASS):	$(ADR_CLASS) $(BIN_MULTI_CLASS)
+$(MULTI_CLASS):	$(DBFILE) $(BIN_MULTI_CLASS)
 	mkdir -p $(WWWDIR)/class
-	$(BIN_MULTI_CLASS) $(ADR_CLASS)
+	$(BIN_MULTI_CLASS) $(DBFILE)
 
 INDEX=$(WWWDIR)/index.html
 index:	$(INDEX)
