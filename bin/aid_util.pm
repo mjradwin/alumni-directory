@@ -2,7 +2,7 @@
 #     FILE: aid_util.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: perl library routines for the Alumni Internet Directory
-#      $Id: aid_util.pl,v 5.83 2001/01/26 18:19:21 mradwin Exp mradwin $
+#      $Id: aid_util.pl,v 5.84 2001/01/26 18:20:52 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -406,7 +406,7 @@ Regards,
 " . $config{'short_school'} . " Alumni Internet Directory
 http://" . $config{'master_srv'} . $config{'master_path'} . "\n";
 
-    $return_path = $config{'admin_email'};
+    $return_path = $config{'devnull_email'};
     $from = $config{'short_school'} . ' Alumni Robot';
     $subject = $config{'short_school'} .
 	" Alumni Internet Directory Verification [$randkey]";
