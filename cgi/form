@@ -4,7 +4,7 @@
 #     FILE: mvhsaid.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: MVHS Alumni Internet Directory CGI interface
-#      $Id: mvhsaid,v 1.19 1997/08/11 16:28:14 mjr Exp mjr $
+#      $Id: mvhsaid,v 1.20 1997/08/22 16:57:57 mjr Exp mjr $
 #
 
 require 'mv_util.pl';
@@ -22,7 +22,7 @@ $dbfile = &mv_config('wwwdir') . "mvhs.adr";
 if (defined($in{'version'})) {
     select(STDOUT);  $| = 1;
     print "Content-type: text/plain\n\n";
-    print '$Id: mvhsaid,v 1.19 1997/08/11 16:28:14 mjr Exp mjr $', "\n";
+    print '$Id: mvhsaid,v 1.20 1997/08/22 16:57:57 mjr Exp mjr $', "\n";
     exit(0);
 }
 
@@ -258,24 +258,14 @@ sub send_upd_list {
 	 $school,$year,$email,$homepage,$location) = split(/;/);
 
 	$fullname = &fullname($first,$last,$married);
-
-	if ($year =~ /^\d+$/) {
-	    $affil  = "  '$year";
-	    $affil .= " $school" 
-		if $school ne 'MVHS' && $school ne '';
-	} else {
-	    $affil  = "  [$school $year]";
-	}
-	$affil_tmp = $affil;
-	$affil_tmp =~ s/<[^>]+>//g;
-	$affil_len = length($affil_tmp);
+	$affil = &affiliate($year,$school);
 
 	print "<a href=\"$cgi?about=$id\">$info_gif</a>";
 	print "<a href=\"", &mv_config('cgi_path'), "?update=$id\">";
 	print $fullname;
 	print "</a>";
 	print $affil;
-	print ' ' x (42 - (length($fullname) + $affil_len));
+	print ' ', ' ' x (41 - (length($fullname) + length($affil)));
 	print $email;
 	print "\n";
     }
