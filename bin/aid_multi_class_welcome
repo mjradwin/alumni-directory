@@ -1,6 +1,6 @@
 #!/usr/local/bin/perl5 -w
 
-# $Id: aid_multi_class_welcome,v 5.9 2000/02/29 21:55:00 mradwin Exp mradwin $
+# $Id: aid_multi_class_welcome,v 5.10 2000/06/05 17:01:11 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -24,9 +24,9 @@ $dirname =~ s,/[^/]+$,,;
 unshift(@INC, $dirname);
 
 use DB_File;
+use Getopt::Std;
 
 require 'aid_util.pl';
-require 'getopts.pl';
 
 $0 =~ s,.*/,,;  # basename
 $usage = "usage: $0 [-hq] infile.db classtxt-dir
@@ -34,12 +34,11 @@ $usage = "usage: $0 [-hq] infile.db classtxt-dir
     -q        Quiet.
 ";
 
-&Getopts('hq') || die "$usage\n";
-$opt_h && die "$usage\n";
+my(%opts);
+&getopts('hq', \%opts) || die "$usage\n";
+$opts{'h'} && die "$usage\n";
 $ARGV[0] || die "$usage\n";
 $ARGV[1] || die "$usage\n";
-$opt_h = $opt_h;		# avoid warning
-$opt_q = $opt_q;		# avoid warning
 
 $dbmfile = shift;
 tie(%DB, 'DB_File', $dbmfile, O_RDONLY, 0444, $DB_File::DB_HASH)
@@ -79,11 +78,13 @@ foreach (@years)
 
     if (@mail_ids)
     {
+	next unless -r "${dir}/${_}.txt";
+
 	@mail_ids = sort { $a <=> $b } @mail_ids;
 
 	print "$welcome_exe -l logs/massmail-$date-4.log -r4 ",
 	      "-m ${dir}/${_}.txt $dbmfile ", join(' ', @mail_ids), "\n"
-		  unless $opt_q;
+		  unless $opts{'q'};
 
 	system
 	    $welcome_exe,
