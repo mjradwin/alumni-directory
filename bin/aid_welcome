@@ -2,7 +2,7 @@
 
 #
 # mails a welcome, update, confirm, or massmail message to members
-# $Id: aid_welcome,v 3.44 1999/04/12 16:10:07 mradwin Exp mradwin $
+# $Id: aid_welcome,v 3.45 1999/05/06 16:37:45 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -253,7 +253,7 @@ sub mail_user
 		  $message);
     print LOG time, " - $rec{'id'} - $rec{'e'}\n";
 
-    if (defined $rec{'eo'} &&
+    if ($opt_u && defined $rec{'eo'} &&
 	$rec{'eo'} ne '' && $rec{'eo'} ne $rec{'e'})
     {
 	&aid_sendmail($rec{'eo'}, $name,
