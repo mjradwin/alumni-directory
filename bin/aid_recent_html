@@ -15,7 +15,8 @@ $cgi = &mv_config('cgi_path');
 
 print FMTOUT &common_html_hdr(3,1);
 print FMTOUT "<br>";
-print FMTOUT &tableheader("Recent Additions to the Directory", 1, 'ffff99', 1);
+print FMTOUT &tableheader("Recent Additions to the Directory", 1,
+'ffff99', '000000', 1);
 print FMTOUT '
 <p>All entries on this page have been added to the Directory within the
 last month.  The most recent additions or updates are at the bottom of the

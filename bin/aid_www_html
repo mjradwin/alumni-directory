@@ -24,7 +24,8 @@ $cgi = &mv_config('cgi_path');
 
 print FMTOUT &common_html_hdr(4,1);
 print FMTOUT "<br>";
-print FMTOUT &tableheader("Alumni with Web Pages", 1, 'ffff99', 1);
+print FMTOUT &tableheader("Alumni with Web Pages", 1, 'ffff99',
+'000000', 1);
 print FMTOUT '
 <p>Any entries marked with <img src="new.gif" alt="[new]" width="28"
 height="11"> have been added to the Directory within the last month.

@@ -14,7 +14,8 @@ open(FMTOUT,">$ARGV[1]") || die "Can't open $ARGV[1]: $!\n";
 
 print FMTOUT &common_html_hdr(-1,1);
 print FMTOUT "<br>";
-print FMTOUT &tableheader("Alumni with Invalid Addresses", 1, 'ffff99', 1);
+print FMTOUT &tableheader("Alumni with Invalid Addresses", 1, 'ffff99',
+'000000', 1);
 print FMTOUT "
 <p>The following addresses are invalid because either email to them
 bounces, or the address is being used by a new owner.  If you know a

@@ -24,7 +24,8 @@ open(FMTOUT,">$ARGV[1]") || die "Can't open $ARGV[1]: $!\n";
 if (!$opt_t) {
     print FMTOUT &common_html_hdr(1,1);
     print FMTOUT "<br>";
-    print FMTOUT &tableheader("Alumni Listed by Last Name", 1, 'ffff99', 1);
+    print FMTOUT &tableheader("Alumni Listed by Last Name", 1, 'ffff99',
+'000000', 1);
     print FMTOUT '
 <p>Any entries marked with <img src="new.gif" alt="[new]" width="28"
 height="11"> have been added to the Directory within the last month.

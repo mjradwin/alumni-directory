@@ -4,7 +4,7 @@
 #     FILE: mvhsaid.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: MVHS Alumni Internet Directory CGI interface
-#      $Id: mvhsaid,v 1.33 1997/10/16 21:35:00 mjr Exp mjr $
+#      $Id: mvhsaid,v 1.34 1997/10/17 23:46:21 mjr Exp mjr $
 #
 
 require 'mv_util.pl';
@@ -22,7 +22,7 @@ $dbfile = &mv_config('wwwdir') . "mvhs.adr";
 if (defined($in{'version'})) {
     select(STDOUT);  $| = 1;
     print "Content-type: text/plain\n\n";
-    print '$Id: mvhsaid,v 1.33 1997/10/16 21:35:00 mjr Exp mjr $', "\n";
+    print '$Id: mvhsaid,v 1.34 1997/10/17 23:46:21 mjr Exp mjr $', "\n";
     exit(0);
 }
 
@@ -139,7 +139,8 @@ sub confirm_submission {
     print &common_html_hdr(-1,1);
 
     print "<br>\n";
-    print &tableheader("Please confirm your submission", 1, "ffff99", 1);
+    print &tableheader("Please confirm your submission", 1, "ffff99",
+'000000', 1);
     print "
 <p>Please confirm that all of the below information is correct.  If you
 have made any mistakes, select the <strong>Revise</strong> button to edit
@@ -193,7 +194,8 @@ EOM
     print &common_html_hdr(-1,1);
 
     print "<br>\n";
-    print &tableheader("Your submission is confirmed and queued", 1, "ffff99", 1);
+    print &tableheader("Your submission is confirmed and queued", 1,
+"ffff99", '000000', 1);
     $fullname = &inorder_fullname($in{'first'},$in{'last'},$in{'married'});
     print "<p>The entry for <strong>$fullname</strong> has been\n";
     print "added to the submission queue.\n";
@@ -254,7 +256,7 @@ sub send_about {
     print "Content-type: text/html\n\n";
     print &common_html_hdr(-1,1);
     print "<br>\n";
-    print &tableheader($fullname, 1, "ffff99", 1);
+    print &tableheader($fullname, 1, "ffff99", '000000', 1);
     print "<p>Here is more detailed information about $fullname.  To see\n";
     print "<a href=\"" . &mv_config('cgi_path') . "?vcard=$id\">";
     print "${first}'s vCard</a>,\n";
@@ -315,7 +317,8 @@ sub send_upd_list {
     print "Content-type: text/html\n\n";
     print &common_html_hdr(-1,1);
     print "<br>\n";
-    print &tableheader("Update Your Directory Listing", 1, "ffff99", 1);
+    print &tableheader("Update Your Directory Listing", 1, "ffff99",
+'000000', 1);
     print "\n";
     print "<p>Please select an entry to update from the list below.<p>\n";
     print "<pre>";
