@@ -2,7 +2,7 @@
 
 #
 # does the html version of the grad-date address list
-# $Id: aid_class_html,v 5.10 1999/06/28 23:36:24 mradwin Exp mradwin $
+# $Id: aid_class_html,v 5.11 1999/06/29 01:08:09 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -100,6 +100,24 @@ if (!$opt_t) {
     print FMTOUT "<pre>";
 }
 
+if ($opt_c)
+{
+    die "corrupt/missing _t_${opt_c} key!"
+	unless defined $DB{"_t_${opt_c}"} && $DB{"_t_${opt_c}"} ne '';
+    $time = unpack("N",$DB{"_t_${opt_c}"});
+
+    if ($opt_c =~ /^\d+$/)
+    {
+	print FMTOUT "Class of $opt_c";
+    }
+    else
+    {
+	print FMTOUT "Faculty/Staff";
+    }
+
+    print FMTOUT "  (Last updated ", &aid_caldate($time), ")\n\n";
+}
+
 print FMTOUT "Name $blank_gif                                    E-Mail\n";
 print FMTOUT "---------------------------------------------------------------------------";
 
@@ -116,23 +134,29 @@ foreach $year (@years)
     print FMTOUT "\n";
     if ($year =~ /^\d+$/)
     {
-	$opt_t || print FMTOUT "<a name=\"grad${year}\" " .
-	    "href=\"" . &aid_config('master_path') . "class/${year}.html\">";
-	print FMTOUT "Class of $year";
-	$opt_t || print FMTOUT "</a>  (<a href=\"#top\">top</a>)";
-	print FMTOUT "\n";
+	if (!$opt_c)
+	{
+	    $opt_t || print FMTOUT "<a name=\"grad${year}\" " .
+		"href=\"" . &aid_config('master_path') . "class/${year}.html\">";
+	    print FMTOUT "Class of $year";
+	    $opt_t || print FMTOUT "</a>  (<a href=\"#top\">top</a>)";
+	    print FMTOUT "\n";
+	}
 	$prev = $year;
     }
     else
     {
-	$opt_t || print FMTOUT "<a name=\"gradother\" " .
-	    "href=\"" . &aid_config('master_path') . "class/other.html\">"
-		if $prev =~ /^\d+$/;
-	print FMTOUT "Faculty/Staff";
-	$opt_t || print FMTOUT "</a>" if $prev =~ /^\d+$/;
-	print FMTOUT ' ' x (13 - length("Faculty/Staff"));
-	$opt_t || print FMTOUT "  (<a href=\"#top\">top</a>)";
-	print FMTOUT "\n";
+	if (!$opt_c)
+	{
+	    $opt_t || print FMTOUT "<a name=\"gradother\" " .
+		"href=\"" . &aid_config('master_path') . "class/other.html\">"
+		    if $prev =~ /^\d+$/;
+	    print FMTOUT "Faculty/Staff";
+	    $opt_t || print FMTOUT "</a>" if $prev =~ /^\d+$/;
+	    print FMTOUT ' ' x (13 - length("Faculty/Staff"));
+	    $opt_t || print FMTOUT "  (<a href=\"#top\">top</a>)";
+	    print FMTOUT "\n";
+	}
 	$prev = $year;
     }
 
