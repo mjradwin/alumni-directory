@@ -2,11 +2,11 @@
 #     FILE: aid_util.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: perl library routines for the Alumni Internet Directory
-#      $Id: aid_util.pl,v 4.5 1999/02/01 23:42:12 mradwin Exp mradwin $
+#      $Id: aid_util.pl,v 4.6 1999/02/01 23:53:58 mradwin Exp mradwin $
 #
 
 $aid_util'rcsid =
- '$Id: aid_util.pl,v 4.5 1999/02/01 23:42:12 mradwin Exp mradwin $';
+ '$Id: aid_util.pl,v 4.6 1999/02/01 23:53:58 mradwin Exp mradwin $';
 $aid_util'caldate = &aid_caldate(time); #'#
 
 # ----------------------------------------------------------------------
@@ -22,9 +22,9 @@ require 'aid_config.pl';
 @aid_util'req_descr_long =   #'#
     (
      'No e-mail except for yearly address verification.',
-     'All alumni, sorted by name. [~ 50 kbytes]',
-     'All alumni, sorted by graduating class. [~ 50 kbytes]',
-     'Only new and changed alumni entries. [~ 10 kbytes]',
+     'All alumni, sorted by name. [~ 65 kbytes]',
+     'All alumni, sorted by graduating class. [~ 65 kbytes]',
+     'Only new and changed alumni entries. [~ 15 kbytes]',
      'Only people from my graduating class.',
      );
 
