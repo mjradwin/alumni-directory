@@ -2,11 +2,11 @@
 #     FILE: aid_util.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: perl library routines for the Alumni Internet Directory
-#      $Id: aid_util.pl,v 2.20 1998/05/16 01:57:36 mradwin Exp mradwin $
+#      $Id: aid_util.pl,v 2.21 1998/05/16 02:20:00 mradwin Exp mradwin $
 #
 
 $aid_util'rcsid =
- '$Id: aid_util.pl,v 2.20 1998/05/16 01:57:36 mradwin Exp mradwin $';
+ '$Id: aid_util.pl,v 2.21 1998/05/16 02:20:00 mradwin Exp mradwin $';
 
 # ----------------------------------------------------------------------
 # CONFIGURATION
@@ -256,6 +256,17 @@ sub is_new {
     local($[) = 0;
 
     (((time - $_[0]) < 2678400) ? 1 : 0);
+}
+
+
+# is the GMT more than one year ago?
+# 31536000 = 31 days * 24 hrs * 60 mins * 60 secs
+sub is_old {
+    package aid_util;
+
+    local($[) = 0;
+
+    (((time - $_[0]) >= 31536000) ? 1 : 0);
 }
 
 
