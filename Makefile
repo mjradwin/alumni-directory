@@ -2,7 +2,7 @@
 #     FILE: Makefile
 #   AUTHOR: Michael J. Radwin
 #    DESCR: Makefile for building the Alumni Internet Directory
-#      $Id: Makefile,v 3.71 1999/04/05 16:46:52 mradwin Exp mradwin $
+#      $Id: Makefile,v 3.72 1999/04/06 16:42:00 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -25,6 +25,7 @@ WWWROOT=/home/web/radwin.org
 WWWDIR=$(WWWROOT)/docs/mvhs-alumni
 CGIDIR=$(WWWROOT)/cgi-bin
 AID_UTIL_PL=$(CGIDIR)/aid_util.pl
+AID_SUBMIT_PL=$(CGIDIR)/aid_submit.pl
 AIDDIR=/home/users/mradwin/mvhs
 TAR_AIDDIR=mvhs
 TAR_IMGDIR=web/images
@@ -186,7 +187,7 @@ $(STATS):	$(BIN_STATS) $(DBFILE)
 SUBMIT=$(WWWDIR)/add/new.html
 SUBMIT_TS=$(WWWDIR)/add/.new.html
 submit:	$(SUBMIT_TS)
-$(SUBMIT_TS):	$(BIN_HOME) $(AID_UTIL_PL)
+$(SUBMIT_TS):	$(BIN_HOME) $(AID_SUBMIT_PL)
 	$(BIN_HOME) -s -p20 \
 		-t 'Add Your Listing to the Directory' \
 		$(SUBMIT)
