@@ -116,6 +116,7 @@ sub mv_create_db {
 
 sub submit_body {
     package mv_util;
+    require 'tableheader.pl';
 
     local($[) = 0;
     local($_);
@@ -125,22 +126,9 @@ sub submit_body {
     $homepage = 'http://' if $homepage eq '';
     $req = ($req) ? ' checked' : '';
 
-    return "<br>
-<table cellspacing=0 cellpadding=1 border=0 width=\"100%\">
-  <tr>
-    <td bgcolor=\"#000000\" align=center>
-    <table cellspacing=0 cellpadding=5 border=0 width=\"100%\">
-      <tr>
-        <td bgcolor=\"#eeee88\" align=center valign=middle>
-        <strong><font size=\"+1\">A</font>&nbsp;D&nbsp;D&nbsp;&nbsp; A&nbsp;&nbsp; <font size=\"+1\">L</font>&nbsp;I&nbsp;S&nbsp;T&nbsp;I&nbsp;N&nbsp;G&nbsp;&nbsp; T&nbsp;O&nbsp;&nbsp; T&nbsp;H&nbsp;E&nbsp;&nbsp; <font size=\"+1\">D</font>&nbsp;I&nbsp;R&nbsp;E&nbsp;C&nbsp;T&nbsp;O&nbsp;R&nbsp;Y</strong>
-        </td>
-      </tr>
-    </table>
-    </td>
-  </tr>
-</table>
-
-<p>Thanks for adding a name to the MVHS Alumni Internet
+    return "<br>\n" . 
+	&tableheader("Add a Listing to the Directory", 1, 'eeee88', 1) . 
+"<p>Thanks for adding a name to the MVHS Alumni Internet
 Directory!  To update your entry, please see the <a
 href=\"/cgi-bin/mjr-mvhs.cgi?update\">update page</a>.  To add a new
 entry, please enter the following information and hit the submit button.
