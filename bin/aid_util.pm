@@ -2,7 +2,7 @@
 #     FILE: mv_util.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: perl library routines for the MVHS Alumni Internet Directory
-#      $Id: mv_util.pl,v 1.73 1997/12/31 18:31:22 mjr Exp mjr $
+#      $Id: mv_util.pl,v 1.74 1997/12/31 18:59:57 mjr Exp mjr $
 #
 
 CONFIG: {
@@ -60,7 +60,7 @@ CONFIG: {
 	("Listings,"              . $config{'master_path'} . "listings.html",
 	 "Reunions,"              . $config{'master_path'} . "reunions.html",
 	 "Links,"                 . $config{'master_path'} . "links.html",
-	 "Nicknames,"             . $config{'master_path'} . "nicknames.html",
+	 "Nicknames,"             . $config{'master_path'} . "books/",
 	 "Tech&nbsp;Notes,"       . $config{'master_path'} . "tech.html",
 	 "Acceptable&nbsp;Use,#disclaimer");
 
@@ -601,7 +601,7 @@ sub common_html_ftr {
     package mv_util;
 
     local($page) = @_;
-    local($rcsid) = '<!-- $Id: mv_util.pl,v 1.73 1997/12/31 18:31:22 mjr Exp mjr $ -->';
+    local($rcsid) = '<!-- $Id: mv_util.pl,v 1.74 1997/12/31 18:59:57 mjr Exp mjr $ -->';
     local($ftr);
 
     $ftr = "
@@ -664,7 +664,7 @@ sub common_html_hdr {
     local($h1, $h2, $h3, $h4, $html_head);
     local($name, $url);
     local($timestamp);
-    local($rcsid) = '<!-- $Id: mv_util.pl,v 1.73 1997/12/31 18:31:22 mjr Exp mjr $ -->';
+    local($rcsid) = '<!-- $Id: mv_util.pl,v 1.74 1997/12/31 18:59:57 mjr Exp mjr $ -->';
 
     $timestamp = ($page == 0) ? 'Last update to Directory: ' :
 	'Last update to this page: ';
