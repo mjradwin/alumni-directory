@@ -2,11 +2,11 @@
 #     FILE: aid_util.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: perl library routines for the Alumni Internet Directory
-#      $Id: aid_util.pl,v 2.17 1998/05/15 23:46:57 mradwin Exp mradwin $
+#      $Id: aid_util.pl,v 2.18 1998/05/15 23:49:09 mradwin Exp mradwin $
 #
 
 $aid_util'rcsid =
- '$Id: aid_util.pl,v 2.17 1998/05/15 23:46:57 mradwin Exp mradwin $';
+ '$Id: aid_util.pl,v 2.18 1998/05/15 23:49:09 mradwin Exp mradwin $';
 
 # ----------------------------------------------------------------------
 # CONFIGURATION
@@ -126,7 +126,7 @@ $aid_util'config{'admin_email'} .
 "\" on \"1998.03.10T11:49-0800\" r (n 0 s 0 v 0 l 0))'>"; #"#
 
 $aid_util'site_tags = #'#
-"<meta name=\"keywords\" content=\"Mountain View High School, Alumni, MVHS, Awalt High School, Mountain View, Los Altos, California, reunion, Radwin\">\n<meta name=\"description\" content=\"Alumni email and web page directory for Mountain View High School (MVHS) and Awalt High School in Mountain View, CA. Updated $aid_util'caldate.\">";
+"<meta name=\"keywords\" content=\"Mountain View High School, Alumni, MVHS, Awalt High School, Mountain View, Los Altos, California, reunion, Radwin\">\n<meta name=\"description\" content=\"Alumni email and web page directory for Mountain View High School (MVHS) and Awalt High School in Mountain View, CA. Updated $aid_util'caldate.\">\n<link rev=made href=\"mailto:" . $aid_util'config{'admin_email'} . "\">";
 
 $aid_util'noindex = "<meta name=\"robots\" content=\"noindex\">"; #'#
 %aid_util'aid_aliases = ();   #'# global alias hash repository 
