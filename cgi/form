@@ -4,7 +4,7 @@
 #     FILE: form.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: Alumni Internet Directory CGI form-submission interface
-#      $Id: form,v 5.32 2000/06/26 21:35:25 mradwin Exp mradwin $
+#      $Id: form,v 5.33 2000/07/10 16:35:53 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -36,7 +36,7 @@ use CGI::Carp qw(fatalsToBrowser);
 # configuration
 $dbmfile = &aid_config('dbmfile');
 
-$rcsid = '$Id: form,v 5.32 2000/06/26 21:35:25 mradwin Exp mradwin $'; #'fnt
+$rcsid = '$Id: form,v 5.33 2000/07/10 16:35:53 mradwin Exp mradwin $'; #'fnt
 
 $listing_upd_title = 'Modify Your Directory Listing';
 $listing_add_title = 'Join the Directory';
@@ -560,8 +560,6 @@ sub encode_key
 # avoid stupid warnings
 if ($^W && 0)
 {
-    $aid_util::header_bg = '';
-    $aid_util::header_fg = '';
     %in = ();
 }
 
