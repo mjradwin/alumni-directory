@@ -4,6 +4,9 @@ use strict;
 use DB_File;
 use Fcntl qw(:DEFAULT :flock);
 
+$0 =~ s,.*/,,;  # basename
+die "$0: No database file specified\n" unless $ARGV[0];
+
 my $dbmfile = shift;
 die "$0: $dbmfile: $!\n" unless -r $dbmfile;
 my($db,$fd,%DB);
