@@ -2,11 +2,11 @@
 #     FILE: aid_util.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: perl library routines for the Alumni Internet Directory
-#      $Id: aid_util.pl,v 4.43 1999/03/05 00:17:27 mradwin Exp mradwin $
+#      $Id: aid_util.pl,v 4.44 1999/03/09 01:33:41 mradwin Exp mradwin $
 #
 
 $aid_util'rcsid =
- '$Id: aid_util.pl,v 4.43 1999/03/05 00:17:27 mradwin Exp mradwin $';
+ '$Id: aid_util.pl,v 4.44 1999/03/09 01:33:41 mradwin Exp mradwin $';
 
 # ----------------------------------------------------------------------
 # CONFIGURATION
@@ -330,6 +330,9 @@ sub affiliate {
 	if ($rec{'school'} eq 'Awalt') {
 	    $affil  .= "A'$year";
 	    $len    += length("A'$year");
+	} elsif ($rec{'school'} eq 'MVHS+Awalt') {
+	    $affil  .= "MV/A'$year";
+	    $len    += length("MV/A'$year");
 	} elsif ($rec{'school'} eq $config{'short_school'} ||
 		 $rec{'school'} eq '') {
 	    $affil  .= "'$year";
