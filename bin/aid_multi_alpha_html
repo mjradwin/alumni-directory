@@ -2,7 +2,7 @@
 
 #
 # does the html verbose pages
-# $Id: aid_multi_alpha_html,v 5.2 1999/06/07 18:32:25 mradwin Exp mradwin $
+# $Id: aid_multi_alpha_html,v 5.3 1999/06/08 19:29:01 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -93,10 +93,13 @@ foreach $id (@alpha_ids)
 }
 print STDOUT "\n";
 
-print FMTOUT "</pre>\n";
-print FMTOUT &aid_common_html_ftr(1,$time);
-close(FMTOUT);
-utime $time, $time, $outFile;
+if ($opened)
+{
+    print FMTOUT "</pre>\n";
+    print FMTOUT &aid_common_html_ftr(1,$time);
+    close(FMTOUT);
+    utime $time, $time, $outFile;
+}
 
 # index page
 die "no _t key!\n" unless defined $DB{'_t'};
