@@ -2,7 +2,7 @@
 
 #
 # mails a welcome, update, confirm, or massmail message to members
-# $Id: aid_welcome,v 5.20 2000/04/21 23:37:03 mradwin Exp mradwin $
+# $Id: aid_welcome,v 5.21 2000/04/21 23:39:47 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -310,7 +310,8 @@ address verification messages.
     local($srv_prefix) = "http://" . &aid_config('master_srv');
     local($about) = &aid_about_text(*rec,1,0,0);
 
-    return "Dear $rec{'gn'},\n\n" . &aid_config('mail_intro') . "\n\n" .
+    return &aid_inorder_fullname(*rec) . ",\n\n" .
+	&aid_config('mail_intro') . "\n\n" .
 	'  ' . $srv_prefix . &aid_config('master_path') . "
 $params{'intro'}
 You are listed in the Directory as follows:
@@ -324,7 +325,6 @@ of date, please update your listing online at:
 
 $srv_prefix . &aid_config('go_cgi') . "/$rec{'id'}
 
-If you don't have web access, e-mail me corrections.
 If you have received this e-mail in error, or you do
 not want to be listed in the Directory, please let
 me know and I will remove your listing.

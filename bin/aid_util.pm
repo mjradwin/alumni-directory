@@ -2,7 +2,7 @@
 #     FILE: aid_util.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: perl library routines for the Alumni Internet Directory
-#      $Id: aid_util.pl,v 5.59 2000/04/25 00:49:21 mradwin Exp mradwin $
+#      $Id: aid_util.pl,v 5.60 2000/04/25 01:31:38 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -542,141 +542,39 @@ sub aid_about_text
     package aid_util;
 
     local($retval) = '';
-    local(*rec_arg,$show_req_p,$do_html_p,$do_vcard_p) = @_;
-    local(%rec) = $do_html_p ? &main::aid_html_entify_rec(*rec_arg) : %rec_arg; 
+    local(*rec) = @_;
 
-    $do_vcard_p = 0 unless defined($do_vcard_p);
+    $retval .= &main::aid_inorder_fullname(*rec) . "\n";
 
-    $retval .= "<div class=\"about\">\n" if $do_html_p;
-    $retval .= "<pre class=\"about\">\n\n" if $do_html_p;
-
-    $retval .= "First Name         : ";
-    $retval .= "<strong>" if $do_html_p;
-    $retval .= $rec{'gn'};
-    $retval .= "</strong>" if $do_html_p;
-    $retval .= "\n";
-    
-    $retval .= "Middle Initial     : ";
-    if ($rec{'mi'} ne '')
-    {
-	$retval .= "<strong>" if $do_html_p;
-	$retval .= "$rec{'mi'}.";
-	$retval .= "</strong>" if $do_html_p;
-    }
-    else
-    {
-	$retval .= "(none)";
-    }
-    $retval .= "\n";
-    
-    $retval .= "Last/Maiden Name   : ";
-    $retval .= "<strong>" if $do_html_p;
-    $retval .= $rec{'sn'};
-    $retval .= "</strong>" if $do_html_p;
-    $retval .= "\n";
-    
-    $retval .= "Married Last Name  : ";
-    if ($rec{'mn'} eq '') {
-	$retval .= "(same as last name)";
-    } else {
-	$retval .= "<strong>" if $do_html_p;
-	$retval .= $rec{'mn'};
-	$retval .= "</strong>" if $do_html_p;
-    }
-    $retval .= "\n";
-    
-    $retval .= "\n";
     if ($rec{'yr'} =~ /^\d+$/) {
-	$retval .= "Graduation Year    : ";
+	$retval .= $config{'short_school'} . " Class of " . $rec{'yr'} . "\n";
     } else {
-	$retval .= "Affiliation        : ";
-    }
-    $retval .= "<strong>" if $do_html_p;
-    $retval .= "<a target=\"_top\" href=\"" . &main::aid_about_path(*rec) . "\">" 
-	    if $do_html_p && !$show_req_p;
-    $retval .= $rec{'yr'};
-    $retval .= "</a>" if $do_html_p && !$show_req_p;
-    $retval .= "</strong>" if $do_html_p;
-    $retval .= "\n";
-
-    $retval .= "\n";
-    $retval .= "E-mail             : ";
-    $retval .= "<strong>" if $do_html_p;
-    $retval .= "<a target=\"_top\" href=\"mailto:$rec{'e'}\">"
-	if $do_html_p && !$show_req_p && $rec{'v'};
-    $retval .= $rec{'e'};
-    $retval .= "</a>" if $do_html_p && !$show_req_p && $rec{'v'};
-    $retval .= "</strong>" if $do_html_p;
-    if ($rec{'v'} == 0)
-    {
-	$retval .= " ";
-	$retval .= "<em>" if $do_html_p;
-	$retval .= "(invalid address)";
-	$retval .= "</em>" if $do_html_p;
-    }
-    $retval .= "\n";
-
-    $retval .= "Personal Web Page  : ";
-    $retval .= ($rec{'w'} eq '') ? "(none)\n" :
-	((($do_html_p) ? "<strong><a target=\"_top\" href=\"$rec{'w'}\">" : "") .
-	 $rec{'w'} . 
-	 (($do_html_p) ? "</a></strong>" : "") .
-	 "\n");
-
-    $retval .= "Location           : ";
-    $retval .= ($rec{'l'} eq '') ? "(none)\n" :
-	((($do_html_p) ? "<strong>" : "") .
-	 $rec{'l'} .
-	 (($do_html_p) ? "</strong>" : "") .
-	 "\n");
-
-    if ($do_vcard_p && $do_html_p && $rec{'v'}) {
-	$retval .= "vCard              : ";
-	$retval .= "<a target=\"_top\" href=\"" . &main::aid_vcard_path(*rec_arg) . "\">"; 
-	$retval .= $image_tag{'vcard'};
-	$retval .= "</a>\n";
-
-	$retval .= "Yahoo! Address Book: ";
-	$retval .= "<a target=\"_top\" href=\"" .
-	    $config{'yab_cgi'} . "/$rec{'id'}\">"; 
-	$retval .= 'Add to My Personal Address Book';
-	$retval .= "</a>\n";
+	$retval .= "Affiliation: " . $rec{'yr'} . "\n\n";
     }
 
-    if ($show_req_p) {
+    $retval .= "E-mail: " . $rec{'e'} . "\n";
+
+    if ($rec{'w'} ne '' || $rec{'l'} ne '') {
+	$retval .= "Web Page: " . $rec{'w'} . "\n"
+	    if $rec{'w'} ne '';
+	$retval .= "Location: " . $rec{'l'} . "\n"
+	    if $rec{'l'} ne '';
 	$retval .= "\n";
-	$retval .= "Reunion Info Okay  : ";
-	$retval .= ($rec{'r'} == 1) ?
-	    "yes\n" : "no\n";
-	$retval .= "Send E-mail Digests: ";
-	$retval .= defined $req_descr[$rec{'q'}] ?
-	    "$req_descr[$rec{'q'}]\n" : "(unknown)\n";
-    } 
-
-    if ($rec{'u'} ne '' && $rec{'u'} != 0 &&
-	$rec{'c'} ne '' && $rec{'c'} != 0) {
-	$retval .= "\n";
-	$retval .= "Last Updated       : ";
-	$retval .= &main::aid_caldate($rec{'u'}) . "\n"; 
-	$retval .= "Joined Directory   : ";
-        $retval .= &main::aid_caldate($rec{'c'}) . "\n"; 
     }
 
     if ($rec{'n'} ne '') {
-	$retval .= "\n";
-	$retval .= "What's New?        :\n";
-	$retval .= "</pre>\n" if $do_html_p;
-	$retval .= $do_html_p ? "<blockquote class=\"about\">\n" : "";
-	$rec{'n'} =~ s/\n/<br>\n/g if $do_html_p;
-	$retval .= $rec{'n'};
-	$retval .= $do_html_p ? "</blockquote>\n" : "";
+	$retval .= "What's New?\n-----------\n" . $rec{'n'} . 
+	    "\nLast Updated: " . &main::aid_caldate($rec{'u'}) . "\n";
     } else {
-	$retval .= "\n";
-	$retval .= "What's New?        : (blank)\n";
-	$retval .= "</pre>\n" if $do_html_p;
+	$retval .= "Last Updated: " . &main::aid_caldate($rec{'u'}) . "\n"; 
     }
 
-    $retval .= "</div>\n" if $do_html_p;
+    $retval .= "\nPreferences\n-----------\n";
+    $retval .= "My class officers may send me reunion info via e-mail:\n";
+    $retval .= ($rec{'r'} == 1) ? " ==> yes\n" : " ==> no\n";
+    $retval .= "Receive a digest of the Directory every quarter:\n";
+    $retval .= defined $req_descr[$rec{'q'}] ?
+	" ==> $req_descr[$rec{'q'}]\n" : " ==> no\n";
 
     $retval;
 }
