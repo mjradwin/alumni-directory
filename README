@@ -1,5 +1,5 @@
 Alumni Internet Directory README file
-$Id: README,v 5.1 1999/05/31 21:19:10 mradwin Exp mradwin $
+$Id: README,v 5.2 1999/06/01 19:56:03 mradwin Exp mradwin $
 
 ------------------------------------------------------------------------
  Copyright (c) 1995-1999  Michael John Radwin
@@ -41,11 +41,18 @@ data/*.include:
 
 data/working.db:
   You'll need to create this file, but there's no script to do it
-  automatically.  I'd suggest you do a 'touch data/working.db' and then
-  './bin/aid_edit_entry data/working.db -1' and edit yourself an entry
-  (be sure to put non-blank values in the 4 required keys -- sn
-  [surname], gn [given name], e [email address], yr [graduation year] or
-  it won't work).
+  automatically.  I'd suggest run these commands:
+    $ perl -e 'dbmopen(%DB,"data/working",0666); dbmclose(%DB);'
+    $ ./bin/aid_edit_entry data/working.db -1
+
+  The first should create a valid, empty DBM file for your particular OS.
+  The second will drop you into your favorite editor (vi by default)
+  and let you create the first entry (probably your name!) by hand.
+  Be sure to put non-blank values in the 4 required keys:
+    * sn [surname]
+    * gn [given name]
+    * e [email address]
+    * yr [graduation year]
 
 After editing Makefile and the .pl configuration files appropriately, do
 a 'make symlinks' to set up symbolic links from the web's cgi-bin
@@ -55,10 +62,11 @@ If you've successfully created a working.db file and done a 'make
 symlinks', you should be able to do a 'make all' and actually get
 something to work.
 
-'make symlinks' will do this, but you should be aware of it -- if you're
-using Apache and a directory other than cgi-bin for your binaries,
-you'll also need to create a .htaccess file in your web's bin directory
-with this directive:
+One more note -- 'make symlinks' will do this for you automatically, but
+you should be aware of it if it fails for some reason -- if you're using
+Apache and a directory other than cgi-bin for your binaries, you'll also
+need to create a .htaccess file in your web's bin directory with this
+directive:
 
   SetHandler cgi-script
 
@@ -67,7 +75,5 @@ need to rename all of the cgi binaries with the extension .cgi.
 
 ------------------------------------------------------------------------
 Michael John Radwin
-mjr@acm.org
+michael@radwin.org
 http://www.radwin.org/michael/
-
-
