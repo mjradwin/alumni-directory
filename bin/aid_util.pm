@@ -2,11 +2,11 @@
 #     FILE: aid_util.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: perl library routines for the Alumni Internet Directory
-#      $Id: aid_util.pl,v 1.96 1998/01/15 16:13:23 mjr Exp mjr $
+#      $Id: aid_util.pl,v 1.97 1998/01/27 21:14:34 mjr Exp mjr $
 #
 
 $aid_util'rcsid =
- '$Id: aid_util.pl,v 1.96 1998/01/15 16:13:23 mjr Exp mjr $';
+ '$Id: aid_util.pl,v 1.97 1998/01/27 21:14:34 mjr Exp mjr $';
 
 # ----------------------------------------------------------------------
 # CONFIGURATION
@@ -108,6 +108,11 @@ $aid_util'rcsid =
      "Acceptable&nbsp;Use," . "#disclaimer",
      );
 
+($i,$i,$i,$aid_util'mday,$aid_util'mon,$aid_util'yr,$i,$i,$i)
+ = localtime(time);
+$aid_util'caldate = sprintf("%d/%02d/%02d", ($aid_util'yr+1900),
+ ($aid_util'mon+1), $aid_util'mday);
+
 $aid_util'pics_label = #'font-lock
 "<meta http-equiv=\"PICS-Label\" content='(PICS-1.1 \"http://www.rsac.org/ratingsv01.html\" l gen true comment \"RSACi North America Server\" by \"" . 
 $aid_util'config{'admin_email'} . "\" for \"http://" .
@@ -115,7 +120,7 @@ $aid_util'config{'master_srv'} . $aid_util'config{'master_path'} . #'font-lock
 "\" on \"1996.04.04T08:15-0500\" r (n 0 s 0 v 0 l 0))'>";
 
 $aid_util'site_tags = #'font-lock
-"<meta name=\"keywords\" content=\"Mountain View High School, Alumni, MVHS, Awalt High School, Mountain View, Los Altos, California, reunion, Radwin\">\n<meta name=\"description\" content=\"email/web page listing of alumni, students, faculty and staff from Mountain View High School in Mountain View, California.  Also catalogues alumni from Chester F. Awalt High School, which was merged with MVHS in the early 80's.\">";
+"<meta name=\"keywords\" content=\"Mountain View High School, Alumni, MVHS, Awalt High School, Mountain View, Los Altos, California, reunion, Radwin\">\n<meta name=\"description\" content=\"Email and web page directory of alumni, students, faculty and staff from Mountain View High School (MVHS) and Chester F. Awalt High School in Mountain View, California.  Updated $aid_util'caldate.\">";
 
 $aid_util'noindex = "<meta name=\"robots\" content=\"noindex\">"; #'font-lock
 %aid_util'aid_aliases = ();   #' global alias hash repository 
