@@ -2,7 +2,7 @@
 
 #
 # does the html version of the alphabetical address list
-# $Id: aid_alpha_html,v 3.14 1998/05/27 21:46:49 mradwin Exp mradwin $
+# $Id: aid_alpha_html,v 3.15 1998/05/27 21:49:54 mradwin Exp mradwin $
 #
 
 require 'aid_util.pl';
@@ -37,6 +37,20 @@ if (!$opt_t) {
     }
     print FMTOUT "</code>";
     print FMTOUT "\n<p>\n<pre>";
+
+} else {
+
+    print FMTOUT
+"Below you'll find the most recent version of the Alumni Internet
+Directory.  Please read the acceptable use policy before using any email
+addresses listed below:
+
+   This directory is provided solely for the information of alumni of
+   Mountain View High School and Awalt High School. Any unauthorized
+   solicitation of business, information, contributions or other
+   response from individuals listed in this publication is forbidden.
+
+";
 }
 
 print FMTOUT "Name and Graduation Year$blank_gif                 Email\n";
@@ -60,7 +74,7 @@ while(<DATA>) {
     }
 
     $fullname = &fullname(*rec);
-    ($affil,$len) = &affiliate(*rec,1);
+    ($affil,$len) = &affiliate(*rec,!$opt_t);
 
     print FMTOUT ' ';
     $opt_t || print FMTOUT "<a href=\"" . &aid_about_path(*rec) . "\">$info_gif</a>"; #'#

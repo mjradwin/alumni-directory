@@ -2,7 +2,7 @@
 
 #
 # does the html version of the grad-date address list
-# $Id: aid_class_html,v 3.13 1998/05/26 18:36:21 mradwin Exp mradwin $
+# $Id: aid_class_html,v 3.14 1998/05/27 21:38:52 mradwin Exp mradwin $
 #
 
 require 'aid_util.pl';
@@ -55,6 +55,20 @@ if (!$opt_t) {
     }
     close(DATAPRE);
     print FMTOUT "</p>\n\n<pre>";
+
+} else {
+
+    print FMTOUT
+"Below you'll find the most recent version of the Alumni Internet
+Directory.  Please read the acceptable use policy before using any email
+addresses listed below:
+
+   This directory is provided solely for the information of alumni of
+   Mountain View High School and Awalt High School. Any unauthorized
+   solicitation of business, information, contributions or other
+   response from individuals listed in this publication is forbidden.
+
+";
 }
 
 print FMTOUT "Name$blank_gif                                     Email\n";
