@@ -1,6 +1,6 @@
 #!/usr/bin/perl -w
 
-# $Id: aid_dbm_read,v 5.5 1999/06/18 03:19:26 mradwin Exp mradwin $
+# $Id: aid_dbm_read,v 5.6 1999/06/18 03:20:57 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -215,8 +215,9 @@ sub display_key_val
 
     elsif ($key =~ /^_t(_[^_]+)?$/)
     {
-	print "time", (defined $1 ? $1 : ''), 
-	  " = ", &ctime(unpack("N", $val));
+	$val = unpack("N", $val);
+	print "time", (defined $1 ? $1 : ''), " = ", 
+	  $val ? &ctime($val) : "0\n";
     }
 
     elsif ($key =~ /\@/)
