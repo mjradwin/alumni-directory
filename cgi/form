@@ -4,7 +4,7 @@
 #     FILE: mvhsaid.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: MVHS Alumni Internet Directory CGI interface
-#      $Id: mvhsaid,v 1.36 1997/10/29 18:18:34 mjr Exp mjr $
+#      $Id: mvhsaid,v 1.37 1997/10/31 18:56:24 mjr Exp mjr $
 #
 
 require 'mv_util.pl';
@@ -22,7 +22,7 @@ $dbfile = &mv_config('wwwdir') . "mvhs.adr";
 if (defined($in{'version'})) {
     select(STDOUT);  $| = 1;
     print "Content-type: text/plain\n\n";
-    print '$Id: mvhsaid,v 1.36 1997/10/29 18:18:34 mjr Exp mjr $', "\n";
+    print '$Id: mvhsaid,v 1.37 1997/10/31 18:56:24 mjr Exp mjr $', "\n";
     exit(0);
 }
 
@@ -100,6 +100,14 @@ $in{'school'} = ($in{'school'} eq 'Other' && $in{'sch_other'} ne '') ?
 $mail_addr = 'aol.com' if $mail_addr eq '';
 $mail_user = "\L$mail_user\E" if $mail_user eq "\U$mail_user\E";
 $in{'mail'} = $mail_user . '@' . "\L$mail_addr\E";
+
+# uncapitalize those overzealous capslock names
+$in{'first'} = "\L$in{'first'}\E" 
+    if ($in{'first'} eq "\U$in{'first'}\E");
+$in{'last'} = "\L$in{'last'}\E"
+    if ($in{'last'} eq "\U$in{'last'}\E");
+$in{'married'} = "\L$in{'married'}\E" 
+    if ($in{'married'} eq "\U$in{'married'}\E");
 
 # capitalize those lazy names
 $in{'first'} = "\u$in{'first'}";
