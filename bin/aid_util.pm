@@ -2,11 +2,11 @@
 #     FILE: aid_util.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: perl library routines for the Alumni Internet Directory
-#      $Id: aid_util.pl,v 2.5 1998/04/02 21:13:44 mjr Exp mjr $
+#      $Id: aid_util.pl,v 2.6 1998/04/02 21:53:06 mjr Exp mjr $
 #
 
 $aid_util'rcsid =
- '$Id: aid_util.pl,v 2.5 1998/04/02 21:13:44 mjr Exp mjr $';
+ '$Id: aid_util.pl,v 2.6 1998/04/02 21:53:06 mjr Exp mjr $';
 
 # ----------------------------------------------------------------------
 # CONFIGURATION
@@ -971,23 +971,23 @@ sub common_html_hdr {
 
     $hdr .= "<body bgcolor=\"#$body_bg\" text=\"#$body_fg\" link=\"#$body_link\" vlink=\"#$body_vlink\">\n\n";
     
-    $hdr .= &main'common_link_table($page); #'#
-
     $hdr .= "
 <center>
 <table cellspacing=0 cellpadding=6 border=1 width=\"100%\">
   <tr>
-    <td bgcolor=\"#$cell_bg\" valign=middle><p align=left><font size=\"+2\"
-    color=\"#$cell_fg\"><strong><tt>$config{'school'} Alumni
+    <td bgcolor=\"#$header_bg\" valign=middle><p align=left><font size=\"+2\"
+    color=\"#$header_fg\"><strong><tt>$config{'school'} Alumni
     Internet Directory</tt></strong></font>
     </p><p align=right><font size=\"-1\" 
-    color=\"#$cell_fg\"><i>$timestamp</i></font></p>
+    color=\"#$header_fg\"><i>$timestamp</i></font></p>
     </td>
   </tr>
   <tr>
-    <td bgcolor=\"#$header_bg\" align=center valign=middle>
+    <td bgcolor=\"#$cell_bg\" align=center valign=middle>
     <strong>$result</strong>
-    </td>
+";
+    $hdr .= &main'common_link_table($page); #'#
+    $hdr .= "    </td>
   </tr>
 </table>
 </center>
