@@ -2,7 +2,7 @@
 
 #
 # does the html verbose pages
-# $Id: aid_verbose_html,v 2.1 1998/03/31 19:55:13 mjr Exp mradwin $
+# $Id: aid_verbose_html,v 2.2 1998/04/02 20:22:44 mjr Exp mjr $
 #
 
 require 'aid_util.pl';
@@ -63,7 +63,7 @@ print FMTOUT "<a href=\"" . &aid_config('master_path') . "class.html\">";
 print FMTOUT "All&nbsp;Alumni</a> |\n";
 print FMTOUT "<a href=\"" . &aid_config('master_path') . "awalt.html\">";
 print FMTOUT "Awalt&nbsp;Alumni</a>\n";
-print FMTOUT "<p>Expanded&nbsp;Form</a>:<br>\n";
+print FMTOUT "<p>Expanded&nbsp;Form:<br>\n";
 
 foreach $year (@years) {
     print FMTOUT "<a href=\"" . &aid_config('master_path');
