@@ -2,7 +2,7 @@
 
 #
 # does the html multi_class pages
-# $Id: aid_multi_class_html,v 6.6 2004/02/02 22:58:14 mradwin Exp mradwin $
+# $Id: aid_multi_class_html,v 6.7 2004/05/12 22:33:12 mradwin Exp mradwin $
 #
 # Copyright (c) 2003  Michael J. Radwin.
 # All rights reserved.
@@ -288,7 +288,20 @@ if ($opt_d && !$opt_i)
     {
 	my $out2 = sprintf("%s%s/%06d.html",
 			   aid_util::config('wwwdir'), "detail", $id);
-	if (! defined $DB{$id} && -e $out2)
+	next unless -e $out2;
+	my $remove = 0;
+
+	if (defined $DB{$id})
+	{
+	    my %rec = aid_util::db_unpack_rec($id,$DB{$id});
+	    $remove = 1 unless $rec{'v'};
+	}
+	else
+	{
+	    $remove = 1;
+	}
+
+	if ($remove)
 	{
 	    print STDOUT " $id" unless $opt_q;
 	    unlink($out2);
