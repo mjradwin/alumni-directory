@@ -4,7 +4,7 @@
 #     FILE: search.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: Alumni Internet Directory CGI search
-#      $Id: search,v 5.2 1999/06/01 17:34:42 mradwin Exp mradwin $
+#      $Id: search,v 5.3 1999/06/01 21:27:00 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -22,6 +22,10 @@
 #   along with this program; if not, write to the Free Software
 #   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #
+
+$dirname = $0;
+$dirname =~ s,/[^/]+$,,;
+unshift(@INC, $dirname);
 
 require 'aid_util.pl';
 require 'cgi-lib.pl';
