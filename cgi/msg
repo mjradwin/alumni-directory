@@ -4,7 +4,7 @@
 #     FILE: msg.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: Alumni Internet Directory update redirector
-#      $Id: msg,v 6.3 2003/08/25 06:18:38 mradwin Exp mradwin $
+#      $Id: msg,v 6.4 2003/08/25 16:13:56 mradwin Exp mradwin $
 #
 #   Copyright (c) 2003  Michael John Radwin
 #
@@ -32,6 +32,7 @@ use Digest::MD5  qw(md5_hex);
 use Email::Valid;
 use CGI qw(-no_xhtml);
 use CGI::Carp qw(fatalsToBrowser);
+use Mail::SpamAssassin;
 use aid_util;
 use strict;
 
@@ -129,6 +130,39 @@ _EOHTML_
 	exit(0);
     }
 
+    my $spam_headers = "From: $from\nSubject: $subject\nTo: " . $rec{'e'} ."\nDate: " .
+      POSIX::strftime("%a, %d %b %Y %H:%M:%S +0000", gmtime(time())) . "\n\n";
+
+    my $spam_test = Mail::SpamAssassin->new({
+	'local_tests_only' => 1,
+	'rules_filename' => '/pub/m/r/mradwin/private/share/spamassassin',
+    });
+
+    my $spam_status = $spam_test->check_message_text($spam_headers . $message);
+    if ($spam_status->is_spam()) {
+	print "Content-Type: text/html\015\012\015\012";
+	print aid_util::common_html_hdr(9, 'Your message looks like SPAM', 1);
+
+        my $school = aid_util::config('short_school');
+	my $admin = aid_util::config('admin_email');
+
+	print <<_EOHTML_;
+<p><font color=\"red\">Sorry, this message appears to be unsolicited
+commercial email (a.k.a. <a
+href=\"http://spam.abuse.net/overview/\">Spam</a>).</font>
+<br>If you are really a member of the $school alumni community and
+think you are getting this message in error, please contact <a
+href="mailto:$admin">$admin</a></p>
+_EOHTML_
+
+	my $name = email_name(\%rec);
+	my $e = "$name &lt;" . aid_util::protect_email($rec{'e'}) . "&gt;";
+	form($e,$id,$hash,$from,$subject,$message);
+
+	print aid_util::common_html_ftr(9);
+	exit(0);
+    }
+
     my $name = email_name(\%rec);
     my $school = aid_util::config('short_school');
 
@@ -137,6 +171,8 @@ _EOHTML_
 ----
 Sent via $school Web Form from IP address $ENV{'REMOTE_ADDR'}
 Please report abuse to " . aid_util::config('admin_email') . "\n";
+
+#    $message .= "\n" . $spam_status->get_report();
 
     my $status = 0;
     for (my $i = 0; $status == 0 && $i < 3; $i++) {
