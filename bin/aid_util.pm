@@ -2,7 +2,7 @@
 #     FILE: aid_util.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: perl library routines for the Alumni Internet Directory
-#      $Id: aid_util.pl,v 5.56 2000/02/25 20:18:33 mradwin Exp mradwin $
+#      $Id: aid_util.pl,v 5.57 2000/04/21 23:37:03 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -28,7 +28,7 @@ require 'aid_submit.pl';
 use MIME::QuotedPrint;
 use Net::SMTP; 
 
-@aid_util'MoY = #'#
+@aid_util::MoY = 
     ('Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec');
 sub aid_caldate
 {
@@ -83,9 +83,9 @@ sub aid_is_new_html
 
     local(*rec) = @_;
 
-    if (&main'aid_is_new($rec{'u'})) #')#
+    if (&main::aid_is_new($rec{'u'}))
     {
-	if (&main'aid_is_new($rec{'c'})) #')#
+	if (&main::aid_is_new($rec{'c'}))
         {
 	    ' &nbsp;' . $image_tag{'new'};
 	}
@@ -151,7 +151,7 @@ sub aid_affiliate
     if ($rec{'yr'} =~ /^\d+$/)
     {
 	$affil .= "<a target=\"_top\" href=\"" .
-	    &main'aid_about_path(*rec,1) . "\">" #'#
+	    &main::aid_about_path(*rec,1) . "\">" 
 	    if $do_html_p;
 	$year = sprintf("%02d", $rec{'yr'} % 100);
 
@@ -165,7 +165,7 @@ sub aid_affiliate
     else
     {
 	$affil .= "<a target=\"_top\" href=\"" .
-	    &main'aid_about_path(*rec,1) . "\">" #'#
+	    &main::aid_about_path(*rec,1) . "\">" 
 	    if $do_html_p;
 	$tmp    = '[' . $config{'short_school'} . ' ' . $rec{'yr'} . ']';
 	$affil .= $tmp;
@@ -201,15 +201,15 @@ sub aid_ampersand_join
     local(*rec) = @_;
     local($key,$val,$retval,$_);
 
-    $retval = 'id=' . &main'aid_url_escape($rec{'id'}); #'#
+    $retval = 'id=' . &main::aid_url_escape($rec{'id'}); 
 
-    foreach (@main'aid_edit_field_names) #'){}
+    foreach (@main::aid_edit_field_names)
     {
 	next if $_ eq 'id';
-	$retval .= '&' . $_   . '=' . &main'aid_url_escape($rec{$_}); #'#
+	$retval .= '&' . $_   . '=' . &main::aid_url_escape($rec{$_}); 
     }
     
-    $retval . '&n=' . &main'aid_url_escape($rec{'n'}); #'#
+    $retval . '&n=' . &main::aid_url_escape($rec{'n'}); 
 }
 
 sub aid_generate_alias
@@ -219,11 +219,11 @@ sub aid_generate_alias
     local(*rec) = @_;
     local($mangledLast,$mangledFirst,$alias);
 
-    $mangledFirst = &main'aid_mangle($rec{'gn'}); #'#
+    $mangledFirst = &main::aid_mangle($rec{'gn'}); 
     if ($rec{'mn'} ne '') {
-	$mangledLast = &main'aid_mangle($rec{'mn'});   #'#
+	$mangledLast = &main::aid_mangle($rec{'mn'});   
     } else {
-	$mangledLast = &main'aid_mangle($rec{'sn'});   #'#
+	$mangledLast = &main::aid_mangle($rec{'sn'});   
     }
 
 #    $alias = substr($mangledFirst, 0, 1) . substr($mangledLast, 0, 7);
@@ -246,8 +246,8 @@ sub aid_vcard_path {
     local(*rec) = @_;
 
     $config{'vcard_cgi'} . '/' . $rec{'id'} . '/' . 
-	&main'aid_mangle($rec{'gn'}) . &main'aid_mangle($rec{'sn'}) . 
-	    &main'aid_mangle($rec{'mn'}) . '.vcf';
+	&main::aid_mangle($rec{'gn'}) . &main::aid_mangle($rec{'sn'}) . 
+	    &main::aid_mangle($rec{'mn'}) . '.vcf';
 }
 
 sub aid_yahoo_abook_path {
@@ -256,49 +256,49 @@ sub aid_yahoo_abook_path {
     local(*rec) = @_;
     local($url) = 'http://address.yahoo.com/yab?A=da&amp;au=a';
 
-    $url .= '&amp;fn=' . &main'aid_url_escape($rec{'gn'}); #'#
+    $url .= '&amp;fn=' . &main::aid_url_escape($rec{'gn'}); 
     if ($rec{'mn'} ne '')
     {
-	$url .= '&amp;mn=' . &main'aid_url_escape($rec{'sn'}); #'#
-	$url .= '&amp;ln=' . &main'aid_url_escape($rec{'mn'}); #'#
+	$url .= '&amp;mn=' . &main::aid_url_escape($rec{'sn'}); 
+	$url .= '&amp;ln=' . &main::aid_url_escape($rec{'mn'}); 
     }
     else
     {
-	$url .= '&amp;mn=' . &main'aid_url_escape($rec{'mi'}); #'#
-	$url .= '&amp;ln=' . &main'aid_url_escape($rec{'sn'}); #'#
+	$url .= '&amp;mn=' . &main::aid_url_escape($rec{'mi'}); 
+	$url .= '&amp;ln=' . &main::aid_url_escape($rec{'sn'}); 
     }
     $url .= '&amp;c=Unfiled';
-    $url .= '&amp;nn=' . &main'aid_url_escape($rec{'a'}); #'#
-    $url .= '&amp;e='  . &main'aid_url_escape($rec{'e'}); #'#
+    $url .= '&amp;nn=' . &main::aid_url_escape($rec{'a'}); 
+    $url .= '&amp;e='  . &main::aid_url_escape($rec{'e'}); 
     $url .= '&amp;pp=0';
     $url .= '&amp;co=' . $config{'short_school'};
     if ($rec{'yr'} =~ /^\d+$/) {
 	$url .= '+Class+of+' . $rec{'yr'};
     } else {
-	$url .= '+' . &main'aid_url_escape($rec{'yr'}); #'#
+	$url .= '+' . &main::aid_url_escape($rec{'yr'}); 
     }
 
-    $url .= '&amp;pu=' . &main'aid_url_escape($rec{'w'}); #'#
+    $url .= '&amp;pu=' . &main::aid_url_escape($rec{'w'}); 
     $url .= '&amp;af=d';
 
     if ($rec{'l'} =~ /^(.*),\s+(\w\w)$/)
     {
-	$url .= '&amp;hc=' . &main'aid_url_escape($1); #'#
+	$url .= '&amp;hc=' . &main::aid_url_escape($1); 
 	$url .= '&amp;hs=' . $2;
     }
     elsif ($rec{'l'} =~ /^(.*),\s+(\w\w)\s+(\d\d\d\d\d)$/)
     {
-	$url .= '&amp;hc=' . &main'aid_url_escape($1); #'#
+	$url .= '&amp;hc=' . &main::aid_url_escape($1); 
 	$url .= '&amp;hs=' . $2;
 	$url .= '&amp;hz=' . $3;
     }
     else
     {
-	$url .= '&amp;hc=' . &main'aid_url_escape($rec{'l'}); #'#
+	$url .= '&amp;hc=' . &main::aid_url_escape($rec{'l'}); 
     }
 
     $url .= '&amp;.done=' .
-	&main'aid_url_escape('http://' . $config{'master_srv'} . #'#
+	&main::aid_url_escape('http://' . $config{'master_srv'} . 
 	    $config{'master_path'});
 
     $url;
@@ -380,7 +380,7 @@ Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: QUOTED-PRINTABLE
 Subject: $subject
 
-" . &main'encode_qp($body);
+" . &main::encode_qp($body);
 
     my($smtp) = Net::SMTP->new($config{'smtp_svr'}, Timeout => 30); 
     unless ($smtp->mail($return_path)) {
@@ -419,9 +419,9 @@ sub aid_verbose_entry {
     local(*rec);
     local($retval) = '';
 
-    %rec = &main'aid_html_entify_rec(*rec_arg);
+    %rec = &main::aid_html_entify_rec(*rec_arg);
 
-    $fullname = &main'aid_inorder_fullname(*rec); #'#
+    $fullname = &main::aid_inorder_fullname(*rec); 
 
     $retval .= "<dl compact=\"compact\">\n";
 
@@ -432,14 +432,14 @@ sub aid_verbose_entry {
     $retval .= "</a>";
     $retval .= "</strong>";
     $retval .= "</big>\n";
-    $retval .= &main'aid_is_new_html(*rec) unless $suppress_new; #'#
+    $retval .= &main::aid_is_new_html(*rec) unless $suppress_new; 
     $retval .= "</dt>\n";
 
     if (! $suppress_links && $rec{'v'})
     {
 	$retval .= "<dt>Tools: <small>" .
 	    "<a target=\"_top\"\nhref=\"" .
-	    &main'aid_vcard_path(*rec_arg) . "\">" . #'#
+	    &main::aid_vcard_path(*rec_arg) . "\">" . 
 	    "vCard</a>&nbsp;|&nbsp;" .
 	    "<a target=\"_top\"\nhref=\"" . $config{'about_cgi'} .
 	    "/$rec{'id'}\">modify</a>&nbsp;|&nbsp;<a target=\"_top\"\n" .
@@ -450,12 +450,12 @@ sub aid_verbose_entry {
     if ($rec{'yr'} =~ /^\d+$/) {
 	if ($display_year) {
 	    $retval .= "<dt>Year: <strong><a target=\"_top\"\n" .
-		"href=\"" . &main'aid_about_path(*rec,1) . "\">" . #'#
+		"href=\"" . &main::aid_about_path(*rec,1) . "\">" . 
 		    $rec{'yr'} . "</a></strong></dt>\n";
 	}
     } else {
 	$retval .= "<dt>Affiliation: <strong><a target=\"_top\"\n" .
-	    "href=\"" . &main'aid_about_path(*rec,1) . "\">" . #'#
+	    "href=\"" . &main::aid_about_path(*rec,1) . "\">" . 
 		$rec{'yr'} . "</a></strong></dt>\n";
     }
 
@@ -472,12 +472,12 @@ sub aid_verbose_entry {
     $retval .= "<dt>Location: <strong>$rec{'l'}</strong></dt>\n"
 	if $rec{'l'} ne '';
     $retval .= "<dt>Updated: ";
-    $date = &main'aid_caldate($rec{'u'}); #'#
+    $date = &main::aid_caldate($rec{'u'}); 
     $retval .= "<strong>$date</strong></dt>\n";
 
     if ($rec{'n'} ne '') {
 	$retval .= "<dt>What's New?</dt>\n";
-	$rec{'n'} =~ s/\n/<br${main'ht_empty_close_tag}\n/g;
+	$rec{'n'} =~ s/\n/<br${main::ht_empty_close_tag}\n/g;
 	$retval .= "<dd>$rec{'n'}</dd>\n";
     }
     $retval .= "</dl>\n\n";
@@ -520,14 +520,14 @@ sub aid_vcard_text {
 	$retval .= "ADR:;;;$rec{'l'}\015\012" if $rec{'l'} ne '';
     }
     $retval .= "URL:$rec{'w'}\015\012" if $rec{'w'} ne '';
-    $retval .= "REV:" . &main'aid_vdate($rec{'u'}) . "\015\012"; #'#
+    $retval .= "REV:" . &main::aid_vdate($rec{'u'}) . "\015\012"; 
     $retval .= "VERSION:2.1\015\012";
 
 #    if ($rec{'n'} !~ /^\s*$/)
 #    {
 #	$retval .= "NOTE;BASE64:\015\012";
 #	$retval .= "  ";
-#	$message = &main'encode_base64($rec{'n'}, "\015\012  "); #'#;
+#	$message = &main::encode_base64($rec{'n'}, "\015\012  ");
 #	substr($message,-4) = '';
 #	$retval .= $message . "\015\012\015\012";
 #    }
@@ -543,7 +543,7 @@ sub aid_about_text
 
     local($retval) = '';
     local(*rec_arg,$show_req_p,$do_html_p,$do_vcard_p) = @_;
-    local(%rec) = $do_html_p ? &main'aid_html_entify_rec(*rec_arg) : %rec_arg; #'#
+    local(%rec) = $do_html_p ? &main::aid_html_entify_rec(*rec_arg) : %rec_arg; 
 
     $do_vcard_p = 0 unless defined($do_vcard_p);
 
@@ -592,7 +592,7 @@ sub aid_about_text
 	$retval .= "Affiliation        : ";
     }
     $retval .= "<strong>" if $do_html_p;
-    $retval .= "<a target=\"_top\" href=\"" . &main'aid_about_path(*rec) . "\">" #'#
+    $retval .= "<a target=\"_top\" href=\"" . &main::aid_about_path(*rec) . "\">" 
 	    if $do_html_p && !$show_req_p;
     $retval .= $rec{'yr'};
     $retval .= "</a>" if $do_html_p && !$show_req_p;
@@ -632,13 +632,13 @@ sub aid_about_text
 
     if ($do_vcard_p && $do_html_p && $rec{'v'}) {
 	$retval .= "vCard              : ";
-	$retval .= "<a target=\"_top\" href=\"" . &main'aid_vcard_path(*rec_arg) . "\">"; #'#
+	$retval .= "<a target=\"_top\" href=\"" . &main::aid_vcard_path(*rec_arg) . "\">"; 
 	$retval .= $image_tag{'vcard'};
 	$retval .= "</a>\n";
 
 	$retval .= "Yahoo! Address Book: ";
 	$retval .= "<a target=\"_top\" href=\"" .
-	    $config{'yab_cgi'} . "/$rec{'id'}\">"; #'#
+	    $config{'yab_cgi'} . "/$rec{'id'}\">"; 
 	$retval .= 'Add to My Personal Address Book';
 	$retval .= "</a>\n";
     }
@@ -657,9 +657,9 @@ sub aid_about_text
 	$rec{'c'} ne '' && $rec{'c'} != 0) {
 	$retval .= "\n";
 	$retval .= "Last Updated       : ";
-	$retval .= &main'aid_caldate($rec{'u'}) . "\n"; #'#
+	$retval .= &main::aid_caldate($rec{'u'}) . "\n"; 
 	$retval .= "Joined Directory   : ";
-        $retval .= &main'aid_caldate($rec{'c'}) . "\n"; #'#
+        $retval .= &main::aid_caldate($rec{'c'}) . "\n"; 
     }
 
     if ($rec{'n'} ne '') {
@@ -667,7 +667,7 @@ sub aid_about_text
 	$retval .= "What's New?        :\n";
 	$retval .= "</pre>\n" if $do_html_p;
 	$retval .= $do_html_p ? "<blockquote class=\"about\">\n" : "";
-	$rec{'n'} =~ s/\n/<br${main'ht_empty_close_tag}\n/g if $do_html_p;
+	$rec{'n'} =~ s/\n/<br${main::ht_empty_close_tag}\n/g if $do_html_p;
 	$retval .= $rec{'n'};
 	$retval .= $do_html_p ? "</blockquote>\n" : "";
     } else {
@@ -723,7 +723,7 @@ sub aid_common_link_table
         }
 	$html .= ' - ' unless $idx == $#page_idx;
     }
-    $html .= "\n<br${main'ht_empty_close_tag}";
+    $html .= "\n<br${main::ht_empty_close_tag}";
     foreach $idx (0 .. $#second_idx) {
 	($name, $url) = split(/,/, $second_idx[$idx]);
         if ($idx == ($page - 10)) {
@@ -752,19 +752,20 @@ sub aid_common_html_ftr
     local($ftr);
     local($year) = (localtime(time))[5] + 1900;
 
-    $time = time unless (defined $time && $time ne '0');
+    $time = time unless (defined $time && $time =~ /\d+/ && $time ne '0');
 
-    $ftr  = "\n<hr noshade=\"noshade\" size=\"1\"${main'ht_empty_close_tag}\n";
+    $ftr  = "\n<hr noshade=\"noshade\" size=\"1\"${main::ht_empty_close_tag}\n";
 
     $ftr .= "<small>\n<!-- hhmts start -->\nLast modified: ";
-    $ftr .= &main'ctime($time); #'#
-    $ftr .= "<!-- hhmts end -->\n<br${main'ht_empty_close_tag}\n";
+    $ftr .= &main::ctime($time); 
+    $ftr .= "<!-- hhmts end -->\n<br${main::ht_empty_close_tag}\n";
     $ftr .= "<a target=\"_top\" href=\"" . $copyright_path . "\">" .
 	"Copyright</a>\n&copy; $year " . $config{'admin_name'} . 
 	".  All rights reserved.\n" .
-	"<br${main'ht_empty_close_tag}<br${main'ht_empty_close_tag}\n";
+	"<br${main::ht_empty_close_tag}<br${main::ht_empty_close_tag}\n";
     $ftr .= $disclaimer . "\n" .
-	"<a target=\"_top\" href=\"" . $config{'master_path'} . "etc/privacy.html\">More info on privacy</a>." .
+	"<a target=\"_top\"\nhref=\"" . $config{'master_path'} .
+	"etc/privacy.html\">More info on privacy</a>." .
 	"</small>\n</body>\n</html>\n";
 
     $ftr;
@@ -778,10 +779,10 @@ sub aid_common_html_hdr
     local($page,$title,$norobots,$time,$subtitle,$extra_meta) = @_;
     local($hdr,$titletag,$srv_nowww,$descr);
     local($timestamp) =
-	&main'aid_caldate((defined $time && $time ne '') ? $time : time); #'#
+	&main::aid_caldate((defined $time && $time ne '') ? $time : time); 
 
-    $title = &main'aid_html_entify_str($title);
-    $subtitle = &main'aid_html_entify_str($subtitle)
+    $title = &main::aid_html_entify_str($title);
+    $subtitle = &main::aid_html_entify_str($subtitle)
 	if defined $subtitle;
 
     $titletag = ($page == 0) ?
@@ -799,7 +800,7 @@ sub aid_common_html_hdr
     # early evaluation is good
     $hdr .= "<link rel=\"stylesheet\" type=\"text/css\" href=\"http://";
     $hdr .= $config{'master_srv'} . $config{'master_path'};
-    $hdr .= "default.css\"${main'ht_empty_close_tag}\n";
+    $hdr .= "default.css\"${main::ht_empty_close_tag}\n";
 
     $hdr .= $pics_label . "\n" . $author_meta . "\n" . $navigation_meta . "\n";
 
@@ -845,7 +846,7 @@ sub aid_common_html_hdr
     }
 
     $hdr .=
-"($timestamp)<br${main'ht_empty_close_tag}<br${main'ht_empty_close_tag}
+"($timestamp)<br${main::ht_empty_close_tag}<br${main::ht_empty_close_tag}
 </small></td><td align=\"right\"><small>
 <a target=\"_top\"
 href=\"$config{'search_cgi'}\">Search</a></small></td></tr></table>
@@ -873,7 +874,7 @@ bgcolor=\"#$header_bg\">";
     $hdr .= "</td></tr></table>\n\n";
 
 #    $hdr .= "<div class=\"about\">";
-#    $hdr .= &main'aid_common_link_table($page); #'#
+#    $hdr .= &main::aid_common_link_table($page); 
 #    $hdr .="</div>\n";
     $hdr .="<!--BAD-DOG-->\n";
 
@@ -992,7 +993,7 @@ sub aid_book_write_entry {
     elsif ($option eq 'l') {
         print BOOK "dn: cn=$rec{'gn'}$mi_spc $long_last,mail=$rec{'e'}\015\012";
 	print BOOK "modifytimestamp: ";
-	$vdate = &main'aid_vdate($rec{'u'}); #'#
+	$vdate = &main::aid_vdate($rec{'u'}); 
 	$vdate =~ s/T//;
 	print BOOK "$vdate\015\012";
         print BOOK "cn: $rec{'gn'}$mi_spc $long_last\015\012";
@@ -1023,7 +1024,7 @@ sub aid_book_write_entry {
     
     # lots of data for a vCard
     elsif ($option eq 'v') {
-	print BOOK &main'aid_vcard_text(*rec), "\015\012"; #'#
+	print BOOK &main::aid_vcard_text(*rec), "\015\012"; 
     }
 
     elsif ($option eq 'o') {
@@ -1179,7 +1180,7 @@ sub aid_rebuild_secondary_keys
     {
 	if ($key =~ /^\d+$/)
 	{
-	    %rec = &main'aid_db_unpack_rec($key,$val); #'#;
+	    %rec = &main::aid_db_unpack_rec($key,$val);
 	    push(@datakeys,
 		 "\L$rec{'sn'}\0$rec{'gn'}\0$rec{'mi'}\0$rec{'mn'}\0$rec{'yr'}\E\0" . $key);
 	    $maxval = $key if $key > $maxval;
@@ -1210,7 +1211,7 @@ sub aid_rebuild_secondary_keys
     # second pass - timestamps and lists
     foreach $id (@alpha_ids)
     {
-	%rec = &main'aid_db_unpack_rec($id,$DB{$id}); #'#;
+	%rec = &main::aid_db_unpack_rec($id,$DB{$id});
 
 	if ($rec{'v'})
 	{
@@ -1359,6 +1360,22 @@ sub aid_url_escape
     $_;
 }
 
+sub aid_cgi_die
+{
+    package aid_util;
+
+    local($title,$html) = @_;
+
+    print "Content-Type: text/html\015\012\015\012";
+
+    print &main::aid_common_html_hdr(-1,$title,1);
+    print $html, "<p>\n" if (defined $html && $html !~ /^\s*$/);
+    print &main::aid_common_html_ftr(-1);
+
+    close(STDOUT);
+    exit(0);
+}
+
 # We get a whole bunch of warnings about "possible typo" when running
 # with the -w switch.  Touch them all once to get rid of the warnings.
 # This is ugly and I hate it.
@@ -1389,14 +1406,14 @@ if ($^W && 0)
     &aid_generate_alias();
     &aid_common_link_table();
 
-    $aid_util'header_bg = '';
-    $aid_util'pack_len = '';
-    @aid_util'MoY = ();
-    $aid_util'noindex = '';
-    $aid_util'disclaimer = $aid_util'copyright_path = '';
-    $aid_util'pics_label = '';
-    $aid_util'author_meta = $aid_util'navigation_meta = $aid_util'descr_meta;
-    %aid_util'parent_page_path = ();
+    $aid_util::header_bg = '';
+    $aid_util::pack_len = '';
+    @aid_util::MoY = ();
+    $aid_util::noindex = '';
+    $aid_util::disclaimer = $aid_util::copyright_path = '';
+    $aid_util::pics_label = '';
+    $aid_util::author_meta = $aid_util::navigation_meta = $aid_util::descr_meta;
+    %aid_util::parent_page_path = ();
 
     @aid_edit_field_names = ();
 }
