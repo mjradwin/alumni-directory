@@ -2,7 +2,7 @@
 
 #
 # mails a welcome, update, confirm, or massmail message to members
-# $Id: aid_welcome,v 5.6 1999/06/04 18:43:02 mradwin Exp mradwin $
+# $Id: aid_welcome,v 5.7 1999/06/07 18:32:25 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -30,12 +30,15 @@ require 'aid_util.pl';
 require 'getopts.pl';
 require 'ctime.pl';
 
+$default_sleep = 0;
+$default_massmail_sleep = 5;
+
 $0 =~ s,.*/,,;  # basename
 $usage = "usage: $0 [options] infile.db [target ids...]
     -h            Display usage information.
     -a            Mail all users in <infile.db> matching -r <reqtype>.
     -d <secs>     Sleep for <secs> seconds between sending e-mail
-                  (default 10 for -m, 0 for all others).
+                  (default $default_massmail_sleep for -m, $default_sleep for all others).
     -r <reqtype>  Request type [0-4] (only valid with -m and -a).
     -l <logfile>  Log to <logfile> instead of default.
 
@@ -63,7 +66,7 @@ correct, NO ACTION IS REQUIRED ON YOUR PART.
 
      'textfile', '',
      'closing',  '',
-     'sleep',    '0',
+     'sleep',    $default_sleep,
      );
 
 %welcome_parameters = 
@@ -83,7 +86,7 @@ you're all set.
 
 Once again, welcome to the Alumni Internet Directory!
 ",
-     'sleep',    '0',
+     'sleep',    $default_sleep,
      );
 
 %update_parameters = 
@@ -102,7 +105,7 @@ changes are now visible on-line.
 Otherwise, if everything you see above is correct,
 you're all set.
 ",
-     'sleep',    '0',
+     'sleep',    $default_sleep,
      );
 
 %massmail_parameters = 
@@ -127,7 +130,7 @@ solicitation of business or contributions
 from individuals listed below is forbidden.
 
 ",
-     'sleep',    '10',
+     'sleep',    $default_massmail_sleep,
      );
 
 @args = @ARGV;
@@ -195,7 +198,7 @@ if ($opt_a)
 	    }
 
 	    &mail_user(*rec);
-	    sleep $params{'sleep'} if $params{'sleep'} > 0;
+	    sleep($params{'sleep'}) if $params{'sleep'} > 0;
 	}
     }
 }
@@ -217,6 +220,7 @@ else
 
 	%rec = &aid_db_unpack_rec($_,$DB{$_});
 	&mail_user(*rec);
+	sleep($params{'sleep'}) if $params{'sleep'} > 0;
     }
 }
 
