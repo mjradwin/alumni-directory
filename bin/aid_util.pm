@@ -2,11 +2,11 @@
 #     FILE: aid_util.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: perl library routines for the Alumni Internet Directory
-#      $Id: aid_util.pl,v 3.13 1998/05/19 20:23:59 mradwin Exp mradwin $
+#      $Id: aid_util.pl,v 3.14 1998/05/19 20:24:50 mradwin Exp mradwin $
 #
 
 $aid_util'rcsid =
- '$Id: aid_util.pl,v 3.13 1998/05/19 20:23:59 mradwin Exp mradwin $';
+ '$Id: aid_util.pl,v 3.14 1998/05/19 20:24:50 mradwin Exp mradwin $';
 
 # ----------------------------------------------------------------------
 # CONFIGURATION
@@ -30,7 +30,6 @@ $aid_util'rcsid =
      'cgi_path',     '/cgi-bin/mvhsaid',
      'index_page',   'index.html',
      'wwwdir',       '/home/web/radwin.org/docs/mvhs-alumni/',
-     'newsdir',      '/home/web/radwin.org/docs/mvhs-alumni/whatsnew/',
      'aiddir',       '/home/users/mradwin/mvhs/',
      'sendmail',     '/usr/sbin/sendmail',
      'mailprog',     '/usr/bin/mail',
@@ -58,7 +57,6 @@ $aid_util'rcsid =
 #      'cgi_path',     '/cgi-bin/cgiwrap/mjr/mvhsaid',
 #      'index_page',   'index.html',
 #      'wwwdir',       '/home/divcom/mjr/public_html/mvhs/',
-#      'newsdir',      '/home/divcom/mjr/public_html/mvhs/whatsnew/',
 #      'aiddir',       '/home/divcom/mjr/mvhs/',
 #      'sendmail',     '/usr/lib/sendmail',
 #      'mailprog',     '/usr/ucb/mail',
@@ -69,29 +67,6 @@ $aid_util'rcsid =
 #      'mailto',       "mjr\@divcom",
 #      'mailsubj',     'MVHSAID',
 #      'spoolfile',    '/var/spool/mail/mjr',
-#      'rcsid',        "$aid_util'rcsid",
-#      );
-
-# albert.corp.adobe.com (Solaris 2.5.1) configuration
-# %aid_util'config =  #'#
-#     ('admin_name',   'Michael John Radwin',
-#      'admin_email',  "mjr\@acm.org",
-#      'school',       'Mountain View High School',
-#      'admin_school', "Mountain View High School, Class of '93",
-#      'admin_phone',  '408-536-2554',
-#      'admin_url',    'http://slimy.com/~mjr/',
-#      'master_srv',   'albert.corp.adobe.com',
-#      'master_path',  '/~mradwin/mvhs/',
-#      'cgi_path',     '/~mradwin/mvhs/cgi-bin/mvhsaid.cgi',
-#      'index_page',   'index.html',
-#      'wwwdir',       '/user/mradwin/public_html/mvhs/',
-#      'newsdir',      '/user/mradwin/public_html/mvhs/whatsnew/',
-#      'aiddir',       '/user/mradwin/mvhs/',
-#      'sendmail',     '/usr/lib/sendmail',
-#      'mailprog',     '/usr/ucb/mail',
-#      'mailto',       "mradwin",
-#      'mailsubj',     'MVHSAID',
-#      'spoolfile',    '/var/mail/mradwin', 
 #      'rcsid',        "$aid_util'rcsid",
 #      );
 
@@ -128,7 +103,7 @@ $aid_util'config{'admin_email'} .
 "\" on \"1998.03.10T11:49-0800\" r (n 0 s 0 v 0 l 0))'>\n" .
 "<meta http-equiv=\"PICS-Label\" content='(PICS-1.1 " . 
 "\"http://www.classify.org/safesurf/\" l gen true " .
-"for \"http://" . $aid_util'config{'master_svr'} . "\" by \"" . 
+"for \"http://" . $aid_util'config{'master_srv'} . "\" by \"" . 
 $aid_util'config{'admin_email'} .
 "\" r (SS~~000 1 SS~~100 1))'>"; #"#
 
@@ -475,6 +450,14 @@ sub aid_alpha_db {
     @alpha;
 }
 
+sub aid_newsfile {
+    package aid_util;
+
+    local($id) = @_;
+
+    $config{'wwwdir'} . "whatsnew/${id}.txt";
+}
+
 sub aid_get_usertext {
     package aid_util;
 
@@ -483,7 +466,7 @@ sub aid_get_usertext {
     local($text,$inFile,*TEXTFILE);
 
     $text = '';
-    $inFile = $config{'newsdir'} . "${id}.txt";
+    $inFile = &main'aid_newsfile($id);
 
     if (-r $inFile) {
 	open(TEXTFILE,$inFile) || die "Can't open $inFile: $!\n";
@@ -1000,10 +983,9 @@ sub common_html_hdr {
 
     local($page,$title,$norobots) = @_;
     local($hdr,$result,$timestamp,$titletag);
-    local($rcstag) = "<!-- " . $config{'rcsid'} . " -->";
     local($date) = &main'ctime(time);  #'#
 
-    chop($date);
+    chop $date;
     $timestamp = (($page == 0) ? 'Last update to Directory: ' :
 		  'Last update to this page: ') . $date;
 
@@ -1014,11 +996,11 @@ sub common_html_hdr {
 	($config{'short_school'} . " Alumni: " . $title);
 
     $hdr  = "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 3.2 Final//EN\">\n" .
+	"<!--  " . $config{'rcsid'} . " -->" .
 	"<html>\n<head>\n" .
 	"<title>" . $titletag .
 	"</title>\n" . $site_tags . "\n" . $pics_label . "\n";
     $hdr .= "$noindex\n" if $norobots;
-    $hdr .= "$rcstag\n";
     $hdr .= "</head>\n\n";
     
     $hdr .= "<!-- begin common_html_hdr -->\n";
