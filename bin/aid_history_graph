@@ -1,6 +1,6 @@
 #!/usr/bin/perl -w
 
-# $Id: aid_history_graph,v 1.1 1999/03/16 00:27:03 mradwin Exp mradwin $
+# $Id: aid_history_graph,v 1.2 1999/03/26 19:41:22 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -52,8 +52,8 @@ while (($key,$val) = each %DB)
 
     ($i,$i,$i,$i,$i,$year,$i,$yday,$i) = localtime($rec{'created'});
 
-    $year -= 95;
-    $yday += $year * 365;
+    # time began on October 31, 1995 (day 303, year 95)
+    $yday += (($year - 95) * 365) - 303;
 
     $members[$yday]++;
 }
