@@ -2,7 +2,7 @@
 #     FILE: aid_util.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: perl library routines for the Alumni Internet Directory
-#      $Id: aid_util.pl,v 5.77 2000/09/13 18:39:00 mradwin Exp mradwin $
+#      $Id: aid_util.pl,v 5.78 2000/09/13 18:49:32 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -28,6 +28,7 @@ require 'aid_submit.pl';
 use MIME::QuotedPrint;
 use Net::SMTP; 
 use Time::Local;
+use POSIX qw(strftime);
 
 @aid_util::MoY = 
     ('Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec');
@@ -1294,7 +1295,13 @@ sub aid_write_reunion_hash
 	}
 	else
 	{
-	    print FH " - $key";
+	    my($clean_key) = lc($key);
+	    $clean_key =~ s/[^\w]/_/g;
+	    $clean_key =~ s/_+/_/g;
+	    $clean_key =~ s/^_//;
+	    $clean_key =~ s/_$//;
+
+	    print FH " - <a name=\"$clean_key\">$key</a>";
 	}
 
 	print FH "</b></dt>\n",
