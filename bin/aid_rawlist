@@ -36,7 +36,7 @@ while (($key,$val) = each %DB)
     }
 }
 
-dbmclose(DATA);
+dbmclose(DB);
 
 # cut off the last comma and space
 chop $output;
