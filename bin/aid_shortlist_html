@@ -4,7 +4,7 @@
 # does a short list, either compact or verbose, sorted by graduating
 # class with a jump bar
 #
-# $Id: aid_shortlist_html,v 5.10 2001/09/16 16:57:51 mradwin Exp mradwin $
+# $Id: aid_shortlist_html,v 5.11 2002/03/07 23:29:39 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -163,9 +163,13 @@ if (!$opt_v) {
 	$opt_t || print FMTOUT "</a>";
 	print FMTOUT $affil;
 	print FMTOUT ' ', ' ' x (41 - (length($fullname) + $len));
-	$opt_t || print FMTOUT "<a href=\"mailto:", $rec{'e'}, "\">";
-	print FMTOUT $rec{'e'};
-	$opt_t || print FMTOUT "</a>";
+	if ($opt_t) {
+	    print FMTOUT $rec{'e'};
+	} else {
+	    print FMTOUT "<a href=\"mailto:",
+	    aid_protect_email($rec{'e'}), "\">",
+	    aid_protect_email($rec{'e'}), "</a>";
+	}
 	$opt_t || $opt_m || print FMTOUT &aid_is_new_html(*rec);
 	print FMTOUT "\n";
     }
