@@ -4,7 +4,7 @@
 #     FILE: form.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: Alumni Internet Directory CGI form-submission interface
-#      $Id: form,v 5.36 2000/08/02 18:54:45 mradwin Exp mradwin $
+#      $Id: form,v 5.37 2000/11/06 02:58:17 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -36,7 +36,7 @@ use CGI::Carp qw(fatalsToBrowser);
 # configuration
 $dbmfile = &aid_config('dbmfile');
 
-$rcsid = '$Id: form,v 5.36 2000/08/02 18:54:45 mradwin Exp mradwin $'; #'fnt
+$rcsid = '$Id: form,v 5.37 2000/11/06 02:58:17 mradwin Exp mradwin $'; #'fnt
 
 $listing_upd_title = 'Modify Your Directory Listing';
 $listing_add_title = 'Join the Directory';
@@ -521,12 +521,38 @@ sub send_upd_notfound {
 
     print "Content-Type: text/html\015\012\015\012";
     print &aid_common_html_hdr(20,$listing_upd_title,1);
-    print "\n";
-    print "<p>Sorry, a listing with the address\n";
-    print "<code><strong>$notfound</strong></code>\n";
-    print "could not be found in the Directory.</p>\n";
-    print "<p>Please check the spelling and <a href=\""
-	. &aid_config('master_path') .  "add/\">try again</a>.</p>\n";
+    print "
+<p><big><font color=\"red\">Sorry, a listing with the address</font>
+<code><strong>$notfound</strong></code>
+<font color=\"red\">could not be found in the Directory.</font></big></p>
+<blockquote>
+<dl>
+  <dt><h3>I am currently listed in the Directory and want to
+      modify my listing.</h3>
+  <dd><br>
+      <form method=\"get\" action=\"" . &aid_config('update_cgi') . "\">
+      <label for=\"upd\">My e-mail address is </label>
+      <input type=\"text\" name=\"upd\" size=\"20\" id=\"upd\">
+      <input type=\"submit\" value=\"Sign In\">
+      </form>
+  <dt><dd><strong>If you don't remember the e-mail address you used
+  before, search for your listing:</strong>
+  <dd><br>
+      <form method=\"get\" action=\"" . &aid_config('search_cgi') . "/upd\">
+      <label for=\"q\">My last name is </label>
+      <input type=\"text\" name=\"q\" size=\"20\" id=\"q\">
+      <input type=\"hidden\" name=\"upd\" value=\"1\">
+      <input type=\"submit\" value=\"Search\">
+      </form>
+
+  <dt><br><h3>I want to join the Directory.</h3>
+  <dd><br><a
+href=\"" . &aid_config('master_path') . "add/new.html\">Fill
+out this form with your contact information</a>.
+      
+</dl>
+</blockquote>
+";
 
     print &aid_common_html_ftr(20);
 }
