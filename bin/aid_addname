@@ -1,6 +1,6 @@
 #!/usr/local/bin/perl5 -w
 
-# $Id: aid_addname,v 5.20 2000/05/31 00:33:54 mradwin Exp mradwin $
+# $Id: aid_addname,v 5.21 2000/05/31 15:55:03 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -82,6 +82,7 @@ sub readspool
 	unless (flock (DB_FH, LOCK_EX)) { die "flock: $!" }
     }
 
+    my(@vals) = ();
     if (defined $DBS{'_verified'})
     {
 	@key8s = split(/\0/, $DBS{'_verified'});
@@ -90,13 +91,7 @@ sub readspool
 	{
 	    if (defined $DBS{$key8} && $DBS{$key8} ne "\0")
 	    {
-		my($val) = $DBS{$key8};
-		my($id,$packed) = split(/\0/, $val, 2);
-		%rec = &aid_db_unpack_rec($id,$packed);
-
-		&addname(*rec) || die "$0: can't add $rec{'id'} $rec{'e'}!\n";
-		$success = 1;
-
+		push(@vals, $DBS{$key8});
 		$DBS{$key8} = "\0";
 	    }
 	}
@@ -109,6 +104,16 @@ sub readspool
     undef $db;
     untie(%DBS);
     close(DB_FH);
+
+    my($val);
+    foreach $val (@vals)
+    {
+	my($id,$packed) = split(/\0/, $val, 2);
+	%rec = &aid_db_unpack_rec($id,$packed);
+
+	&addname(*rec) || die "$0: can't add $rec{'id'} $rec{'e'}!\n";
+	$success = 1;
+    }
 
     if ($success)
     {
