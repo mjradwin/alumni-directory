@@ -3,7 +3,7 @@
 #
 # generates reunion info page
 #
-# $Id: aid_reunion_html,v 1.3 2000/05/24 23:31:55 mradwin Exp mradwin $
+# $Id: aid_reunion_html,v 1.4 2000/05/24 23:32:43 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -65,14 +65,14 @@ $admin = &aid_config('admin_email');
 print FMTOUT <<END_OF_HTML;
 <h2>Alumni: help keep this page up-to-date!</h2>
 
-<p>If you know the details about a reunion that isn't listed on this
-page, please send e-mail to <code><a
-href="mailto:$admin">$admin</a></code>.</p>
-
 <p>If your class reunion isn't listed here, contact your Senior year
 class officers (see your yearbook).  Failing that, try the Activities
 Office of Mountain View High School, at 650-940-4600.  Their U.S. mail
 address is 3535 Truman Avenue, Mountain View, CA 94040-4598.</p>
+
+<p>If you know the details about a reunion that isn't listed on this
+page, please send e-mail to <code><a
+href="mailto:$admin">$admin</a></code>.</p>
 
 <p>If you are a class officer and would like to send e-mail to members
 of your graduating class, please contact
