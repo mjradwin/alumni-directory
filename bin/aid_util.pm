@@ -2,7 +2,7 @@
 #     FILE: aid_util.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: perl library routines for the Alumni Internet Directory
-#      $Id: aid_util.pl,v 5.85 2001/01/28 06:53:15 mradwin Exp mradwin $
+#      $Id: aid_util.pl,v 5.86 2001/02/01 21:09:38 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -21,7 +21,7 @@
 #   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #
 
-require 'mvhs_config.pl';
+require 'school_config.pl';
 require 'aid_config.pl';
 require 'aid_submit.pl';
 
