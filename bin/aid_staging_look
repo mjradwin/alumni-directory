@@ -1,6 +1,6 @@
 #!/usr/local/bin/perl -w
 
-# $Id: aid_staging_look,v 6.1 2003/08/25 04:10:32 mradwin Exp mradwin $
+# $Id: aid_staging_look,v 6.2 2003/08/25 05:32:04 mradwin Exp mradwin $
 #
 #   Copyright (c) 2003  Michael J. Radwin
 #
@@ -96,9 +96,9 @@ while (my($key,$val) = each %DB)
 
 	print aid_util::inorder_fullname(\%rec), $affil, " <",
 	$rec{'e'}, ">\n",
-	"web submission: ", scalar(localtime($rec{'u'})),
+	"web submission: ", scalar(localtime($rec{'u'})), "\n",
 	"mailed confirm: ", ($rec{'lm'} == 0 ? "(never)\n" :
-			     scalar(localtime($rec{'lm'}))),
+			     scalar(localtime($rec{'lm'}))), "\n",
 	"key=$key\tid=$id\n";
 
 	print "*VERIFIED*\n" if defined $verif{$key};

@@ -1,6 +1,6 @@
 #!/usr/local/bin/perl -w
 
-# $Id: aid_dbm_read,v 6.1 2003/08/25 04:10:32 mradwin Exp mradwin $
+# $Id: aid_dbm_read,v 6.2 2003/08/25 05:32:04 mradwin Exp mradwin $
 #
 #   Copyright (c) 2003  Michael J. Radwin
 #
@@ -275,7 +275,7 @@ sub display_key_val
 
     elsif ($key =~ /^_created$/)
     {
-	print "created = ", scalar(localtime(unpack("N", $val)));
+	print "created = ", scalar(localtime(unpack("N", $val))), "\n";
     }
 
     elsif ($key =~ /^_nextid$/)
@@ -287,7 +287,7 @@ sub display_key_val
     {
 	$val = unpack("N", $val);
 	print "time", (defined $1 ? $1 : ''), " = ", 
-	  $val ? scalar(localtime($val)) : "0\n";
+	($val ? scalar(localtime($val)) : "0"), "\n";
     }
 
     elsif ($key =~ /\@/)
