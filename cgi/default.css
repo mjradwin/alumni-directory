@@ -8,22 +8,27 @@ a:visited { color: #990099;  }
 a:active  { color: #ffcc00;  }
 
 strong.newupd {
-  background-color: #ffc;
+  color: black;
+  background: #ffffcb;
 }
 
 div.about {
   border: none;
   color: black;
   width: 100%;
-  background-color: #ffc;
+  background: #ffffcc;
 }
 
 pre.about {
   color: black;
   margin-left: 1em;
   margin-right: 1em;
+  background: #ffffcc;
 }
 
 .alert {
   color: red;
+  background: white;
 }
+
+pre { font-family: monospace }        /* navigator 4 requires this */
