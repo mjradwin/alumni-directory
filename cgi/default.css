@@ -12,6 +12,14 @@ strong.y {
   background: #ffffcb;
 }
 
+.navbar {
+  border: none;
+  width: 100%;
+  color: black;
+  background: #ffffcc;
+  text-align: center;
+}
+
 div.about {
   border: none;
   color: black;
