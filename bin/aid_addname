@@ -1,6 +1,6 @@
 #!/usr/bin/perl -w
 
-# $Id: aid_addname,v 3.24 1999/03/22 17:38:30 mradwin Exp mradwin $
+# $Id: aid_addname,v 3.25 1999/03/23 16:11:30 mradwin Exp mradwin $
 
 require 'getopts.pl';
 require 'aid_util.pl';
@@ -32,6 +32,17 @@ $adr_update  = &aid_config('aiddir') . 'data/update.adr';
 
 print STDERR "done!\n";
 exit(0);
+
+# make the "what's new" text fit in 55 columns.
+format NEWSOUT =
+^<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<~~
+$message
+.
+
+format STDOUT =
+^<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<~~
+$message
+.
 
 sub readspool {
     local($spoolFile) = @_;
@@ -65,12 +76,37 @@ sub readspool {
 		open(NEWSOUT, ">$newsFile") ||
 		    die "Can't open $newsFile: $!\n";
 		print "MESSAGE $newsFile\n";
-		while(<SPOOL>) {
+
+		$message = '';
+		$maxlen = 0;
+		while(<SPOOL>)
+		{
 		    last if /^_AID_END_MESSAGE_/;
-		    print STDOUT $_;
-		    print NEWSOUT $_;
+		    $maxlen = length($_) if (length($_) > $maxlen);
+		    $message .= $_;
+		}
+		if ($maxlen <= 56)
+		{
+		    print STDOUT  $message;
+		    print NEWSOUT $message;
+		}
+		else
+		{
+		    $message_bak = $message;
+		    write(NEWSOUT);	# destructively modifies message
+		    $message = $message_bak;
+		    print "(reformatted)\n";
+		    write(STDOUT);
 		}
 		close(NEWSOUT);
+
+#		while(<SPOOL>) {
+#		    last if /^_AID_END_MESSAGE_/;
+#		    print STDOUT $_;
+#		    print NEWSOUT $_;
+#		}
+#		close(NEWSOUT);
+
 		$newsp = 1;	# they had a What's New? message
 	    }
 	}
