@@ -2,13 +2,13 @@
 
 #
 # does the html multi_class pages
-# $Id: aid_multi_class_html,v 3.16 1998/11/02 21:43:49 mradwin Exp mradwin $
+# $Id: aid_multi_class_html,v 3.17 1999/02/01 17:57:10 mradwin Exp mradwin $
 #
 
 require 'aid_util.pl';
 require 'getopts.pl';
 
-$usage = 'usage: aid_multi_class_html [-h] infile.adr
+$usage = 'usage: aid_multi_class_html [-h] infile.db
     -h        Display usage information.
 ';
 
@@ -17,48 +17,43 @@ $opt_h && die "$usage\n";
 $ARGV[0] || die "$usage\n";
 $opt_h = $opt_h;		# avoid warning
 
-open(DATA,$ARGV[0]) || die "Can't open $ARGV[0]: $!\n";
+$ARGV[0] =~ s/\.db$//;
+die "can't open $ARGV[0].db\n" unless -r "$ARGV[0].db";
+dbmopen(DB,$ARGV[0],0444);
 
-@years = ();
-@db = ();
+die "no __years__ key!\n" unless defined $DB{'__years__'};
 
-while(<DATA>) {
-    chop;
-    %rec = &aid_split($_);
-    next unless $rec{'valid'};
+@years = unpack("n*",$DB{'__years__'});
+push(@years, 'other');
 
-    push(@db,$_);
-    &aid_build_yearlist(*years, $rec{'year'});
-}
+foreach $year (@years)
+{
+    print STDERR ".";
+    @ids = unpack("n*",$DB{"__${year}__"});
 
-$prev = '';
-while (defined($_ = shift(@db))) {
-    %rec = &aid_parse($_);
+    $outFile = &aid_config('wwwdir') . "class/${year}.html";
+    open(FMTOUT,">$outFile") || die "Can't open $outFile: $!\n";
 
-    if ($prev ne $rec{'year'} && $prev ne 'other') {
-	if ($prev ne '') {
-	    print FMTOUT &common_html_ftr(-1);
-	    close(FMTOUT);
-	}
+    $title = ($year =~ /^\d+$/) ? "Class of $year" : "Faculty and Staff";
+    print FMTOUT &common_html_hdr(-1,$title,1);
+    print FMTOUT &common_intro_para(0);
+    print FMTOUT &aid_class_jump_bar('', '.html', *years, 1, $year);
+    print FMTOUT "<hr noshade size=1>\n\n";
 
-	$prev = ($rec{'year'} =~ /^\d+$/) ? $rec{'year'} : 'other';
-	$outFile = &aid_config('wwwdir') . "class/${prev}.html";
+    foreach $id (@ids)
+    {
+	%rec = &aid_db_unpack_rec($id,$DB{$id});
+	next unless $rec{'valid'};
 
-	open(FMTOUT,">$outFile") || die "Can't open $outFile: $!\n";
-
-	$title  = ($rec{'year'} =~ /^\d+$/) ? "Class of $rec{'year'}" :
-	    "Faculty and Staff";
-	print FMTOUT &common_html_hdr(-1,$title,1);
-	print FMTOUT &common_intro_para(0);
-	print FMTOUT &aid_class_jump_bar('', '.html', *years, 1, $prev);
-	print FMTOUT "<hr noshade size=1>\n\n";
+	print FMTOUT &aid_verbose_entry(*rec);
     }
 
-    print FMTOUT &aid_verbose_entry(*rec);
+    print FMTOUT &common_html_ftr(-1);
+    close(FMTOUT);
 }
 
-print FMTOUT &common_html_ftr(-1);
-close(FMTOUT);
+dbmclose(DB);
+print STDERR "\n";
 
 # index page
 $outFile = &aid_config('wwwdir') . "class/index.html";
