@@ -7,7 +7,7 @@
 require 'aid_util.pl';
 require 'getopts.pl';
 
-$usage = 'usage: aid_alpha_html [-h] infile.adr outfile
+$usage = 'usage: aid_rawlist [-h] infile.db outfile
     -h        Display usage information.
 ';
 
@@ -17,18 +17,26 @@ $ARGV[0] || die "$usage\n";
 $ARGV[1] || die "$usage\n";
 $opt_h = $opt_h;		# avoid warning
 
-open(DATA,$ARGV[0]) || die "Can't open $ARGV[0]: $!\n";
+$ARGV[0] =~ s/\.db$//;
+die "can't open $ARGV[0].db\n" unless -r "$ARGV[0].db";
+dbmopen(DB,$ARGV[0],0444);
+
 open(FMTOUT,">$ARGV[1]") || die "Can't open $ARGV[1]: $!\n";
 
 $output = '';
 
-while(<DATA>) {
-    chop;
-    %rec = &aid_parse($_);
-    next unless $rec{'valid'};
+while (($key,$val) = each %DB)
+{
+    if ($key =~ /^\d+$/)
+    {
+	%rec = &aid_db_unpack_rec($key,$val);
+	next unless $rec{'valid'};
 
-    $output .= $rec{'email'} . ', ';
+	$output .= $rec{'email'} . ', ';
+    }
 }
+
+dbmclose(DATA);
 
 # cut off the last comma and space
 chop $output;
