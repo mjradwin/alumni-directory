@@ -2,7 +2,7 @@
 #     FILE: Makefile
 #   AUTHOR: Michael J. Radwin
 #    DESCR: Makefile for building the MVHS Alumni Internet Directory
-#      $Id: Makefile,v 1.43 1997/12/31 18:49:13 mjr Exp mjr $
+#      $Id: Makefile,v 1.44 1997/12/31 19:29:34 mjr Exp mjr $
 #
 
 HOMEDIR=/home/divcom/mjr
@@ -56,6 +56,7 @@ $(PAGES):	data/alpha.adr bin/mv_www_html
 VERBOSE=$(WWWDIR)/class/index.html
 verbose:	$(VERBOSE)
 $(VERBOSE):	data/class.adr bin/mv_verbose_html
+	mkdir -p $(WWWDIR)/class
 	bin/mv_verbose_html data/class.adr
 
 HOME=$(WWWDIR)/index.html
@@ -89,6 +90,7 @@ $(LINKS):	data/links.include bin/mv_home_html mv_util.pl
 NICKNAMES=$(WWWDIR)/books/index.html
 nicknames:	$(NICKNAMES)
 $(NICKNAMES):	data/nicknames.include bin/mv_home_html mv_util.pl
+	mkdir -p $(WWWDIR)/books
 	bin/mv_home_html -p13 -i data/nicknames.include \
 		-t 'Nicknames: address books for your e-mail program' \
 		$(NICKNAMES)
@@ -108,6 +110,7 @@ $(SUBMIT):	bin/mv_home_html mv_util.pl
 BOOKS=$(WWWDIR)/books/mvhs.vcf
 books:	$(BOOKS)
 $(BOOKS):	data/alpha.adr bin/mv_book
+	mkdir -p $(WWWDIR)/books
 	bin/mv_book \
 		-p $(WWWDIR)/books/pine.txt \
 		-e $(WWWDIR)/books/elm.txt \
