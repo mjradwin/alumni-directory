@@ -2,7 +2,7 @@
 #     FILE: mv_util.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: perl library routines for the MVHS Alumni Internet Directory
-#      $Id: mv_util.pl,v 1.45 1997/10/14 19:36:54 mjr Exp mjr $
+#      $Id: mv_util.pl,v 1.46 1997/10/14 19:38:53 mjr Exp mjr $
 #
 
 CONFIG: {
@@ -237,7 +237,7 @@ sub submit_body {
 	$tableh = 
 	    &tableheader("Update Your Directory Listing", 1, "ffff99", 1);
 	$tableh .= "\n<p>Please update the following information";
-	$tableh .= " and hit the submit button.\nYour submission will be";
+	$tableh .= " and hit the <strong>Submit</strong> button.\nYour submission will be";
 	$tableh .= " processed in a day or so.</p>\n\n";
 	$tableh .= "<p>Fields marked with a <font color=\"#ff0000\">*</font>";
 	$tableh .= " are required.  All other fields are optional.";
@@ -249,7 +249,8 @@ sub submit_body {
 	$tableh .= "\n<p>Thanks for adding a name to the MVHS Alumni Internet
 Directory!  To update your entry, please see the <a
 href=\"" . $config{'cgi_path'} . "?update\">update page</a>.  To add a new
-entry, please enter the following information and hit the submit button.
+entry, please enter the following information and hit the
+strong>Submit</strong> button.
 Your submission will be processed in a day or so.</p>
 
 <p>Fields marked with a $star are required.
