@@ -1,6 +1,6 @@
 #!/usr/bin/perl -w
 
-# $Id: aid_stats,v 1.14 1999/03/26 22:07:17 mradwin Exp mradwin $
+# $Id: aid_stats,v 1.15 1999/03/26 22:09:20 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -142,11 +142,11 @@ printf FMTOUT "%4d (%2.0f%%) wrote What's New? paragraph\n",
 
 print FMTOUT "\n";
 
-printf FMTOUT "average tenure           : %.1f weeks\n", $avg_tenure_weeks;
-printf FMTOUT "median  tenure           : %.1f weeks\n", $median_tenure_weeks;
+printf FMTOUT "average tenure           : %.0f weeks\n", $avg_tenure_weeks;
+printf FMTOUT "median  tenure           : %.0f weeks\n", $median_tenure_weeks;
 
-printf FMTOUT "average time since update: %.1f weeks\n", $avg_update_weeks;
-printf FMTOUT "median  time since update: %.1f weeks\n", $median_update_weeks;
+printf FMTOUT "average time since update: %.0f weeks\n", $avg_update_weeks;
+printf FMTOUT "median  time since update: %.0f weeks\n", $median_update_weeks;
 
 printf FMTOUT "entries never updated    : %.0f%% (%d of %d)\n",
     ((100.0 * $num_never_updated) / $nlegit), $num_never_updated, $nlegit;
