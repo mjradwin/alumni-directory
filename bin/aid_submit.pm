@@ -2,7 +2,7 @@
 #     FILE: aid_submit.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: submission form for Alumni Internet Directory
-#      $Id: aid_submit.pl,v 1.6 1999/05/07 00:47:36 mradwin Exp mradwin $
+#      $Id: aid_submit.pl,v 1.7 1999/05/31 18:26:09 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -104,7 +104,8 @@ are required.  All other fields are optional.</p>
     $body .= "<table border=\"0\" cellspacing=\"7\">
 
 <tr><td colspan=\"3\" bgcolor=\"#$header_bg\">
-<font size=\"+1\"><strong>1. Full Name</strong></font>
+<font color=\"#$header_fg\"><strong><big>1.
+Full Name</strong></big></font>
 </td></tr>
 <tr>
   <td valign=\"top\" align=\"right\"><label
@@ -138,7 +139,8 @@ are required.  All other fields are optional.</p>
 </tr>
 
 <tr><td colspan=\"3\" bgcolor=\"#$header_bg\">
-<font size=\"+1\"><strong>2. Graduating Class while at $config{'short_school'}</strong></font>
+<font color=\"#$header_fg\"><big><strong>2.
+Graduating Class while at $config{'short_school'}</strong></big></font>
 </td></tr>
 <tr>
   <td valign=\"top\" align=\"right\"><label
@@ -150,7 +152,8 @@ are required.  All other fields are optional.</p>
 </tr>
 
 <tr><td colspan=\"3\" bgcolor=\"#$header_bg\">
-<font size=\"+1\"><strong>3. Contact Info</strong></font>
+<font color=\"#$header_fg\"><big><strong>3.
+Contact Info</strong></big></font>
 </td></tr>
 <tr>
   <td valign=\"top\" align=\"right\"><label
@@ -177,7 +180,8 @@ are required.  All other fields are optional.</p>
 </tr>
 
 <tr><td colspan=\"3\" bgcolor=\"#$header_bg\">
-<font size=\"+1\"><strong>4. What's New?</strong></font>
+<font color=\"#$header_fg\"><big><strong>4.
+What's New?</strong></big></font>
 </td></tr>
 <tr>
   <td colspan=\"3\">
@@ -191,7 +195,8 @@ are required.  All other fields are optional.</p>
 </tr>
 
 <tr><td colspan=\"3\" bgcolor=\"#$header_bg\">
-<font size=\"+1\"><strong>5. E-mail Preferences</strong></font>
+<font color=\"#$header_fg\"><big><strong>5.
+E-mail Preferences</strong></big></font>
 </td></tr>
 <tr>
   <td colspan=\"3\"><input type=\"checkbox\"
@@ -221,7 +226,8 @@ are required.  All other fields are optional.</p>
 </tr>
 
 <tr><td colspan=\"3\" bgcolor=\"#$header_bg\">
-<font size=\"+1\"><strong>6. Continue</strong></font>
+<font color=\"#$header_fg\"><big><strong>6.
+Continue</strong></big></font>
 </td></tr>
 
 <tr>

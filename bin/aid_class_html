@@ -2,7 +2,7 @@
 
 #
 # does the html version of the grad-date address list
-# $Id: aid_class_html,v 3.39 1999/05/24 18:55:52 mradwin Exp mradwin $
+# $Id: aid_class_html,v 3.40 1999/05/31 18:26:09 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -29,16 +29,15 @@ require 'aid_util.pl';
 require 'getopts.pl';
 
 $0 =~ s,.*/,,;  # basename
-$usage = "usage: $0 [-hqtaw] [-c class] infile.db outfile
+$usage = "usage: $0 [-hqtw] [-c class] infile.db outfile
     -h        Display usage information.
     -q        Quiet.
     -t        Output text only.
-    -a        Awalt mode.
     -w        Web page mode.
     -c class  Only people from <class>.
 ";
 
-&Getopts('hqtawc:') || die "$usage\n";
+&Getopts('hqtwc:') || die "$usage\n";
 $opt_h && die "$usage\n";
 $ARGV[0] || die "$usage\n";
 $ARGV[1] || die "$usage\n";
@@ -51,11 +50,10 @@ $ARGV[0] =~ s/\.db$//;
 die "can't open $ARGV[0].db\n" unless -r "$ARGV[0].db";
 dbmopen(%DB,$ARGV[0],0444);
 
-$prefix = $opt_a ? 'awalt_' : ($opt_w ? 'www_' : '');
-$affix = $opt_a ? '_awalt' : ($opt_w ? '_www' : '');
-$title  = $opt_a ? 'Awalt Alumni' : 
-    ($opt_w ? 'Alumni with Web Pages' : 'Listed by Graduating Class');
-$pageno = $opt_a ? 3 : ($opt_w ? 4 : -1);
+$prefix = $opt_w ? 'www_' : '';
+$affix = $opt_w ? '_www' : '';
+$title  = $opt_w ? 'Alumni with Web Pages' : 'Listed by Graduating Class';
+$pageno = $opt_w ? 4 : -1;
 
 if ($opt_c)
 {

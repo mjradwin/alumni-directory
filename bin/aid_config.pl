@@ -2,7 +2,7 @@
 #     FILE: aid_config.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: configuration variables for Alumni Internet Directory
-#      $Id: aid_config.pl,v 1.42 1999/05/24 18:21:51 mradwin Exp mradwin $
+#      $Id: aid_config.pl,v 1.43 1999/05/31 18:26:09 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -55,7 +55,7 @@ die "NO CONFIG DEFINED!!\n" unless defined %aid_util'config; #'#
  "Home,"             . $aid_util'config{'master_path'},
  "Alpha,"            . $aid_util'config{'master_path'} . "alpha/a-index.html",
  "Class,"            . $aid_util'config{'master_path'} . "class/",
- "Awalt,"            . $aid_util'config{'master_path'} . "class/awalt.html",
+ "MVHS,"             . "/mvhs-alumni/",
  "Web&nbsp;Pages,"   . $aid_util'config{'master_path'} . "pages.html",
  "Recent,"           . $aid_util'config{'master_path'} . "recent.html",
  "Search,"           . $aid_util'config{'search_cgi'},
@@ -100,7 +100,7 @@ $aid_util'ID_INDEX    = 0;     #'# position that the ID key is in datafile
     'c',			# date of record creation
     'u',			# date of last update
     'f',			# date of last successful verification
-    's',			# high school (primary or Awalt)
+    's',			# OBSOLETE
     'yr',			# 4-digit grad year or affiliation
     'e',			# email address
     'w',			# personal web page
