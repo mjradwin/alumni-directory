@@ -2,7 +2,7 @@
 
 #
 # does the html version of the alphabetical address list
-# $Id: aid_alpha_html,v 3.20 1999/02/16 18:13:16 mradwin Exp mradwin $
+# $Id: aid_alpha_html,v 3.21 1999/02/24 20:37:19 mradwin Exp mradwin $
 #
 
 require 'aid_util.pl';
@@ -32,7 +32,8 @@ die "no __alpha__ key!\n" unless defined $DB{'__alpha__'};
 open(FMTOUT,">$ARGV[1]") || die "Can't open $ARGV[1]: $!\n";
 
 if (!$opt_t) {
-    print FMTOUT &common_html_hdr(1,'Alumni Listed by Last Name',1);
+    print FMTOUT &common_html_hdr(1,'Alumni Listed by Last Name',1,
+				  unpack("N",$DB{'__t__'}));
     print FMTOUT &common_intro_para(1);
     print FMTOUT "<p><a name=\"top\">Index</a>: <code>";
     # do the funky quick-jump bar

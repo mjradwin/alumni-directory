@@ -2,7 +2,7 @@
 
 #
 # does the html version of just home pages
-# $Id: aid_home_html,v 3.23 1999/02/24 20:42:19 mradwin Exp mradwin $
+# $Id: aid_home_html,v 3.24 1999/02/24 21:49:55 mradwin Exp mradwin $
 #
 
 require 'aid_util.pl';
@@ -35,29 +35,43 @@ die "$usage\n" unless defined($opt_t);
 
 $infile = $opt_i;
 $outfile = $ARGV[0];
+$dbmfile = &aid_config('wwwdir') . 'master';
 
-if ($opt_i) {
+if ($opt_i)
+{
     open(INFILE,$infile) || die "Can't open $infile: $!\n";
+    $time = (stat(INFILE))[9];
     @lines = <INFILE>;
     close(INFILE);
 }
+else
+{
+    die "can't open ${dbmfile}.db\n" unless -r "${dbmfile}.db";
+    dbmopen(DB,$dbmfile,0444);
+
+    die "no __t__ key!\n" unless defined $DB{'__t__'};
+    $time = unpack("N",$DB{'__t__'});
+}
+
+if ($opt_i && $opt_p == 0)
+{
+    die "can't open ${dbmfile}.db\n" unless -r "${dbmfile}.db";
+    dbmopen(DB,$dbmfile,0444);
+    die "no __t__ key!\n" unless defined $DB{'__t__'};
+    $time = unpack("N",$DB{'__t__'});
+    dbmclose(DB);
+}
 
 open(OUTFILE,">$outfile") || die "Can't open $outfile: $!\n";
-
-print OUTFILE &common_html_hdr($opt_p,$opt_t,0);
+print OUTFILE &common_html_hdr($opt_p,$opt_t,0,$time);
 
 if ($opt_s) {
     print OUTFILE &submit_body(*blank_entry,'');
 
 } elsif ($opt_d) {
-    $dbmfile = &aid_config('wwwdir') . 'master';
-    die "can't open ${dbmfile}.db\n" unless -r "${dbmfile}.db";
-    dbmopen(DB,$dbmfile,0444);
     die "no __years__ key!\n" unless defined $DB{'__years__'};
-
     @years = unpack("n*",$DB{'__years__'});
     push(@years, 'other');
-    dbmclose(DB);
 
     print OUTFILE "<p>Before downloading nickname and address book files
 for your e-mail program, please read the
@@ -121,5 +135,8 @@ years after mine.</label>
     print OUTFILE @lines;
 }
 print OUTFILE &common_html_ftr($opt_p);
+
+dbmclose(DB) unless $opt_i;
+close(OUTFILE);
 
 exit(0);

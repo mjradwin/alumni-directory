@@ -2,7 +2,7 @@
 
 #
 # does the html version of the invalid address list
-# $Id: aid_goners_html,v 3.16 1999/02/16 18:17:12 mradwin Exp mradwin $
+# $Id: aid_goners_html,v 3.17 1999/02/24 20:37:19 mradwin Exp mradwin $
 #
 
 require 'aid_util.pl';
@@ -18,7 +18,8 @@ die "no __alpha__ key!\n" unless defined $DB{'__alpha__'};
 
 open(FMTOUT,">$ARGV[1]") || die "Can't open $ARGV[1]: $!\n";
 
-print FMTOUT &common_html_hdr(-1,'Alumni with Invalid Addresses',1);
+print FMTOUT &common_html_hdr(-1,'Alumni with Invalid Addresses',1,
+			      unpack("N",$DB{'__t_goner__'}));
 print FMTOUT "
 <p>The following addresses are invalid because either e-mail to them
 bounces, or the address is being used by a new owner.  If you know a

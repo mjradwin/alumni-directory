@@ -2,7 +2,7 @@
 
 #
 # does the html version of the grad-date address list
-# $Id: aid_class_html,v 3.21 1999/02/16 19:14:55 mradwin Exp mradwin $
+# $Id: aid_class_html,v 3.22 1999/02/24 20:43:17 mradwin Exp mradwin $
 #
 
 require 'aid_util.pl';
@@ -49,7 +49,11 @@ open(FMTOUT,">$ARGV[1]") || die "Can't open $ARGV[1]: $!\n";
 
 if (!$opt_t) {
     $title  = $opt_a ? 'Awalt Alumni' : 'Listed by Graduating Class';
-    print FMTOUT &common_html_hdr(($opt_a ? 3 : -1),$title,1);
+
+    $time   = $opt_a ? unpack("N",$DB{'__t_awalt__'}) :
+	unpack("N",$DB{'__t__'});
+
+    print FMTOUT &common_html_hdr(($opt_a ? 3 : -1),$title,1,$time);
     print FMTOUT &common_intro_para(1);
     print FMTOUT &aid_class_jump_bar('#grad','',*years,0);
     print FMTOUT "<pre>";

@@ -2,7 +2,7 @@
 
 #
 # does the html verbose pages
-# $Id: aid_multi_alpha_html,v 3.22 1999/02/16 18:17:12 mradwin Exp mradwin $
+# $Id: aid_multi_alpha_html,v 3.23 1999/02/24 20:42:19 mradwin Exp mradwin $
 #
 
 require 'aid_util.pl';
@@ -25,7 +25,8 @@ dbmopen(DB,$ARGV[0],0444);
 die "no __alpha__ key!\n" unless defined $DB{'__alpha__'};
 
 $initial = "Z";
-$alpha_header = &common_html_hdr(1,'Listed by Last Name',1) .
+$alpha_header = &common_html_hdr(1,'Listed by Last Name',1,
+				 unpack("N",$DB{'__t__'})) .
     &common_intro_para(1);
 
 @alpha_ids = unpack("n*",$DB{'__alpha__'});

@@ -1,9 +1,10 @@
 #!/usr/bin/perl -w
 
-# $Id: aid_dbm_read,v 1.7 1999/02/16 19:16:55 mradwin Exp mradwin $
+# $Id: aid_dbm_read,v 1.8 1999/02/26 19:40:38 mradwin Exp mradwin $
 
 require 'aid_util.pl';
 require 'getopts.pl';
+require 'ctime.pl';
 
 $0 =~ s,.*/,,;  # basename
 $usage = "usage: $0 [-hac] [-t adr] infile.db [key]
@@ -128,6 +129,11 @@ sub display_key_val
     elsif ($key =~ /^__alpha__$/)
     {
 	print "list alpha = ", join(',', unpack("n*", $val)), "\n";
+    }
+
+    elsif ($key =~ /^__created__$/)
+    {
+	print "created = ", &ctime(unpack("N", $val));
     }
 
     elsif ($key =~ /\@/)

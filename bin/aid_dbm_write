@@ -1,6 +1,6 @@
 #!/usr/bin/perl -w
 
-# $Id: aid_dbm_write,v 1.8 1999/02/10 20:17:31 mradwin Exp mradwin $
+# $Id: aid_dbm_write,v 1.9 1999/02/16 19:10:59 mradwin Exp mradwin $
 
 require 'aid_util.pl';
 require 'getopts.pl';
@@ -28,6 +28,14 @@ $ARGV[1] =~ s/\.db$//;
 
 print STDERR "making binary db...";
 dbmopen(DB, $ARGV[1], 0666);
+
+$DB{'__created__'} = pack("N", time);
+
+$latest = 0;
+$latest_www = 0;
+$latest_awalt = 0;
+$latest_goner = 0;
+
 for (@db)
 {
     next unless defined($_) && $_ ne '';
@@ -40,6 +48,10 @@ for (@db)
     # make a list of alpha years
     if ($rec{'valid'})
     {
+	$latest = $rec{'time'} if $rec{'time'} > $latest;
+	$latest_www = $rec{'time'} if
+	    (($rec{'www'} ne '') && ($rec{'time'} > $latest_www));
+
 	$ykey = ($rec{'year'} =~ /^\d+$/) ? $rec{'year'} : 'other';
 	if (defined $class_members{$ykey})
 	{
@@ -52,6 +64,8 @@ for (@db)
 
 	if ($rec{'school'} =~ /awalt/i)
 	{
+	    $latest_awalt = $rec{'time'} if $rec{'time'} > $latest_awalt;
+
 	    if (defined $awalt{$ykey})
 	    {
 		$awalt{$ykey} .= ' ' . $rec{'id'};
@@ -61,6 +75,11 @@ for (@db)
 		$awalt{$ykey}  =       $rec{'id'};
 	    }
 	}
+    }
+    else
+    {
+	$latest_goner = $rec{'bounce'} if $rec{'bounce'} > $latest_goner;
+	$latest_goner = $rec{'fresh'} if $rec{'fresh'} > $latest_goner;
     }
     
     # also make the alpha list
@@ -96,6 +115,11 @@ foreach $ykey (@years)
     $DB{"__awalt_${ykey}__"} = pack("n*", split(/ /, $awalt{$ykey}));
 }
 print STDERR ".";
+
+$DB{'__t__'} = pack("N", $latest);
+$DB{'__t_www__'} = pack("N", $latest_www);
+$DB{'__t_awalt__'} = pack("N", $latest_awalt);
+$DB{'__t_goner__'} = pack("N", $latest_goner);
 
 dbmclose(DB);
 

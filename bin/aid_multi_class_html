@@ -2,7 +2,7 @@
 
 #
 # does the html multi_class pages
-# $Id: aid_multi_class_html,v 3.19 1999/02/16 19:10:33 mradwin Exp mradwin $
+# $Id: aid_multi_class_html,v 3.20 1999/02/24 20:42:19 mradwin Exp mradwin $
 #
 
 require 'aid_util.pl';
@@ -23,6 +23,7 @@ die "can't open $ARGV[0].db\n" unless -r "$ARGV[0].db";
 dbmopen(DB,$ARGV[0],0444);
 
 die "no __years__ key!\n" unless defined $DB{'__years__'};
+$time = unpack("N",$DB{'__t__'});
 
 @years = unpack("n*",$DB{'__years__'});
 push(@years, 'other');
@@ -36,7 +37,7 @@ foreach $year (@years)
     open(FMTOUT,">$outFile") || die "Can't open $outFile: $!\n";
 
     $title = ($year =~ /^\d+$/) ? "Class of $year" : "Faculty and Staff";
-    print FMTOUT &common_html_hdr(-1,$title,1);
+    print FMTOUT &common_html_hdr(-1,$title,1,$time);
     print FMTOUT &common_intro_para(0);
     print FMTOUT &aid_class_jump_bar('', '.html', *years, 1, $year);
     print FMTOUT "<hr noshade size=1>\n\n";
@@ -60,7 +61,7 @@ print STDERR "\n";
 $outFile = &aid_config('wwwdir') . "class/index.html";
 open(FMTOUT,">$outFile") || die "Can't open $outFile: $!\n";
 
-print FMTOUT &common_html_hdr(2,'Listed by Graduating Class',0);
+print FMTOUT &common_html_hdr(2,'Listed by Graduating Class',0,$time);
 
 print FMTOUT "<p align=center><big>By&nbsp;Class:<br>\n";
 print FMTOUT &aid_class_jump_bar('', '.html', *years, 0);
