@@ -2,7 +2,7 @@
 
 #
 # does the html version of the invalid address list
-# $Id: aid_goners_html,v 2.4 1998/05/17 01:02:30 mradwin Exp mradwin $
+# $Id: aid_goners_html,v 3.10 1998/05/17 05:18:53 mradwin Exp mradwin $
 #
 
 require 'aid_util.pl';
@@ -29,20 +29,7 @@ while(<DATA>) {
     $fullname = &fullname(*rec);
     ($affil,$len) = &affiliate(*rec,0);
 
-    # now that we've grabbed the fullname, modify the parts that
-    # are likely to be bad for x-url-encoded.  Don't do anything fancy,
-    # just replace spaces with plusses.
-    $rec{'first'} =~ s/[ \t]/+/g;
-    $rec{'last'} =~ s/[ \t]/+/g;
-    $rec{'married'} =~ s/[ \t]/+/g;
-    $rec{'location'} =~ s/[ \t]/+/g;
-    $rec{'year'} =~ s/[ \t]/+/g;
-
-    print FMTOUT "<a href=\"", &aid_config('cgi_path'), "?revise";
-    foreach (keys %rec) {
-	print FMTOUT "&$_=$rec{$_}";
-    }
-    print FMTOUT "\">";
+    print FMTOUT "<a href=\"", &aid_config('cgi_path'), "?update=$rec{'id'}\">";
     print FMTOUT $fullname;
     print FMTOUT "</a>";
     print FMTOUT $affil;
