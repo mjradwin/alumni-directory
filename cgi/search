@@ -4,7 +4,7 @@
 #     FILE: search.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: Alumni Internet Directory CGI search
-#      $Id: search,v 5.17 2000/05/30 17:26:41 mradwin Exp mradwin $
+#      $Id: search,v 5.18 2000/05/30 17:28:07 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -33,19 +33,6 @@ use Fcntl qw(:DEFAULT :flock);
 use CGI;
 use CGI::Carp qw(fatalsToBrowser);
 
-CGI::ReadParse();
-if (!defined($in{'q'}) || $in{'q'} =~ /^[^\w]*$/)
-{
-    print "Content-Type: text/html\015\012\015\012";
-
-    print &aid_common_html_hdr(6, 'Search', 1);
-    &print_search_form('', defined $in{'y'} ? $in{'y'} : '');
-    print &aid_common_html_ftr(6);
-
-    close(STDOUT);
-    exit(0);
-}
-
 $dbmfile = &aid_config('dbmfile');
 die "$dbmfile: $!\n" unless -r $dbmfile;
 
@@ -57,6 +44,24 @@ open(DB_FH, "<&=$fd") || die "dup $!";
 
 unless (flock (DB_FH, LOCK_SH | LOCK_NB)) {
     unless (flock (DB_FH, LOCK_SH)) { die "flock: $!" }
+}
+
+CGI::ReadParse();
+if (!defined($in{'q'}) || $in{'q'} =~ /^[^\w]*$/)
+{
+    print "Content-Type: text/html\015\012\015\012";
+
+    print &aid_common_html_hdr(6, 'Search', 1);
+    &print_search_form('', defined $in{'y'} ? $in{'y'} : '');
+    print &aid_common_html_ftr(6);
+
+    flock(DB_FH, LOCK_UN);
+    undef $db;
+    untie(%DB);
+    close(DB_FH);
+
+    close(STDOUT);
+    exit(0);
 }
 
 defined $DB{'_alpha'} || die "$dbmfile: missing _alpha\n";
