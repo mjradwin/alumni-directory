@@ -2,7 +2,7 @@
 #     FILE: mv_util.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: perl library routines for the MVHS Alumni Internet Directory
-#      $Id: mv_util.pl,v 1.70 1997/12/22 19:45:40 mjr Exp mjr $
+#      $Id: mv_util.pl,v 1.71 1997/12/22 20:02:33 mjr Exp mjr $
 #
 
 CONFIG: {
@@ -68,7 +68,7 @@ CONFIG: {
 
     $site_tags = "<meta name=\"keywords\" content=\"Mountain View High School, Alumni, MVHS, Awalt High School, Mountain View, Los Altos, California, reunion, Radwin\">\n<meta name=\"description\" content=\"email/web page listing of alumni, students, faculty and staff from Mountain View High School in Mountain View, California.  Also catalogues alumni from Chester F. Awalt High School, which was merged with MVHS in the early 80's.\">";
 
-    $noindex = "<meta name=\"robots\" content=\"noindex,nofollow\">";
+    $noindex = "<meta name=\"robots\" content=\"noindex\">";
 
     %mv_aliases = ();   # global alias hash repository
 
@@ -303,14 +303,13 @@ sub submit_body {
 	    &tableheader("Add a Listing to the Directory", 1, "ffff99", "000000", 1);
 
 	$tableh .= "
-<p>Thanks for adding a name to the MVHS Alumni Internet Directory!  If
-you'd like to update your existing entry, please see the 
+<p>If you'd like to update your existing entry, please see the 
 <a href=\"" . $config{'cgi_path'} . "?update\">update page</a>.  
 To update the entry for an alumnus with an invalid address, please see
 the <a href=\"" . $config{'master_path'} . "invalid.html\">invalid
 addresses page</a>.</p>
 
-<p>To add a new entry, please enter the following information and hit
+<p>To add a new alumnus, please enter the following information and hit
 the <strong>Next&nbsp;&gt;</strong> button. Fields marked with a $star
 are required.  All other fields are optional.</p>\n\n";
     }
