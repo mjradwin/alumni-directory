@@ -1,10 +1,10 @@
-#!/usr/local/bin/perl5 -w
+#!/usr/local/bin/perl -w
 
 #
 #     FILE: verify.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: CGI for verifcation of e-mail address
-#      $Id: verify,v 1.9 2001/02/01 19:42:58 mradwin Exp mradwin $
+#      $Id: verify,v 1.10 2001/05/03 14:27:24 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-2000  Michael John Radwin
 #

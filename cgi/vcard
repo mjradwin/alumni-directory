@@ -1,10 +1,10 @@
-#!/usr/local/bin/perl5 -w
+#!/usr/local/bin/perl -w
 
 #
 #     FILE: vcard.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: Alumni Internet Directory CGI vCard generation
-#      $Id: vcard,v 5.6 2000/04/25 00:42:01 mradwin Exp mradwin $
+#      $Id: vcard,v 5.7 2000/05/30 17:26:41 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
