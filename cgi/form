@@ -4,7 +4,7 @@
 #     FILE: form.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: Alumni Internet Directory CGI form-submission interface
-#      $Id: form,v 5.35 2000/08/02 18:28:00 mradwin Exp mradwin $
+#      $Id: form,v 5.36 2000/08/02 18:54:45 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -36,7 +36,7 @@ use CGI::Carp qw(fatalsToBrowser);
 # configuration
 $dbmfile = &aid_config('dbmfile');
 
-$rcsid = '$Id: form,v 5.35 2000/08/02 18:28:00 mradwin Exp mradwin $'; #'fnt
+$rcsid = '$Id: form,v 5.36 2000/08/02 18:54:45 mradwin Exp mradwin $'; #'fnt
 
 $listing_upd_title = 'Modify Your Directory Listing';
 $listing_add_title = 'Join the Directory';
@@ -471,8 +471,11 @@ http://" . &aid_config('master_srv') . &aid_config('master_path') . "\n";
     print &aid_common_html_hdr(20,'Final Step: verify e-mail address',1);
 
     print "
-<p>Our e-mail robot just sent a verification message to
-<b>$cgi{'e'}</b>.</p>
+<p>Our e-mail robot
+(<tt>", &aid_config('admin_email'), "</tt>)
+just sent a verification message to
+<b>$cgi{'e'}</b>.
+It may take 2 or 3 minutes for it to arrive.</p>
 
 <p>Please check your e-mail and find the 8-letter
 verification code that was sent to you by the ",
