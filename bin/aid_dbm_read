@@ -1,6 +1,6 @@
 #!/usr/bin/perl -w
 
-# $Id: aid_dbm_read,v 1.18 1999/04/05 23:07:12 mradwin Exp mradwin $
+# $Id: aid_dbm_read,v 1.19 1999/04/06 18:04:44 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -203,6 +203,11 @@ sub display_key_val
     elsif ($key =~ /^_alpha$/)
     {
 	print "list alpha = ", join(',', unpack("n*", $val)), "\n";
+    }
+
+    elsif ($key =~ /^_a_(\w)$/)
+    {
+	print "list alpha $1 = ", join(',', unpack("n*", $val)), "\n";
     }
 
     elsif ($key =~ /^_created$/)
