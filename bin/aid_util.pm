@@ -2,7 +2,7 @@
 #     FILE: aid_util.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: perl library routines for the Alumni Internet Directory
-#      $Id: aid_util.pl,v 4.100 1999/05/04 18:57:09 mradwin Exp mradwin $
+#      $Id: aid_util.pl,v 4.101 1999/05/04 19:09:43 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -851,15 +851,22 @@ sub aid_common_html_hdr
 	"<html xmlns=\"http://www.w3.org/Profiles/xhtml1-transitional\">\n" .
 	"<head>\n" .
 	"  <title>" . $titletag . "</title>\n" . 
-	    $pics_label . "\n" . $site_tags . "\n";
+	    $pics_label . "\n" . $author_meta . "\n" . $navigation_meta . "\n";
 
     $hdr .= "  <link rel=\"stylesheet\" type=\"text/css\" href=\"http://";
     $hdr .= $config{'master_srv'} . $config{'master_path'};;
     $hdr .= "default.css\" />\n";
 
-    $hdr .= "$noindex\n" if $norobots;
+    if ($norobots)
+    {
+	$hdr .= $noindex;
+    }
+    else
+    {
+	$hdr .= $descr_meta;
+    }
 
-    $hdr .= "</head>\n\n";
+    $hdr .= "\n</head>\n\n";
     
     $hdr .= "<!-- hdr begin -->\n";
 
@@ -1469,7 +1476,7 @@ if ($^W && 0)
     $aid_util'disclaimer = '';
     $aid_util'school_awalt = '';
     $aid_util'pics_label = '';
-    $aid_util'site_tags = '';
+    $aid_util'author_meta = $aid_util'navigation_meta = $aid_util'descr_meta;
     $aid_util'header_bg = '';
     $aid_util'body_link = '';
     &aid_rebuild_secondary_keys();
