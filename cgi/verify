@@ -1,0 +1,144 @@
+#!/usr/local/bin/perl5 -w
+
+#
+#     FILE: verify.pl
+#   AUTHOR: Michael J. Radwin
+#    DESCR: CGI for verifcation of e-mail address
+#      $Id$
+#
+#   Copyright (c) 1995-2000  Michael John Radwin
+#
+#   This program is free software; you can redistribute it and/or modify
+#   it under the terms of the GNU General Public License as published by
+#   the Free Software Foundation; either version 2 of the License, or
+#   (at your option) any later version.
+#
+#   This program is distributed in the hope that it will be useful,
+#   but WITHOUT ANY WARRANTY; without even the implied warranty of
+#   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#   GNU General Public License for more details.
+#
+#   You should have received a copy of the GNU General Public License
+#   along with this program; if not, write to the Free Software
+#   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+#
+
+$dirname = $0;
+$dirname =~ s,/[^/]+$,,;
+unshift(@INC, $dirname);
+
+require 'aid_util.pl';
+use DB_File;
+use Fcntl qw(:DEFAULT :flock);
+use CGI;
+use CGI::Carp qw(fatalsToBrowser);
+
+$ENV{'QUERY_STRING'} =~ s/%([A-Fa-f0-9]{2})/pack("c",hex($1))/ge;
+if ($ENV{'QUERY_STRING'} =~ /^(k=)?(\w+)$/)
+{
+    $key = uc($2);
+
+    $dbmfile = &aid_config('staging');
+    die "$dbmfile: $!\n" unless -r $dbmfile;
+
+    my($db) = tie(%DB, 'DB_File', $dbmfile, O_CREAT|O_RDWR, 0644,
+		  $DB_File::DB_HASH)
+	or die "$dbmfile: $!\n";
+
+    my($fd) = $db->fd;
+    open(DB_FH, "+<&=$fd") || die "dup $!";
+
+    unless (flock (DB_FH, LOCK_EX | LOCK_NB)) {
+	unless (flock (DB_FH, LOCK_EX)) { die "flock: $!" }
+    }
+
+    if (defined $DB{$key})
+    {
+	my($val) = $DB{$key};
+
+	if (defined $DB{'_verified'})
+	{
+	    $DB{'_verified'} .= "\0" . $key
+		unless $DB{'_verified'} =~ /\b$key\b/;
+	}
+	else
+	{
+	    $DB{'_verified'} = $key;
+	}
+
+	$db->sync;
+	flock(DB_FH, LOCK_UN);
+	undef $db;
+	untie(%DB);
+	close(DB_FH);
+
+	my($id,$packed) = split(/\0/, $val, 2);
+	%rec = &aid_db_unpack_rec($id,$packed);
+	$fullname = &aid_inorder_fullname(*rec);
+
+	print "Content-Type: text/html\015\012\015\012";
+	print &aid_common_html_hdr(20,'E-mail address verified!',1);
+
+	$fullname = &aid_html_entify_str($fullname);
+	print "
+
+<h3>Hello, $fullname.  Your e-mail address has been verified!</h3>
+
+<p>The listing for <strong>$fullname</strong> has been added
+to the submission queue, but it has <strong>not yet been published in
+the Directory</strong>.  Processing your submission can take up to 48 hours.
+If your submission was made Monday-Friday between 9am and 5pm Pacific
+Time, your submission will probably be processed within an hour.</p>
+
+<p>E-mail will be sent to <b>$rec{'e'}</b>
+confirming receipt of this submission when it it processed.</p>
+";
+	print &aid_config('html_ad');
+	print &aid_common_html_ftr(20);
+
+	close(STDOUT);
+	exit(0);
+    }
+    else
+    {
+	flock(DB_FH, LOCK_UN);
+	undef $db;
+	untie(%DB);
+	close(DB_FH);
+
+	print "Content-Type: text/html\015\012\015\012";
+        print &aid_common_html_hdr(20,'Invalid verifcation code',1);
+
+	$key =~ s/&/&amp;/g;
+	$key =~ s/</&lt;/g;
+	$key =~ s/>/&gt;/g;
+
+	print "<p>Sorry, the verification code you entered\n",
+	    "(<b>$key</b>) is invalid.</p>\n";
+    }
+}
+else
+{
+    print "Content-Type: text/html\015\012\015\012";
+    print &aid_common_html_hdr(20,'Enter verifcation code',1);
+}
+
+print "<p>Please check your e-mail and find the 8-letter
+verification code that was sent to you by the ",
+&aid_config('short_school'), "
+Alumni Robot and enter it below.</p>
+
+<form method=\"get\" action=\"" . &aid_config('verify_cgi') . "\">
+<label for=\"k\">Enter 8-letter code:</label>
+&nbsp;
+<input id=\"k\" type=\"text\" size=\"8\" maxlength=\"8\" name=\"k\" value=\"\">
+&nbsp;
+<input type=\"submit\" value=\"Verify my e-mail address\">
+</form>
+";
+
+print &aid_common_html_ftr(20);
+
+close(STDOUT);
+exit(0);
+
