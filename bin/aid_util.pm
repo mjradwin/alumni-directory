@@ -2,7 +2,7 @@
 #     FILE: aid_util.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: perl library routines for the Alumni Internet Directory
-#      $Id: aid_util.pl,v 5.94 2001/11/26 21:55:00 mradwin Exp mradwin $
+#      $Id: aid_util.pl,v 5.95 2002/01/25 03:37:54 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -518,13 +518,14 @@ sub aid_verbose_entry {
 
     $retval .= "<dt><big>";
     $retval .= "<b>";
-    $retval .= "<a name=\"id-$rec{'id'}\" id=\"id-$rec{'id'}\">";
+    $retval .= "<a name=\"id-$rec{'id'}\">";
     $retval .=  $fullname;
     $retval .= "</a>";
     $retval .= "</b>";
     $retval .= "</big>\n";
     $retval .= &main::aid_is_new_html(*rec) unless $suppress_new; 
-    $retval .= "</dt>\n";
+#    $retval .= "</dt>";
+    $retval .= "\n";
 
     if (! $suppress_links && $rec{'v'})
     {
@@ -535,19 +536,28 @@ sub aid_verbose_entry {
 	    "<a\nhref=\"" . $config{'about_cgi'} .
 	    "/$rec{'id'}\">modify</a>&nbsp;|&nbsp;<a\n" .
 	    "href=\"" .  $config{'yab_cgi'} . "/$rec{'id'}\">" .
-	    "add to Y! address book</a></small></dt>\n";
+	    "add to Y! address book</a></small>";
+#	$retval .= "</dt>";
+	$retval .= "\n";
+
     }
 
     if ($rec{'yr'} =~ /^\d+$/) {
 	if ($display_year) {
 	    $retval .= "<dt>Year: <b><a\n" .
 		"href=\"" . &main::aid_about_path(*rec,1) . "\">" . 
-		    $rec{'yr'} . "</a></b></dt>\n";
+		    $rec{'yr'} . "</a></b>";
+#	$retval .= "</dt>";
+	$retval .= "\n";
+
 	}
     } else {
 	$retval .= "<dt>Affiliation: <b><a\n" .
 	    "href=\"" . &main::aid_about_path(*rec,1) . "\">" . 
-		$rec{'yr'} . "</a></b></dt>\n";
+		$rec{'yr'} . "</a></b>";
+#	$retval .= "</dt>";
+	$retval .= "\n";
+
     }
 
     $retval .= "<dt>E-mail: <tt><b>";
@@ -555,20 +565,24 @@ sub aid_verbose_entry {
     $retval .= $rec{'e'};
     $retval .= "</a>" if $rec{'v'};
     $retval .= "\n<em>(invalid address)</em>" unless $rec{'v'};
-    $retval .= "</b></tt></dt>\n";
+    $retval .= "</b></tt>";
+#    $retval .= "</dt>";
+    $retval .= "\n";
 
     $retval .= "<dt>Web Page: <tt><b><a\n" . 
-	"href=\"$rec{'w'}\">$rec{'w'}</a></b></tt></dt>\n"
+	"href=\"$rec{'w'}\">$rec{'w'}</a></b></tt>\n"
 	    if $rec{'w'} ne '';
-    $retval .= "<dt>Location: <b>$rec{'l'}</b></dt>\n"
+    $retval .= "<dt>Location: <b>$rec{'l'}</b>\n"
 	if $rec{'l'} ne '';
     $retval .= "<dt>Updated: ";
     $date = &main::aid_caldate($rec{'u'}); 
-    $retval .= "<b>$date</b></dt>\n";
+    $retval .= "<b>$date</b>";
+#    $retval .= "</dt>";
+    $retval .= "\n";
 
     if ($rec{'n'} ne '') {
-	$retval .= "<dt>What's New?</dt>\n";
-	$rec{'n'} =~ s/\n/<br>\n/g;
+	$retval .= "<dt>What's New?\n";
+	$rec{'n'} =~ s/[ ]*\n/<br>\n/g;
 	$retval .= "<dd>$rec{'n'}</dd>\n";
     }
     $retval .= "</dl>\n\n";
@@ -846,7 +860,7 @@ sub aid_class_jump_bar {
 
     if (defined @years && defined $years[0])
     {
-	$retval .= "[ <a name=\"top\" id=\"top\"";
+	$retval .= "[ <a name=\"top\"";
 	if (defined $hilite && $years[0] eq $hilite)
 	{
 	    $retval .= ">";
