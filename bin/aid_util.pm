@@ -2,11 +2,11 @@
 #     FILE: aid_util.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: perl library routines for the Alumni Internet Directory
-#      $Id: aid_util.pl,v 2.7 1998/04/03 17:47:14 mjr Exp mjr $
+#      $Id: aid_util.pl,v 2.8 1998/04/07 18:34:40 mjr Exp mjr $
 #
 
 $aid_util'rcsid =
- '$Id: aid_util.pl,v 2.7 1998/04/03 17:47:14 mjr Exp mjr $';
+ '$Id: aid_util.pl,v 2.8 1998/04/07 18:34:40 mjr Exp mjr $';
 
 # ----------------------------------------------------------------------
 # CONFIGURATION
@@ -802,9 +802,18 @@ sub about_text {
     $retval .= "\n";
     
     $retval .= "Grad. Year         : ";
-    $retval .= "<strong>" if $do_html_p;
+    if ($do_html_p) {
+	$retval .= "<strong>";
+	if ($newrec{'year'} =~ /^\d+$/) {
+            $retval .= "<a href=\"" . $config{'master_path'} .
+                "class/$newrec{'year'}.html\">";
+	} else {
+	    $retval .= "<a href=\"" . $config{'master_path'} .
+		"class/other.html\">";
+	}
+    }
     $retval .= $newrec{'year'};
-    $retval .= "</strong>" if $do_html_p;
+    $retval .= "</a></strong>" if $do_html_p;
     $retval .= "\n";
 
     $retval .= "\n";
