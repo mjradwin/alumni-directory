@@ -1,6 +1,6 @@
 #!/usr/bin/perl -w
 
-# $Id: aid_addname,v 3.30 1999/03/26 20:23:37 mradwin Exp mradwin $
+# $Id: aid_addname,v 3.31 1999/03/27 02:38:09 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -37,8 +37,8 @@ $opt_w = $opt_w;                # avoid warning
 $cp   = &aid_config('cp');
 $make = &aid_config('make');
 
--x $cp   || die "$cp   is not executable!";
--x $make || die "$make is not executable!";
+-x $cp   || die "$0: $cp   is not executable!";
+-x $make || die "$0: $make is not executable!";
 
 @new_ids = ();
 @upd_ids = ();
@@ -64,36 +64,24 @@ $message
 sub readspool {
     local($spoolFile) = @_;
     local($_);
-    local($id,$logFile,$newsFile,*SPOOL);
-    local($newsp,$browserLog,$time);
+    local($logFile,$newsFile,*SPOOL);
+    local($newsp,$browserLog);
 
     $browserLog = &aid_config('aiddir') . "logs/browsers.log";
-    open(SPOOL, $spoolFile) || die "can't open $spoolFile: $!\n";
+    open(SPOOL, $spoolFile) || die "$0: can't open $spoolFile: $!\n";
     print STDERR "reading spool...\n";
-    while(<SPOOL>) {
+    while(<SPOOL>)
+    {
 	next unless /^_AID_BEGIN_SUBMISSION_/;
-
-	$_ = <SPOOL>;  # grab blank line
-	$_ = <SPOOL>;  # here it is!
-	chop;
-
-	$id = &addname($_);
+	
+	%rec = ();
 	$newsp = 0;
-
-	while(<SPOOL>) {
-	    if (/^Browser: (.*)$/) {
-		$time = time;
-		open(BROWSERLOG,">>$browserLog") || die "$browserLog: $!\n";
-		print BROWSERLOG "$time - $id - $1\n";
-		close(BROWSERLOG);
-	    }
+	while(<SPOOL>)
+	{
 	    last if /^_AID_END_SUBMISSION_/;
-	    if (/^_AID_BEGIN_MESSAGE_/) {
-		$newsFile = &aid_newsfile($id);
-		open(NEWSOUT, ">$newsFile") ||
-		    die "Can't open $newsFile: $!\n";
-		print "MESSAGE $newsFile\n";
 
+	    if (/^_AID_BEGIN_MESSAGE_/)
+	    {
 		$message = '';
 		$maxlen = 0;
 		while(<SPOOL>)
@@ -102,40 +90,52 @@ sub readspool {
 		    $maxlen = length($_) if (length($_) > $maxlen);
 		    $message .= $_;
 		}
-		if ($maxlen <= 60)
-		{
-		    print STDOUT  $message;
-		    print NEWSOUT $message;
-		}
-		else
-		{
-		    $message_bak = $message;
-		    write(NEWSOUT);	# destructively modifies message
-		    $message = $message_bak;
-		    print "(reformatted)\n";
-		    write(STDOUT);
-		}
-		close(NEWSOUT);
-
-#		while(<SPOOL>) {
-#		    last if /^_AID_END_MESSAGE_/;
-#		    print STDOUT $_;
-#		    print NEWSOUT $_;
-#		}
-#		close(NEWSOUT);
-
 		$newsp = 1;	# they had a What's New? message
 	    }
-	}
-
-	if (!$newsp) {
-	    $newsFile = &aid_newsfile($id);
-	    if (-e $newsFile) {
-		print "No news, but newsFile exists.\nREMOVING $newsFile\n";
-		unlink($newsFile);
+	    else
+	    {
+		chop;
+		($key,$val) = split(/=/, $_, 2);
+		$rec{$key} = $val;
 	    }
 	}
+	
+	&addname(*rec) || die "$0: can't add $rec{'id'} $rec{'email'}!\n";
 
+	$newsFile = &aid_newsfile($rec{'id'});
+	if ($newsp)
+	{
+	    open(NEWSOUT, ">$newsFile") ||
+		die "$0: can't open $newsFile: $!\n";
+	    print "MESSAGE $newsFile\n";
+
+	    if ($maxlen <= 60)
+	    {
+		print STDOUT  $message;
+		print NEWSOUT $message;
+	    }
+	    else
+	    {
+		$message_bak = $message;
+		write(NEWSOUT);	# destructively modifies message
+		$message = $message_bak;
+		print "(reformatted)\n";
+		write(STDOUT);
+	    }
+	    close(NEWSOUT);
+	}
+	elsif (-e $newsFile)
+	{
+	    print "No news, but newsFile exists.\nREMOVING $newsFile\n";
+	    unlink($newsFile);
+	}
+	    
+	if ($rec{'browser'} ne '')
+	{
+	    open(BROWSERLOG,">>$browserLog") || die "$0: $browserLog: $!\n";
+	    print BROWSERLOG time, " - $rec{'id'} - $rec{'browser'}\n";
+	    close(BROWSERLOG);
+	}
     }
     close(SPOOL);
 
@@ -145,10 +145,10 @@ sub readspool {
 
 sub rebuild
 {
-    chdir &aid_config('aiddir') || die "can't chdir: $!\n";
+    chdir &aid_config('aiddir') || die "$0: can't chdir: $!\n";
 
     print STDERR "rebuilding...\n";
-    system $make || die "failed to run $make: $!\n";
+    system $make || die "$0: failed to run $make: $!\n";
 }
 
 sub mail_welcome
@@ -156,21 +156,21 @@ sub mail_welcome
     local($cmd);
     local($dbmfile) = &aid_config('dbmfile');
 
-    chdir &aid_config('aiddir') || die "can't chdir: $!\n";
+    chdir &aid_config('aiddir') || die "$0: can't chdir: $!\n";
 
     print STDERR "mailing...";
     if (@new_ids)
     {
 	print STDERR ' new(', join(' ', @new_ids), ')';
 	$cmd = "./bin/aid_welcome $dbmfile " . join(' ', @new_ids);
-	system $cmd || die "failed to run $cmd: $!\n";
+	system $cmd || die "$0: failed to run $cmd: $!\n";
     }
 
     if (@upd_ids)
     {
 	print STDERR ' upd(', join(' ', @upd_ids), ')';
 	$cmd = "./bin/aid_welcome -u $dbmfile " . join(' ', @upd_ids);
-	system $cmd || die "failed to run $cmd: $!\n";
+	system $cmd || die "$0: failed to run $cmd: $!\n";
     }
 
     print STDERR "\n";
@@ -179,14 +179,12 @@ sub mail_welcome
 
 sub addname
 {
-    local($rawdata) = @_;
+    local(*rec) = @_;
     local($[) = 0;
     local($_);
     local($dbFile,$logFile,@db,%oldrec);
-    local(%rec) = &aid_split($rawdata);
-    local($addme,$tmpFile,*LOG,*TMP);
+    local($cmd,$tmpFile,*LOG,*TMP);
     local($key_name,$key_email,%id_by_email,%id_by_name);
-    local($cmd);
 
     $dbFile = &aid_config('aiddir') . "data/master.adr";
     $logFile = &aid_config('aiddir') . "logs/additions.log";
@@ -205,7 +203,7 @@ sub addname
     }
     undef(%oldrec);
 
-    open(LOG, ">>$logFile") || die "Can't open $logFile: $!\n";
+    open(LOG, ">>$logFile") || die "$0: can't open $logFile: $!\n";
     select(LOG); $| = 1; select(STDOUT);
 
     # assign the double-submit newbies the same id if we've seen their
@@ -223,7 +221,6 @@ sub addname
 	    %oldrec = &aid_split($db[$rec{'id'}]);
 
 	    $rec{'created'} = $oldrec{'created'};
-	    $rawdata = &aid_join(*rec);
 	}
 	elsif (defined $id_by_name{$key_name})
 	{
@@ -235,21 +232,21 @@ sub addname
 		$oldrec{'email'} ne $rec{'email'};
 	    $rec{'email_old'} = $oldrec{'email'} if
 		$oldrec{'email'} ne $rec{'email'};
-	    $rawdata = &aid_join(*rec);
 	}
+	undef(%oldrec);
     }
 
-    if ($rec{'id'} == -1) {
+    if ($rec{'id'} == -1)
+    {
 	$rec{'id'} = ($#db + 1);
-	$addme = &aid_join(*rec);
 
 	push(@new_ids, $rec{'id'});
 	print     "new - ";
 	print LOG "new - ";
-
-    } else {
+    }
+    else
+    {
 	%oldrec = &aid_split($db[$rec{'id'}]);
-	$addme = $rawdata;
 
 	push(@upd_ids, $rec{'id'})
 	     unless ((grep(/$rec{'id'}/, @new_ids)) ||
@@ -257,15 +254,16 @@ sub addname
 
 	print     "upd ", $oldrec{'email'}, " ";
 	print LOG "upd ", $oldrec{'email'}, " ";
+	undef(%oldrec);
     }
 
-    $db[$rec{'id'}] = $addme;
-    print $addme, "\n";
-    print LOG $addme, "\n";
+    $db[$rec{'id'}] = &aid_join(*rec);
+    print     $db[$rec{'id'}], "\n";
+    print LOG $db[$rec{'id'}], "\n";
     close(LOG);
 
     $tmpFile = "/tmp/aid_add.$$";
-    open(TMP, ">$tmpFile") || die "Can't open $tmpFile: $!\n";
+    open(TMP, ">$tmpFile") || die "$0: can't open $tmpFile: $!\n";
     for (@db) {
 	next unless defined($_) && $_ ne '';
 	print TMP $_, "\n";
@@ -273,8 +271,8 @@ sub addname
     close(TMP);
 
     $cmd = "$cp -f $tmpFile $dbFile";
-    system $cmd || die "failed to run $cmd: $!\n";
-    unlink($tmpFile) || die "couldn't unlink $tmpFile: $!\n";
+    system $cmd || die "$0: failed to run $cmd: $!\n";
+    unlink($tmpFile) || die "$0: couldn't unlink $tmpFile: $!\n";
 
     $rec{'id'};
 }
