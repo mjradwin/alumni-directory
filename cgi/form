@@ -4,7 +4,7 @@
 #     FILE: mvhsaid.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: MVHS Alumni Internet Directory CGI interface
-#      $Id: mvhsaid,v 1.38 1997/11/03 18:28:59 mjr Exp mjr $
+#      $Id: mvhsaid,v 1.39 1997/11/03 22:07:45 mjr Exp mjr $
 #
 
 require 'mv_util.pl';
@@ -22,7 +22,7 @@ $dbfile = &mv_config('wwwdir') . "mvhs.adr";
 if (defined($in{'version'})) {
     select(STDOUT);  $| = 1;
     print "Content-type: text/plain\n\n";
-    print '$Id: mvhsaid,v 1.38 1997/11/03 18:28:59 mjr Exp mjr $', "\n";
+    print '$Id: mvhsaid,v 1.39 1997/11/03 22:07:45 mjr Exp mjr $', "\n";
     exit(0);
 }
 
@@ -92,6 +92,7 @@ foreach $key (keys(%in)) {
 
 # remove apostropies and leading year from gradyear field
 # e.g. '93 -> 93, 1993 -> 93
+$in{'grad'} =~ s/^class\s+of\s*//i;
 $in{'grad'} =~ s/^\'(\d\d)$/$1/;
 $in{'grad'} =~ s/^19(\d+)$/$1/;
 $in{'grad'} =~ s/^20(\d+)$/$1/;
