@@ -2,7 +2,7 @@
 #     FILE: mv_util.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: perl library routines for the MVHS Alumni Internet Directory
-#      $Id: mv_util.pl,v 1.62 1997/12/19 20:28:37 mjr Exp mjr $
+#      $Id: mv_util.pl,v 1.63 1997/12/19 20:41:48 mjr Exp mjr $
 #
 
 CONFIG: {
@@ -458,7 +458,7 @@ sub about_text {
     require 'ctime.pl';
 
     local($retval) = '';
-    local($rawdata,$show_req_p,$do_html_p,$do_vcard_p) = @_;
+    local($rawdata,$message,$show_req_p,$do_html_p,$do_vcard_p) = @_;
     local($time,$id,$req,$last,$first,$married,
 	  $school,$year,$email,$homepage,$location) = split(/;/, $rawdata);
 
@@ -540,13 +540,17 @@ sub about_text {
 	$retval .= do ctime($time);
     }
 
-
     $retval .= "</pre>\n" if $do_html_p;
 
-    if ($do_vcard_p && $do_html_p) {
-	$rawdata = &'mv_get_usertext($id);  #' fnt
-	$retval .= "<tt>What's New? (beta) :</tt>\n" if $rawdata ne '';
-	$retval .= "<blockquote>\n$rawdata\n</blockquote>\n" if $rawdata ne '';
+    $message = &'mv_get_usertext($id) if $message eq '';  #' fnt
+    if ($message ne '') {
+	$retval .= "<tt>" if $do_html_p;
+	$retval .= "What's New? (beta) :";
+	$retval .= "</tt>" if $do_html_p;
+	$retval .= "\n";
+	$retval .= "<blockquote>\n" if $do_html_p;
+	$retval .= "$message\n";
+	$retval .= "</blockquote>\n" if $do_html_p;
     }
 
     $retval .= "</font></td></tr></table>\n" if $do_html_p;

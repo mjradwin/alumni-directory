@@ -4,7 +4,7 @@
 #     FILE: mvhsaid.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: MVHS Alumni Internet Directory CGI interface
-#      $Id: mvhsaid,v 1.46 1997/12/19 20:42:00 mjr Exp mjr $
+#      $Id: mvhsaid,v 1.47 1997/12/19 23:26:01 mjr Exp mjr $
 #
 
 require 'mv_util.pl';
@@ -22,7 +22,7 @@ $dbfile = &mv_config('wwwdir') . "mvhs.adr";
 if (defined($in{'version'})) {
     select(STDOUT);  $| = 1;
     print "Content-type: text/plain\n\n";
-    print '$Id: mvhsaid,v 1.46 1997/12/19 20:42:00 mjr Exp mjr $', "\n"; #'fnt
+    print '$Id: mvhsaid,v 1.47 1997/12/19 23:26:01 mjr Exp mjr $', "\n"; #'fnt
     exit(0);
 }
 
@@ -183,8 +183,7 @@ to edit your entry.  If everything is correct, please hit the
     }
 
     print "<table border=0><tr><td>\n";
-    print &about_text(";;$in{'request'};$in{'last'};$in{'first'};$in{'married'};$in{'school'};$in{'grad'};$in{'mail'};$in{'homepage'};$in{'location'}",1,1), "\n";
-
+    print &about_text(";;$in{'request'};$in{'last'};$in{'first'};$in{'married'};$in{'school'};$in{'grad'};$in{'mail'};$in{'homepage'};$in{'location'}",$in{'message'},1,1), "\n";
     print "</td></tr>\n";
     print "<tr><td align=right>\n";
     print "<input type=submit name=\"revise\" value=\"&lt; Back\">\n";
@@ -311,7 +310,7 @@ sub send_about {
     print "plugin installed.  To learn more about vCard, check out the\n";
     print "<a href=\"http://www.imc.org/pdi/\">Internet Mail Consortium</a>'s";
     print " website.\n\n";
-    print &about_text($_[0],0,1,1), "\n";
+    print &about_text($_[0],'',0,1,1), "\n";
     print &common_html_ftr(-1);
 }
 

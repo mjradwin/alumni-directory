@@ -51,7 +51,7 @@ sub message_body {
     local($denied) = ($req) ? '' :
 	"\nSince you asked not to receive the Alumni Internet Directory via email,\nthis is the only notice you will receive.\n";
 
-    local($about) = &about_text($_[0],1,0);
+    local($about) = &about_text($_[0],'',1,0);
     local($confirming) = ($opt_c) ? 
 "\nAs a service to alumni who do not have Web access, I will email a copy
 of the most current Internet Directory to everyone listed in it
