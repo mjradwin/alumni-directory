@@ -1,6 +1,6 @@
 #!/usr/bin/perl -w
 
-# $Id: aid_addname,v 2.1 1998/03/31 19:55:13 mjr Exp mradwin $
+# $Id: aid_addname,v 2.2 1998/05/15 20:06:57 mradwin Exp mradwin $
 
 require 'getopts.pl';
 require 'aid_util.pl';
@@ -55,7 +55,7 @@ sub readspool {
     open(SPOOL, $spoolFile) || die "can't open $spoolFile: $!\n";
     print "reading spool...\n";
     while(<SPOOL>) {
-	next unless /^This was submitted to the Alumni Internet Directory/;
+	next unless /^_AID_BEGIN_SUBMISSION_/;
 
 	$_ = <SPOOL>;  # grab blank line
 	$_ = <SPOOL>;  # here it is!
@@ -65,7 +65,7 @@ sub readspool {
 	$newsp = 0;
 
 	while(<SPOOL>) {
-	    last if /^The kind soul who submitted it/;
+	    last if /^_AID_END_SUBMISSION_/;
 	    if (/^_AID_BEGIN_MESSAGE_/) {
 		$newsFile = &aid_config('newsdir') . "${id}.txt";
 		open(NEWSOUT, ">$newsFile") ||
