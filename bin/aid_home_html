@@ -2,7 +2,7 @@
 
 #
 # does the html version of just home pages
-# $Id: aid_home_html,v 3.28 1999/03/02 01:26:34 mradwin Exp mradwin $
+# $Id: aid_home_html,v 3.29 1999/03/09 20:50:23 mradwin Exp mradwin $
 #
 
 require 'aid_util.pl';
@@ -91,11 +91,7 @@ such as John Smith and Jane Smith, then the first one will be
     print OUTFILE &aid_config('download_cgi') . "\">\n";
     print OUTFILE "<input type=\"hidden\" name=\"download\" value=\"1\">\n\n";
 
-    print OUTFILE "<label for=\"email\">Your e-mail address:&nbsp;</label>\n";
-    print OUTFILE "<input type=\"text\" name=\"email\" size=\"25\" ";
-    print OUTFILE "value=\"\" id=\"email\"> (for logging purposes only)\n";
-
-    print OUTFILE "<br><label for=\"year\">Year to download:&nbsp;</label>\n";
+    print OUTFILE "<label for=\"year\">Year to download:&nbsp;</label>\n";
     print OUTFILE "<select name=\"year\" id=\"year\">\n";
     foreach (@years)
     {
@@ -106,7 +102,16 @@ such as John Smith and Jane Smith, then the first one will be
     }
     print OUTFILE "</select>\n";
 
-    print OUTFILE "<br><label for=\"format\">Format:&nbsp;</label>
+    print OUTFILE "
+<br>
+
+<input type=checkbox name=\"plusminus\" id=\"plusminus\"><label
+for=\"plusminus\">&nbsp;Also download graduating classes 3 years before and 3
+years after mine.</label>
+
+<br>
+
+<label for=\"format\">Format:&nbsp;</label>
 <select name=\"format\" id=\"format\">
 <option value=\"n\">Netscape 2.x
 <option value=\"n\">Netscape 3.x
@@ -122,9 +127,9 @@ such as John Smith and Jane Smith, then the first one will be
 
 <br>
 
-<input type=checkbox name=\"plusminus\" id=\"plusminus\"><label
-for=\"plusminus\">&nbsp;Also download graduating classes 3 years before and 3
-years after mine.</label>
+<label for=\"email\">Your e-mail address:&nbsp;</label>
+<input type=\"text\" name=\"email\" size=\"25\" value=\"\" id=\"email\">
+(for logging purposes only)
 
 <br>
 
