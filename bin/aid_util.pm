@@ -2,11 +2,11 @@
 #     FILE: aid_util.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: perl library routines for the Alumni Internet Directory
-#      $Id: aid_util.pl,v 1.91 1998/01/05 23:56:23 mjr Exp mjr $
+#      $Id: aid_util.pl,v 1.92 1998/01/06 20:16:34 mjr Exp mjr $
 #
 
 $aid_util'rcsid =
- '$Id: aid_util.pl,v 1.91 1998/01/05 23:56:23 mjr Exp mjr $';
+ '$Id: aid_util.pl,v 1.92 1998/01/06 20:16:34 mjr Exp mjr $';
 
 # ----------------------------------------------------------------------
 # CONFIGURATION
@@ -140,23 +140,35 @@ $aid_util'body_fg    = '000000'; #'font-lock
 $aid_util'body_link  = '0000cc'; #'font-lock
 $aid_util'body_vlink = '990099'; #'font-lock
 
-$aid_util'ID_INDEX    = 1; #'font-lock
-%aid_util'blank_entry =    #'font-lock
+$aid_util'FIELD_SEP   = ";";   #' character that separates fields in DB
+$aid_util'ID_INDEX    = 1;     #' position that the ID key is in datafile
+@aid_util'field_names = #' order is important!
     (
-     'time',         '',
-     'id',           -1,
-     'request',       2,
-     'last',         '',
-     'first',        '',
-     'married',      '',
-     'school',   'MVHS',
-     'year',         '',
-     'email',        '',
-     'homepage',     '',
-     'location',     '',
-     'created',      '',
-     'inethost',     '',
+     'time',
+     'id',
+     'request',
+     'last',
+     'first',
+     'married',
+     'school',
+     'year',
+     'email',
+     'homepage',
+     'location',
+     'created',
+     'inethost',
      );
+
+%aid_util'blank_entry =        #' a prototypical blank entry to clone
+    ();
+
+for ($i = 0; $i <= $#aid_util'field_names; $i++) { #'
+     $aid_util'blank_entry{$aid_util'field_names[$i]} = '';
+}
+
+$aid_util'blank_entry{'id'}      = -1;
+$aid_util'blank_entry{'request'} = 2;
+$aid_util'blank_entry{'school'}  = 'MVHS';  #'font-lock
 
 %aid_util'image_tag = #'font-lock
     (
@@ -330,26 +342,13 @@ sub aid_split {
 
     local($_) = @_;
     local($[) = 0;
-    local(@fields) = split(/;/);
-    local($field) = 0;
+    local(@fields) = split(/$FIELD_SEP/);
+    local($i);
     local(%rec);
 
-    $rec{'time'}     = $fields[$field++];
-    $rec{'id'}       = $fields[$field++];
-    $rec{'request'}  = $fields[$field++];
-    $rec{'last'}     = $fields[$field++];
-    $rec{'first'}    = $fields[$field++];
-    $rec{'married'}  = $fields[$field++];
-    $rec{'school'}   = $fields[$field++];
-    $rec{'year'}     = $fields[$field++];
-    $rec{'email'}    = $fields[$field++];
-    $rec{'homepage'} = $fields[$field++];
-    $rec{'location'} = $fields[$field++];
-    $rec{'created'}  = $fields[$field++];
-    $rec{'inethost'} = $fields[$field++];
-
-    foreach (keys %rec) {
-	$rec{$_} = '' unless defined($rec{$_});
+    for ($i = 0; $i <= $#field_names; $i++) {
+	$rec{$field_names[$i]} = 
+	    defined($fields[$i]) ? $fields[$i] : '';
     }
 
     %rec;
@@ -360,23 +359,13 @@ sub aid_join {
     package aid_util;
 
     local(*rec) = @_;
+    local($i,@fields);
 
-    join(';', (
-	       $rec{'time'},
-	       $rec{'id'},
-	       $rec{'request'},
-	       $rec{'last'},
-	       $rec{'first'},
-	       $rec{'married'},
-	       $rec{'school'},
-	       $rec{'year'},
-	       $rec{'email'},
-	       $rec{'homepage'},
-	       $rec{'location'},
-	       $rec{'created'},
-	       $rec{'inethost'},
-	       )
-	 );
+    for ($i = 0; $i <= $#field_names; $i++) {
+	push(@fields, $rec{$field_names[$i]});
+    }
+
+    join($FIELD_SEP, @fields);
 }
 
 
@@ -400,7 +389,6 @@ sub aid_parse {
         $aid_aliases{$alias} = 1;
     }
 
-
     $rec{'alias'} = $alias;
     %rec;
 }
@@ -417,7 +405,7 @@ sub aid_create_db {
     open(INFILE,$filename) || die "Can't open $filename: $!\n";
     while(<INFILE>) {
 	chop;
-	$db[(split(/;/))[$ID_INDEX]] = $_;
+	$db[(split(/$FIELD_SEP/o))[$ID_INDEX]] = $_;
     }
     close(INFILE);
     
@@ -469,12 +457,6 @@ sub aid_get_usertext {
 }
 
 
-sub aid_blank_entry {
-    package aid_util;
-
-    %blank_entry;
-}
-
 sub rec_html_entify {
     package aid_util;
 
@@ -488,6 +470,7 @@ sub rec_html_entify {
 	$newrec{$_} =~ s/</&lt;/g;
 	$newrec{$_} =~ s/>/&gt;/g;
 	$newrec{$_} =~ s/"/&quot;/g; #" fnt
+	$newrec{$_} =~ s/\s+/ /g;
     }
 
     %newrec;
@@ -697,12 +680,12 @@ sub about_text {
     $do_vcard_p = 0 unless defined($do_vcard_p);
 
     $retval .= "<table border=0 cellpadding=6><tr><td bgcolor=\"#$cell_bg\"><font color=\"#$cell_fg\"><pre>\n\n" if $do_html_p;
+
     $retval .= "First Name         : ";
-    $retval .= ($newrec{'first'} eq '') ? "\n" : 
-	((($do_html_p) ? "<strong>" : "") .
-	 $newrec{'first'} . 
-	 (($do_html_p) ? "</strong>" : "") .
-	 "\n");
+    $retval .= "<strong>" if $do_html_p;
+    $retval .= $newrec{'first'};
+    $retval .= "</strong>" if $do_html_p;
+    $retval .= "\n";
     
     $retval .= "Last/Maiden Name   : ";
     $retval .= "<strong>" if $do_html_p;
@@ -711,11 +694,14 @@ sub about_text {
     $retval .= "\n";
     
     $retval .= "Married Name       : ";
-    $retval .= ($newrec{'married'} eq '') ? "(same as last name)\n" :
-	((($do_html_p) ? "<strong>" : "") .
-	 $newrec{'married'} . 
-	 (($do_html_p) ? "</strong>" : "") .
-	 "\n");
+    if ($newrec{'married'} eq '') {
+	$retval .= "(same as last name)";
+    } else {
+	$retval .= "<strong>" if $do_html_p;
+	$retval .= $newrec{'married'};
+	$retval .= "</strong>" if $do_html_p;
+    }
+    $retval .= "\n";
     
     $retval .= "\n";
     $retval .= "School             : ";
