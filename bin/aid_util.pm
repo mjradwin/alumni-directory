@@ -2,11 +2,11 @@
 #     FILE: aid_util.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: perl library routines for the Alumni Internet Directory
-#      $Id: aid_util.pl,v 4.36 1999/03/04 00:04:23 mradwin Exp mradwin $
+#      $Id: aid_util.pl,v 4.37 1999/03/04 00:14:34 mradwin Exp mradwin $
 #
 
 $aid_util'rcsid =
- '$Id: aid_util.pl,v 4.36 1999/03/04 00:04:23 mradwin Exp mradwin $';
+ '$Id: aid_util.pl,v 4.37 1999/03/04 00:14:34 mradwin Exp mradwin $';
 
 # ----------------------------------------------------------------------
 # CONFIGURATION
@@ -112,6 +112,7 @@ $aid_util'ID_INDEX    = 0;     #'# position that the ID key is in datafile
     'www',			# personal web page
     'location',			# city, company, or college
     'inethost',			# REMOTE_HOST of last update
+    'middle',			# middle initial
     );
 
 %aid_util'field_descr = #'#
@@ -133,6 +134,7 @@ $aid_util'ID_INDEX    = 0;     #'# position that the ID key is in datafile
     'www',	'Personal Web Page',
     'location',	'Location',
     'inethost',	'',
+    'middle',	'Middle Initial',
     );
 
 %aid_util'blank_entry =        #'# a prototypical blank entry to clone
@@ -271,14 +273,15 @@ sub fullname {
     package aid_util;
 
     local(*rec) = @_;
+    local($mid) = ($rec{'middle'} ne '') ? " $rec{'middle'}." : '';
 
     if ($rec{'first'} eq '') {
 	$rec{'last'};
     } else {
 	if ($rec{'married'} ne '') {
-	    "$rec{'last'} (now $rec{'married'}), $rec{'first'}";
+	    "$rec{'last'} (now $rec{'married'}), $rec{'first'}${mid}";
 	} else {
-	    "$rec{'last'}, $rec{'first'}";
+	    "$rec{'last'}, $rec{'first'}${mid}";
 	}
     }
 }
@@ -288,14 +291,15 @@ sub inorder_fullname {
     package aid_util;
 
     local(*rec) = @_;
+    local($mid) = ($rec{'middle'} ne '') ? "$rec{'middle'}. " : '';
 
     if ($rec{'first'} eq '') {
 	$rec{'last'};
     } else {
 	if ($rec{'married'} ne '') {
-	    "$rec{'first'} $rec{'last'} (now $rec{'married'})";
+	    "$rec{'first'} ${mid}$rec{'last'} (now $rec{'married'})";
 	} else {
-	    "$rec{'first'} $rec{'last'}";
+	    "$rec{'first'} ${mid}$rec{'last'}";
 	}
     }
 }
@@ -657,6 +661,13 @@ $instr
   value=\"$rec{'first'}\" id=\"first\"></td>
 </tr>
 <tr>
+  <td valign=top align=right><label
+  for=\"middle\"><strong>Middle Initial:</strong></label></td>
+  <td>&nbsp;</td>
+  <td valign=top><input type=text name=\"middle\" size=1 maxlength=1
+  value=\"$rec{'middle'}\" id=\"middle\"></td>
+</tr>
+<tr>
   <td valign=top align=right><label 
   for=\"last\"><strong>Last Name/Maiden Name:</strong></label><br>
   <small>(your last name in high school)</small></td>
@@ -921,13 +932,15 @@ sub aid_vcard_text {
 
     local(*rec) = @_;
     local($v_fn,$v_n,$retval);
+    local($mid) = ($rec{'middle'} ne '') ? "$rec{'middle'}. " : '';
+    local($v_mid) = ($rec{'middle'} ne '') ? ";$rec{'middle'}" : '';
 
     if ($rec{'married'} ne '') {
-	$v_n  = "N:$rec{'married'};$rec{'first'};$rec{'last'}\015\012";
-	$v_fn = "FN:$rec{'first'} $rec{'last'} $rec{'married'}\015\012";
+	$v_n  = "N:$rec{'married'};$rec{'first'}${v_mid};$rec{'last'}\015\012";
+	$v_fn = "FN:$rec{'first'} ${mid}$rec{'last'} $rec{'married'}\015\012";
     } else {
-	$v_n  = "N:$rec{'last'};$rec{'first'}\015\012";
-	$v_fn = "FN:$rec{'first'} $rec{'last'}\015\012";
+	$v_n  = "N:$rec{'last'};$rec{'first'}${v_mid}\015\012";
+	$v_fn = "FN:$rec{'first'} ${mid}$rec{'last'}\015\012";
     }
 
     $retval  = "Begin:vCard\015\012";
@@ -970,6 +983,19 @@ sub about_text {
     $retval .= "<strong>" if $do_html_p;
     $retval .= $rec{'first'};
     $retval .= "</strong>" if $do_html_p;
+    $retval .= "\n";
+    
+    $retval .= "Middle Initial     : ";
+    if ($rec{'middle'} ne '')
+    {
+	$retval .= "<strong>" if $do_html_p;
+	$retval .= "$rec{'middle'}.";
+	$retval .= "</strong>" if $do_html_p;
+    }
+    else
+    {
+	$retval .= "(blank)";
+    }
     $retval .= "\n";
     
     $retval .= "Last/Maiden Name   : ";
@@ -1443,6 +1469,7 @@ sub aid_db_pack_rec
 	 $rec{'last'},
 	 $rec{'married'},
 	 $rec{'first'},
+	 $rec{'middle'},
 	 $rec{'school'},
 	 $rec{'year'},
 	 $rec{'email'},
@@ -1479,6 +1506,7 @@ sub aid_db_unpack_rec
      $rec{'last'},
      $rec{'married'},
      $rec{'first'},
+     $rec{'middle'},
      $rec{'school'},
      $rec{'year'},
      $rec{'email'},
