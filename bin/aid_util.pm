@@ -2,11 +2,11 @@
 #     FILE: aid_util.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: perl library routines for the Alumni Internet Directory
-#      $Id: aid_util.pl,v 2.22 1998/05/16 02:56:58 mradwin Exp mradwin $
+#      $Id: aid_util.pl,v 2.23 1998/05/17 00:36:21 mradwin Exp mradwin $
 #
 
 $aid_util'rcsid =
- '$Id: aid_util.pl,v 2.22 1998/05/16 02:56:58 mradwin Exp mradwin $';
+ '$Id: aid_util.pl,v 2.23 1998/05/17 00:36:21 mradwin Exp mradwin $';
 
 # ----------------------------------------------------------------------
 # CONFIGURATION
@@ -152,7 +152,7 @@ $aid_util'body_link  = '0000cc'; #'#
 $aid_util'body_vlink = '990099'; #'#
 
 $aid_util'FIELD_SEP   = ";";   #'# character that separates fields in DB
-$aid_util'ID_INDEX    = 1;     #'# position that the ID key is in datafile
+$aid_util'ID_INDEX    = 0;     #'# position that the ID key is in datafile
 @aid_util'field_names = #'# order is important!
     (
     'id',			# numerical userid

@@ -4,7 +4,7 @@
 #     FILE: mvhsaid.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: MVHS Alumni Internet Directory CGI interface
-#      $Id: mvhsaid,v 2.9 1998/05/17 00:36:31 mradwin Exp mradwin $
+#      $Id: mvhsaid,v 2.10 1998/05/17 00:37:58 mradwin Exp mradwin $
 #
 
 require 'aid_util.pl';
@@ -24,7 +24,7 @@ if (defined($ENV{'PATH_INFO'}) && $ENV{'PATH_INFO'} =~ m,^/vcard/,) {
     $in{'vcard'} =~ s,^/vcard/(\d+).*$,$1,;
 }
 
-$rcsid = '$Id: mvhsaid,v 2.9 1998/05/17 00:36:31 mradwin Exp mradwin $'; #'fnt
+$rcsid = '$Id: mvhsaid,v 2.10 1998/05/17 00:37:58 mradwin Exp mradwin $'; #'fnt
 
 # special flags: version, update, vcard, about
 #
@@ -240,8 +240,8 @@ sub queue_submission {
 	 "_AID_BEGIN_MESSAGE_\n$in{'message'}\n_AID_END_MESSAGE_\n");
     
     $message_bot =
-"The kind soul who submitted it was using the web from $ENV{'REMOTE_HOST'}
-Their browser is $ENV{'HTTP_USER_AGENT'}
+"Browser: $ENV{'HTTP_USER_AGENT'}
+_AID_END_SUBMISSION_
 
 Love,
 the mvhsaid cgi-bin script
