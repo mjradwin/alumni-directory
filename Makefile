@@ -2,7 +2,7 @@
 #     FILE: Makefile
 #   AUTHOR: Michael J. Radwin
 #    DESCR: Makefile for building the Alumni Internet Directory
-#      $Id: Makefile,v 3.82 1999/05/19 00:55:36 mradwin Exp mradwin $
+#      $Id: Makefile,v 3.83 1999/05/19 01:01:37 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -24,10 +24,11 @@
 WWWROOT=/home/web/radwin.org
 WWWDIR=$(WWWROOT)/docs/mvhs-alumni
 CGIDIR=$(WWWROOT)/cgi-bin
-AID_UTIL_PL=$(CGIDIR)/aid_util.pl
-AID_SUBMIT_PL=$(CGIDIR)/aid_submit.pl
 DATADIR=$(HOME)/mvhs/data
 BINDIR=$(HOME)/mvhs/bin
+AID_UTIL_PL=$(BINDIR)/aid_util.pl
+AID_SUBMIT_PL=$(BINDIR)/aid_submit.pl
+
 TAR_AIDDIR=mvhs
 TAR_IMGDIR=web/images
 TAR_WWWDIR=web/mvhs-alumni
@@ -43,22 +44,18 @@ TARFILES= \
 	$(TAR_AIDDIR)/README \
 	$(TAR_AIDDIR)/COPYING \
 	$(TAR_AIDDIR)/Makefile \
-	$(TAR_AIDDIR)/cgi-bin/*.pl \
-	$(TAR_AIDDIR)/cgi-bin/mvhsaid \
-	$(TAR_AIDDIR)/cgi-bin/nph-aid-search \
-	$(TAR_AIDDIR)/cgi-bin/nph-vcard \
 	$(TAR_AIDDIR)/bin/aid_* \
+	$(TAR_AIDDIR)/bin/mvhs_config.pl \
+	$(TAR_AIDDIR)/bin/mvhsaid \
+	$(TAR_AIDDIR)/bin/nph-aid-search \
+	$(TAR_AIDDIR)/bin/tableheader.pl \
 	$(TAR_AIDDIR)/data/test.adr \
 	$(TAR_AIDDIR)/data/*.include \
 	$(TAR_WWWDIR)/default.css
 
 SNAPSHOTFILES= \
 	$(TAR_AIDDIR) \
-	$(TAR_AIDDIR)/cgi-bin/RCS/* \
-	$(TAR_AIDDIR)/cgi-bin/*.pl \
-	$(TAR_AIDDIR)/cgi-bin/mvhsaid \
-	$(TAR_AIDDIR)/cgi-bin/nph-aid-search \
-	$(TAR_AIDDIR)/cgi-bin/nph-vcard \
+	$(TAR_AIDDIR)/cgi-bin/cgi-lib.pl \
 	$(TAR_WWWDIR)/default.css \
 	$(TAR_WWWDIR)/.htaccess \
 	$(TAR_WWWDIR)/master.db
@@ -68,6 +65,11 @@ all:	index submit \
 	recent multi_class multi_alpha \
 	pages awalt goners download \
 	stats vcard pine_book
+
+SYMLINKS=$(AID_SUBMIT_PL) $(AID_UTIL_PL) $(BINDIR)/aid_config.pl \
+	$(BINDIR)/mvhs_config.pl $(BINDIR)/tableheader.pl
+symlinks:
+	(cd $(CGIDIR) ; /bin/ln -sf $(SYMLINKS) .; $(CP) $(BINDIR)/mvhsaid .)
 
 DBFILE=$(WWWDIR)/master.db
 dbfile:	$(DBFILE)
@@ -166,7 +168,7 @@ $(COPYRIGHT_TS):	$(DATADIR)/copyright.include $(BINDIR)/aid_home_html
 	$(BINDIR)/aid_home_html -p16 -i $(DATADIR)/copyright.include \
 		-t 'Acceptable Use, Privacy Statement, Copyright' \
 		$(COPYRIGHT)
-	ln -sf $(COPYRIGHT) $(WWWDIR)/etc/privacy.html
+	/bin/ln -sf $(COPYRIGHT) $(WWWDIR)/etc/privacy.html
 
 STATS=$(WWWDIR)/etc/stats.html
 stats:	$(STATS)
