@@ -4,7 +4,7 @@
 #     FILE: mvhsaid.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: Alumni Internet Directory CGI interface
-#      $Id: mvhsaid,v 3.105 1999/04/29 23:18:49 mradwin Exp mradwin $
+#      $Id: mvhsaid,v 3.106 1999/05/04 23:50:41 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -40,7 +40,7 @@ $mailprog = &aid_config('mailprog');
 $dbmfile = &aid_config('dbmfile');
 $dbmfile =~ s/\.db$//;
 
-$rcsid = '$Id: mvhsaid,v 3.105 1999/04/29 23:18:49 mradwin Exp mradwin $'; #'fnt
+$rcsid = '$Id: mvhsaid,v 3.106 1999/05/04 23:50:41 mradwin Exp mradwin $'; #'fnt
 
 $listing_upd_title = 'Update Your Directory Listing';
 $listing_upl_title = 'Select a Listing to Update';
@@ -375,8 +375,10 @@ sub confirm_submission {
 
 <tr><td>
 
-Please double-check all of the below information.  Be sure that your
-e-mail address is spelled correctly!
+Please double-check all of the below information.  
+Be sure that your e-mail address
+(<strong class=\"alert\"><code>$in{'e'}</code></strong>)
+is spelled correctly or we won't be able to communicate with you!
 
 <ul>
 <li>If you have made any mistakes, select the
