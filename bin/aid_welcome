@@ -2,7 +2,7 @@
 
 #
 # mails a welcome or update note to everyone in targets.adr
-# $Id: aid_welcome,v 3.19 1998/12/30 20:01:19 mradwin Exp mradwin $
+# $Id: aid_welcome,v 3.20 1999/01/20 18:37:17 mradwin Exp mradwin $
 #
 
 require 'aid_util.pl';
@@ -96,7 +96,14 @@ update URL.\n",
      'textfile', '',
      'closing',
 "
-============================================================
+=======================================================================
+
+MVHS NEEDS VOLUNTEER ACADEMIC TUTORS in its Tutorial Center to assist
+students in one or more subject areas.  For more details, please see:
+  http://www.mv.mvla.k12.ca.us/Student%20Services/Tutorial%20Center.htm
+Contact George St. Clair, Coordinator: 650-940-4624; gstclair@mvla.net
+
+=======================================================================
 
 The following information is provided solely for the
 Mountain View High School and Awalt High School communities.
