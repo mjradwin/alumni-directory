@@ -2,7 +2,7 @@
 #     FILE: aid_config.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: configuration variables for Alumni Internet Directory
-#      $Id: aid_config.pl,v 1.24 1999/04/07 16:29:28 mradwin Exp mradwin $
+#      $Id: aid_config.pl,v 1.25 1999/04/07 16:46:21 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -22,7 +22,7 @@
 #
 
 $aid_util'rcsid =
- '$Id: aid_config.pl,v 1.24 1999/04/07 16:29:28 mradwin Exp mradwin $';
+ '$Id: aid_config.pl,v 1.25 1999/04/07 16:46:21 mradwin Exp mradwin $';
 
 # radwin.org (FreeBSD 2.2.2) configuration
 %aid_util'config =   #'#
@@ -46,6 +46,7 @@ $aid_util'rcsid =
      'update_cgi',   '/cgi-bin/mvhsaid/upd',
      'confirm_cgi',  '/cgi-bin/mvhsaid/cnf',
      'index_page',   'index.html',
+     'cgidir',       '/home/web/radwin.org/cgi-bin/',
      'wwwdir',       '/home/web/radwin.org/docs/mvhs-alumni/',
      'dbmfile',      '/home/web/radwin.org/docs/mvhs-alumni/master.db',
      'aiddir',       '/home/users/mradwin/mvhs/',
@@ -175,6 +176,8 @@ $aid_util'config{'admin_email'} .
 
 $aid_util'noindex = "  <meta name=\"robots\"  content=\"noindex\">"; #'#
 %aid_util'aid_aliases = ();   #'# global alias hash repository 
+
+$aid_util'EPOCH       = 815130000; #'# Tue Oct 31 09:00:00 GMT 1995
 
 $aid_util'FIELD_SEP   = ";";   #'# character that separates fields in DB
 $aid_util'ID_INDEX    = 0;     #'# position that the ID key is in datafile
