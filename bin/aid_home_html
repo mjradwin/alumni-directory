@@ -8,7 +8,7 @@ push(@INC, '/home/mjr/lib');
 require 'mv_util.pl';
 require 'getopts.pl';
 
-$usage = 'usage: mv_home_html [-h] -i|-s
+$usage = 'usage: mv_home_html [-h] {-i | -s}
     -h        Display usage information.
     -i        Create the index page
     -s        Create the submit page
@@ -34,7 +34,7 @@ if ($opt_i) {
     print FMTOUT @lines;
     close(HOME);
 } else {
-    print FMTOUT &submit_body(":-1:1:::MVHS:::");
+    print FMTOUT &old_submit_body(":-1:1:::MVHS:::");
 }
 
 print FMTOUT &common_html_ftr($pageno);
