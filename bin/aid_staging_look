@@ -1,6 +1,6 @@
 #!/usr/local/bin/perl5 -w
 
-# $Id: aid_staging_look,v 1.1 2000/06/12 16:56:21 mradwin Exp mradwin $
+# $Id: aid_staging_look,v 1.2 2000/06/12 16:59:12 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -52,8 +52,10 @@ while (($key,$val) = each %DB)
 
 	($affil,undef) = &aid_affiliate(*rec,0);
 
-	print &aid_inorder_fullname(*rec), $affil, "\n",
-	&ctime($rec{'u'}),
+	print &aid_inorder_fullname(*rec), $affil, " <",
+	$rec{'e'}, ">\n",
+	"web submission: ", &ctime($rec{'u'}),
+	"mailed confirm: ", ($rec{'lm'} == 0 ? "(never)\n" : &ctime($rec{'lm'})),
 	"key=$key\tid=$id\n\n";
     }
 }
