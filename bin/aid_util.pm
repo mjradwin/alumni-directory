@@ -1,5 +1,30 @@
+#
+#     FILE: mv_util.pl
+#   AUTHOR: Michael J. Radwin
+#    DESCR: perl library routines for the MVHS Alumni Internet Directory
+#      $Id: tableheader.pl,v 1.1 1996/11/23 17:47:15 mjr Exp $
+#
+
 CONFIG: {
     package mv_util;
+
+    # BrownCS configuration
+    %config = ('admin_email', "mjr\@cs.brown.edu",
+	       'admin_url',   "http://www.cs.brown.edu/people/mjr/",
+	       'master_url',  "http://www.cs.brown.edu/people/mjr/mvhs/",
+	       'cgi_url',     "http://www.cs.brown.edu/cgi-bin/mjr-mvhs.cgi",
+	       'wwwdir',      "/pro/web/web/people/mjr/mvhs/",
+	       'mvhsdir',     "/home/mjr/doc/mvhs/",
+	       'cgi_path',     "/cgi-bin/mjr-mvhs.cgi");
+
+    # divcom configuration
+#     %config = ('admin_email', "mjr\@acm.org",
+# 	       'admin_url',   "http://umop-ap.com/~mjr/",
+# 	       'master_url',  "http://umop-ap.com/~mjr/mvhs/",
+# 	       'cgi_url',     "http://umop-ap.com/~mjr/mvhs/cgi-bin/mvhsaid",
+# 	       'wwwdir',      "/home/divcom/mjr/public_html/mvhs/",
+# 	       'mvhsdir',     "/home/divcom/mjr/mvhs/",
+#	       'cgi_path',    "/~mjr/mvhs/cgi-bin/mvhsaid");
 
     @page_idx = ('Home,./',
 		 'Alphabetically,all.html',
@@ -9,7 +34,7 @@ CONFIG: {
 		 'Get&nbsp;Listed!,add.html',
 		 'Acceptible&nbsp;Use,#disclaimer');
 
-    $pics_label = "<meta http-equiv=\"PICS-Label\" content='(PICS-1.0 \"http://www.rsac.org/ratingsv01.html\" l gen true comment \"RSACi North America Server\" by \"mjr\@cs.brown.edu\" for \"http://www.cs.brown.edu/people/mjr/mvhs/\" on \"1996.04.04T08:15-0500\" exp \"1997.07.01T08:15-0500\" r (n 0 s 0 v 0 l 0))'>";
+    $pics_label = "<meta http-equiv=\"PICS-Label\" content='(PICS-1.0 \"http://www.rsac.org/ratingsv01.html\" l gen true comment \"RSACi North America Server\" by \"" . $config{'admin_email'} . "\" for \"" . $config{'master_url'} . "\" on \"1996.04.04T08:15-0500\" exp \"1997.07.01T08:15-0500\" r (n 0 s 0 v 0 l 0))'>";
 
     $site_tags = "<meta name=\"keywords\" content=\"Mountain View High School, Alumni, MVHS, Awalt High School, Mountain View, Los Altos, California, reunion, Radwin\">\n<meta name=\"description\" content=\"Mountain View High School Internet Directory: email address and web page listing of alumni, students, faculty and staff.  Also Awalt High School\">";
 
@@ -18,6 +43,14 @@ CONFIG: {
 	$site_tags . "\n" . $pics_label . "\n</head>\n\n";
 
     1;
+}
+
+# give 'em back the configuration variable they need
+sub mv_config {
+    package mv_util;
+
+    die if !defined($config{$_[0]});
+    return $config{$_[0]};
 }
 
 # is the GMT less than one month ago?
@@ -135,14 +168,14 @@ sub submit_body {
     $req = ($req) ? ' checked' : '';
 
     return "<br>\n" . 
-	&tableheader("Add a Listing to the Directory", 1, 'eeee88', 1) . 
+	&tableheader("Add a Listing to the Directory", 1, 'ffff99', 1) . 
 "<p>Thanks for adding a name to the MVHS Alumni Internet
 Directory!  To update your entry, please see the <a
-href=\"/cgi-bin/mjr-mvhs.cgi?update\">update page</a>.  To add a new
+href=\"" . $config{'cgi_path'} . "?update\">update page</a>.  To add a new
 entry, please enter the following information and hit the submit button.
 Your submission will be processed in a day or so.</p>
 
-<form method=post action=\"/cgi-bin/mjr-mvhs.cgi\"> 
+<form method=post action=\"" . $config{'cgi_path'} . "\"> 
 <table border=0 cellspacing=10>
 <tr>
   <td><strong>Full Name</strong><br><em>(i.e. Smith, Chester)</em></td>
@@ -192,8 +225,26 @@ Your submission will be processed in a day or so.</p>
 sub common_html_ftr {
     package mv_util;
 
-    return "
+    local($page) = @_;
+    local($ftr);
+
+    $ftr = "
 <hr noshade size=1>
+<p align=center>[ <font size=\"-1\" 
+  face=\"Arial, Helvetica, MS Sans Serif\">";
+
+    foreach $idx (0 .. $#page_idx) {
+	($name, $url) = split(/,/, $page_idx[$idx]);
+        if ($idx == $page) {
+	    $ftr .= "\n  <strong>$name</strong>";
+        } else {
+            $ftr .= "<a\n  href=\"$url\">$name</a>";
+        }
+	$ftr .= " | " unless $idx == $#page_idx;
+    }
+    $ftr .= "</font> ]</p>\n";
+    
+    return $ftr . "
 <blockquote><a name=\"disclaimer\">This</a> address list is provided
 solely for the information of alumni of Mountain View High School and
 Awalt High School.  Any solicitation of business, information,
@@ -201,8 +252,10 @@ contributions or other response from individuals listed in this
 publication is forbidden.</blockquote>
 <hr noshade size=1>
 
-<p><a href=\"/people/mjr/\"><em>Michael J. Radwin</em></a><em>,</em> <a 
-href=\"mailto:mjr\@cs.brown.edu\"><tt>mjr\@cs.brown.edu</tt></a></p>
+<p><a href=\"" . $config{'admin_url'} .
+"\"><em>Michael J. Radwin</em></a><em>,</em> <a 
+href=\"mailto:" . $config{'admin_email'} . 
+"\"><tt>" . $config{'admin_email'} . "</tt></a></p>
 </body>
 </html>
 ";
@@ -217,15 +270,15 @@ sub common_html_hdr {
     local($name, $url);
     local($today);
 
-    ($page_name) = split(/,/, $page_idx[$page]) unless $page_name;
-    $page_name =~ s/&nbsp;/ /g;
+#    ($page_name) = split(/,/, $page_idx[$page]) unless $page_name;
+#    $page_name =~ s/&nbsp;/ /g;
     $today = localtime;
 
-    $h1 = "<body bgcolor=\"#f0f0f0\" LINK=\"#000080\" TEXT=\"#000000\" VLINK=\"#800080\">
+    $h1 = "<body bgcolor=\"#ffffff\" LINK=\"#000099\" TEXT=\"#000000\" VLINK=\"#990099\">
 <hr noshade size=1>
 <table border=0 cellpadding=8 cellspacing=0 width=\"100%\">
 <tr>
-  <td bgcolor=\"#eeeecc\" align=left rowspan=2><font size=\"-1\"
+  <td bgcolor=\"#ffffcc\" align=left rowspan=2><font size=\"-1\"
   face=\"Arial, Helvetica, MS Sans Serif\">";
 
     $h2 = "";
@@ -240,13 +293,14 @@ sub common_html_hdr {
     }
     $h2 .= "</font>\n  </td>\n";
 
-    $h3 = "  <td align=right valign=top bgcolor=\"#eeeecc\"><a href=\"./\"><img
-  src=\"title.gif\" alt=\"Mountain View High School Alumni Internet
-  Directory\" align=bottom width=398 height=48 border=0></a>
+    $h3 = "  <td align=right valign=top bgcolor=\"#ffffcc\"><a href=\"./\"><img
+  src=\"title.gif\"
+  alt=\"Mountain View High School Alumni Internet Directory\"
+  align=bottom width=398 height=48 border=0></a>
   </td>
 </tr>
 <tr>
-  <td align=right valign=bottom bgcolor=\"#eeeecc\"><font size=\"-1\"
+  <td align=right valign=bottom bgcolor=\"#ffffcc\"><font size=\"-1\"
   color=\"#000000\"><i>This page generated: $today</i></font>
   </td>
 </tr>
