@@ -3,16 +3,18 @@
 require 'getopts.pl';
 require 'mv_util.pl';
 
-$usage = 'usage: mv_addname [-hm] [mailspoolfile]
+$usage = 'usage: mv_addname [-hmw] [mailspoolfile]
     -h        Display usage information.
     -m        Manual operation (don\'t rebuild).
+    -w        Don\'t mail welcome messages.
 ';
 
-&Getopts('hm') || die "$usage\n";
+&Getopts('hmw') || die "$usage\n";
 $opt_h && die "$usage\n";
 
 &readspool(($ARGV[0]) ? $ARGV[0] : '/var/spool/mail/mjr');
 &rebuild() unless $opt_m;
+&mail_welcome() unless $opt_w;
 
 print "done!\n";
 exit(0);
@@ -57,6 +59,10 @@ sub rebuild {
 
     print "rebuilding...\n";
     system 'make';
+}
+
+sub mail_welcome {
+    chdir &mv_config('mvhsdir') || die "can't chdir: $!\n";
 
     print "mailing...";
     if (-e 'data/newmail.adr') {
@@ -121,7 +127,8 @@ sub addname {
     }
     close(TMP);
 
-    system("/bin/cp -f $tmpFile $dbFile");
+    print "/usr/local/gnu/bin/cp -f $tmpFile $dbFile\n";
+    system "/usr/local/gnu/bin/cp -f $tmpFile $dbFile";
     unlink($tmpFile) || die "couldn't unlink $tmpFile: $!\n";
 #    unlink($dbFile) || die "couldn't unlink $dbFile: $!\n";
 
