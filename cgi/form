@@ -4,7 +4,7 @@
 #     FILE: mvhsaid.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: Alumni Internet Directory CGI interface
-#      $Id: mvhsaid,v 3.49 1999/01/29 20:14:18 mradwin Exp mradwin $
+#      $Id: mvhsaid,v 3.50 1999/02/02 00:03:19 mradwin Exp mradwin $
 #
 
 require 'aid_util.pl';
@@ -13,7 +13,7 @@ require 'cgi-lib.pl';
 # configuration
 $mailprog = &aid_config('mailprog');
 $dbfile = &aid_config('wwwdir') . "master.adr";
-$rcsid = '$Id: mvhsaid,v 3.49 1999/01/29 20:14:18 mradwin Exp mradwin $'; #'fnt
+$rcsid = '$Id: mvhsaid,v 3.50 1999/02/02 00:03:19 mradwin Exp mradwin $'; #'fnt
 
 @required_headers = ('id', 'first', 'last', 'school', 'year', 'email');
 
@@ -317,7 +317,7 @@ sub queue_submission {
 _AID_END_SUBMISSION_
 
 Love,
-the \L$majsubj\E cgi-bin script
+the \L$mailsubj\E cgi-bin script
 $date";
 
     system("$mailprog -s $mailsubj $mailto <<'EOM'
