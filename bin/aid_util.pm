@@ -2,7 +2,7 @@
 #     FILE: aid_util.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: perl library routines for the Alumni Internet Directory
-#      $Id: aid_util.pl,v 5.8 1999/06/07 17:32:26 mradwin Exp mradwin $
+#      $Id: aid_util.pl,v 5.9 1999/06/08 19:29:01 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -720,27 +720,12 @@ sub aid_common_html_ftr
 
 sub aid_common_html_hdr
 {
-    require 'tableheader.pl';
     package aid_util;
 
     local($page,$title,$norobots,$time,$subtitle) = @_;
-    local($hdr,$tablehdr,$timestamp,$titletag,$srv_nowww);
+    local($hdr,$titletag,$srv_nowww);
     local($pagetime) = (defined $time && $time ne '') ? $time : time;
-#    local($sec,$min,$hour) = localtime($pagetime);
-#    local($ampm) = $hour >= 12 ? 'pm' : 'am';
-
-#    $hour -= 12 if $hour > 12;
-#    $hour  = 12 if $hour == 0;
-#    $timestamp = sprintf("%s %2d:%02d%s",
-#			 &main'aid_caldate($pagetime), $hour, $min, $ampm);
-    $timestamp = &main'aid_caldate($pagetime); #'#
-
-#    $tablehdr = $title eq '' ? '' :
-#	'<strong>' . &main'tableheader_internal($title,1,$cell_fg) . #'#
-#	    "</strong>\n";
-#    $tablehdr .= "<br />$subtitle\n" if defined $subtitle && $subtitle ne '';
-#    $tablehdr .= ($title eq '' ? '' : "<br /><br />");
-#    $tablehdr .= "\n";
+    local($timestamp) = &main'aid_caldate($pagetime); #'#
 
     $titletag = ($page == 0) ?
 	($config{'school'} . " Alumni Internet Directory") :
@@ -769,7 +754,7 @@ sub aid_common_html_hdr
 
     $hdr .= "\n</head>\n\n";
     
-    $hdr .= "<body bgcolor=\"#$body_bg\" text=\"#$body_fg\" link=\"#$body_link\" vlink=\"#$body_vlink\">\n";
+    $hdr .= "<body>\n";
 
     $srv_nowww =  $config{'master_srv'};
     $srv_nowww =~ s/^www\.//i;
@@ -1356,16 +1341,16 @@ if ($^W && 0)
     &aid_url_escape();
     &aid_rebuild_secondary_keys();
     &aid_generate_alias();
+    &aid_common_link_table();
 
-    $aid_util'body_bg = $aid_util'body_fg = $aid_util'body_vlink =
-	$aid_util'body_link = $aid_util'cell_bg = $aid_util'cell_fg =
-	    $aid_util'header_bg = '';
+    $aid_util'header_bg = '';
     $aid_util'pack_len = '';
     @aid_util'MoY = ();
     $aid_util'noindex = '';
     $aid_util'disclaimer = $aid_util'copyright_path = '';
     $aid_util'pics_label = '';
     $aid_util'author_meta = $aid_util'navigation_meta = $aid_util'descr_meta;
+    %aid_util'parent_page_path = ();
 
     @aid_edit_field_names = ();
 }
