@@ -2,11 +2,11 @@
 #     FILE: aid_util.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: perl library routines for the Alumni Internet Directory
-#      $Id: aid_util.pl,v 3.75 1998/11/09 02:39:32 mradwin Exp mradwin $
+#      $Id: aid_util.pl,v 3.76 1998/11/09 02:44:18 mradwin Exp mradwin $
 #
 
 $aid_util'rcsid =
- '$Id: aid_util.pl,v 3.75 1998/11/09 02:39:32 mradwin Exp mradwin $';
+ '$Id: aid_util.pl,v 3.76 1998/11/09 02:44:18 mradwin Exp mradwin $';
 
 # ----------------------------------------------------------------------
 # CONFIGURATION
@@ -925,15 +925,18 @@ sub about_text {
     $retval .= "<a href=\"" . &main'aid_about_path(*rec) . "\">" #'#
 	    if $do_html_p && !$show_req_p;
     $retval .= $rec{'year'};
-    $retval .= "</a></strong>" if $do_html_p && !$show_req_p;
+    $retval .= "</a>" if $do_html_p && !$show_req_p;
     $retval .= "</strong>" if $do_html_p;
     $retval .= "\n";
 
     $retval .= "\n";
     $retval .= "Email              : ";
-    $retval .= "<strong><a href=\"mailto:$rec{'email'}\">" if $do_html_p;
+    $retval .= "<strong>" if $do_html_p;
+    $retval .= "<a href=\"mailto:$rec{'email'}\">"
+	if $do_html_p && !$show_req_p;
     $retval .= $rec{'email'};
-    $retval .= "</a></strong>" if $do_html_p;
+    $retval .= "</a>" if $do_html_p && !$show_req_p;
+    $retval .= "</strong>" if $do_html_p;
     $retval .= "\n";
 
     $retval .= "Personal Web Page  : ";
