@@ -4,7 +4,7 @@
 #     FILE: form.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: Alumni Internet Directory CGI form-submission interface
-#      $Id: form,v 5.24 2000/05/30 17:26:41 mradwin Exp mradwin $
+#      $Id: form,v 5.25 2000/05/30 23:15:01 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -36,7 +36,7 @@ use CGI::Carp qw(fatalsToBrowser);
 # configuration
 $dbmfile = &aid_config('dbmfile');
 
-$rcsid = '$Id: form,v 5.24 2000/05/30 17:26:41 mradwin Exp mradwin $'; #'fnt
+$rcsid = '$Id: form,v 5.25 2000/05/30 23:15:01 mradwin Exp mradwin $'; #'fnt
 
 $listing_upd_title = 'Modify Your Directory Listing';
 $listing_upl_title = 'Select a Listing to Modify';
@@ -452,7 +452,11 @@ http://" . &aid_config('master_srv') . &aid_config('master_path') . "\n";
 Check your e-mail for this message and then follow the
 instructions provided.</p>
 
-<h3>Last Step: Verify your e-mail address</h3>
+<table border=\"0\" cellspacing=\"7\" width=\"100%\">
+<tr><td bgcolor=\"#$aid_util::header_bg\"><font
+color=\"#$aid_util::header_fg\"><big><strong>8.
+Last Step: Verify your e-mail
+address</strong></big></font></td></tr></table>
 
 <p>Please check your e-mail and find the 8-letter
 verification code that was sent to you by the ",
