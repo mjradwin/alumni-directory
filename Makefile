@@ -2,10 +2,14 @@
 #     FILE: Makefile
 #   AUTHOR: Michael J. Radwin
 #    DESCR: Makefile for building the Alumni Internet Directory
-#      $Id: Makefile,v 3.14 1998/06/01 16:30:51 mradwin Exp mradwin $
+#      $Id: Makefile,v 3.15 1998/06/08 22:40:52 mradwin Exp mradwin $
 #
 
-WWWDIR=/home/web/radwin.org/docs/mvhs-alumni
+WWWROOT=/home/web/radwin.org
+WWWDIR=$(WWWROOT)/docs/mvhs-alumni
+CGIDIR=$(WWWROOT)/cgi-bin
+AID_UTIL_PL=$(CGIDIR)/aid_util.pl
+
 RM=/bin/rm -f
 
 ADR_MASTER=./data/master.adr
@@ -23,9 +27,6 @@ BIN_HOME=./bin/aid_home_html
 BIN_RECENT=./bin/aid_recent_html
 BIN_VERBOSE=./bin/aid_verbose_html
 BIN_WWW=./bin/aid_www_html
-
-AID_UTIL_PL=/home/web/radwin.org/cgi-bin/aid_util.pl
-TABLEHEADER_PL=/home/web/radwin.org/cgi-bin/tableheader.pl
 
 TARFILES=README Makefile cgi-bin/*.pl cgi-bin/mvhsaid bin/aid_* data/*.include
 SNAPSHOTFILES=bin/aid_make mvhs web/mvhs-alumni/*.gif \
