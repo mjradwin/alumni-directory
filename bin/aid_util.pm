@@ -2,11 +2,11 @@
 #     FILE: aid_util.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: perl library routines for the Alumni Internet Directory
-#      $Id: aid_util.pl,v 2.1 1998/03/31 19:54:03 mjr Exp mradwin $
+#      $Id: aid_util.pl,v 2.2 1998/04/02 20:23:18 mjr Exp mjr $
 #
 
 $aid_util'rcsid =
- '$Id: aid_util.pl,v 2.1 1998/03/31 19:54:03 mjr Exp mradwin $';
+ '$Id: aid_util.pl,v 2.2 1998/04/02 20:23:18 mjr Exp mjr $';
 
 # ----------------------------------------------------------------------
 # CONFIGURATION
@@ -884,10 +884,9 @@ sub common_link_table {
     package aid_util;
 
     local($page) = @_;
-    local($rcstag) = "<!-- " . $config{'rcsid'} . " -->";
     local($html,$name,$url,$idx);
 
-    $html  = "\n<!-- begin common_link_table -->\n$rcstag\n";
+    $html  = "<!-- begin common_link_table -->\n";
     $html .= "<p align=center><font size=\"-1\">";
 
     foreach $idx (0 .. $#page_idx) {
@@ -910,6 +909,7 @@ sub common_link_table {
 	$html .= " || " unless $idx == $#second_idx;
     }
     $html .= "\n</font></p>\n";
+    $html .= "<!-- end common_link_table -->\n";
     
     $html;
 }
@@ -923,7 +923,7 @@ sub common_html_ftr {
 
     $ftr  = "\n<!-- begin common_html_ftr -->\n";
     $ftr .= "<hr noshade size=1>\n";
-    $ftr .= &common_link_table($page);
+    $ftr .= &main'common_link_table($page); #'#
     
     $ftr .= "\n" . $disclaimer . "\n\n<hr noshade size=1>\n<a href=\"" .
 	$config{'admin_url'} . "\"><em>" . $config{'admin_name'} .
@@ -942,6 +942,7 @@ sub common_html_hdr {
 
     local($page,$title,$norobots) = @_;
     local($hdr,$result,$timestamp);
+    local($rcstag) = "<!-- " . $config{'rcsid'} . " -->";
     local($date) = &main'ctime(time);  #'#
 
     chop($date);
@@ -955,13 +956,14 @@ sub common_html_hdr {
 	"<title>" . $config{'school'} . " Alumni Internet Directory" .
 	"</title>\n" . $site_tags . "\n" . $pics_label . "\n";
     $hdr .= "$noindex\n" if $norobots;
+    $hdr .= "$rcstag\n";
     $hdr .= "</head>\n\n";
     
     $hdr .= "<!-- begin common_html_hdr -->\n";
 
     $hdr .= "<body bgcolor=\"#$body_bg\" text=\"#$body_fg\" link=\"#$body_link\" vlink=\"#$body_vlink\">\n\n";
     
-    $hdr .= &common_link_table($page);
+    $hdr .= &main'common_link_table($page); #'#
 
     $hdr .= "
 <center>
@@ -987,7 +989,7 @@ sub common_html_hdr {
 
 ";
 
-    $hdr .= "<!-- end common_html_hdr -->\n";
+    $hdr .= "<!-- end common_html_hdr -->\n\n";
 
     $hdr;
 }
