@@ -2,7 +2,7 @@
 #     FILE: Makefile
 #   AUTHOR: Michael J. Radwin
 #    DESCR: Makefile for building the Alumni Internet Directory
-#      $Id: Makefile,v 5.13 1999/06/12 18:50:22 mradwin Exp mradwin $
+#      $Id: Makefile,v 5.14 1999/06/28 18:08:42 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -46,7 +46,6 @@ TARFILES= \
 	$(TAR_AIDDIR)/bin/aid_* \
 	$(TAR_AIDDIR)/bin/generic_config.pl \
 	$(TAR_AIDDIR)/bin/$(SCHOOL)_config.pl \
-	$(TAR_AIDDIR)/bin/tableheader.pl \
 	$(TAR_AIDDIR)/cgi/[a-z]* \
 	$(TAR_AIDDIR)/data/*.include
 
@@ -58,14 +57,14 @@ SNAPSHOTFILES= \
 all:	index submit \
 	addupdate reunions links faq copyright \
 	recent multi_class multi_alpha \
-	pages goners download stats pine_book
+	pages goners download stats pine_book rss
 
 SYMLINKS=$(AID_SUBMIT_PL) $(AID_UTIL_PL) $(BINDIR)/aid_config.pl \
-	$(BINDIR)/$(SCHOOL)_config.pl $(BINDIR)/tableheader.pl \
-	$(CGISRC)/cgi-lib.pl
+	$(BINDIR)/$(SCHOOL)_config.pl $(CGISRC)/cgi-lib.pl
 symlinks:
 	$(MKDIR) $(WWWDIR)
 	echo 'AddType text/html;charset=ISO-8859-1 html' > $(WWWDIR)/.htaccess
+	echo 'AddType text/xml xml rdf' >> $(WWWDIR)/.htaccess
 	echo 'Options -Indexes' >> $(WWWDIR)/.htaccess
 	$(MKDIR) $(CGIDIR)
 	(cd $(CGIDIR) ; /bin/ln -sf $(SYMLINKS) .; \
@@ -164,6 +163,12 @@ $(STATS):	$(BINDIR)/aid_stats $(DBFILE)
 	$(MKDIR) $(WWWDIR)/etc
 	$(BINDIR)/aid_stats $(DBFILE) $(STATS)
 
+RSS=$(WWWDIR)/summary.rdf
+RSS_TS=$(WWWDIR)/.summary.rdf
+rss:	$(RSS_TS)
+$(RSS_TS):	$(BINDIR)/aid_rss_summary $(DBFILE)
+	$(BINDIR)/aid_rss_summary $(DBFILE) $(RSS)
+
 SUBMIT=$(WWWDIR)/add/new.html
 SUBMIT_TS=$(WWWDIR)/add/.new.html
 submit:	$(SUBMIT_TS)
@@ -232,4 +237,5 @@ clean:
 	$(COPYRIGHT_TS) \
 	$(SUBMIT_TS) \
 	$(ADDUPDATE_TS) \
-	$(DOWNLOAD_TS)
+	$(DOWNLOAD_TS) \
+	$(RSS_TS)
