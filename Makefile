@@ -2,7 +2,7 @@
 #     FILE: Makefile
 #   AUTHOR: Michael J. Radwin
 #    DESCR: Makefile for building the Alumni Internet Directory
-#      $Id: Makefile,v 3.64 1999/03/04 18:04:58 mradwin Exp mradwin $
+#      $Id: Makefile,v 3.65 1999/03/05 00:32:30 mradwin Exp mradwin $
 #
 
 WWWROOT=/home/web/radwin.org
@@ -58,10 +58,10 @@ SNAPSHOTFILES= \
 
 all:	index submit \
 	addupdate reunions links faq copyright \
-	recent multi_class multi_alpha vcard \
+	recent multi_class multi_alpha \
 	pages class awalt goners download books2 \
-	stats $(CGIDIR)/nph-mvhsaid
-
+	stats $(CGIDIR)/nph-mvhsaid \
+	vcard
 
 $(CGIDIR)/nph-mvhsaid: $(CGIDIR)/mvhsaid
 	$(CP) $(CGIDIR)/mvhsaid $(CGIDIR)/nph-mvhsaid
