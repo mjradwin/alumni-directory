@@ -45,8 +45,14 @@ else
 
 $in{'q'} =~ s/^\s*//;
 $in{'q'} =~ s/\s*$//;
+$query = $in{'q'};
+$query =~ s/[,\.;+'"\(\)]//g;
+$query =~ s/\band\b//ig;
+$query =~ s/\bor\b//ig;
+$query =~ s/-/ /ig;
+@search_terms = split(/\s+/, $query);
 
-@results = ();
+%results = ();
 foreach (@alpha_ids)
 {
     %rec = &aid_db_unpack_rec($_,$DB{$_});
@@ -58,15 +64,22 @@ foreach (@alpha_ids)
 	next unless ($in{'y'} eq $rec{'year'}) || $in{'y'} eq 'other';
     }
 
-    if ($fullname =~ /$in{'q'}/i)
+    $results{$_} = 1;
+    foreach $term (@search_terms)
     {
-	push(@results,$_);
+	if ($fullname !~ /$term/i)
+	{
+	    delete $results{$_};
+	    last;
+	}
     }
 }
 undef @alpha_ids;
 
 print "Content-Type: text/html\015\012\015\012";
 
+@results = keys %results;
+undef %results;
 if ($#results == -1)
 {
     print &common_html_hdr(6, 'No matches', 1);
@@ -103,7 +116,10 @@ else
 	($affil,$len) = &affiliate(*rec,0);
 	
 	print "<li><a href=\"", &aid_config('about_cgi'), 
-	 "?about=", $rec{'id'}, "\">$fullname $affil</a>\n";
+	"?about=", $rec{'id'}, "\">$fullname $affil</a>";
+	
+	print " (invalid e-mail address)" unless $rec{'valid'};
+	print "\n";
     }
     print "</ul>\n";
     &print_search_form($in{'q'},$in{'y'});
