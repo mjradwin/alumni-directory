@@ -2,7 +2,7 @@
 #     FILE: mv_util.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: perl library routines for the MVHS Alumni Internet Directory
-#      $Id: mv_util.pl,v 1.38 1997/09/29 17:18:20 mjr Exp mjr $
+#      $Id: mv_util.pl,v 1.39 1997/09/29 18:36:58 mjr Exp mjr $
 #
 
 CONFIG: {
@@ -267,57 +267,67 @@ All other fields are optional.";
     
     return "<br>\n" . $tableh . "
 <form method=post action=\"" . $config{'cgi_path'} . "\"> 
-<table border=0 cellspacing=10>
+<table border=0 cellspacing=7>
 <tr>
-  <td valign=top rowspan=3><strong>Your Name</strong></td>
-  <td valign=top>First Name $star</td>
+  <td valign=top>First Name</td>
+  <td>$star</td>
   <td valign=top><input type=text name=\"first\" size=35 
   value=\"$first\"></td>
 </tr>
 <tr>
-  <td valign=top>Last/Maiden Name $star</td>
+  <td valign=top>Last/Maiden Name</td>
+  <td>$star</td>
   <td valign=top><input type=text name=\"last\" size=35
   value=\"$last\"></td>
 </tr>
 <tr>
-  <td valign=top>Married Name<br><em>(if different from Maiden
-  Name)</em></td>
+  <td colspan=2 valign=top>Married Name<br>
+  <font size=\"-1\">(if different from Maiden Name)</font></td>
   <td valign=top><input type=text name=\"married\" size=35
-      value=\"$married\"></td>
+  value=\"$married\"></td>
 </tr>
 <tr>
-  <td valign=top rowspan=2><strong>High School</strong> $star</td>
+  <td valign=top>High School</td>
+  <td>$star</td>
   <td valign=top><input type=radio name=\"school\"
   value=\"MVHS\"$mvhs_checked>MVHS&nbsp;&nbsp;<input type=radio
-  name=\"school\" value=\"Awalt\"$awalt_checked>Awalt&nbsp;&nbsp;<input 
-  type=radio name=\"school\" value=\"Other\"$other_checked>Other:</td>
-  <td valign=top><input type=text name=\"sch_other\" size=35
-      value=\"$school\"></td>
+  name=\"school\" value=\"Awalt\"$awalt_checked>Awalt</td>
 </tr>
 <tr>
-  <td valign=top>Graduation year or affiliation
-      $star<br><em>(such as 93, 87, or Teacher)</em></td>
+  <td valign=top>&nbsp;</td>
+  <td valign=top>&nbsp;</td>
+  <td valign=top><input type=radio name=\"school\" 
+  value=\"Other\"$other_checked>Other:&nbsp;<input type=text
+  name=\"sch_other\" size=27 value=\"$school\"></td>
+</tr>
+<tr>
+  <td valign=top>Graduation year or affiliation<br>
+  <font size=\"-1\">(such as 93, 87, or Teacher)</font></td>
+  <td>$star</td>
   <td valign=top><input type=text name=\"grad\" size=35
-      value=\"$year\"></td>
+  value=\"$year\"></td>
 </tr>
 <tr>
-  <td valign=top rowspan=3><strong>Contact Info</strong></td>
-  <td valign=top>E-mail address $star</td>
+  <td valign=top>E-mail address<br>
+  <font size=\"-1\">(such as albert@aol.com)</font></td>
+  <td>$star</td>
   <td valign=top><input type=text name=\"mail\" size=35
   value=\"$email\"></td>
 </tr>
 <tr>
-  <td valign=top>Web Page</td>
+  <td colspan=2 valign=top>Web Page</td>
   <td valign=top><input type=text name=\"homepage\" size=35
-      value=\"$homepage\"></td>
+  value=\"$homepage\"></td>
 </tr>
 <tr>
-  <td valign=top>Location</td>
+  <td colspan=2 valign=top>Location<br>
+  <font size=\"-1\">(city, school, or company)</font></td>
   <td valign=top><input type=text name=\"location\" size=35
-      value=\"$location\"></td>
+  value=\"$location\"></td>
 </tr>
 <tr>
-  <td colspan=3>Please send an updated copy of the Directory to my
+  <td colspan=3><br>
+  Please send an updated copy of the Directory to my
   email address every 3-4 months:<br>
   &nbsp;&nbsp;&nbsp;&nbsp;<input type=radio name=\"request\"
   value=\"1\"$reqchk[1]>&nbsp;Sorted by name.<br>
