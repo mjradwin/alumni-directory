@@ -2,7 +2,7 @@
 #     FILE: Makefile
 #   AUTHOR: Michael J. Radwin
 #    DESCR: Makefile for building the Alumni Internet Directory
-#      $Id: Makefile,v 3.88 1999/05/24 19:15:29 mradwin Exp mradwin $
+#      $Id: Makefile,v 3.89 1999/05/27 21:03:20 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -67,7 +67,7 @@ all:	index submit \
 	addupdate reunions links faq copyright \
 	recent multi_class multi_alpha \
 	pages awalt goners download \
-	stats vcard pine_book
+	stats pine_book
 
 SYMLINKS=$(AID_SUBMIT_PL) $(AID_UTIL_PL) $(BINDIR)/aid_config.pl \
 	$(BINDIR)/$(SCHOOL)_config.pl $(BINDIR)/tableheader.pl
@@ -87,11 +87,11 @@ $(DBFILE):	$(ADR_MASTER) $(BINDIR)/aid_dbm_write $(AID_UTIL_PL)
 	chmod 0444 $(DBFILE)
 	$(BINDIR)/aid_dbm_read -u ./data/master.u $(DBFILE)
 
-VCARD_TS=$(WWWDIR)/vcard/.created
-vcard:	$(VCARD_TS)
-$(VCARD_TS):	$(DBFILE) $(BINDIR)/aid_write_vcards
-	$(MKDIR) $(WWWDIR)/vcard
-	$(BINDIR)/aid_write_vcards $(DBFILE) $(WWWDIR)/vcard $(MOD_IDS)
+#VCARD_TS=$(WWWDIR)/vcard/.created
+#vcard:	$(VCARD_TS)
+#$(VCARD_TS):	$(DBFILE) $(BINDIR)/aid_write_vcards
+#	$(MKDIR) $(WWWDIR)/vcard
+#	$(BINDIR)/aid_write_vcards $(DBFILE) $(WWWDIR)/vcard $(MOD_IDS)
 
 MULTI_ALPHA=$(WWWDIR)/alpha/a-index.html
 MULTI_ALPHA_TS=$(WWWDIR)/alpha/.z-index.html
