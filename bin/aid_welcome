@@ -2,7 +2,7 @@
 
 #
 # mails a welcome, update, confirm, or massmail message to members
-# $Id: aid_welcome,v 5.19 2000/02/29 21:55:00 mradwin Exp mradwin $
+# $Id: aid_welcome,v 5.20 2000/04/21 23:37:03 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -288,9 +288,9 @@ sub mail_user
 		  $params{'subject'} .
 		  ' [' . &aid_config('short_school') . '-' . $rec{'id'} . ']',
 		  $message,@mailto);
-    print LOG $time, " - $rec{'id'} - $rec{'e'}\n";
+    print LOG $time, " - $rec{'id'} - $rec{'e'} - $status\n";
 
-    print LOG $time, " - $rec{'id'} - $rec{'eo'} - OLD\n"
+    print LOG $time, " - $rec{'id'} - $rec{'eo'} - $status - OLD\n"
 	if ($opt_u && defined $rec{'eo'} &&
 	    $rec{'eo'} ne '' && "\L$rec{'eo'}\E" ne "\L$rec{'e'}\E");
 
