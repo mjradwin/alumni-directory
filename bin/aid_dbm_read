@@ -1,6 +1,6 @@
 #!/usr/bin/perl -w
 
-# $Id: aid_dbm_read,v 1.11 1999/03/03 20:33:12 mradwin Exp mradwin $
+# $Id: aid_dbm_read,v 1.12 1999/03/09 20:50:23 mradwin Exp mradwin $
 
 require 'aid_util.pl';
 require 'getopts.pl';
@@ -45,8 +45,8 @@ if ($opt_t)
     {
 	%rec = &aid_db_unpack_rec($_,$DB{$_});
 	print DATA &aid_join(*rec);
-#	print DATA ';', &old_encode_base64($rec{'message'},'')
-#	    if ($rec{'message'} ne '');
+	print DATA ';', &old_encode_base64($rec{'message'},'')
+	    if ($rec{'message'} ne '');
 	print DATA "\n";
     } 
     close(DATA);
