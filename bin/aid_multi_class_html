@@ -2,7 +2,7 @@
 
 #
 # does the html verbose pages
-# $Id: aid_verbose_html,v 1.16 1998/02/18 17:33:59 mjr Exp mjr $
+# $Id: aid_verbose_html,v 1.17 1998/02/18 17:37:25 mjr Exp mjr $
 #
 
 require 'aid_util.pl';
@@ -41,13 +41,13 @@ for(;;) {
     print FMTOUT &aid_tableheader($title);
     print FMTOUT &common_intro_para(0);
 
-    &write_entry(*FMTOUT,$_);
+    &aid_write_verbose_entry(*FMTOUT,*rec);
     while(<DATA>) {
 	chop;
 	%rec = &aid_split($_);
 	
 	last if (($rec{'year'} ne $currentYear) && ($currentYear =~ /^\d+$/));
-	&write_entry(*FMTOUT,$_);
+	&aid_write_verbose_entry(*FMTOUT,*rec);
     }
     print FMTOUT &common_html_ftr(-1);
     close(FMTOUT);
@@ -83,55 +83,3 @@ print FMTOUT &common_html_ftr(2);
 close(FMTOUT);
 
 exit(0);
-
-sub write_entry {
-    local(*FMTOUT,$record) = @_;
-    local($[) = 0;
-    local($_);
-    local($fullname,$message);
-    local(%rec) = &aid_split($record);
-
-    $fullname = &inorder_fullname(*rec);
-
-    print FMTOUT "<dl compact>\n";
-
-    print FMTOUT "<dt><font size=\"+1\">";
-    print FMTOUT "<strong>$fullname</strong>";
-    print FMTOUT "</font>\n";
-
-    print FMTOUT "&nbsp;<font size=\"-1\">[";
-    print FMTOUT "<a href=\"" . &aid_config('cgi_path') . "?about=$rec{'id'}\">";
-    print FMTOUT "details</a>";
-    print FMTOUT "&nbsp;|&nbsp;";
-    print FMTOUT "<a href=\"" . &aid_config('cgi_path') . "/vcard/$rec{'id'}.vcf\">";
-    print FMTOUT "vCard</a>";
-    print FMTOUT "]</font>\n";
-
-    print FMTOUT &aid_image_tag('new_anchored') if &is_new($rec{'time'});
-
-    print FMTOUT "</dt>\n";
-    print FMTOUT "<dt>School: <strong>$rec{'school'}</strong></dt>\n" 
-	if $rec{'school'} ne 'MVHS';
-    print FMTOUT "<dt>Affiliation:  <strong>$rec{'year'}</strong></dt>\n" 
-	unless ($rec{'year'} =~ /^\d+$/);
-    print FMTOUT "<dt>Email: <tt><strong><a href=\"mailto:$rec{'email'}\">$rec{'email'}</a></strong></tt></dt>\n";
-    print FMTOUT "<dt>Web Page: <tt><strong><a href=\"$rec{'homepage'}\">$rec{'homepage'}</a></strong></tt></dt>\n"
-	if $rec{'homepage'} ne '';
-    print FMTOUT "<dt>Location: <strong>$rec{'location'}</strong></dt>\n"
-	if $rec{'location'} ne '';
-    print FMTOUT "<dt>Joined: ";
-    $date = &ctime($rec{'created'}); chop $date;
-    print FMTOUT "<strong>$date</strong></dt>\n";
-    if ($rec{'time'} != $rec{'created'}) {
-	print FMTOUT "<dt>Updated: ";
-	$date = &ctime($rec{'time'}); chop $date;
-	print FMTOUT "<strong>$date</strong></dt>\n";
-    }
-
-    $message = &aid_get_usertext($rec{'id'});
-    if ($message ne '') {
-	print FMTOUT "<dt>What's New?</dt>\n";
-	print FMTOUT "<dd>$message</dd>\n";
-    }
-    print FMTOUT "</dl>\n\n";
-}

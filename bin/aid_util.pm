@@ -2,11 +2,11 @@
 #     FILE: aid_util.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: perl library routines for the Alumni Internet Directory
-#      $Id: aid_util.pl,v 1.99 1998/02/23 21:12:14 mjr Exp mjr $
+#      $Id: aid_util.pl,v 1.100 1998/03/10 19:53:22 mjr Exp mjr $
 #
 
 $aid_util'rcsid =
- '$Id: aid_util.pl,v 1.99 1998/02/23 21:12:14 mjr Exp mjr $';
+ '$Id: aid_util.pl,v 1.100 1998/03/10 19:53:22 mjr Exp mjr $';
 
 # ----------------------------------------------------------------------
 # CONFIGURATION
@@ -675,6 +675,62 @@ sub message_footer {
 	"Phone     : " . $config{'admin_phone'};
 }
 
+sub aid_write_verbose_entry {
+    require 'ctime.pl';
+    package aid_util;
+
+    local(*FMTOUT,*rec,$suppress_new) = @_;
+    local($[) = 0;
+    local($_);
+    local($fullname,$message);
+
+    $fullname = &main'inorder_fullname(*rec);
+
+    print FMTOUT "<dl compact>\n";
+
+    print FMTOUT "<dt><font size=\"+1\">";
+    print FMTOUT "<strong>$fullname</strong>";
+    print FMTOUT "</font>\n";
+
+    print FMTOUT "&nbsp;<font size=\"-1\">[";
+    print FMTOUT "<a href=\"" . $config{'cgi_path'} . "?about=$rec{'id'}\">";
+    print FMTOUT "details</a>";
+    print FMTOUT "&nbsp;|&nbsp;";
+    print FMTOUT "<a href=\"" . $config{'cgi_path'} . "/vcard/$rec{'id'}.vcf\">";
+    print FMTOUT "vCard</a>";
+    print FMTOUT "]</font>\n";
+
+    print FMTOUT $image_tag{'new_anchored'}
+	if !$suppress_new && &main'is_new($rec{'time'});
+
+    print FMTOUT "</dt>\n";
+    print FMTOUT "<dt>School: <strong>$rec{'school'}</strong></dt>\n" 
+	if $rec{'school'} ne 'MVHS';
+    print FMTOUT "<dt>Affiliation:  <strong>$rec{'year'}</strong></dt>\n" 
+	unless ($rec{'year'} =~ /^\d+$/);
+    print FMTOUT "<dt>Email: <tt><strong><a href=\"mailto:$rec{'email'}\">$rec{'email'}</a></strong></tt></dt>\n";
+    print FMTOUT "<dt>Web Page: <tt><strong><a href=\"$rec{'homepage'}\">$rec{'homepage'}</a></strong></tt></dt>\n"
+	if $rec{'homepage'} ne '';
+    print FMTOUT "<dt>Location: <strong>$rec{'location'}</strong></dt>\n"
+	if $rec{'location'} ne '';
+    print FMTOUT "<dt>Joined: ";
+    $date = &main'ctime($rec{'created'}); chop $date;
+    print FMTOUT "<strong>$date</strong></dt>\n";
+    if ($rec{'time'} != $rec{'created'}) {
+	print FMTOUT "<dt>Updated: ";
+	$date = &main'ctime($rec{'time'}); chop $date;
+	print FMTOUT "<strong>$date</strong></dt>\n";
+    }
+
+    $message = &main'aid_get_usertext($rec{'id'});
+    if ($message ne '') {
+	print FMTOUT "<dt>What's New?</dt>\n";
+	print FMTOUT "<dd>$message</dd>\n";
+    }
+    print FMTOUT "</dl>\n\n";
+}
+
+
 sub about_text {
     require 'ctime.pl';
     package aid_util;
@@ -786,35 +842,7 @@ sub about_text {
 
     $retval .= "</font></td></tr></table>\n" if $do_html_p;
 
-    if ($do_html_p && $newrec{'time'} ne '' && $newrec{'time'} != 0) {
-	$retval .= &main'modify_button($newrec{'id'},
-				       &main'inorder_fullname(*newrec));
-    }
-
     $retval;
-}
-
-sub modify_button {
-    package aid_util;
-
-    local($id,$name) = @_;
-    local($cgi) = $config{'cgi_path'};
-
-    "
-<!-- borrowed from gamelan -->
-To update the entry for this person, please click the button below.
-
-<form method=get action=\"$cgi\">
-<center><input type=hidden name=\"update\" value=\"$id\">
-<input type=submit value=\"Update $name\">
-</center>
-</form>
-
-To avoid malicious modification by other people passing through, we
-mail the original user about the change (plus the new user if the
-email changes). The honor system has worked for us so far; please
-don't abuse it and force us to install a password door.<p>
-";
 }
 
 sub common_intro_para {
