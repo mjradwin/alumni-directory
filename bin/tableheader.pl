@@ -3,7 +3,7 @@
 #   AUTHOR: Michael J. Radwin
 #    DESCR: generates small-caps HTML headers with colored tables
 #     DATE: Mon Nov 11 23:52:52 EST 1996
-#      $Id: tableheader.pl,v 1.3 1997/03/23 20:56:39 mjr Exp mjr $
+#      $Id: tableheader.pl,v 1.4 1997/08/25 23:57:14 mjr Exp mjr $
 #
 
 
@@ -11,6 +11,7 @@
 #  data     - text string           - text to display
 #  size     - integer               - how much to increase font size by
 #  color    - six-char rgb value    - background color of table
+#  fontcolor- six-char rgb value    - foreground color of table
 #  wide     - binary value (0 or 1) - should the table be full page width?
 #  align    - align= html tag       - table alignment
 #  valign   - valign= html tag      - table alignment
@@ -22,14 +23,16 @@ sub tableheader {
 
     local($[) = 0;
     local($_);
-    local($last,$result,$fn_size,$bgcolor,$width);
-    local($data,$size,$color,$wide,$align,$valign,$pretext,$posttext) = @_;
+    local($last,$result,$fn_size,$bgcolor,$fgcolor,$width);
+    local($data,$size,$color,$fontcolor,$wide,$align,$valign,
+	  $pretext,$posttext) = @_;
 
     @array = unpack('C*', $data);
     $last = pop(@array);   # the last char is a special case
 
     $result = ""; 
     $bgcolor = "bgcolor=\"#$color\"";
+    $fgcolor = "color=\"#$fontcolor\"";
     $fn_size = "size=\"+$size\"";
     $width = " width=\"100%\"" if $wide;
     $align = "center" if $align eq '';
@@ -40,23 +43,25 @@ sub tableheader {
 	    $result .= "&nbsp; ";
 	    next;
 	} elsif ($_ >= 65 && $_ <= 90) {
-	    $result .= sprintf("<font %s>%c</font>&nbsp;", $fn_size, $_);
+	    $result .= sprintf("<font %s %s>%c</font>&nbsp;", $fn_size, 
+			       $fgcolor, $_);
 	} elsif ($_ >= 97 && $_ <= 122) {
-	    $result .= sprintf("%c", $_ - 32);
+	    $result .= sprintf("<font %s>%c</font>", $fgcolor, $_ - 32);
 	    $result .= "&nbsp;";
 	} else {
-	    $result .= sprintf("%c", $_);
+	    $result .= sprintf("<font %s>%c</font>", $fgcolor, $_);
 	    $result .= "&nbsp;";
 	}
     }
 
     # handle the last char differently
     if ($last >= 65 && $last <= 90) {
-	$result .= sprintf("<font %s>%c</font>", $fn_size, $last);
+	$result .= sprintf("<font %s %s>%c</font>", $fn_size, 
+			   $fgcolor, $last);
     } elsif ($last >= 97 && $last <= 122) {
-	$result .= sprintf("%c", $last - 32);
+	$result .= sprintf("<font %s>%c</font>", $fgcolor, $last - 32);
     } else {
-	$result .= sprintf("%c", $last);
+	$result .= sprintf("<font %s>%c</font>", $fgcolor, $last);
     }
 
     return "
