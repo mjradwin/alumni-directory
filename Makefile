@@ -2,7 +2,7 @@
 #     FILE: Makefile
 #   AUTHOR: Michael J. Radwin
 #    DESCR: Makefile for building the Alumni Internet Directory
-#      $Id: Makefile,v 3.22 1998/09/18 23:20:06 mradwin Exp mradwin $
+#      $Id: Makefile,v 3.23 1998/09/23 22:25:00 mradwin Exp mradwin $
 #
 
 WWWROOT=/home/web/radwin.org
@@ -101,14 +101,14 @@ REUNIONS=$(WWWDIR)/reunions.html
 reunions:	$(REUNIONS)
 $(REUNIONS):	data/reunions.include $(BIN_HOME)
 	$(BIN_HOME) -p11 -i data/reunions.include \
-		-t 'Reunions: when, where, who to contact' \
+		-t 'Reunions' \
 		$(REUNIONS)
 
 LINKS=$(WWWDIR)/links.html
 links:	$(LINKS)
 $(LINKS):	data/links.include $(BIN_HOME)
 	$(BIN_HOME) -p12 -i data/links.include \
-		-t 'Links: other MVHS and Awalt websites' \
+		-t 'Other MVHS and Awalt websites' \
 		$(LINKS)
 
 NICKNAMES=$(WWWDIR)/books/index.html
@@ -116,14 +116,14 @@ nicknames:	$(NICKNAMES)
 $(NICKNAMES):	data/nicknames.include $(BIN_HOME)
 	mkdir -p $(WWWDIR)/books
 	$(BIN_HOME) -p13 -i data/nicknames.include \
-		-t 'Nicknames: address books for your e-mail program' \
+		-t 'Download Nickname and Address Book files' \
 		$(NICKNAMES)
 
 TECH=$(WWWDIR)/tech.html
 tech:	$(TECH)
 $(TECH):	data/tech.include $(BIN_HOME)
 	$(BIN_HOME) -p14 -i data/tech.include \
-		-t 'Tech Notes: info about the Directory' \
+		-t 'Technical notes about the Directory' \
 		$(TECH)
 
 COPYRIGHT=$(WWWDIR)/copyright.html
