@@ -1,6 +1,6 @@
 #!/usr/bin/perl -w
 
-# $Id: aid_stats,v 1.18 1999/04/07 01:41:40 mradwin Exp mradwin $
+# $Id: aid_stats,v 1.19 1999/04/07 01:49:16 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -57,7 +57,7 @@ $update_time_sum = 0;
 $join_time_sum = 0;
 @join_times = ();
 
-$num_never_updated = $nweek = $nmonth = $n3month = 0;
+$nnever_updated = $nweek = $nmonth = $n3month = $n13month = 0;
 
 while (($key,$val) = each %DB)
 {
@@ -91,10 +91,11 @@ while (($key,$val) = each %DB)
     $join_time_sum += $rec{'c'};
     push(@join_times, $rec{'c'});
 
-    $num_never_updated++ if $rec{'u'} == $rec{'c'};
+    $nnever_updated++ if $rec{'u'} == $rec{'c'};
     $nweek++ if &aid_is_new($rec{'c'}, 0.25);
     $nmonth++ if &aid_is_new($rec{'c'}, 1);
     $n3month++ if &aid_is_new($rec{'c'}, 3);
+    $n13month++ if &aid_is_new($rec{'c'}, 13);
 }
 
 $nlegit = $nvalid + $ndubious;
@@ -153,22 +154,24 @@ printf FMTOUT "%4d (%2.0f%%) wrote What's New? paragraph\n",
 
 print FMTOUT "\n";
 
+printf FMTOUT "%4d (%2.0f%%) joined during past week\n",
+    $nweek, ((100.0 * $nweek) / $nlegit);
+printf FMTOUT "%4d (%2.0f%%) joined during past month\n",
+    $nmonth, ((100.0 * $nmonth) / $nlegit);
+printf FMTOUT "%4d (%2.0f%%) joined during past 3 months\n",
+    $n3month, ((100.0 * $n3month) / $nlegit);
+printf FMTOUT "%4d (%2.0f%%) joined during past year\n",
+    $n13month, ((100.0 * $n13month) / $nlegit);
+printf FMTOUT "%4d (%2.0f%%) have never updated their listings\n",
+    $nnever_updated, ((100.0 * $nnever_updated) / $nlegit);
+
+print FMTOUT "\n";
+
 printf FMTOUT "average tenure             : %.0f weeks\n", $avg_tenure_weeks;
 printf FMTOUT "median  tenure             : %.0f weeks\n", $median_tenure_weeks;
 
 printf FMTOUT "average time since update  : %.0f weeks\n", $avg_update_weeks;
 printf FMTOUT "median  time since update  : %.0f weeks\n", $median_update_weeks;
-
-print FMTOUT "\n";
-
-printf FMTOUT "joined during past week    : %2.0f%% (%4d of %4d)\n",
-    ((100.0 * $nweek) / $nlegit), $nweek, $nlegit;
-printf FMTOUT "joined during past month   : %2.0f%% (%4d of %4d)\n",
-    ((100.0 * $nmonth) / $nlegit), $nmonth, $nlegit;
-printf FMTOUT "joined during past 3 months: %2.0f%% (%4d of %4d)\n",
-    ((100.0 * $n3month) / $nlegit), $n3month, $nlegit;
-printf FMTOUT "entries never updated      : %.0f%% (%4d of %4d)\n",
-    ((100.0 * $num_never_updated) / $nlegit), $num_never_updated, $nlegit;
 
 print FMTOUT "\n------------------------------------------------------------------------\n";
 print FMTOUT &ctime(time);
