@@ -4,7 +4,7 @@
 #     FILE: mvhsaid.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: MVHS Alumni Internet Directory CGI interface
-#      $Id: mvhsaid,v 3.24 1998/10/13 21:06:26 mradwin Exp mradwin $
+#      $Id: mvhsaid,v 3.25 1998/10/13 23:16:33 mradwin Exp mradwin $
 #
 
 require 'aid_util.pl';
@@ -24,7 +24,7 @@ if (defined($ENV{'PATH_INFO'}) && $ENV{'PATH_INFO'} =~ m,^/vcard/,) {
     $in{'vcard'} =~ s,^/vcard/(\d+).*$,$1,;
 }
 
-$rcsid = '$Id: mvhsaid,v 3.24 1998/10/13 21:06:26 mradwin Exp mradwin $'; #'fnt
+$rcsid = '$Id: mvhsaid,v 3.25 1998/10/13 23:16:33 mradwin Exp mradwin $'; #'fnt
 
 # special flags: version, update, vcard, about
 #
@@ -292,8 +292,8 @@ the Directory.  Processing your submission can take up to 48 hours.</p>
 
 <p>Email will be sent to <code>$in{'email'}</code> confirming
 receipt of this submission when it it processed.
-See the <a href=\"" . &aid_config('master_path') . 
-"tech.html#submit\">submission tech note</a>
+See \"<a href=\"" . &aid_config('master_path') . 
+"faq.html#submit\">What happens when I submit my entry?</a>\"
 for behind-the-scenes details.</p>
 
 <p>You might also be interested in joining the 
