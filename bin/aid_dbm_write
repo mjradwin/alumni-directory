@@ -1,6 +1,6 @@
 #!/usr/bin/perl -w
 
-# $Id: aid_dbm_write,v 1.12 1999/02/27 01:32:25 mradwin Exp mradwin $
+# $Id: aid_dbm_write,v 1.13 1999/02/27 02:00:14 mradwin Exp mradwin $
 
 require 'aid_util.pl';
 require 'getopts.pl';
@@ -92,14 +92,14 @@ for (@db)
 }
 print STDERR "\n";
 
-print STDERR "finishing...";
-
+print STDERR "secondary keys...";
 $DB{'__alpha__'} = pack("n*", @alpha_ids);
 print STDERR ".";
 
 @class_ids = ();
 @years = sort keys %class_members;
 $DB{'__years__'} = pack("n*",grep(/\d+/,@years));
+print STDERR ".";
 
 foreach $ykey (@years)
 {
@@ -107,10 +107,11 @@ foreach $ykey (@years)
     $DB{"__${ykey}__"} = pack("n*", @alpha_ids);
     $DB{"__t_${ykey}__"} = pack("N", $class_latest{$ykey});
     push(@class_ids, @alpha_ids);
+    print STDERR ".";
 }
-print STDERR ".";
 
 $DB{'__class__'} = pack("n*", @class_ids);
+print STDERR ".";
 
 # now do years, but only for awalt
 @years = sort keys %awalt;
@@ -118,13 +119,20 @@ $DB{'__awalt_years__'} = pack("n*",grep(/\d+/,@years));
 foreach $ykey (@years)
 {
     $DB{"__awalt_${ykey}__"} = pack("n*", split(/ /, $awalt{$ykey}));
+    print STDERR ".";
 }
-print STDERR ".";
+print STDERR "\n";
+
+print STDERR "finishing...";
 
 $DB{'__t__'} = pack("N", $latest);
+print STDERR ".";
 $DB{'__t_www__'} = pack("N", $latest_www);
+print STDERR ".";
 $DB{'__t_awalt__'} = pack("N", $latest_awalt);
+print STDERR ".";
 $DB{'__t_goner__'} = pack("N", $latest_goner);
+print STDERR ".";
 
 dbmclose(DB);
 
