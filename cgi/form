@@ -4,7 +4,7 @@
 #     FILE: mvhsaid.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: MVHS Alumni Internet Directory CGI interface
-#      $Id: mvhsaid,v 1.24 1997/08/26 00:24:23 mjr Exp mjr $
+#      $Id: mvhsaid,v 1.25 1997/08/26 00:55:04 mjr Exp mjr $
 #
 
 require 'mv_util.pl';
@@ -22,7 +22,7 @@ $dbfile = &mv_config('wwwdir') . "mvhs.adr";
 if (defined($in{'version'})) {
     select(STDOUT);  $| = 1;
     print "Content-type: text/plain\n\n";
-    print '$Id: mvhsaid,v 1.24 1997/08/26 00:24:23 mjr Exp mjr $', "\n";
+    print '$Id: mvhsaid,v 1.25 1997/08/26 00:55:04 mjr Exp mjr $', "\n";
     exit(0);
 }
 
@@ -47,7 +47,7 @@ if ($in{'vcard'} =~ /^\d+$/) {
     if (defined($db[$in{'vcard'}])) {
 	&send_vcard($db[$in{'vcard'}]);
     } else {
-	&send_upd_real(";-1;2;;;;MVHS;;;",0,0);
+	&send_blank_submit;
     }
     exit(0);
 }
@@ -59,7 +59,7 @@ if ($in{'about'} =~ /^\d+$/) {
     if (defined($db[$in{'about'}])) {
 	&send_about($db[$in{'about'}]);
     } else {
-	&send_upd_real(";-1;2;;;;MVHS;;;",0,0);
+	&send_blank_submit;
     }
     exit(0);
 }
@@ -69,7 +69,7 @@ if ($in{'about'} =~ /^\d+$/) {
 foreach (@required_headers) {
     if (!defined($in{$_})) {
 	# wrong form
-	&send_upd_real(";-1;2;;;;MVHS;;;",0,0);
+	&send_blank_submit;
 	exit(0);
     }
 }
@@ -133,6 +133,7 @@ This was submitted to the MVHS address database:
 $time;$in{'id'};$in{'request'};$in{'last'};$in{'first'};$in{'married'};$in{'school'};$in{'grad'};$in{'mail'};$in{'homepage'};$in{'location'}
 
 The kind soul who submitted it was using the web from $ENV{'REMOTE_HOST'}
+Their browser is $ENV{'HTTP_USER_AGENT'}
 
 Love,
 the mvhsaid cgi-bin script
@@ -170,6 +171,10 @@ sub mv_alpha_db {
 
     @alpha = @db[sort bydatakeys $[..$#db];
     return @alpha;
+}
+
+sub send_blank_submit {
+    &send_upd_real(";-1;2;;;;MVHS;;;",0,0);
 }
 
 sub send_upd_real {
