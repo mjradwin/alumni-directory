@@ -2,36 +2,54 @@
 #     FILE: Makefile
 #   AUTHOR: Michael J. Radwin
 #    DESCR: Makefile for building the Alumni Internet Directory
-#      $Id: Makefile,v 5.29 2001/06/18 16:59:57 mradwin Exp mradwin $
+#      $Id: Makefile,v 1.4 2003/10/30 07:31:11 mradwin Exp mradwin $
 #
-#   Copyright (c) 1995-1999  Michael John Radwin
+# Copyright (c) 2003  Michael J. Radwin.
+# All rights reserved.
 #
-#   This program is free software; you can redistribute it and/or modify
-#   it under the terms of the GNU General Public License as published by
-#   the Free Software Foundation; either version 2 of the License, or
-#   (at your option) any later version.
+# Redistribution and use in source and binary forms, with or
+# without modification, are permitted provided that the following
+# conditions are met:
 #
-#   This program is distributed in the hope that it will be useful,
-#   but WITHOUT ANY WARRANTY; without even the implied warranty of
-#   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-#   GNU General Public License for more details.
+#  * Redistributions of source code must retain the above
+#    copyright notice, this list of conditions and the following
+#    disclaimer.
 #
-#   You should have received a copy of the GNU General Public License
-#   along with this program; if not, write to the Free Software
-#   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+#  * Redistributions in binary form must reproduce the above
+#    copyright notice, this list of conditions and the following
+#    disclaimer in the documentation and/or other materials
+#    provided with the distribution. 
 #
+#  * Neither the name of the High School Alumni Internet Directory
+#    nor the names of its contributors may be used to endorse or
+#    promote products derived from this software without specific
+#    prior written permission.
+#
+# THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND
+# CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES,
+# INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF
+# MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+# DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR
+# CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+# SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT
+# NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+# LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+# HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+# CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR
+# OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+# SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-SCHOOL=awalt
-WWWROOT=/home/web/radwin.org/docs
+SCHOOL=generic
+WWWROOT=$(HOME)/public_html
 WWWDIR=$(WWWROOT)/$(SCHOOL)
 CGIDIR=$(WWWROOT)/$(SCHOOL)/bin
-DATADIR=$(HOME)/$(SCHOOL)/data
-BINDIR=$(HOME)/$(SCHOOL)/bin
-CGISRC=$(HOME)/$(SCHOOL)/cgi
-AID_UTIL_PL=$(BINDIR)/aid_util.pl
-AID_SUBMIT_PL=$(BINDIR)/aid_submit.pl
+DATADIR=$(HOME)/alumni/$(SCHOOL)/data
+BINDIR=$(HOME)/alumni/$(SCHOOL)/bin
+CGISRC=$(HOME)/alumni/src/cgi
+AID_UTIL_PL=$(BINDIR)/aid_util.pm
+AID_SUBMIT_PL=$(BINDIR)/aid_submit.pm
 
-TAR_AIDDIR=$(SCHOOL)
+TAR_AIDDIR=alumni/src
 
 MKDIR=/bin/mkdir -p
 RM=/bin/rm -f
@@ -43,11 +61,10 @@ TARFILES= \
 	$(TAR_AIDDIR)/COPYING \
 	$(TAR_AIDDIR)/Makefile \
 	$(TAR_AIDDIR)/bin/aid_* \
-	$(TAR_AIDDIR)/bin/generic_config.pl \
-	$(TAR_AIDDIR)/bin/$(SCHOOL)_config.pl \
-	$(TAR_AIDDIR)/cgi/[a-z]* \
+	$(TAR_AIDDIR)/data/*.include \
 	$(TAR_AIDDIR)/data/*.dat \
-	$(TAR_AIDDIR)/data/*.include
+	$(TAR_AIDDIR)/bin/generic_config.pl \
+	$(TAR_AIDDIR)/cgi/[a-z]*
 
 SNAPSHOTFILES= $(TAR_AIDDIR)
 
@@ -56,8 +73,8 @@ all:	index submit \
 	recent multi_class multi_alpha \
 	pages goners download stats pine_book rss db_dump
 
-SYMLINKS=$(AID_SUBMIT_PL) $(AID_UTIL_PL) $(BINDIR)/aid_config.pl \
-	$(BINDIR)/$(SCHOOL)_config.pl
+SYMLINKS=$(AID_SUBMIT_PL) $(AID_UTIL_PL) \
+	$(BINDIR)/school_config.pl
 symlinks:
 	$(MKDIR) logs
 	$(MKDIR) $(WWWDIR)
@@ -81,7 +98,7 @@ install:
 	$(CP) $(SYMLINKS) \
 	      $(CGISRC)/form $(CGISRC)/search $(CGISRC)/alumni.txt \
 	      $(CGISRC)/vcard $(CGISRC)/about $(CGISRC)/yab \
-	      $(CGISRC)/go \
+	      $(CGISRC)/go $(CGISRC)/msg $(CGISRC)/remove $(CGISRC)/verify \
 	      $(CGIDIR)
 	$(CP) $(CGISRC)/default.css $(WWWDIR)
 	echo 'SetHandler cgi-script' > $(CGIDIR)/.htaccess
@@ -142,12 +159,8 @@ REUNIONS_TS=$(WWWDIR)/etc/.reunions.html
 reunions:	$(REUNIONS_TS)
 $(REUNIONS_TS):	$(DATADIR)/reunions.dat $(BINDIR)/aid_reunion_html \
 $(BINDIR)/aid_reunion_create
-	$(RM) $(DATADIR)/reunions.db
 	$(BINDIR)/aid_reunion_create \
-		$(DATADIR)/reunions.db $(DATADIR)/reunions.dat
-	$(RM) $(WWWDIR)/reunions.db
-	$(MV) $(DATADIR)/reunions.db $(WWWDIR)/reunions.db
-	chmod 0444 $(WWWDIR)/reunions.db
+		$(WWWDIR)/reunions.db $(DATADIR)/reunions.dat
 	$(MKDIR) $(WWWDIR)/etc
 	$(BINDIR)/aid_reunion_html $(WWWDIR)/reunions.db $(REUNIONS)
 
@@ -189,7 +202,7 @@ RSS=$(WWWDIR)/summary.rdf
 RSS_TS=$(WWWDIR)/.summary.rdf
 rss:	$(RSS_TS)
 $(RSS_TS):	$(BINDIR)/aid_rss_summary $(DBFILE)
-	$(BINDIR)/aid_rss_summary $(DBFILE) $(RSS)
+	$(BINDIR)/aid_rss_summary $(DBFILE) $(RSS) $(WWWDIR)/reunions.db
 
 SUBMIT=$(WWWDIR)/add/new.html
 SUBMIT_TS=$(WWWDIR)/add/.new.html
