@@ -4,7 +4,7 @@
 #     FILE: mvhsaid.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: Alumni Internet Directory CGI interface
-#      $Id: mvhsaid,v 3.56 1999/02/05 18:56:49 mradwin Exp mradwin $
+#      $Id: mvhsaid,v 3.57 1999/02/08 21:20:44 mradwin Exp mradwin $
 #
 
 require 'aid_util.pl';
@@ -22,7 +22,7 @@ if ($ENV{'SCRIPT_NAME'} =~ m,/nph-,)
 # configuration
 $mailprog = &aid_config('mailprog');
 $dbfile = &aid_config('wwwdir') . "master.adr";
-$rcsid = '$Id: mvhsaid,v 3.56 1999/02/05 18:56:49 mradwin Exp mradwin $'; #'fnt
+$rcsid = '$Id: mvhsaid,v 3.57 1999/02/08 21:20:44 mradwin Exp mradwin $'; #'fnt
 
 @required_headers = ('id', 'first', 'last', 'school', 'year', 'email');
 
@@ -228,11 +228,14 @@ $in{'www'} = '' if $in{'www'} eq 'http://';
 $in{'www'} = 'http://' . $in{'www'} if
     $in{'www'} ne '' && $in{'www'} !~ m,^http://,i;
 
+$in{'last'} =~ s/^$in{'first'}\s+//i;
+$in{'married'} =~ s/^$in{'first'}\s+//i;
+     
 $in{'married'} = '' if defined $in{'married'} &&
     ($in{'married'} =~ /\(?\s*same\s+as\s+last\s+name\s*\)?/i ||
      $in{'married'} =~ /\(?\s*same\s*\)?/i ||
      $in{'married'} eq $in{'last'});
-     
+
 # did they have non-blank entries for all the required fields?
 # did they check the "other" box for school, but not fill in any text?
 @blank_fields = ();
