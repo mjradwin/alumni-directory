@@ -1,6 +1,6 @@
 #!/usr/bin/perl -w
 
-# $Id: aid_edit_entry,v 1.7 1999/05/19 01:36:09 mradwin Exp mradwin $
+# $Id: aid_edit_entry,v 5.1 1999/05/31 21:20:48 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -75,7 +75,7 @@ $note_end_str = &aid_config('note_end_str');
 $tmpfile = '/tmp/aid_edit_entry.' . $$;
 
 open(TMPFILE,">$tmpfile") || die "$tmpfile: $!\n";
-print TMPFILE '# $Id: aid_edit_entry,v 1.7 1999/05/19 01:36:09 mradwin Exp mradwin $', "\n";
+print TMPFILE '# $Id: aid_edit_entry,v 5.1 1999/05/31 21:20:48 mradwin Exp mradwin $', "\n"; #'#
 print TMPFILE "# record last touched: ",
  (($rec{'f'} > $rec{'b'}) ? &ctime($rec{'f'}) : &ctime($rec{'b'}));
 
