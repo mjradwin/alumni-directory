@@ -2,11 +2,11 @@
 #     FILE: aid_util.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: perl library routines for the Alumni Internet Directory
-#      $Id: aid_util.pl,v 3.40 1998/09/03 02:55:36 mradwin Exp mradwin $
+#      $Id: aid_util.pl,v 3.41 1998/09/03 02:57:46 mradwin Exp mradwin $
 #
 
 $aid_util'rcsid =
- '$Id: aid_util.pl,v 3.40 1998/09/03 02:55:36 mradwin Exp mradwin $';
+ '$Id: aid_util.pl,v 3.41 1998/09/03 02:57:46 mradwin Exp mradwin $';
 
 # ----------------------------------------------------------------------
 # CONFIGURATION
@@ -63,6 +63,10 @@ $aid_util'rcsid =
      "Tech&nbsp;Notes,"     . $aid_util'config{'master_path'} . "tech.html",     #'#
      "Acceptable&nbsp;Use," . $aid_util'config{'master_path'} . "copyright.html", #'#
      );
+
+@aid_util'MoY = #'#
+    ('Jan','Feb','Mar','Apr','May','Jun',
+     'Jul','Aug','Sep','Oct','Nov','Dec');
 
 $aid_util'caldate = &aid_caldate(time); #'#
 
@@ -201,7 +205,7 @@ sub aid_caldate {
     local($i,$day,$month,$year);
 
     ($i,$i,$i,$day,$month,$year,$i,$i,$i) = localtime($time);
-    sprintf("%d/%02d/%02d", ($year+1900), ($month+1), $day);
+    sprintf("%02d-%s-%d", $day, $MoY[$month], ($year+1900));
 }
 
 # is the GMT less than one month ago?
@@ -765,14 +769,9 @@ sub aid_write_verbose_entry {
 	if $rec{'homepage'} ne '';
     print FMTOUT "<dt>Location: <strong>$rec{'location'}</strong></dt>\n"
 	if $rec{'location'} ne '';
-    print FMTOUT "<dt>Joined: ";
-    $date = &main'aid_caldate($rec{'created'}); #'#
+    print FMTOUT "<dt>Updated: ";
+    $date = &main'aid_caldate($rec{'time'}); #'#
     print FMTOUT "<strong>$date</strong></dt>\n";
-    if ($rec{'time'} != $rec{'created'}) {
-	print FMTOUT "<dt>Updated: ";
-        $date = &main'aid_caldate($rec{'time'}); #'#
-	print FMTOUT "<strong>$date</strong></dt>\n";
-    }
 
     if ($rec{'message'} ne '') {
 	print FMTOUT "<dt>What's New?</dt>\n";
