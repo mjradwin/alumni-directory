@@ -2,7 +2,7 @@
 #     FILE: aid_config.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: configuration variables for Alumni Internet Directory
-#      $Id: aid_config.pl,v 5.10 1999/06/28 23:36:24 mradwin Exp mradwin $
+#      $Id: aid_config.pl,v 5.11 1999/06/29 01:08:09 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -118,6 +118,7 @@ $aid_util'EPOCH       = 815130000; #'# Tue Oct 31 09:00:00 GMT 1995
     'eo',	'Previous E-mail Address',
     'a',	'[alias (a.k.a. nickname)]',
     'n',	'What\'s New? note',
+    'lm',	'[unix time - last time mailing was sent]',
     );
 
 @aid_edit_field_names = # in the order we'd like to edit them
@@ -128,7 +129,7 @@ $aid_util'EPOCH       = 815130000; #'# Tue Oct 31 09:00:00 GMT 1995
      'w', 'l',
      'yr',
      'v', 'q', 'r',
-     'c', 'u', 'f', 'b',
+     'c', 'u', 'f', 'b', 'lm',
      'eu', 'eo',
      'h',
     );
@@ -151,6 +152,7 @@ $aid_util'blank_entry{'v'}  = 1;       #'#
 $aid_util'blank_entry{'q'}  = 4;       #'#
 $aid_util'blank_entry{'r'}  = 1;       #'#
 $aid_util'blank_entry{'b'}  = 0;       #'#
+$aid_util'blank_entry{'lm'} = 0;       #'#
 $aid_util'blank_entry{'eu'} = 0;       #'#
 $aid_util'blank_entry{'n'}  = '';      #'#
 

@@ -4,7 +4,7 @@
 # does a short list, either compact or verbose, sorted by graduating
 # class with a jump bar
 #
-# $Id: aid_shortlist_html,v 5.4 1999/06/28 23:36:24 mradwin Exp mradwin $
+# $Id: aid_shortlist_html,v 5.5 1999/06/29 01:08:09 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -31,10 +31,11 @@ require 'aid_util.pl';
 require 'getopts.pl';
 
 $0 =~ s,.*/,,;  # basename
-$usage = "usage: $0 [-htv] {-w,-m <mos>} [-M <mos_descr>] infile.db outfile
+$usage = "usage: $0 [-htve] {-w,-m <mos>} [-M <mos_descr>] infile.db outfile
     -h        Display usage information.
     -t        Output text only.
     -v        Output verbose HTML.
+    -e        Recency relative to email update ('eu') (default 'u')
 
     -w        Alumni with web pages only.
     -m <mos>  Define 'recent' to mean <mos> months.
@@ -43,8 +44,9 @@ $usage = "usage: $0 [-htv] {-w,-m <mos>} [-M <mos_descr>] infile.db outfile
 Either -w or -m must be supplied.  They are mutually exclusive.
 ";
 
-&Getopts('htvwm:M:') || die "$usage\n";
+&Getopts('htvwm:M:e') || die "$usage\n";
 $opt_h && die "$usage\n";
+$opt_e = $opt_e;		# avoid warning
 $opt_h = $opt_h;		# avoid warning
 $opt_v = $opt_v;		# avoid warning
 
@@ -74,9 +76,15 @@ for (@class)
     next unless $rec{'v'};
     if ($opt_m)
     {
-	next unless &aid_is_new($rec{'u'}, $opt_m);
-#	next unless &aid_is_new($rec{'eu'}, $opt_m) ||
-#	    ($rec{'eu'} == 0 && &aid_is_new($rec{'u'}, $opt_m));
+	if ($opt_e)
+	{
+	    next unless &aid_is_new($rec{'eu'}, $opt_m) ||
+		($rec{'eu'} == 0 && &aid_is_new($rec{'u'}, $opt_m));
+	}
+	else
+	{
+	    next unless &aid_is_new($rec{'u'}, $opt_m);
+	}
     }
     $opt_w && next unless $rec{'w'} ne '';
 
