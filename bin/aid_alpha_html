@@ -2,7 +2,7 @@
 
 #
 # does the html version of the alphabetical address list
-# $Id: aid_alpha_html,v 3.12 1998/05/26 18:36:21 mradwin Exp mradwin $
+# $Id: aid_alpha_html,v 3.13 1998/05/27 21:38:52 mradwin Exp mradwin $
 #
 
 require 'aid_util.pl';
@@ -60,7 +60,7 @@ while(<DATA>) {
     }
 
     $fullname = &fullname(*rec);
-    ($affil,$len) = &affiliate(*rec,!$opt_t);
+    ($affil,$len) = &affiliate(*rec,0);
 
     print FMTOUT ' ';
     $opt_t || print FMTOUT "<a href=\"" . &aid_about_path(*rec) . "\">$info_gif</a>"; #'#

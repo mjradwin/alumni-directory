@@ -2,7 +2,7 @@
 
 #
 # does the html verbose pages
-# $Id: aid_alpha2_html,v 3.13 1998/05/26 18:36:21 mradwin Exp mradwin $
+# $Id: aid_alpha2_html,v 3.14 1998/05/27 21:38:52 mradwin Exp mradwin $
 #
 
 require 'aid_util.pl';
@@ -73,7 +73,7 @@ sub html_pre_entry {
     local($retval);
 
     $fullname = &fullname(*rec);
-    ($affil,$len) = &affiliate(*rec,$do_html_p);
+    ($affil,$len) = &affiliate(*rec,0);
     $needsanchor = ($do_html_p && (($a_name ne '') ||
 				   ($rec{'homepage'} ne ''))) ? 1 : 0;
     $retval = '';
