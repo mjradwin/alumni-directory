@@ -2,11 +2,11 @@
 #     FILE: aid_util.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: perl library routines for the Alumni Internet Directory
-#      $Id: aid_util.pl,v 1.80 1998/01/02 20:15:52 mjr Exp mjr $
+#      $Id: aid_util.pl,v 1.81 1998/01/02 20:41:51 mjr Exp mjr $
 #
 
 $aid_util'rcsid =
- '$Id: aid_util.pl,v 1.80 1998/01/02 20:15:52 mjr Exp mjr $';
+ '$Id: aid_util.pl,v 1.81 1998/01/02 20:41:51 mjr Exp mjr $';
 
 # ----------------------------------------------------------------------
 # CONFIGURATION
@@ -727,9 +727,9 @@ sub common_intro_para {
 
     local($[) = 0;
     local($new) = "<p>Any entries marked with\n" . $image_tag{'new'} .
-	"have been added to the Directory within the last month.\n";
+	" have been added to the Directory within the last month.\n";
     local($info) = "The " . $image_tag{'info'} .
-	"icon lets you get more detailed information about an alumnus.";
+	" icon lets you get more detailed information about an alumnus.";
     local($end) = "</p>\n\n";
 
     return $new . ($_[0] ? $info : '') . $end;
