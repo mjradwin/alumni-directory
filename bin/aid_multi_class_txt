@@ -1,0 +1,66 @@
+#!/usr/bin/perl -w
+
+# $Id$
+#
+#   Copyright (c) 1995-1999  Michael John Radwin
+#
+#   This program is free software; you can redistribute it and/or modify
+#   it under the terms of the GNU General Public License as published by
+#   the Free Software Foundation; either version 2 of the License, or
+#   (at your option) any later version.
+#
+#   This program is distributed in the hope that it will be useful,
+#   but WITHOUT ANY WARRANTY; without even the implied warranty of
+#   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#   GNU General Public License for more details.
+#
+#   You should have received a copy of the GNU General Public License
+#   along with this program; if not, write to the Free Software
+#   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+#
+
+require 'aid_util.pl';
+require 'getopts.pl';
+
+$0 =~ s,.*/,,;  # basename
+$usage = "usage: $0 [-hq] infile.db output-dir
+    -h        Display usage information.
+    -q        Quiet.
+";
+
+&Getopts('hq') || die "$usage\n";
+$opt_h && die "$usage\n";
+$ARGV[0] || die "$usage\n";
+$ARGV[1] || die "$usage\n";
+$opt_h = $opt_h;		# avoid warning
+$opt_q = $opt_q;		# avoid warning
+
+$dbmfile = shift;
+$dbmfile =~ s/\.db$//;
+die "$0: ${dbmfile}.db: $!\n" unless -r "${dbmfile}.db";
+
+dbmopen(%DB,$dbmfile,0644) || die "$0: ${dbmfile}.db: $!\n";
+
+die "no __years__ key!\n" unless defined $DB{'__years__'};
+@years = unpack("n*",$DB{'__years__'});
+push(@years, 'other');
+
+dbmclose(%DB);
+
+$output_dir = shift;
+die "$0: $output_dir: $!\n" unless -d $output_dir;
+
+$class_exe = &aid_config('aiddir') . 'bin/aid_class_html';
+die "$0: $class_exe: $!\n" unless -x $class_exe;
+
+foreach (@years)
+{
+    print "$class_exe -qtc $_ ${dbmfile}.db ${output_dir}/${_}.txt\n"
+	unless $opt_q;
+    system $class_exe,
+    	'-qtc', $_,
+    	$dbmfile . '.db',
+    	$output_dir . '/' . $_ . '.txt';
+}
+
+exit 0;
