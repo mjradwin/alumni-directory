@@ -18,8 +18,9 @@ open(FMTOUT,">$ARGV[1]") || die "Can't open $ARGV[1]: $!\n";
 print FMTOUT &common_html_hdr(-1, "Invalid&nbsp;Addresses");
 print FMTOUT "<p>The following addresses are invalid.  If you know a new email\n";
 print FMTOUT "address for anyone on this list, please <a href=\"add.html\">submit it</a>!</p>\n\n";
-print FMTOUT "<pre>Name                           Graduating Class/Affiliation\n";
-print FMTOUT "-------------------------------------------------------------------\n";
+print FMTOUT "<pre>";
+print FMTOUT "Name and Graduation Year\n";
+print FMTOUT "---------------------------------------------------------------------------\n";
 
 while(<MVHS>) {
     chop;
@@ -30,14 +31,20 @@ while(<MVHS>) {
     } else {
        $fullname = $last;
     }
-#    print FMTOUT '   ';
-    print FMTOUT "<a href=\"$homepage\">" if $homepage ne '';
+
+    if ($year =~ /^\d+$/) {
+	$affil  = "  '$year";
+	$affil .= " $school" 
+	    if $school ne 'MVHS' && $school ne '';
+    } else {
+	$affil  = "  [$school $year]";
+    }
+    $affil_tmp = $affil;
+    $affil_tmp =~ s/<[^>]+>//g;
+    $affil_len = length($affil_tmp);
+
     print FMTOUT $fullname;
-    print FMTOUT "</a>" if $homepage ne '';
-    print FMTOUT ' ' x (31 - length($fullname));
-    print FMTOUT $year;
-    print FMTOUT " $school" if $school ne 'MVHS' && $school ne '';
-#    print FMTOUT " <img alt=\"[new]\" WIDTH=28 HEIGHT=11 SRC=\"new.gif\">";
+    print FMTOUT $affil;
     print FMTOUT "\n";
 }
 

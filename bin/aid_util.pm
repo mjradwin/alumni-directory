@@ -265,7 +265,7 @@ sub common_html_hdr {
 <table border=0 cellpadding=8 cellspacing=0 width=\"100%\">
 <tr>
   <td bgcolor=\"#eeeecc\" align=left rowspan=2><font size=\"-1\"
-  face=\"Arial, Helvetica\">";
+  face=\"Arial, Helvetica, MS Sans Serif\">";
 
 #' (unconfuse da font-lock)
 
