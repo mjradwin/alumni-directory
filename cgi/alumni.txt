@@ -4,7 +4,7 @@
 #     FILE: alumni.txt.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: Address Book/Nicknames Downloading module
-#      $Id: form,v 3.109 1999/05/31 17:29:07 mradwin Exp $
+#      $Id: alumni.txt,v 1.1 1999/05/31 17:40:11 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -63,7 +63,7 @@ elsif (defined $in{'format'} && defined $in{'year'})
 }
 else
 {
-    print "Status: 404 Not Found\015\012";
+    print "Status: 400 Bad Request\015\012";
     &CgiError(&aid_config('short_school') . " Alumni: Bad Download Request",
 	      "The download request could not be processed.\n" .
 	      "Please <a href=\"" . &aid_config('master_path') .
