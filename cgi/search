@@ -4,7 +4,7 @@
 #     FILE: search.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: Alumni Internet Directory CGI search
-#      $Id: search,v 5.3 1999/06/01 21:27:00 mradwin Exp mradwin $
+#      $Id: search,v 5.4 1999/06/07 18:25:50 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -128,7 +128,7 @@ if ($#results == -1)
     print "<p>You might try broadening your search.  Try just the first\n";
     print "or last name, or search \"all years\" instead of a particular\n";
     print "graduating class.  Or, just browse the\n";
-    print "<a href=\"", &aid_config('master_path'), "alpha/a-index.html\">";
+    print "<a href=\"", &aid_config('master_path'), "alpha/\">";
     print "Alphabetical</a> or\n";
     print "<a href=\"", &aid_config('master_path'), "class/\">";
     print "Graduating Class</a>\nlistings.</p>\n\n";
