@@ -2,7 +2,7 @@
 
 #
 # does the html verbose pages
-# $Id: aid_multi_alpha_html,v 5.7 1999/06/11 00:42:21 mradwin Exp mradwin $
+# $Id: aid_multi_alpha_html,v 5.8 1999/06/11 16:23:29 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -152,16 +152,14 @@ sub html_pre_entry {
 # do the funky quick-jump bar
 sub alpha_jump_bar {
     local($regular) = @_;
-    local($initial,$retval);
+    local($i,$retval);
 
     $retval = '';
-    $initial = 'a';
-
-    foreach $initial (@initials)
+    foreach $i (@initials)
     {
-	$retval .= (($regular eq $initial) ?
-		    "\U${initial}\E\n" :
-		    "<a href=\"${initial}-index.html\">\U${initial}\E</a>\n");
+	$retval .= (($regular eq $i) ?
+		    "\U${i}\E\n" :
+		    "<a href=\"${i}-index.html\">\U${i}\E</a>\n");
     }
 
     $retval;
