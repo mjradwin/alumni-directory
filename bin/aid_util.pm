@@ -2,11 +2,11 @@
 #     FILE: aid_util.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: perl library routines for the Alumni Internet Directory
-#      $Id: aid_util.pl,v 4.14 1999/02/08 21:20:44 mradwin Exp mradwin $
+#      $Id: aid_util.pl,v 4.15 1999/02/09 00:07:44 mradwin Exp mradwin $
 #
 
 $aid_util'rcsid =
- '$Id: aid_util.pl,v 4.14 1999/02/08 21:20:44 mradwin Exp mradwin $';
+ '$Id: aid_util.pl,v 4.15 1999/02/09 00:07:44 mradwin Exp mradwin $';
 $aid_util'caldate = &aid_caldate(time); #'#
 
 # ----------------------------------------------------------------------
@@ -1360,6 +1360,70 @@ sub aid_http_date
 }
 
 
+sub aid_db_pack_rec
+{
+    local(*rec) = @_;
+
+    pack("C2N4",
+	 (($rec{'valid'} ? 1 : 0) | (($rec{'reunion'} ? 1 : 0) << 1)),
+	 $rec{'request'},
+	 $rec{'bounce'},
+	 $rec{'created'},
+	 $rec{'time'},
+	 $rec{'fresh'}
+	 ) .
+    join("\0",
+	 $rec{'last'},
+	 $rec{'married'},
+	 $rec{'first'},
+	 $rec{'school'},
+	 $rec{'year'},
+	 $rec{'email'},
+	 $rec{'www'},
+	 $rec{'location'},
+	 $rec{'inethost'},
+	 $rec{'alias'},
+	 $rec{'message'}
+	 );
+};
+
+
+sub aid_db_unpack_rec
+{
+    local($key,$val) = @_;
+    local(*rec,$masked);
+
+    %rec = ();
+    $rec{'id'} = $key;
+
+    (
+     $masked,
+     $rec{'request'},
+     $rec{'bounce'},
+     $rec{'created'},
+     $rec{'time'},
+     $rec{'fresh'}
+     ) = unpack("C2N4", $val);
+
+    $rec{'valid'}   = ( $masked       & 1) ? 1 : 0;
+    $rec{'reunion'} = (($masked >> 1) & 1) ? 1 : 0;
+
+    (
+     $rec{'last'},
+     $rec{'married'},
+     $rec{'first'},
+     $rec{'school'},
+     $rec{'year'},
+     $rec{'email'},
+     $rec{'www'},
+     $rec{'location'},
+     $rec{'inethost'},
+     $rec{'alias'}
+     ) = split(/\0/, substr($val, 18));
+
+    %rec;
+};
+
 # We get a whole bunch of warnings about "possible typo" when running
 # with the -w switch.  Touch them all once to get rid of the warnings.
 # This is ugly and I hate it.
@@ -1390,6 +1454,8 @@ if ($^W)
 	&message_footer();
 	&sendmail();
 	&submit_body();
+	&aid_db_unpack_rec();
+	&aid_db_pack_rec();
     }
 }
 

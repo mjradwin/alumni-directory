@@ -16,30 +16,7 @@ if ($ENV{'PATH_INFO'} =~ m,/(\d+)\.vcf,i)
     $val = $DB{$1};
     dbmclose(DB);
 
-    %rec = ();
-    $rec{'id'} = $1;
-
-    (
-     $rec{'valid'},
-     $rec{'request'},
-     $rec{'reunion'},
-     $rec{'bounce'},
-     $rec{'created'},
-     $rec{'time'},
-     $rec{'fresh'}
-     ) = unpack("C3N4", substr($val, 0, 19));
-
-    (
-     $rec{'last'},
-     $rec{'married'},
-     $rec{'first'},
-     $rec{'school'},
-     $rec{'year'},
-     $rec{'email'},
-     $rec{'www'},
-     $rec{'location'},
-     $rec{'inethost'}
-     ) = split(/\0/, substr($val, 19));
+    %rec = &aid_db_unpack_rec($1,$val);
 
     print "Last-Modified: ", &aid_http_date($rec{'time'}), "\015\012";
     print "Content-Type: text/x-vcard\015\012\015\012";
