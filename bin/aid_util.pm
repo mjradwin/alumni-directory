@@ -2,11 +2,11 @@
 #     FILE: aid_util.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: perl library routines for the Alumni Internet Directory
-#      $Id: aid_util.pl,v 4.69 1999/03/23 16:46:47 mradwin Exp mradwin $
+#      $Id: aid_util.pl,v 4.70 1999/03/23 18:07:02 mradwin Exp mradwin $
 #
 
 $aid_util'rcsid =
- '$Id: aid_util.pl,v 4.69 1999/03/23 16:46:47 mradwin Exp mradwin $';
+ '$Id: aid_util.pl,v 4.70 1999/03/23 18:07:02 mradwin Exp mradwin $';
 
 # ----------------------------------------------------------------------
 # CONFIGURATION
@@ -20,7 +20,7 @@ require 'aid_config.pl';
 
 @aid_util'req_descr_long =   #'#
     (
-     'No e-mail except for yearly address verification.',
+     'No e-mail except for bi-yearly address verification.',
      'All alumni, sorted by name. [~ 65 kbytes]',
      'All alumni, sorted by graduating class. [~ 65 kbytes]',
      'Only new and changed alumni entries. [~ 15 kbytes]',
@@ -239,13 +239,13 @@ sub is_new {
 
 
 # is the GMT more than one year ago?
-# 31536000 = 365 days * 24 hrs * 60 mins * 60 secs
+# 15724800 = 182 days * 24 hrs * 60 mins * 60 secs
 sub is_old {
     package aid_util;
 
     local($[) = 0;
 
-    (((time - $_[0]) >= 31536000) ? 1 : 0);
+    (((time - $_[0]) >= 15724800) ? 1 : 0);
 }
 
 sub aid_is_new_html

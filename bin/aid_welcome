@@ -2,7 +2,7 @@
 
 #
 # mails a welcome or update note to everyone in targets.adr
-# $Id: aid_welcome,v 3.33 1999/03/10 18:41:53 mradwin Exp mradwin $
+# $Id: aid_welcome,v 3.34 1999/03/15 01:42:19 mradwin Exp mradwin $
 #
 
 require 'aid_util.pl';
@@ -32,12 +32,11 @@ $directory_name = &aid_config('short_school') . ' Alumni Internet Directory';
      'intro', 
 
 "
-You were sent this address verification message
-because it has been at least one year since we last
-confirmed your Directory listing.  Please make sure
-your infromation below is still current.  If everything
-you see below is correct, NO ACTION IS REQUIRED ON YOUR
-PART.
+You were sent this address verification message because
+it has been 6 months since we last confirmed your
+Directory listing.  Please make sure your infromation
+below is still current.  If everything you see below is
+correct, NO ACTION IS REQUIRED ON YOUR PART.
 ",
 
      'textfile', '',
@@ -208,7 +207,7 @@ sub message_body {
     local($denied) = $rec{'request'} == 0 ?
 	"
 Since you asked not to receive quarterly Directory
-digests via e-mail, you will only receive yearly
+digests via e-mail, you will only receive bi-yearly
 address verification messages.
 " : '';
     local($srv_prefix) = "http://" . &aid_config('master_srv');
