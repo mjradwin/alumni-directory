@@ -2,7 +2,7 @@
 
 #
 # does the html multi_class pages
-# $Id: aid_multi_class_html,v 5.29 2003/04/22 00:47:29 mradwin Exp mradwin $
+# $Id: aid_multi_class_html,v 5.30 2003/04/22 00:53:50 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -25,7 +25,8 @@ $dirname = $0;
 $dirname =~ s,/[^/]+$,,;
 unshift(@INC, $dirname);
 
-use DB_File;
+use lib "/pub/m/r/mradwin/private/lib/perl5/site_perl";
+use DB_File::Lock;
 use Time::Local;
 use POSIX qw(strftime);
 
@@ -47,14 +48,14 @@ $opt_h = $opt_h;		# avoid warning
 @incremental = ($opt_i ? split(/[,\s]+/, $opt_i) : ());
 
 $dbmfile = shift;
-tie(%DB, 'DB_File', $dbmfile, O_RDONLY, 0444, $DB_File::DB_HASH)
+tie(%DB, 'DB_File::Lock', $dbmfile, O_RDONLY, 0444, $DB_HASH, 'read')
     or die "$dbmfile: $!\n";
 
 my(%RDB);
 if ($ARGV[0])
 {
     $r_dbmfile = shift;
-    tie(%RDB, 'DB_File', $r_dbmfile, O_RDONLY, 0444, $DB_File::DB_HASH)
+    tie(%RDB, 'DB_File::Lock', $r_dbmfile, O_RDONLY, 0444, $DB_HASH, 'read')
 	or die "$r_dbmfile: $!\n";
 }
 

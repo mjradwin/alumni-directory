@@ -1,6 +1,6 @@
 #!/usr/local/bin/perl -w
 
-# $Id: aid_multi_class_txt,v 5.10 2001/09/16 16:57:51 mradwin Exp mradwin $
+# $Id: aid_multi_class_txt,v 5.11 2002/03/07 23:29:39 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -23,7 +23,8 @@ $dirname = $0;
 $dirname =~ s,/[^/]+$,,;
 unshift(@INC, $dirname);
 
-use DB_File;
+use lib "/pub/m/r/mradwin/private/lib/perl5/site_perl";
+use DB_File::Lock;
 
 require 'aid_util.pl';
 use Getopt::Std;
@@ -42,7 +43,7 @@ $opt_h = $opt_h;		# avoid warning
 $opt_q = $opt_q;		# avoid warning
 
 $dbmfile = shift;
-tie(%DB, 'DB_File', $dbmfile, O_RDONLY, 0444, $DB_File::DB_HASH)
+tie(%DB, 'DB_File::Lock', $dbmfile, O_RDONLY, 0444, $DB_HASH, 'read')
     or die "$dbmfile: $!\n";
 
 die "corrupt/missing _years key!"

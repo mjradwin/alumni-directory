@@ -4,7 +4,7 @@
 #     FILE: aid_rss_summary.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: creates an RDF Site Summary for the Directory
-#      $Id: aid_rss_summary,v 1.17 2003/02/03 17:50:20 mradwin Exp mradwin $
+#      $Id: aid_rss_summary,v 1.18 2003/04/22 00:47:29 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -27,7 +27,8 @@ $dirname = $0;
 $dirname =~ s,/[^/]+$,,;
 unshift(@INC, $dirname);
 
-use DB_File;
+use lib "/pub/m/r/mradwin/private/lib/perl5/site_perl";
+use DB_File::Lock;
 
 require 'aid_util.pl';
 require 'ctime.pl';
@@ -46,7 +47,7 @@ $opt_h = $opt_h;		# avoid warning
 
 my $dbmfile = shift;
 my %DB;
-tie(%DB, 'DB_File', $dbmfile, O_RDONLY, 0444, $DB_File::DB_HASH)
+tie(%DB, 'DB_File::Lock', $dbmfile, O_RDONLY, 0444, $DB_HASH, 'read')
     or die "$dbmfile: $!\n";
 
 die "corrupt/missing _t key!" unless defined $DB{'_t'} && $DB{'_t'} ne '';

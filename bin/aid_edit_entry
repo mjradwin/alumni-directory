@@ -1,6 +1,6 @@
 #!/usr/local/bin/perl -w
 
-# $Id: aid_edit_entry,v 5.19 2002/03/07 23:29:39 mradwin Exp mradwin $
+# $Id: aid_edit_entry,v 5.20 2003/03/14 23:30:26 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -23,7 +23,8 @@ $dirname = $0;
 $dirname =~ s,/[^/]+$,,;
 unshift(@INC, $dirname);
 
-use DB_File;
+use lib "/pub/m/r/mradwin/private/lib/perl5/site_perl";
+use DB_File::Lock;
 
 require 'aid_util.pl';
 use Getopt::Std;
@@ -48,11 +49,11 @@ defined $ARGV[1] || die "$usage\n";
 $dbmfile = shift;
 die "$0: $dbmfile: $!\n" unless -r $dbmfile;
 if (-w $dbmfile) {
-    $db = tie(%DB, 'DB_File', $dbmfile, O_RDWR|O_CREAT, 0644, $DB_File::DB_HASH)
+    tie(%DB, 'DB_File::Lock', $dbmfile, O_CREAT|O_RDWR, 0644, $DB_HASH, 'write')
 	or die "$dbmfile: $!\n";
     $mode = 0644;
 } else {
-    $db = tie(%DB, 'DB_File', $dbmfile, O_RDONLY, 0444, $DB_File::DB_HASH)
+    tie(%DB, 'DB_File::Lock', $dbmfile, O_RDONLY, 0444, $DB_HASH, 'read')
 	or die "$dbmfile: $!\n";
     $mode = 0444;
 }
@@ -104,7 +105,7 @@ $note_end_str = '_AID_END_NOTE_';
 $tmpfile = '/tmp/aid_edit_entry.' . $$;
 
 open(TMPFILE,">$tmpfile") || die "$tmpfile: $!\n";
-print TMPFILE '# $Id: aid_edit_entry,v 5.19 2002/03/07 23:29:39 mradwin Exp mradwin $', "\n";
+print TMPFILE '# $Id: aid_edit_entry,v 5.20 2003/03/14 23:30:26 mradwin Exp mradwin $', "\n";
 print TMPFILE "# record last touched: ",
  (($rec{'f'} > $rec{'b'}) ? &ctime($rec{'f'}) : &ctime($rec{'b'}));
 
@@ -212,7 +213,6 @@ elsif ($changed == 1)
     }
 
     my @diffs = &aid_rebuild_secondary_keys(\%DB,0);
-    $db->sync;
 
     if ($opt_d)
     {
@@ -225,7 +225,6 @@ elsif ($changed == 1)
     warn "$0: update successful\n";
 }
 
-undef $db;
 untie(%DB);
 exit(0);
 

@@ -1,6 +1,6 @@
 #!/usr/local/bin/perl -w
 
-# $Id: aid_dbm_rebuild,v 1.7 2003/02/16 18:43:10 mradwin Exp mradwin $
+# $Id: aid_dbm_rebuild,v 1.8 2003/03/14 23:30:26 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -23,7 +23,8 @@ $dirname = $0;
 $dirname =~ s,/[^/]+$,,;
 unshift(@INC, $dirname);
 
-use DB_File;
+use lib "/pub/m/r/mradwin/private/lib/perl5/site_perl";
+use DB_File::Lock;
 
 require 'aid_util.pl';
 use Getopt::Std;
@@ -41,11 +42,11 @@ defined $ARGV[0] || die "$usage\n";
 defined $ARGV[1] || die "$usage\n";
 
 $in_dbmfile = shift;
-tie(%OLDDB, 'DB_File', $in_dbmfile, O_RDONLY, 0444, $DB_File::DB_HASH)
+tie(%OLDDB, 'DB_File::Lock', $in_dbmfile, O_RDONLY, 0444, $DB_HASH, 'read')
     or die "$in_dbmfile: $!\n";
 
 $dbmfile = shift;
-$db = tie(%DB, 'DB_File', $dbmfile, O_RDWR|O_CREAT, 0644, $DB_File::DB_HASH)
+tie(%DB, 'DB_File::Lock', $dbmfile, O_CREAT|O_RDWR, 0644, $DB_HASH, 'write')
     or die "$dbmfile: $!\n";
 
 my(%aliases);
@@ -83,9 +84,7 @@ while (($key,$val) = each(%OLDDB))
 untie(%OLDDB);
 
 &aid_rebuild_secondary_keys(\%DB,$opt_q,0,0);
-$db->sync;
 
-undef $db;
 untie(%DB);
 
 print STDOUT "$0: build successful\n" unless $opt_q;
