@@ -4,7 +4,7 @@
 # does a short list, either compact or verbose, sorted by graduating
 # class with a jump bar
 #
-# $Id: aid_shortlist_html,v 1.1 1998/10/17 20:54:09 mradwin Exp mradwin $
+# $Id: aid_shortlist_html,v 1.2 1998/11/02 21:43:49 mradwin Exp mradwin $
 #
 
 require 'aid_util.pl';
@@ -108,7 +108,7 @@ if (!$opt_v) {
 
 	if ($prev ne $rec{'year'} && $prev ne 'other') {
 	    $prev = ($rec{'year'} =~ /^\d+$/) ? $rec{'year'} : 'other';
-	    print FMTOUT "<a name=\"grad${prev}\"> </a>\n";
+	    print FMTOUT "<a name=\"grad${prev}\">&nbsp;</a>\n";
 	}
 
 	print FMTOUT &aid_verbose_entry(*rec,1,1);
