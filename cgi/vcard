@@ -4,7 +4,7 @@
 #     FILE: vcard.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: Alumni Internet Directory CGI vCard generation
-#      $Id: vcard,v 1.12 1999/05/31 19:16:05 mradwin Exp mradwin $
+#      $Id: vcard,v 5.1 1999/05/31 21:20:15 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -29,7 +29,8 @@ require 'aid_util.pl';
 $ENV{'PATH_INFO'} =~ s/\+/ /g;
 $ENV{'PATH_INFO'} =~ s/%([A-Fa-f0-9]{2})/pack("c",hex($1))/ge;
 
-if ($ENV{'PATH_INFO'} =~ m,/(\d+)\.vcf,i)
+if ($ENV{'PATH_INFO'} =~ m,/(\d+)\.vcf,i ||
+    $ENV{'PATH_INFO'} =~ m,/(\d+)/[\d\w_-]+\.vcf,i)
 {
     $id = $1;
 
