@@ -2,7 +2,7 @@
 #     FILE: Makefile
 #   AUTHOR: Michael J. Radwin
 #    DESCR: Makefile for building the Alumni Internet Directory
-#      $Id: Makefile,v 5.11 1999/06/11 16:24:44 mradwin Exp mradwin $
+#      $Id: Makefile,v 5.12 1999/06/11 20:14:53 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -99,7 +99,7 @@ GONERS=$(WWWDIR)/invalid.html
 GONERS_TS=$(WWWDIR)/.invalid.html
 goners:	$(GONERS_TS)
 $(GONERS_TS):	$(DBFILE) $(BINDIR)/aid_goners_html
-	$(BINDIR)/aid_goners_html $(DBFILE) $(GONERS)
+	$(BINDIR)/aid_goners_html -i "$(MOD_KEYS)" $(DBFILE) $(GONERS)
 
 PAGES=$(WWWDIR)/pages.html
 PAGES_TS=$(WWWDIR)/.pages.html
