@@ -2,7 +2,7 @@
 
 #
 # mails a welcome, update, confirm, or massmail message to members
-# $Id: aid_welcome,v 5.1 1999/05/31 21:20:48 mradwin Exp mradwin $
+# $Id: aid_welcome,v 5.2 1999/05/31 21:52:48 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -49,16 +49,21 @@ $directory_name = &aid_config('short_school') . ' Alumni Internet Directory';
 
 %confirm_parameters = 
     (
-     'subject',  "Confirming your $directory_name listing",
+     'subject',  "$directory_name",
      'log',      'confirm',
      'intro', 
 
 "
-You were sent this address verification message because
-it has been 6 months since we last confirmed your
-Directory listing.  Please make sure your infromation
-below is still current.  If everything you see below is
-correct, NO ACTION IS REQUIRED ON YOUR PART.
+I'm happy to announce that Awalt High School alumni now
+have their own Internet Directory!  Previously, Awalt
+alumni shared the Mountain View High School directory.
+
+Your listing has been moved from the MVHS directory to
+the new Awalt directory.  There's no need to re-enter
+your contact information to be listed on the new site.
+
+If everything you see below is correct, NO ACTION IS
+REQUIRED ON YOUR PART.
 ",
 
      'textfile', '',
@@ -186,12 +191,6 @@ if ($opt_a)
 	    next unless $rec{'v'};
 	    next if $opt_m && $rec{'q'} != $opt_r;
 
-	    if ($opt_c)
-	    {
-		next unless $rec{'q'} == 0;
-		next unless &aid_is_old($rec{'f'});
-	    }
-
 	    &mail_user(*rec);
 	    sleep $params{'sleep'} if $params{'sleep'} > 0;
 	}
@@ -298,7 +297,7 @@ date, please update your listing online at:
 
   " .
 
-$srv_prefix . &aid_config('go_cgi') . "?upd=$rec{'id'}
+$srv_prefix . &aid_config('go_cgi') . "/$rec{'id'}
 
 If you don't have web access, e-mail me corrections.
 If you have received this e-mail in error, or you do
