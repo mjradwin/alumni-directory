@@ -2,7 +2,7 @@
 #     FILE: mv_util.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: perl library routines for the MVHS Alumni Internet Directory
-#      $Id: mv_util.pl,v 1.47 1997/10/16 21:21:24 mjr Exp mjr $
+#      $Id: mv_util.pl,v 1.48 1997/10/16 21:24:03 mjr Exp mjr $
 #
 
 CONFIG: {
@@ -246,12 +246,14 @@ sub submit_body {
 	$tableh =
 	    &tableheader("Add a Listing to the Directory", 1, "ffff99", 1);
 
-	$tableh .= "\n<p>Thanks for adding a name to the MVHS Alumni Internet
-Directory!  To update your entry, please see the <a
-href=\"" . $config{'cgi_path'} . "?update\">update page</a>.  To add a new
-entry, please enter the following information and hit the
-<strong>Submit</strong> button.
-Your submission will be processed in a day or so.</p>
+	$tableh .= "
+<p>Thanks for adding a name to the MVHS Alumni Internet Directory!  If
+you'd like to update your existing entry, please see the 
+<a href=\"" . $config{'cgi_path'} . "?update\">update page</a>.
+
+To add a new entry, please enter the following information and hit the
+<strong>Submit</strong> button.  Your submission will be processed in a
+day or so.</p>
 
 <p>Fields marked with a $star are required.
 All other fields are optional.";
@@ -408,7 +410,7 @@ sub about_text {
 
     $do_vcard_p = 0 unless defined($do_vcard_p);
 
-    $retval .= "<pre>\n" if $do_html_p;
+    $retval .= "<center><table border=0 cellpadding=6><tr><td bgcolor=\"#ffffcc\"><pre>\n\n" if $do_html_p;
     $retval .= "First Name         : ";
     $retval .= ($first eq '') ? "\n" : 
 	((($do_html_p) ? "<strong>" : "") .
@@ -485,7 +487,7 @@ sub about_text {
     }
 
 
-    $retval .= "</pre>\n" if $do_html_p;
+    $retval .= "</pre></td></tr></table></center>\n" if $do_html_p;
 
     if ($do_html_p && $time ne '') {
 	$retval .= &'modify_html($id,&'inorder_fullname($first,$last,$married));
