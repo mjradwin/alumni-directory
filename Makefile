@@ -2,7 +2,7 @@
 #     FILE: Makefile
 #   AUTHOR: Michael J. Radwin
 #    DESCR: Makefile for building the Alumni Internet Directory
-#      $Id: Makefile,v 3.50 1999/02/16 17:58:39 mradwin Exp mradwin $
+#      $Id: Makefile,v 3.51 1999/02/16 19:18:25 mradwin Exp mradwin $
 #
 
 WWWROOT=/home/web/radwin.org
@@ -202,7 +202,7 @@ alpha.txt:	$(DBFILE) $(BIN_ALPHA)
 	$(BIN_ALPHA) -t $(DBFILE) alpha.txt
 
 class.txt:	$(ADR_CLASS) $(BIN_CLASS)
-	$(BIN_CLASS) -t $(ADR_CLASS) class.txt
+	$(BIN_CLASS) -t $(DBFILE) class.txt
 
 recent.txt:	$(ADR_CLASS) $(BIN_RECENT)
 	$(BIN_RECENT) -m3 -t $(ADR_CLASS) recent.txt
