@@ -2,11 +2,11 @@
 #     FILE: aid_util.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: perl library routines for the Alumni Internet Directory
-#      $Id: aid_util.pl,v 3.89 1998/12/28 17:19:49 mradwin Exp mradwin $
+#      $Id: aid_util.pl,v 3.90 1998/12/31 19:19:59 mradwin Exp mradwin $
 #
 
 $aid_util'rcsid =
- '$Id: aid_util.pl,v 3.89 1998/12/28 17:19:49 mradwin Exp mradwin $';
+ '$Id: aid_util.pl,v 3.90 1998/12/31 19:19:59 mradwin Exp mradwin $';
 
 # ----------------------------------------------------------------------
 # CONFIGURATION
@@ -1110,7 +1110,7 @@ sub common_html_ftr {
 #    $ftr .= "    </td>\n  </tr>\n</table>\n";
 
     $ftr .= "\n<br><font size=\"-1\"><a href=\"" . $copyright . "\">" .
-	"Copyright\n&copy; 1998 " . $config{'admin_name'} . "</a></font>\n\n" .
+	"Copyright\n&copy; 1999 " . $config{'admin_name'} . "</a></font>\n\n" .
 	"<!-- end common_html_ftr -->\n\n</body>\n</html>\n";
 
     $ftr;
