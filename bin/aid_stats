@@ -1,6 +1,6 @@
 #!/usr/local/bin/perl -w
 
-# $Id: aid_stats,v 5.16 2001/09/16 16:57:51 mradwin Exp mradwin $
+# $Id: aid_stats,v 5.17 2002/03/07 23:29:39 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -136,12 +136,12 @@ else
 
 printf FMTOUT "      %4d  total entries in the Directory\n",
     $ntotal;
-printf FMTOUT "%3.0f%% (%4d) have valid   e-mail address\n",
-    ((100 * $nlegit) / $ntotal), $nlegit;
-printf FMTOUT "%3.0f%% (%4d) have valid   e-mail address but bounced recently\n",
+printf FMTOUT "%3.0f%% (%4d) have valid e-mail address (no bounces)\n",
+    ((100 * $nvalid) / $ntotal), $nvalid;
+printf FMTOUT "%3.0f%% (%4d) have possibly valid e-mail address (bounced recently)\n",
     ((100 * $ndubious) / $ntotal), $ndubious;
 
-printf FMTOUT "%3.0f%% (%4d) have invalid e-mail address\n",
+printf FMTOUT "%3.0f%% (%4d) have invalid e-mail address (too many bounces)\n",
     ((100 * ($ntotal - $nlegit)) / $ntotal), ($ntotal - $nlegit);
 
 print FMTOUT "\n";
