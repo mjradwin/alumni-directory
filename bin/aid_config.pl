@@ -2,7 +2,7 @@
 #     FILE: aid_config.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: configuration variables for Alumni Internet Directory
-#      $Id: aid_config.pl,v 1.30 1999/04/15 21:11:50 mradwin Exp mradwin $
+#      $Id: aid_config.pl,v 1.31 1999/04/30 18:24:50 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -22,7 +22,7 @@
 #
 
 $aid_util'rcsid =
- '$Id: aid_config.pl,v 1.30 1999/04/15 21:11:50 mradwin Exp mradwin $';
+ '$Id: aid_config.pl,v 1.31 1999/04/30 18:24:50 mradwin Exp mradwin $';
 
 # radwin.org (FreeBSD 2.2.2) configuration
 %aid_util'config =   #'#
@@ -266,20 +266,20 @@ $aid_util'blank_entry{'s'}  = $aid_util'school_default;
 
 %aid_util'image_tag = #'#
     (
-    'new',
-    "<strong class=\"newupd\">*NEW*</strong>",
+     'new',
+     "<strong class=\"y\">*NEW*</strong>",
 
-    'new_anchored',
-    "<strong class=\"newupd\">*NEW*</strong>",
+     'new_anchored',
+     "<strong class=\"y\">*NEW*</strong>",
 
-    'updated',
-    "<strong class=\"newupd\">*UPDATED*</strong>",
+     'updated',
+     "<strong class=\"y\">*UPDATED*</strong>",
 
      'vcard',
      'View vCard',
 
      'info',
-     "<strong class=\"newupd\">[i]</strong>",
+     "<strong class=\"y\">[i]</strong>",
 
      'blank',
      "<strong>&nbsp;&nbsp;&nbsp;</strong>",
