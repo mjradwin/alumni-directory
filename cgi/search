@@ -74,7 +74,7 @@ $query =~ s/\bor\b//ig;
 foreach (@alpha_ids)
 {
     %rec = &aid_db_unpack_rec($_,$DB{$_});
-    $fullname = &inorder_fullname(*rec) . $rec{'email'};
+    $fullname = &aid_inorder_fullname(*rec) . $rec{'email'};
     $key = "\L$rec{'last'},$rec{'first'},$rec{'married'}\E,$rec{'id'}";
 
     if (defined $in{'y'} && $in{'y'} ne '')
@@ -101,7 +101,7 @@ print "Content-Type: text/html\015\012\015\012";
 undef %results;
 if ($#results == -1)
 {
-    print &common_html_hdr(6, 'No matches', 1);
+    print &aid_common_html_hdr(6, 'No matches', 1);
     print "<p>Sorry, no matches were found containing\n";
     print "<strong>$in{'q'}</strong>";
     print "\nin <strong>Class of $in{'y'}</strong>"
@@ -115,7 +115,7 @@ if ($#results == -1)
     print "etc/faq.html#incomplete\">Frequently Asked Questions</a>.</p>\n";
 
     &print_search_form($in{'q'},$in{'y'});
-    print &common_html_ftr(6);
+    print &aid_common_html_ftr(6);
 
     dbmclose(DB);
     close(STDOUT);
@@ -125,11 +125,11 @@ else
 {
     if ($#results == 0)
     {
-	print &common_html_hdr(6, 'Found 1 match', 1);
+	print &aid_common_html_hdr(6, 'Found 1 match', 1);
     }
     else
     {
-	print &common_html_hdr(6, 'Found ' . ($#results+1) . ' matches', 1);
+	print &aid_common_html_hdr(6, 'Found ' . ($#results+1) . ' matches', 1);
     }
 
     print "\n<ul>\n";
@@ -137,8 +137,8 @@ else
     {
 	($ign,$ign,$ign,$id) = split(/,/);
 	%rec = &aid_db_unpack_rec($id,$DB{$id});
-	$fullname = &inorder_fullname(*rec);
-	($affil,$ign) = &affiliate(*rec,0);
+	$fullname = &aid_inorder_fullname(*rec);
+	($affil,$ign) = &aid_affiliate(*rec,0);
 	
 	print "<li><a href=\"", &aid_config('about_cgi'), 
 	"?about=", $rec{'id'}, "\">$fullname</a> $affil";
@@ -155,7 +155,7 @@ else
     }
     print "</ul>\n";
     &print_search_form($in{'q'},$in{'y'});
-    print &common_html_ftr(6);
+    print &aid_common_html_ftr(6);
 }
 
 
