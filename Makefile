@@ -2,7 +2,7 @@
 #     FILE: Makefile
 #   AUTHOR: Michael J. Radwin
 #    DESCR: Makefile for building the Alumni Internet Directory
-#      $Id: Makefile,v 5.10 1999/06/11 00:44:54 mradwin Exp mradwin $
+#      $Id: Makefile,v 5.11 1999/06/11 16:24:44 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -117,7 +117,7 @@ INDEX=$(WWWDIR)/index.html
 INDEX_TS=$(WWWDIR)/.index.html
 index:	$(INDEX_TS)
 $(INDEX_TS):	$(DATADIR)/index.include $(BINDIR)/aid_home_html $(DBFILE)
-	$(BINDIR)/aid_home_html -p0 -i $(DATADIR)/index.include \
+	$(BINDIR)/aid_home_html -p0 -f $(DATADIR)/index.include \
 		-t '' \
 		$(INDEX)
 
@@ -126,7 +126,7 @@ REUNIONS_TS=$(WWWDIR)/etc/.reunions.html
 reunions:	$(REUNIONS_TS)
 $(REUNIONS_TS):	$(DATADIR)/reunions.include $(BINDIR)/aid_home_html
 	$(MKDIR) $(WWWDIR)/etc
-	$(BINDIR)/aid_home_html -p11 -i $(DATADIR)/reunions.include \
+	$(BINDIR)/aid_home_html -p11 -f $(DATADIR)/reunions.include \
 		-t 'Reunion Information' \
 		$(REUNIONS)
 
@@ -135,7 +135,7 @@ LINKS_TS=$(WWWDIR)/etc/.links.html
 links:	$(LINKS_TS)
 $(LINKS_TS):	$(DATADIR)/links.include $(BINDIR)/aid_home_html
 	$(MKDIR) $(WWWDIR)/etc
-	$(BINDIR)/aid_home_html -p12 -i $(DATADIR)/links.include \
+	$(BINDIR)/aid_home_html -p12 -f $(DATADIR)/links.include \
 		-t 'Links and Other Alumni Directories' \
 		$(LINKS)
 
@@ -144,7 +144,7 @@ FAQ_TS=$(WWWDIR)/etc/.faq.html
 faq:	$(FAQ_TS)
 $(FAQ_TS):	$(DATADIR)/faq.include $(BINDIR)/aid_home_html
 	$(MKDIR) $(WWWDIR)/etc
-	$(BINDIR)/aid_home_html -p14 -i $(DATADIR)/faq.include \
+	$(BINDIR)/aid_home_html -p14 -f $(DATADIR)/faq.include \
 		-t 'Frequently Asked Questions' \
 		$(FAQ)
 
@@ -153,7 +153,7 @@ COPYRIGHT_TS=$(WWWDIR)/etc/.copyright.html
 copyright:	$(COPYRIGHT_TS)
 $(COPYRIGHT_TS):	$(DATADIR)/copyright.include $(BINDIR)/aid_home_html
 	$(MKDIR) $(WWWDIR)/etc
-	$(BINDIR)/aid_home_html -p16 -i $(DATADIR)/copyright.include \
+	$(BINDIR)/aid_home_html -p16 -f $(DATADIR)/copyright.include \
 		-t 'Acceptable Use, Privacy Statement, Copyright' \
 		$(COPYRIGHT)
 	/bin/ln -sf $(COPYRIGHT) $(WWWDIR)/etc/privacy.html
@@ -178,7 +178,7 @@ ADDUPDATE_TS=$(WWWDIR)/add/.index.html
 addupdate:	$(ADDUPDATE_TS)
 $(ADDUPDATE_TS):	$(DATADIR)/add.include $(BINDIR)/aid_home_html
 	$(MKDIR) $(WWWDIR)/add
-	$(BINDIR)/aid_home_html -p10 -i $(DATADIR)/add.include \
+	$(BINDIR)/aid_home_html -p10 -f $(DATADIR)/add.include \
 		-t 'Join or Modify Your Listing' \
 		$(ADDUPDATE)
 
@@ -187,7 +187,7 @@ DOWNLOAD_TS=$(WWWDIR)/download/.index.html
 download:	$(DOWNLOAD_TS)
 $(DOWNLOAD_TS):	$(BINDIR)/aid_home_html $(DBFILE)
 	$(MKDIR) $(WWWDIR)/download
-	$(BINDIR)/aid_home_html -d -p13 \
+	$(BINDIR)/aid_home_html -d -p13 -i "$(MOD_KEYS)" \
 		-t 'Download Nickname and Address Book Files' \
 		$(DOWNLOAD)
 
