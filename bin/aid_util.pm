@@ -2,7 +2,7 @@
 #     FILE: aid_util.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: perl library routines for the Alumni Internet Directory
-#      $Id: aid_util.pl,v 4.98 1999/05/04 17:11:41 mradwin Exp mradwin $
+#      $Id: aid_util.pl,v 4.99 1999/05/04 17:27:46 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -461,11 +461,11 @@ sub aid_verbose_entry {
 
     $fullname = &main'aid_inorder_fullname(*rec); #'#
 
-    $retval .= "<dl compact>\n";
+    $retval .= "<dl compact=\"compact\">\n";
 
     $retval .= "<dt><big>";
     $retval .= "<strong>";
-    $retval .= "<a name=\"id-$rec{'id'}\">";
+    $retval .= "<a name=\"id-$rec{'id'}\" id=\"id-$rec{'id'}\">";
     $retval .=  $fullname;
     $retval .= "</a>";
     $retval .= "</strong>";
@@ -918,7 +918,7 @@ sub aid_class_jump_bar {
 
     foreach $year (@years) {
 	if ($first) {
-	    $retval .= "[ <a name=\"top\"";
+	    $retval .= "[ <a name=\"top\" id=\"top\"";
 	    $retval .= ">" if defined $hilite && $year eq $hilite;
 	} else {
 	    $retval .= " |\n";
