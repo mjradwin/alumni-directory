@@ -1,6 +1,6 @@
 #!/usr/bin/perl -w
 
-# $Id: aid_addname,v 5.4 1999/06/01 17:13:41 mradwin Exp mradwin $
+# $Id: aid_addname,v 5.5 1999/06/02 16:46:12 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -42,6 +42,9 @@ $sub_beg_str = &aid_config('sub_beg_str');
 $sub_end_str = &aid_config('sub_end_str');
 $note_beg_str = &aid_config('note_beg_str');
 $note_end_str = &aid_config('note_end_str');
+
+$dbmfile = &aid_config('aiddir') . "data/working.db";
+$dbmfile =~ s/\.db$//;
 
 $make = &aid_config('make');
 -x $make || die "$0: $make is not executable!";
@@ -136,9 +139,7 @@ sub readspool
 
     if ($success)
     {
-	local(%DB,$dbmfile);
-	$dbmfile = &aid_config('aiddir') . "data/working.db";
-	$dbmfile =~ s/\.db$//;
+	local(%DB);
 	die "can't open ${dbmfile}.db for reading/writing\n"
 	    unless -r "${dbmfile}.db" && -w "${dbmfile}.db";
 
@@ -167,7 +168,6 @@ sub rebuild
 sub mail_welcome
 {
     local($cmd);
-    local($dbmfile) = &aid_config('dbmfile');
 
     chdir &aid_config('aiddir') || die "$0: can't chdir: $!\n";
 
@@ -175,14 +175,14 @@ sub mail_welcome
     if (@new_ids)
     {
 	print STDERR ' new(', join(' ', @new_ids), ')';
-	$cmd = "./bin/aid_welcome $dbmfile " . join(' ', @new_ids);
+	$cmd = "./bin/aid_welcome ${dbmfile}.db " . join(' ', @new_ids);
 	system $cmd || die "$0: failed to run $cmd: $!\n";
     }
 
     if (@upd_ids)
     {
 	print STDERR ' upd(', join(' ', @upd_ids), ')';
-	$cmd = "./bin/aid_welcome -u $dbmfile " . join(' ', @upd_ids);
+	$cmd = "./bin/aid_welcome -u ${dbmfile}.db " . join(' ', @upd_ids);
 	system $cmd || die "$0: failed to run $cmd: $!\n";
     }
 
@@ -193,19 +193,17 @@ sub mail_welcome
 sub addname
 {
     local(*rec) = @_;
-    local($dbmfile,$logFile,%oldrec,*LOG);
+    local(%DB,$logFile,%oldrec,*LOG);
     local($key_name,$key_email,%id_by_email,%id_by_name,$email);
 
     %aid_util'aid_aliases = ();   #'# reset global alias hash repository 
 
     $logFile = &aid_config('aiddir') . "logs/additions.log";
-    $dbmfile = &aid_config('aiddir') . "data/working.db";
-    $dbmfile =~ s/\.db$//;
 
     die "can't open ${dbmfile}.db for reading/writing\n"
 	unless -r "${dbmfile}.db" && -w "${dbmfile}.db";
-
     dbmopen(%DB,$dbmfile,0644);
+
     while (($key,$val) = each %DB)
     {
 	next unless $key =~ /^\d+$/;
