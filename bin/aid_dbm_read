@@ -1,6 +1,6 @@
 #!/usr/bin/perl -w
 
-# $Id: aid_dbm_read,v 1.21 1999/05/03 17:16:28 mradwin Exp mradwin $
+# $Id: aid_dbm_read,v 1.22 1999/05/19 01:36:09 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -194,19 +194,19 @@ sub display_key_val
 	print "record $key = ", &aid_join(*rec), "\n";
     }
 
-    elsif ($key =~ /^_(awalt_|www_)?(\d\d\d\d)$/)
+    elsif ($key =~ /^_(www_)?(\d\d\d\d)$/)
     {
 	print "year ", (defined $1 ? $1 : ''), $2,
 	      " = ", join(',', unpack("n*", $val)), "\n";
     }
 
-    elsif ($key =~ /^_(awalt_|www_)?other$/)
+    elsif ($key =~ /^_(www_)?other$/)
     {
 	print "year ", (defined $1 ? $1 : ''), 'other',
 	      " = ", join(',', unpack("n*", $val)), "\n";
     }
 
-    elsif ($key =~ /^_(awalt_|www_)?years$/)
+    elsif ($key =~ /^_(www_)?years$/)
     {
 	print "list ", (defined $1 ? $1 : ''), 'years',
 	      " = ", join(',', unpack("n*", $val)), "\n";
