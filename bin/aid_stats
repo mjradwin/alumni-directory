@@ -1,13 +1,29 @@
 #!/usr/bin/perl -w
 
-# $Id: aid_stats,v 1.8 1999/02/09 00:53:17 mradwin Exp mradwin $
+# $Id: aid_stats,v 1.9 1999/02/10 20:28:51 mradwin Exp mradwin $
 
 require 'aid_util.pl';
 require 'ctime.pl';
+require 'getopts.pl';
 
-$dbmfile = &aid_config('wwwdir') . 'master';
-die "can't open ${dbmfile}.db\n" unless -r "${dbmfile}.db";
-dbmopen(DB,$dbmfile,0444);
+$0 =~ s,.*/,,;  # basename
+$usage = "usage: $0 [-h] infile.db outfile
+    -h        Display usage information.
+";
+
+&Getopts('h') || die "$usage\n";
+$opt_h && die "$usage\n";
+$ARGV[0] || die "$usage\n";
+$ARGV[1] || die "$usage\n";
+$opt_h = $opt_h;		# avoid warning
+
+$ARGV[0] =~ s/\.db$//;
+die "can't open $ARGV[0].db\n" unless -r "$ARGV[0].db";
+dbmopen(DB,$ARGV[0],0444);
+
+die "no __class__ key!\n" unless defined $DB{'__class__'};
+
+open(FMTOUT,">$ARGV[1]") || die "Can't open $ARGV[1]: $!\n";
 
 $nvalid = 0;
 $ndubious = 0;
@@ -45,41 +61,42 @@ while (($key,$val) = each %DB)
     $nnews++ if -f &aid_newsfile($rec{'id'});
 }
 
-print "Mountain View High School Alumni Internet Directory\n";
-print "Member Statistics\n";
-print "------------------------------------------------------------------------\n\n";
+print FMTOUT "Mountain View High School Alumni Internet Directory\n";
+print FMTOUT "Member Statistics\n";
+print FMTOUT "------------------------------------------------------------------------\n\n";
 
-printf "%4d       total entries in the Directory\n",
+printf FMTOUT "%4d       total entries in the Directory\n",
     $ntotal;
-printf "%4d (%2.0f%%) members w/valid   e-mail address\n",
+printf FMTOUT "%4d (%2.0f%%) members w/valid   e-mail address\n",
     $nvalid, ((100 * $nvalid) / $ntotal);
-printf "%4d (%2.0f%%) members w/valid   e-mail address but bounced recently\n",
+printf FMTOUT "%4d (%2.0f%%) members w/valid   e-mail address but bounced recently\n",
     $ndubious, ((100 * $ndubious) / $ntotal);
 
 $nlegit = $nvalid + $ndubious;
 
-printf "%4d (%2.0f%%) members w/invalid e-mail address\n",
+printf FMTOUT "%4d (%2.0f%%) members w/invalid e-mail address\n",
     ($ntotal - $nlegit), ((100 * ($ntotal - $nlegit)) / $ntotal);
 
-printf "%4d (%2.0f%%) requesting quarterly digests:\n",
+printf FMTOUT "%4d (%2.0f%%) requesting quarterly digests:\n",
     ($nreq[1] + $nreq[2] + $nreq[3] + $nreq[4]),
     ((100 * ($nreq[1] + $nreq[2] + $nreq[3] + $nreq[4])) / $nlegit);
 
-printf "    %4d - %s\n", $nreq[1], $aid_util'req_descr_long[1];
-printf "    %4d - %s\n", $nreq[2], $aid_util'req_descr_long[2];
-printf "    %4d - %s\n", $nreq[3], $aid_util'req_descr_long[3];
-printf "    %4d - %s\n", $nreq[4], $aid_util'req_descr_long[4];
+printf FMTOUT "    %4d - %s\n", $nreq[1], $aid_util'req_descr_long[1];
+printf FMTOUT "    %4d - %s\n", $nreq[2], $aid_util'req_descr_long[2];
+printf FMTOUT "    %4d - %s\n", $nreq[3], $aid_util'req_descr_long[3];
+printf FMTOUT "    %4d - %s\n", $nreq[4], $aid_util'req_descr_long[4];
 
-printf "%4d (%2.0f%%) allow class officers to mail reunion info\n",
+printf FMTOUT "%4d (%2.0f%%) allow class officers to mail reunion info\n",
     $nreunion, ((100 * $nreunion) / $nlegit);
-printf "%4d (%2.0f%%) wrote some location info\n",
+printf FMTOUT "%4d (%2.0f%%) wrote some location info\n",
     $nlocation, ((100 * $nlocation) / $nlegit);
-printf "%4d (%2.0f%%) have personal web page\n",
+printf FMTOUT "%4d (%2.0f%%) have personal web page\n",
     $nweb, ((100 * $nweb) / $nlegit);
-printf "%4d (%2.0f%%) wrote What's New? paragraph\n",
+printf FMTOUT "%4d (%2.0f%%) wrote What's New? paragraph\n",
     $nnews, ((100 * $nnews) / $nlegit);
 
-print "\n------------------------------------------------------------------------\n";
-print &ctime(time);
+print FMTOUT "\n------------------------------------------------------------------------\n";
+print FMTOUT &ctime(time);
 
+close(FMTOUT);
 dbmclose(DB);
