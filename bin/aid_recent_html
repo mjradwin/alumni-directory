@@ -16,6 +16,21 @@ open(MVHS,$ARGV[0]) || die "Can't open $ARGV[0]: $!\n";
 open(FMTOUT,">$ARGV[1]") || die "Can't open $ARGV[1]: $!\n";
 
 print FMTOUT &common_html_hdr(3);
+print FMTOUT "<br>
+<table cellspacing=0 cellpadding=1 border=0 width=\"100%\">
+  <tr>
+    <td bgcolor=\"#000000\" align=center>
+    <table cellspacing=0 cellpadding=5 border=0 width=\"100%\">
+      <tr>
+        <td bgcolor=\"#eeee88\" align=center valign=middle>
+        <strong><font size=\"+1\">R</font>&nbsp;E&nbsp;C&nbsp;E&nbsp;N&nbsp;T&nbsp;&nbsp; <font size=\"+1\">A</font>&nbsp;D&nbsp;D&nbsp;I&nbsp;T&nbsp;I&nbsp;O&nbsp;N&nbsp;S&nbsp;&nbsp; T&nbsp;O&nbsp;&nbsp; T&nbsp;H&nbsp;E&nbsp;&nbsp; <font size=\"+1\">D</font>&nbsp;I&nbsp;R&nbsp;E&nbsp;C&nbsp;T&nbsp;O&nbsp;R&nbsp;Y</strong>
+        </td>
+      </tr>
+    </table>
+    </td>
+  </tr>
+</table>
+";
 print FMTOUT "<pre>";
 print FMTOUT "Name and Graduation Year                  Email\n";
 print FMTOUT "---------------------------------------------------------------------------\n";

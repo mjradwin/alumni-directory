@@ -16,6 +16,21 @@ open(FMTOUT,">$ARGV[1]") || die "Can't open $ARGV[1]: $!\n";
 
 print FMTOUT &common_html_hdr(2);
 open(MVHSPRE,$ARGV[0]) || die "Can't open $ARGV[0]: $!\n";
+print FMTOUT "<br>
+<table cellspacing=0 cellpadding=1 border=0 width=\"100%\">
+  <tr>
+    <td bgcolor=\"#000000\" align=center>
+    <table cellspacing=0 cellpadding=5 border=0 width=\"100%\">
+      <tr>
+        <td bgcolor=\"#eeee88\" align=center valign=middle>
+        <strong><font size=\"+1\">A</font>&nbsp;L&nbsp;U&nbsp;M&nbsp;N&nbsp;I&nbsp;&nbsp; <font size=\"+1\">L</font>&nbsp;I&nbsp;S&nbsp;T&nbsp;E&nbsp;D&nbsp;&nbsp; B&nbsp;Y&nbsp;&nbsp; <font size=\"+1\">G</font>&nbsp;R&nbsp;A&nbsp;D&nbsp;U&nbsp;A&nbsp;T&nbsp;I&nbsp;N&nbsp;G&nbsp;&nbsp; <font size=\"+1\">C</font>&nbsp;L&nbsp;A&nbsp;S&nbsp;S</strong>
+        </td>
+      </tr>
+    </table>
+    </td>
+  </tr>
+</table>
+";
 print FMTOUT "<p>Index: <tt>";
 $lastYear = '00';
 $first_fac_staff = 0;
@@ -36,11 +51,8 @@ while(<MVHSPRE>) {
     }
 }
 close(MVHSPRE);
-print FMTOUT "</tt>";
-
-print FMTOUT "
-<pre>
-Name                                      Email
+print FMTOUT "</tt>\n";
+print FMTOUT "<pre>Name                                      Email
 ---------------------------------------------------------------------------";
 
 open(MVHS,$ARGV[0]) || die "Can't open $ARGV[0]: $!\n";
