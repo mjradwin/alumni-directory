@@ -2,11 +2,11 @@
 #     FILE: aid_util.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: perl library routines for the Alumni Internet Directory
-#      $Id: aid_util.pl,v 4.10 1999/02/04 19:21:53 mradwin Exp mradwin $
+#      $Id: aid_util.pl,v 4.11 1999/02/05 00:54:42 mradwin Exp mradwin $
 #
 
 $aid_util'rcsid =
- '$Id: aid_util.pl,v 4.10 1999/02/04 19:21:53 mradwin Exp mradwin $';
+ '$Id: aid_util.pl,v 4.11 1999/02/05 00:54:42 mradwin Exp mradwin $';
 $aid_util'caldate = &aid_caldate(time); #'#
 
 # ----------------------------------------------------------------------
@@ -362,6 +362,8 @@ sub aid_join {
     local($i,@fields);
 
     for ($i = 0; $i <= $#field_names; $i++) {
+	warn "aid_join: record is missing key '$field_names[$i]'"
+	    unless defined $rec{$field_names[$i]};
 	push(@fields, $rec{$field_names[$i]});
     }
 
@@ -472,7 +474,7 @@ sub aid_vcard_path {
 
     local($id) = @_;
 
-    $config{'nph_cgi_path'} . "/vcard/${id}.vcf";
+    $config{'vcard_cgi'} . "/${id}.vcf";
 }
 
 
@@ -620,7 +622,7 @@ sub submit_body {
 are required.  All other fields are optional.</p>\n\n";
 
     $body . "
-<form method=post action=\"" . $config{'nph_cgi_path'} . "/sub\"> 
+<form method=post action=\"" . $config{'submit_cgi'} . "\"> 
 <table border=0 summary=\"\">
 <tr><td align=right><input type=\"submit\" value=\"Next&nbsp;&gt;\">
 &nbsp;
@@ -819,8 +821,7 @@ sub aid_verbose_entry {
     $retval .= "<a href=\"" . &main'aid_vcard_path($rec{'id'}) . "\">"; #'#
     $retval .= "vCard</a>";
     $retval .= "&nbsp;|&nbsp;";
-    $retval .= "<a href=\"" . $config{'nph_cgi_path'} .
-	"/dyn?about=$rec{'id'}\">";
+    $retval .= "<a href=\"" . $config{'about_cgi'} . "?about=$rec{'id'}\">";
     $retval .= "update</a>";
     $retval .= "]</small>\n";
     

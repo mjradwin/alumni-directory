@@ -17,6 +17,7 @@ if ($ENV{'PATH_INFO'} =~ m,/(\d+)\.vcf,i)
     dbmclose(DB);
 
     %rec = ();
+    $rec{'id'} = $1;
 
     (
      $rec{'valid'},

@@ -4,7 +4,7 @@
 #     FILE: mvhsaid.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: Alumni Internet Directory CGI interface
-#      $Id: mvhsaid,v 3.53 1999/02/04 19:56:12 mradwin Exp mradwin $
+#      $Id: mvhsaid,v 3.54 1999/02/05 00:54:42 mradwin Exp mradwin $
 #
 
 require 'aid_util.pl';
@@ -22,7 +22,7 @@ if ($ENV{'SCRIPT_NAME'} =~ m,/nph-,)
 # configuration
 $mailprog = &aid_config('mailprog');
 $dbfile = &aid_config('wwwdir') . "master.adr";
-$rcsid = '$Id: mvhsaid,v 3.53 1999/02/04 19:56:12 mradwin Exp mradwin $'; #'fnt
+$rcsid = '$Id: mvhsaid,v 3.54 1999/02/05 00:54:42 mradwin Exp mradwin $'; #'fnt
 
 @required_headers = ('id', 'first', 'last', 'school', 'year', 'email');
 
@@ -270,8 +270,6 @@ exit(0);
 
 
 sub confirm_submission {
-    local($cgi_path) = &aid_config('nph_cgi_path');
-
     print "Content-Type: text/html\015\012\015\012";
     print &common_html_hdr(-1,'Please confirm your submission',1);
     print "\n<p>\n<strong><font color=\"#" . $aid_util'star_fg . "\">"; #'#
@@ -283,7 +281,7 @@ correct.</font></strong></p>
 If everything is correct, please hit the
 <strong>Finish&nbsp;&gt;</strong> button.</p>\n";
 
-    print "\n<form method=post action=\"$cgi_path/cnf\">\n";
+    print "\n<form method=post action=\", &aid_config('confirm_cgi'), "\">\n";
     %newrec = &rec_html_entify(*in);
     foreach (keys %newrec) {
 	print "<input type=hidden name=\"$_\"";
@@ -403,12 +401,11 @@ sub send_about {
 
 sub modify_button {
     local($id,$name) = @_;
-    local($cgi_path) = &aid_config('nph_cgi_path');
 
     "
 <!-- borrowed from gamelan -->
 
-<form method=get action=\"$cgi_path/upd\">
+<form method=get action=\"" . &aid_config('update_cgi') . "\">
 <input type=hidden name=\"update\" value=\"$id\">
 <input type=submit value=\"Update $name\">
 </form>
@@ -518,7 +515,7 @@ sub send_upd_list {
 	$fullname = &fullname(*rec);
 	($affil,$len) = &affiliate(*rec,0);
 
-	print "<a$anchor href=\"", &aid_config('nph_cgi_path'), "/upd?update=$rec{'id'}\">";
+	print "<a$anchor href=\"", &aid_config('update_cgi'), "?update=$rec{'id'}\">";
 	print $fullname;
 	print "</a>";
 	print $affil;
