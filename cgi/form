@@ -4,7 +4,7 @@
 #     FILE: mvhsaid.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: MVHS Alumni Internet Directory CGI interface
-#      $Id: mvhsaid,v 3.30 1998/10/17 21:01:55 mradwin Exp mradwin $
+#      $Id: mvhsaid,v 3.31 1998/10/20 19:17:16 mradwin Exp mradwin $
 #
 
 require 'aid_util.pl';
@@ -14,7 +14,7 @@ require 'cgi-lib.pl';
 $mailprog = &aid_config('mailprog');
 $dbfile = &aid_config('wwwdir') . "master.adr";
 
-@required_headers = ('id', 'last', 'first', 'school', 'year', 'email');
+@required_headers = ('id', 'first', 'last', 'school', 'year', 'email');
 
 &ReadParse();
 
@@ -24,7 +24,7 @@ if (defined($ENV{'PATH_INFO'}) && $ENV{'PATH_INFO'} =~ m,^/vcard/,) {
     $in{'vcard'} =~ s,^/vcard/(\d+).*$,$1,;
 }
 
-$rcsid = '$Id: mvhsaid,v 3.30 1998/10/17 21:01:55 mradwin Exp mradwin $'; #'fnt
+$rcsid = '$Id: mvhsaid,v 3.31 1998/10/20 19:17:16 mradwin Exp mradwin $'; #'fnt
 
 # special flags: version, update, vcard, about
 #
@@ -42,10 +42,10 @@ if (defined($in{'version'})) {
 	if (defined($db[$in{'update'}])) {
 	    %updateme = &aid_split($db[$in{'update'}]);
 	    $updateme{'message'} = &aid_get_usertext($in{'update'});
-	    &send_upd_real(*updateme,0);
+	    &send_upd_real(*updateme,'');
 
 	} else {
-	    &send_upd_real(*aid_util'blank_entry,0);  #'#
+	    &send_upd_real(*aid_util'blank_entry,'');  #'#
 	}
 
     } elsif ($in{'update'} =~ /^\s*[^@]+@[^\.]+\./) {
@@ -58,7 +58,7 @@ if (defined($in{'version'})) {
 	    %updateme = &aid_split($_);
 	    if ("\L$updateme{'email'}\E" eq $in{'update'}) {
 		$updateme{'message'} = &aid_get_usertext($updateme{'id'});
-		&send_upd_real(*updateme,0);
+		&send_upd_real(*updateme,'');
 		exit(0);
 	    }
 	}
@@ -79,10 +79,10 @@ if (defined($in{'version'})) {
 	if (defined($db[$in{'vcard'}])) {
 	    &send_vcard($db[$in{'vcard'}]);
 	} else {
-	    &send_upd_real(*aid_util'blank_entry,0);
+	    &send_upd_real(*aid_util'blank_entry,'');
 	}
     } else {
-	&send_upd_real(*aid_util'blank_entry,0);
+	&send_upd_real(*aid_util'blank_entry,'');
     }
     exit(0);
 
@@ -91,7 +91,7 @@ if (defined($in{'version'})) {
     if (defined($db[$in{'about'}])) {
 	&send_about($db[$in{'about'}]);
     } else {
-	&send_upd_real(*aid_util'blank_entry,0);
+	&send_upd_real(*aid_util'blank_entry,'');
     }
     exit(0);
 
@@ -103,7 +103,7 @@ if (defined($in{'version'})) {
 foreach (@required_headers) {
     if (!defined($in{$_})) {
 	# wrong form
-	&send_upd_real(*aid_util'blank_entry,0);
+	&send_upd_real(*aid_util'blank_entry,'');
 	exit(0);
     }
 }
@@ -148,9 +148,9 @@ $in{'school'} = ($in{'school'} eq 'Other' && $in{'sch_other'} ne '') ?
     $in{'sch_other'} : $in{'school'};
 
 # lowercase the hostname portion of the email address
-if (!($in{'email'} =~ /^\s*$/)) {
+if ($in{'email'} =~ /\@/)
+{
     ($mail_user, $mail_addr) = split(/\@/, $in{'email'});
-    $mail_addr = 'aol.com' if $mail_addr eq '';
 	
     # test for initial-cap, rest lower user
     $lower_user = "\L$mail_user\E";
@@ -163,11 +163,11 @@ if (!($in{'email'} =~ /^\s*$/)) {
 }
 
 # uncapitalize those overzealous capslock names
-$in{'first'} = "\L$in{'first'}\E" 
+$in{'first'} = "\L$in{'first'}\E"
     if ($in{'first'} eq "\U$in{'first'}\E");
 $in{'last'} = "\L$in{'last'}\E"
     if ($in{'last'} eq "\U$in{'last'}\E");
-$in{'married'} = "\L$in{'married'}\E" 
+$in{'married'} = "\L$in{'married'}\E"
     if ($in{'married'} eq "\U$in{'married'}\E");
 
 # initial capitalize those lazy names
@@ -177,28 +177,32 @@ $in{'married'} = "\u$in{'married'}";
 
 $in{'www'} = '' if $in{'www'} eq 'http://';
 
-# did they check the "other" box for school, but not fill in any text?
-if ($in{'school'} eq 'Other') {
-    $in{'time'} = '';
-    &send_upd_real(*in,1);
-    exit(0);
-}
 
 # did they have non-blank entries for all the required fields?
+# did they check the "other" box for school, but not fill in any text?
+@blank_fields = ();
 foreach (@required_headers) {
-    if ($in{$_} =~ /^\s*$/) {
-	$in{'time'} = '';
-	&send_upd_real(*in,1);
-	exit(0);
+    if (($in{$_} =~ /^\s*$/) ||
+	($_ eq 'school' && $in{'school'} eq 'Other') ||
+	($_ eq 'email' && $in{'email'} !~ /\@/))
+    {
+	push(@blank_fields, $_);
     }
+}
+
+if (@blank_fields)
+{
+    delete $in{'time'};
+    &send_upd_real(*in,join(' ', @blank_fields));
+    exit(0);
 }
 
 # now that the input is cleaned up, decide whether we're going to enter
 # the confirmation phase or the queueing phase.
 
 if (defined($in{'revise'})) {
-    $in{'time'} = '';
-    &send_upd_real(*in,0);
+    delete $in{'time'};
+    &send_upd_real(*in,'');
 } elsif (defined($in{'confirmed'})) {
     &queue_submission();
 } else {
@@ -216,8 +220,9 @@ sub confirm_submission {
     print &common_html_hdr(-1,'Please confirm your submission',1);
     print "\n<p>\n<strong><font color=\"#" . $aid_util'star_fg . "\">"; #'#
     print "Please confirm that all of the below information is
-correct.</font></strong>
-If you have made any mistakes, select the <strong>&lt;&nbsp;Back</strong>
+correct.</font></strong></p>
+
+<p>If you have made any mistakes, select the <strong>&lt;&nbsp;Back</strong>
 button to edit your entry.  If everything is correct, please hit the
 <strong>Finish</strong> button.</p>\n";
 
@@ -317,7 +322,7 @@ and you can share as much or as little as you want.</p>
 
 
 sub send_upd_real {
-    local(*rec,$blankp) = @_;
+    local(*rec,$blank_entries) = @_;
 
     select(STDOUT);  $| = 1;
     print "Content-type: text/html\n\n";
@@ -328,7 +333,7 @@ sub send_upd_real {
 			    'Update Your Directory Entry'),
 			   1);
 
-    print &submit_body(*rec,$blankp);
+    print &submit_body(*rec,$blank_entries);
     print &common_html_ftr(-1);
 }
 

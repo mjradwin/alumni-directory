@@ -2,11 +2,11 @@
 #     FILE: aid_util.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: perl library routines for the Alumni Internet Directory
-#      $Id: aid_util.pl,v 3.63 1998/10/20 19:16:35 mradwin Exp mradwin $
+#      $Id: aid_util.pl,v 3.64 1998/10/20 19:19:32 mradwin Exp mradwin $
 #
 
 $aid_util'rcsid =
- '$Id: aid_util.pl,v 3.63 1998/10/20 19:16:35 mradwin Exp mradwin $';
+ '$Id: aid_util.pl,v 3.64 1998/10/20 19:19:32 mradwin Exp mradwin $';
 
 # ----------------------------------------------------------------------
 # CONFIGURATION
@@ -129,6 +129,27 @@ $aid_util'ID_INDEX    = 0;     #'# position that the ID key is in datafile
     'www',			# personal web page
     'location',			# city, company, or college
     'inethost',			# REMOTE_HOST of last update
+    );
+
+%aid_util'field_descr = #'#
+    (
+    'id',	'',
+    'valid',	'',
+    'last',	'Last/Maiden Name',
+    'married',	'Married Name',
+    'first',	'First Name',
+    'request',	'',
+    'reunion',	'',
+    'bounces',	'',
+    'created',	'',
+    'time',	'',
+    'fresh',	'',
+    'school',	'High School',
+    'year',	'Graduation year or affiliation',
+    'email',	'E-mail address',
+    'www',	'Personal Web Page',
+    'location',	'Location',
+    'inethost',	'',
     );
 
 %aid_util'blank_entry =        #'# a prototypical blank entry to clone
@@ -514,10 +535,10 @@ sub submit_body {
     local($_);
     local($body);
     local($star) = "<font color=\"#$star_fg\">*</font>";
-    local(*rec_arg,$blankp) = @_;
+    local(*rec_arg,$blank_entries) = @_;
     local(%rec) = &main'rec_html_entify(*rec_arg); #'#
     local($mvhs_checked,$awalt_checked,$other_checked) = ('', '', '');
-    local(@reqchk,$i,$reunion_chk);
+    local(@reqchk,$i,$reunion_chk,@blankies);
 
     $rec{'www'} = 'http://' if $rec{'www'} eq '';
 
@@ -538,7 +559,39 @@ sub submit_body {
 	$rec{'school'} = '' if $rec{'school'} eq 'Other';
     }
 
-    $body  = "\n<p>Please ";
+    $body = '';
+
+    if ($blank_entries ne '')
+    {
+	if ($blank_entries =~ /email/ && $rec{'email'} !~ /\@/)
+	{
+	    $body .= "<p><strong><font color=\"#$star_fg\">Your email ";
+	    $body .= "address appears to be missing a domain name.</font>\n";
+	    $body .= "<br>It must be in the form of ";
+	    $body .= "<code>user\@isp.net</code>.\n";
+	    $body .= "Perhaps you meant to type ";
+	    $body .= "<code>$rec{'email'}\@aol.com</code>?\n";
+	    $body .= "</strong></p>\n\n";
+
+	    $blank_entries =~ s/email//g;
+	}
+
+	@blankies = split(/\s+/, $blank_entries);
+	if (@blankies)
+	{
+	    $body .= "<p><font color=\"#$star_fg\"><strong>It appears that ";
+	    $body .= "the following required fields were blank:";
+	    $body .= "</strong></font></p>\n\n<ul>\n";
+
+	    foreach(@blankies)
+	    {
+		$body .= "<li>" . $field_descr{$_} . "\n";
+	    }
+	    $body .= "</ul>\n";
+	}
+    }
+
+    $body .= "\n<p>Please ";
     $body .= (($rec{'id'} != -1) ? "update" : "enter");
     $body .= " the following information and hit the
 <strong>Next&nbsp;&gt;</strong> button.</p>
@@ -546,12 +599,6 @@ sub submit_body {
 <p>Fields marked with a $star
 are required.  All other fields are optional.</p>\n\n";
 
-    if ($blankp) {
-	$body .= "<p><font color=\"#$star_fg\"><strong>You left one or more ";
-	$body .= "required fields blank.\nPlease fill them in below ";
-	$body .= "and resubmit.</strong></font></p>\n\n";
-    }
-	
     $body . "
 <form method=post action=\"" . $config{'cgi_path'} . "/sub\"> 
 <table border=0>
