@@ -2,7 +2,7 @@
 
 #
 # mails a welcome, update, confirm, or massmail message to members
-# $Id: aid_welcome,v 5.24 2000/05/31 01:23:54 mradwin Exp mradwin $
+# $Id: aid_welcome,v 5.25 2000/08/01 17:48:53 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -117,6 +117,7 @@ Directory appears at the end of this message.\n\n",
 "
 You also may change your quarterly digest preference
 by visiting the above URL.
+
 ",
      'sleep',    $default_massmail_sleep,
      );
