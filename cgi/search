@@ -46,17 +46,16 @@ else
 $in{'q'} =~ s/^\s*//;
 $in{'q'} =~ s/\s*$//;
 $query = $in{'q'};
-$query =~ s/[,\.;+'"\(\)]//g;
+$query =~ s/[,\.;+'"\(\)\@_-]/ /g;
 $query =~ s/\band\b//ig;
 $query =~ s/\bor\b//ig;
-$query =~ s/-/ /ig;
 @search_terms = split(/\s+/, $query);
 
 %results = ();
 foreach (@alpha_ids)
 {
     %rec = &aid_db_unpack_rec($_,$DB{$_});
-    $fullname = &inorder_fullname(*rec);
+    $fullname = &inorder_fullname(*rec) . $rec{'email'};
     $key = "\L$rec{'last'},$rec{'first'},$rec{'married'}\E,$rec{'id'}";
 
     if (defined $in{'y'} && $in{'y'} ne '')
@@ -120,7 +119,14 @@ else
 	print "<li><a href=\"", &aid_config('about_cgi'), 
 	"?about=", $rec{'id'}, "\">$fullname</a> $affil";
 	
-	print " <em>(invalid e-mail address)</em>" unless $rec{'valid'};
+	if ($rec{'valid'})
+	{
+	    print " (<code>$rec{'email'}</code>)";
+	}
+	else
+	{
+	    print " <em>(invalid e-mail address)</em>";
+	}
 	print "\n";
     }
     print "</ul>\n";
