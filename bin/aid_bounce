@@ -1,33 +1,37 @@
 #!/usr/bin/perl -w
 
-# $Id: aid_bounce,v 3.11 1998/05/17 17:12:41 mradwin Exp mradwin $
+# $Id: aid_bounce,v 3.12 1998/05/18 17:16:19 mradwin Exp mradwin $
 
 require 'ctime.pl';
 require 'getopts.pl';
 require 'aid_util.pl';
 
-$usage = 'usage: aid_bounce [-hv] [ids...]
+$usage = 'usage: aid_bounce [-hv] [-f <time>] [ids...]
     -h        Display usage information.
     -v        Invalidate ids.
+    -f <time> Set all freshness fields to <time> unless an entry
+              has non-zero bounces, or freshness is later than <time>.
 
 Bumps up the bounce field for every id or email address listed on the
 command line.
 ';
 
-&Getopts('hv') || die "$usage\n";
+&Getopts('hvf:') || die "$usage\n";
 $opt_h && die "$usage\n";
 $opt_h = $opt_h;                # avoid warning
 $opt_v = $opt_v;                # avoid warning
 
-exit(0) unless (@ARGV);
+die "error: freshness date too small\n$usage\n"
+    if (defined $opt_f) && ($opt_f < 815137658);
+exit(0) unless $opt_f || @ARGV;
 
 $cp   = &aid_config('cp');
--x $cp   || die "$cp   is not executable!";
+-x $cp   || die "error: $cp is not executable!";
 
 $dbFile = &aid_config('aiddir') . "data/master.adr";
-
 @db = &aid_create_db($dbFile);
 
+# hash{email} = id
 for (@db) {
     next unless defined($_) && $_ ne '';
     %rec = &aid_split($_);
@@ -36,37 +40,14 @@ for (@db) {
 
 $time = time;
 
-for (@ARGV) {
-    if (/^\d+$/) {
-	if (defined @db[$_]) {
-	    %rec = &aid_split(@db[$_]);
-	} else {
-	    warn "can't find id $_\n";
-	    next;
-	}
-    } else {
-	$_ = "\L$_\E";
-	if (defined $addrs{$_}) {
-	    %rec = &aid_split(@db[$addrs{$_}]);
-	} else {
-	    warn "can't find email addr $_\n";
-	    next;
-	}
-    }
-
-    print "$rec{'email'} ($rec{'id'}) was ";
-    if ($rec{'bounces'} == 0) {
-	print "blank\n";
-    } else {
-	print &ctime($rec{'bounces'});
-    }
-    $rec{'bounces'} = $time;
-    $rec{'valid'} = 0 if $opt_v;
-    $db[$rec{'id'}] = &aid_join(*rec);
+if ($opt_f) {
+    &freshen();
+} else {
+    &bounce_argv();
 }
 
 $tmpFile = "/tmp/aid_add.$$";
-open(TMP, ">$tmpFile") || die "Can't open $tmpFile: $!\n";
+open(TMP, ">$tmpFile") || die "error: can't open $tmpFile: $!\n";
 for (@db) {
     next unless defined($_) && $_ ne '';
     print TMP $_, "\n";
@@ -74,5 +55,56 @@ for (@db) {
 close(TMP);
 
 system "$cp -f $tmpFile $dbFile"
-    || die "failed to $cp -f $tmpFile $dbFile: $!\n";
-unlink($tmpFile) || die "couldn't unlink $tmpFile: $!\n";
+    || die "error: failed to $cp -f $tmpFile $dbFile: $!\n";
+unlink($tmpFile) || die "error: couldn't unlink $tmpFile: $!\n";
+
+exit(0);
+
+
+sub freshen {
+    for (@db) {
+	next unless defined($_) && $_ ne '';
+	%rec = &aid_split($_);
+	next unless $rec{'valid'} == 1 && 
+	    $rec{'bounces'} == 0 && $rec{'fresh'} < $opt_f;
+
+	$rec{'fresh'} = $opt_f;
+	$db[$rec{'id'}] = &aid_join(*rec);
+    }
+
+    1;
+}
+
+
+sub bounce_argv {
+    for (@ARGV) {
+	if (/^\d+$/) {
+	    if (defined @db[$_]) {
+		%rec = &aid_split(@db[$_]);
+	    } else {
+		warn "can't find id $_\n";
+		next;
+	    }
+	} else {
+	    $_ = "\L$_\E";
+	    if (defined $addrs{$_}) {
+		%rec = &aid_split(@db[$addrs{$_}]);
+	    } else {
+		warn "can't find email addr $_\n";
+		next;
+	    }
+	}
+
+	print "$rec{'email'} ($rec{'id'}) was ";
+	if ($rec{'bounces'} == 0) {
+	    print "blank\n";
+	} else {
+	    print &ctime($rec{'bounces'});
+	}
+	$rec{'bounces'} = $time;
+	$rec{'valid'} = 0 if $opt_v;
+	$db[$rec{'id'}] = &aid_join(*rec);
+    }
+
+    1;
+}
