@@ -2,7 +2,7 @@
 #     FILE: aid_util.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: perl library routines for the Alumni Internet Directory
-#      $Id: aid_util.pl,v 4.87 1999/04/09 01:19:09 mradwin Exp mradwin $
+#      $Id: aid_util.pl,v 4.88 1999/04/09 02:11:34 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -272,31 +272,6 @@ sub aid_create_db {
     close(INFILE);
     
     @db;
-}
-
-sub aid_util'bydatakeys {   #'#
-    package aid_util;
-
-    $datakeys[$a] cmp $datakeys[$b];
-}
- 
-sub aid_alpha_db {
-    package aid_util;
-
-    local($filename) = @_;
-    local(@db) = &main'aid_create_db($filename);   #'#
-    local(%rec);
-    local($[) = 0;
-    local($_);
-
-    @datakeys = ();
-
-    foreach (@db) {
-	%rec = &main'aid_split($_);  #'#
-	push(@datakeys, "\L$rec{'sn'}\0$rec{'gn'}\0$rec{'mi'}\0$rec{'mn'}\0$rec{'yr'}\E");
-    }
-
-    @db[sort bydatakeys $[..$#db];
 }
 
 sub aid_vcard_path {
@@ -1195,7 +1170,7 @@ sub aid_rebuild_secondary_keys
     local(%alpha_latest) = ();
 
     # first pass -- gather all names with alpha data
-    print STDERR "$0: fixing up generated keys..." unless $quiet;
+    print STDERR "$0: building index..." unless $quiet;
     while(($key,$val) = each(%DB))
     {
 	if ($key =~ /^\d+$/)
@@ -1460,7 +1435,7 @@ if ($^W && 0)
     &aid_about_text();
     &aid_verbose_entry();
     &aid_html_entify_str();
-    &aid_alpha_db();
+    &aid_create_db();
     &aid_parse();
     &aid_join();
     &aid_affiliate();
