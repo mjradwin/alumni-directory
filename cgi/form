@@ -4,7 +4,7 @@
 #     FILE: mvhsaid.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: MVHS Alumni Internet Directory CGI interface
-#      $Id: mvhsaid,v 1.9 1997/03/25 20:58:13 mjr Exp $
+#      $Id: mvhsaid,v 1.10 1997/03/26 17:43:22 mjr Exp mjr $
 #
 
 require 'mv_util.pl';
@@ -33,7 +33,7 @@ close(SUBMIT_FTR);
 # debugging: what version is installed?
 if (defined($in{'version'})) {
     print @submit_hdr, "\n";
-    print '<pre>Version: $Id: mvhsaid,v 1.9 1997/03/25 20:58:13 mjr Exp $</pre>', "\n";
+    print '<pre>Version: $Id: mvhsaid,v 1.10 1997/03/26 17:43:22 mjr Exp mjr $</pre>', "\n";
     print @submit_ftr, "\n";
     
     exit(0);
@@ -60,7 +60,7 @@ if ($in{'about'} =~ /^\d+$/) {
     if (defined($db[$in{'about'}])) {
 	&send_about($db[$in{'about'}]);
     } else {
-	&send_upd_real(";-1;1;;;;MVHS;;;",0,0);
+	&send_upd_real(";-1;2;;;;MVHS;;;",0,0);
     }
     exit(0);
 }
@@ -70,7 +70,7 @@ if ($in{'about'} =~ /^\d+$/) {
 foreach (@required_headers) {
     if (!defined($in{$_})) {
 	# wrong form
-	&send_upd_real(";-1;1;;;;MVHS;;;",0,0);
+	&send_upd_real(";-1;2;;;;MVHS;;;",0,0);
 	exit(0);
     }
 }
@@ -84,7 +84,7 @@ $in{'grad'} =~ s/^\'(\d+)\s*$/$1/;
 $in{'grad'} =~ s/^19(\d+)\s*$/$1/;
 $in{'grad'} =~ s/^20(\d+)\s*$/$1/;
 
-$in{'request'} = (defined($in{'request'})) ? 1 : 0;
+#$in{'request'} = (defined($in{'request'})) ? 1 : 0;
 $in{'school'} = ($in{'school'} eq 'Other' && $in{'sch_other'} ne '') ? 
     $in{'sch_other'} : $in{'school'};
 
@@ -178,7 +178,8 @@ sub about_text {
     if ($show_req_p) {
 	$retval .= "\n";
 	$retval .= "Send Email Updates: ";
-	$retval .= ($req) ? "yes\n" : "no\n";
+	$retval .= ($req == 2) ? "yes (sorted by graduating class)\n" :
+	    ($req == 1) ? "yes (sorted by name)\n" : "no\n";
     } 
 
     if ($time ne '') {
