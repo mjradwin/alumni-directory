@@ -2,7 +2,7 @@
 #     FILE: Makefile
 #   AUTHOR: Michael J. Radwin
 #    DESCR: Makefile for building the Alumni Internet Directory
-#      $Id: Makefile,v 3.52 1999/02/16 19:21:49 mradwin Exp mradwin $
+#      $Id: Makefile,v 3.53 1999/02/24 20:55:02 mradwin Exp mradwin $
 #
 
 WWWROOT=/home/web/radwin.org
@@ -49,7 +49,7 @@ SNAPSHOTFILES=mvhs \
 	web/mvhs-alumni/whatsnew
 
 all:	$(CGIDIR)/nph-mvhsaid \
-	adrfile stats index submit \
+	stats index submit \
 	addupdate reunions links faq copyright \
 	recent multi_class multi_alpha \
 	pages class awalt goners download books2
@@ -64,11 +64,6 @@ $(DBFILE):	$(ADR_MASTER) $(BIN_DBM_WRITE) $(AID_UTIL_PL)
 	$(RM) $(DBFILE)
 	$(MV) ./master.db $(DBFILE)
 	chmod 0444 $(DBFILE)
-
-ADRFILE=$(WWWDIR)/master.adr
-adrfile:	$(ADRFILE) $(DBFILE)
-$(ADRFILE):	$(ADR_MASTER)
-	$(CP) $(ADR_MASTER) $(WWWDIR)
 
 MULTI_ALPHA=$(WWWDIR)/alpha/a-index.html
 multi_alpha:	$(MULTI_ALPHA)
@@ -110,7 +105,7 @@ $(MULTI_CLASS):	$(DBFILE) $(BIN_MULTI_CLASS)
 
 INDEX=$(WWWDIR)/index.html
 index:	$(INDEX)
-$(INDEX):	$(MVHSDIR)/data/index.include $(BIN_HOME) $(ADR_MASTER)
+$(INDEX):	$(MVHSDIR)/data/index.include $(BIN_HOME) $(DBFILE)
 	$(BIN_HOME) -p0 -i $(MVHSDIR)/data/index.include \
 		-t '' \
 		$(INDEX)
@@ -145,8 +140,8 @@ $(COPYRIGHT):	$(MVHSDIR)/data/copyright.include $(BIN_HOME)
 
 STATS=$(WWWDIR)/etc/stats.txt
 stats:	$(STATS)
-$(STATS):	$(BIN_STATS) $(ADR_MASTER)
-	$(BIN_STATS) > $(STATS)
+$(STATS):	$(BIN_STATS) $(DBFILE)
+	$(BIN_STATS) $(DBFILE) $(STATS)
 
 SUBMIT=$(WWWDIR)/add/new.html
 submit:	$(SUBMIT)
