@@ -2,7 +2,7 @@
 
 #
 # mails a welcome, update, confirm, or massmail message to members
-# $Id: aid_welcome,v 5.35 2003/03/14 20:32:27 mradwin Exp mradwin $
+# $Id: aid_welcome,v 5.36 2003/05/15 00:20:29 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -34,11 +34,11 @@ use lib "/pub/m/r/mradwin/private/lib/perl5/site_perl";
 use DB_File::Lock;
 use Net::SMTP; 
 
-$default_sleep = 0;
-$default_massmail_sleep = 5;
+my $default_sleep = 0;
+my $default_massmail_sleep = 5;
 
 $0 =~ s,.*/,,;  # basename
-$usage = "usage: $0 [options] infile.db [target ids...]
+my $usage = "usage: $0 [options] infile.db [target ids...]
     -h            Display usage information.
     -a            Mail all users in <infile.db> matching -r <reqtype>.
     -d <secs>     Sleep for <secs> seconds between sending e-mail
@@ -53,25 +53,25 @@ Mutually exclusive optional message types (instead of 'welcome' e-mail):
     -s <textfile> Special massmail contents of <textfile>.
 ";
 
-@args = @ARGV;
+my @args = @ARGV;
 
-getopts('hd:r:ucm:l:as:') || die "$usage\n";
-$opt_h && die "$usage\n";
-$opt_h = $opt_h;                # avoid warning
+my(%opts);
+getopts('hd:r:ucm:l:as:', \%opts) || die "$usage\n";
+$opts{'h'} && die "$usage\n";
 $a = $b = 0;                    # avoid warning
 die "$0: Too many mutually-exclusive options\n$usage\n"
-    if (($opt_c ? 1 : 0) + ($opt_u ? 1 : 0) + ($opt_m ? 1 : 0) +
-	($opt_s ? 1 : 0)) > 1;
+    if (($opts{'c'} ? 1 : 0) + ($opts{'u'} ? 1 : 0) + ($opts{'m'} ? 1 : 0) +
+	($opts{'s'} ? 1 : 0)) > 1;
 die "$0: No database file specified\n$usage\n" unless $ARGV[0];
-die "$0: No target ids specified\n$usage\n" unless ($ARGV[1] || $opt_a);
+die "$0: No target ids specified\n$usage\n" unless ($ARGV[1] || $opts{'a'});
 die "$0: Option -m requires -r\n$usage\n" 
-    if defined($opt_m) && !defined($opt_r);
+    if defined($opts{'m'}) && !defined($opts{'r'});
 die "$0: Option -a requires -r\n$usage\n" 
-    if defined($opt_a) && !defined($opt_r);
+    if defined($opts{'a'}) && !defined($opts{'r'});
 
-$directory_name = &aid_config('short_school') . ' Alumni Internet Directory';
+my $directory_name = &aid_config('short_school') . ' Alumni Internet Directory';
 
-%confirm_parameters = 
+my %confirm_parameters = 
     (
      'subject'	=>	$directory_name,
      'log'	=>	'confirm',
@@ -88,7 +88,7 @@ correct, NO ACTION IS REQUIRED ON YOUR PART.\n\n",
      'closing'	=>	'',
      );
 
-%welcome_parameters = 
+my %welcome_parameters = 
     (
      'subject'	=>	$directory_name,
      'log'	=>	'welcome',
@@ -107,7 +107,7 @@ Once again, welcome to the Alumni Internet Directory!
 ",
      );
 
-%update_parameters = 
+my %update_parameters = 
     (
      'subject'	=>	$directory_name,
      'log'	=>	'update',
@@ -125,7 +125,7 @@ you're all set.
 ",
      );
 
-%massmail_parameters = 
+my %massmail_parameters = 
     (
      'subject'	=>	$directory_name,
      'log'	=>	'massmail',
@@ -143,7 +143,7 @@ by visiting the above URL.
 ",
      );
 
-%special_parameters = 
+my %special_parameters = 
     (
      'subject'	=>	$directory_name,
      'log'	=>	'special',
@@ -154,23 +154,23 @@ by visiting the above URL.
      'closing'	=>	'',
      );
 
-%params = $opt_c ? %confirm_parameters : 
-    $opt_u ? %update_parameters :
-    $opt_s ? %special_parameters :
-    $opt_m ? %massmail_parameters :
+my %params = $opts{'c'} ? %confirm_parameters : 
+    $opts{'u'} ? %update_parameters :
+    $opts{'s'} ? %special_parameters :
+    $opts{'m'} ? %massmail_parameters :
     %welcome_parameters;
 
-$logfile = $opt_l ? $opt_l :
+my $logfile = $opts{'l'} ? $opts{'l'} :
     &aid_config('aiddir') . "logs/" . $params{'log'} . '.log';
 
-if ($opt_s || $opt_m) {
-    my $f = $opt_s || $opt_m;
+if ($opts{'s'} || $opts{'m'}) {
+    my $f = $opts{'s'} || $opts{'m'};
     open(TEXTFILE,$f) || die "$0: Can't open $f: $!\n";
     while(<TEXTFILE>) { $params{'textfile'} .= $_; }
     close(TEXTFILE);
 }
 
-$params{'sleep'} = $opt_d if defined $opt_d;
+$params{'sleep'} = $opts{'d'} if defined $opts{'d'};
 
 my $dbmfile = shift;
 die "$0: $dbmfile: $!\n" unless -r $dbmfile;
@@ -184,12 +184,12 @@ die "invalid DB: $dbmfile\n" unless defined $DB{'_class'};
 open(LOG,">>$logfile") || die "$0: Can't open $logfile: $!\n";
 select(LOG); $| = 1; select(STDOUT);
 
-$today = &ctime(time);
+my $today = &ctime(time);
 chop $today;
 
 print LOG "# [$today] - $0 ", join(' ', @args), "\n";
 
-if ($opt_a)
+if ($opts{'a'})
 {
     @ARGV = ();
 
@@ -200,9 +200,9 @@ if ($opt_a)
 	    %rec = &aid_db_unpack_rec($key,$val);
 
 	    next unless $rec{'v'};
-	    next if $opt_m && $rec{'q'} != $opt_r;
+	    next if $opts{'m'} && $rec{'q'} != $opts{'r'};
 
-	    if ($opt_c)
+	    if ($opts{'c'})
 	    {
 		next unless $rec{'q'} == 0;
 		next unless &aid_is_old($rec{'f'});
@@ -216,26 +216,26 @@ if ($opt_a)
 }
 
 my(%lm);
-foreach (@ARGV)
+my($id);
+foreach $id (@ARGV)
 {
-    unless (/^\d+$/)
+    unless ($id =~ /^\d+$/)
     {
-	warn "$0: skipping target `$_' (invalid id)\n";
+	warn "$0: skipping target `$id' (invalid id)\n";
 	next;
     }
     
-    unless (defined $DB{$_})
+    unless (defined $DB{$id})
     {
-	warn "$0: skipping target `$_' (missing from $dbmfile)\n";
+	warn "$0: skipping target `$id' (missing from $dbmfile)\n";
 	next;
     }
 
-    %rec = &aid_db_unpack_rec($_,$DB{$_});
+    %rec = &aid_db_unpack_rec($id,$DB{$id});
 
-    $time = time;
-    if (&mail_user($time, *rec))
+    if (mail_user(*rec))
     {
-	$lm{$_} = $time;
+	$lm{$id} = time;
 	sleep($params{'sleep'}) if $params{'sleep'} > 0;
     }
 }
@@ -263,8 +263,8 @@ exit(0);
 
 sub mail_user
 {
-    local($time,*rec) = @_;
-    local($message,$name,@mailto);
+    local(*rec) = @_;
+    my($message,$name,@mailto);
 
     if ($rec{'v'} == 0)
     {
@@ -298,7 +298,7 @@ sub mail_user
     $name =~ s/\"/\'/g;
 
     @mailto = ($name,$rec{'e'});
-    if ($opt_u && defined $rec{'eo'} &&
+    if ($opts{'u'} && defined $rec{'eo'} &&
 	$rec{'eo'} ne '' && "\L$rec{'eo'}\E" ne "\L$rec{'e'}\E")
     {
 	push(@mailto,$name,$rec{'eo'});
@@ -309,7 +309,7 @@ sub mail_user
 
     for ($i = 0; $status == 0 && $i < 3; $i++)
     {
-	$time = time;
+	my $time = time;
 	$status = &aid_sendmail(
 	    &aid_config('admin_email'),
 	    &aid_config('short_school') . ' Alumni Robot',
@@ -322,7 +322,7 @@ sub mail_user
 	print LOG $time, " - $rec{'id'} - $rec{'e'} - $status\n";
 
 	print LOG $time, " - $rec{'id'} - $rec{'eo'} - $status - OLD\n"
-	    if ($opt_u && defined $rec{'eo'} &&
+	    if ($opts{'u'} && defined $rec{'eo'} &&
 		$rec{'eo'} ne '' && "\L$rec{'eo'}\E" ne "\L$rec{'e'}\E");
     }
 
@@ -333,8 +333,8 @@ sub message_body
 {
     local($[) = 0;
     local(*rec) = @_;
-    local($about) = &aid_about_text(*rec,1,0,0);
-    local($denied) = $rec{'q'} == 0 ?
+    my $about = &aid_about_text(*rec,1,0,0);
+    my $denied = $rec{'q'} == 0 ?
 	"
 Since you asked not to receive quarterly Directory
 digests via e-mail, you will only receive bi-yearly
