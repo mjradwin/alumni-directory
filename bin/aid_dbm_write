@@ -1,6 +1,6 @@
 #!/usr/bin/perl -w
 
-# $Id$
+# $Id: aid_dbm_write,v 1.1 1999/01/21 16:40:17 mradwin Exp mradwin $
 
 require 'aid_util.pl';
 
@@ -12,23 +12,22 @@ for (@db)
 {
     next unless defined($_) && $_ ne '';
     %rec = &aid_split($_);
+
     $DB{$rec{'id'}} = 
 	pack("C3N4", $rec{'valid'}, $rec{'request'}, $rec{'reunion'},
-	     $rec{'bounce'}, $rec{'created'}, $rec{'time'}, $rec{'fresh'});
+	     $rec{'bounce'}, $rec{'created'}, $rec{'time'}, $rec{'fresh'}) .
+	join("\0",
+	     $rec{'last'},
+	     $rec{'married'},
+	     $rec{'first'},
+	     $rec{'school'},
+	     $rec{'year'},
+	     $rec{'email'},
+	     $rec{'www'},
+	     $rec{'location'},
+	     $rec{'inethost'}
+	     );
+
+    $DB{$rec{'email'}} = $rec{'id'};
 }
 dbmclose(DB);
-
-
-dbmopen(DB2, 'master', 0444);
-while (($key,$val) = each %DB2)
-{
-    undef %rec;
-    ($rec{'valid'}, $rec{'request'}, $rec{'reunion'},
-     $rec{'bounce'}, $rec{'created'}, $rec{'time'}, $rec{'fresh'}) =
-	 unpack("C3N4", $val);
-
-    print $key, ' = ', join(';', $rec{'valid'}, $rec{'request'}, 
-			    $rec{'reunion'},  $rec{'bounce'}, $rec{'created'},
-			    $rec{'time'}, $rec{'fresh'}), "\n";
-}
-dbmclose(DB2);
