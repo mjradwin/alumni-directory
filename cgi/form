@@ -4,7 +4,7 @@
 #     FILE: mvhsaid.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: Alumni Internet Directory CGI interface
-#      $Id: mvhsaid,v 3.84 1999/03/10 19:27:45 mradwin Exp mradwin $
+#      $Id: mvhsaid,v 3.85 1999/03/17 19:07:41 mradwin Exp mradwin $
 #
 
 require 'aid_util.pl';
@@ -22,7 +22,7 @@ if ($ENV{'SCRIPT_NAME'} =~ m,/nph-,)
 # configuration
 $mailprog = &aid_config('mailprog');
 $dbmfile = &aid_config('wwwdir') . 'master';
-$rcsid = '$Id: mvhsaid,v 3.84 1999/03/10 19:27:45 mradwin Exp mradwin $'; #'fnt
+$rcsid = '$Id: mvhsaid,v 3.85 1999/03/17 19:07:41 mradwin Exp mradwin $'; #'fnt
 
 $listing_upd_title = 'Update Your Directory Listing';
 $listing_upl_title = 'Select a Listing to Update';
@@ -139,13 +139,11 @@ if (defined($in{'version'})) {
     $in{'plusminus'} = defined $in{'plusminus'} && 
 	($in{'plusminus'} eq 'on' || $in{'plusminus'} == 1) ? 1 : 0;
 
-    if ($in{'email'} !~ /[^\@]+\@([^\.]+\.)+\w\w\w?/)
+    if (! &is_email_okay($in{'email'}))
     {
-	$blankp = ($in{'email'} =~ /^\s*$/ || $in{'email'} eq '(your email)');
-
 	print "Content-Type: text/html\015\012\015\012";
-	print &common_html_hdr(-1, ($blankp ? 'Blank' : 'Invalid') .
-			       ' Email Address',1);
+	print &common_html_hdr(-1, (($in{'email'} =~ /^\s*$/) ? 'Blank' :
+				    'Invalid') . ' Email Address',1);
 	print "\n";
 	print "<p>You must submit a valid, non-blank email address to ";
 	print "download address books.\n";
@@ -212,21 +210,6 @@ if ($in{'year'} =~ /^\d\d$/) {
 $in{'reunion'} = (defined $in{'reunion'} && 
 		  ($in{'reunion'} eq 'on' || $in{'reunion'} == 1)) ? 1 : 0;
 
-# lowercase the hostname portion of the email address
-if ($in{'email'} =~ /\@/)
-{
-    ($mail_user, $mail_addr) = split(/\@/, $in{'email'});
-	
-    # test for initial-cap, rest lower user
-    $lower_user = "\L$mail_user\E";
-    $mail_user = $lower_user if $mail_user eq "\u$lower_user";
-
-    # test for all-caps user
-    $mail_user = $lower_user if $mail_user eq "\U$mail_user\E";
-
-    $in{'email'} = $mail_user . '@' . "\L$mail_addr\E";
-}
-
 # uncapitalize those overzealous capslock names
 $in{'first'} = "\L$in{'first'}\E"
     if ($in{'first'} eq "\U$in{'first'}\E") && $in{'first'} !~ /\./;
@@ -256,20 +239,38 @@ $in{'married'} = '' if defined $in{'married'} &&
      $in{'married'} =~ /\(?\s*same\s*\)?/i ||
      $in{'married'} eq $in{'last'});
 
-# did they have non-blank entries for all the required fields?
-@blank_fields = ();
-foreach (@required_headers) {
-    if (($in{$_} =~ /^\s*$/) ||
-	($_ eq 'email' && $in{'email'} !~ /\@/))
-    {
-	push(@blank_fields, $_);
-    }
+# did they have non-empty entries for all the required fields?
+$empty_fields = '';
+foreach (@required_headers) 
+{
+    $empty_fields .= $_ . "\t"
+	if ($in{$_} =~ /^\s*$/);
 }
 
-if (@blank_fields)
+# lowercase the hostname portion of the email address
+$in{'email'} =~ s/\s//g;
+if (&is_email_okay($in{'email'}))
+{
+    ($mail_user, $mail_addr) = split(/\@/, $in{'email'});
+	
+    # test for initial-cap, rest lower user
+    $lower_user = "\L$mail_user\E";
+    $mail_user = $lower_user if $mail_user eq "\u$lower_user";
+
+    # test for all-caps user
+    $mail_user = $lower_user if $mail_user eq "\U$mail_user\E";
+
+    $in{'email'} = $mail_user . '@' . "\L$mail_addr\E";
+}
+elsif ($empty_fields !~ /\bemail\b/)
+{
+    $empty_fields .= 'email';
+}
+
+if ($empty_fields ne '')
 {
     delete $in{'time'};
-    &send_upd_real(*in,join(' ', @blank_fields));
+    &send_upd_real(*in,$empty_fields);
     close(STDOUT);
     exit(0);
 }
@@ -412,7 +413,7 @@ for behind-the-scenes details.</p>
 
 
 sub send_upd_real {
-    local(*rec,$blank_entries) = @_;
+    local(*rec,$empty_fields) = @_;
 
     print "Content-Type: text/html\015\012\015\012";
 
@@ -422,7 +423,7 @@ sub send_upd_real {
 			   1,
 			   defined $rec{'time'} ? $rec{'time'} : undef);
 
-    print &submit_body(*rec,$blank_entries);
+    print &submit_body(*rec,$empty_fields);
     print &common_html_ftr(-1);
 }
 
@@ -608,4 +609,18 @@ sub jump_bar {
     }
  
     $retval;
+}
+
+sub is_email_okay
+{
+    local($_) = @_;
+
+    if (/^\s*[^\@\s\(\)\"]+\@([^\.\s\(\)\"]+\.)+\w\w\w?\s*$/)
+    {
+	1;
+    }
+    else
+    {
+	0;
+    }
 }

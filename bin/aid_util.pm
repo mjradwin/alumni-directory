@@ -2,11 +2,11 @@
 #     FILE: aid_util.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: perl library routines for the Alumni Internet Directory
-#      $Id: aid_util.pl,v 4.66 1999/03/16 19:50:20 mradwin Exp mradwin $
+#      $Id: aid_util.pl,v 4.67 1999/03/16 19:53:00 mradwin Exp mradwin $
 #
 
 $aid_util'rcsid =
- '$Id: aid_util.pl,v 4.66 1999/03/16 19:50:20 mradwin Exp mradwin $';
+ '$Id: aid_util.pl,v 4.67 1999/03/16 19:53:00 mradwin Exp mradwin $';
 
 # ----------------------------------------------------------------------
 # CONFIGURATION
@@ -657,10 +657,10 @@ sub submit_body {
     local($_);
     local($body,$instr);
     local($star) = "<font color=\"#$star_fg\">*</font>";
-    local(*rec_arg,$blank_entries) = @_;
+    local(*rec_arg,$empty_fields) = @_;
     local(%rec) = &main'rec_html_entify(*rec_arg); #'#
     local(@school_checked) = ('', '', '', '');
-    local(@reqchk,$i,$reunion_chk,@blankies,$prev_email);
+    local(@reqchk,$i,$reunion_chk,@empty_fields,$prev_email);
 
     $prev_email = defined $rec{'prev_email'} ? 
 	$rec{'prev_email'} : $rec{'email'};
@@ -681,30 +681,32 @@ sub submit_body {
 
     $body = '';
 
-    if ($blank_entries ne '')
+    if ($empty_fields ne '')
     {
-	if ($blank_entries =~ /email/ &&
-	    $rec{'email'} ne '' && $rec{'email'} !~ /\@/)
+	if ($empty_fields =~ /email/ && $rec{'email'} !~ /^\s*$/)
 	{
 	    $body .= "<p><strong><span class=\"alert\">Your e-mail\n";
-	    $body .= "address appears to be missing a domain name.</span>\n";
+	    $body .= "address appears to be invalid.</span>\n";
 	    $body .= "<br>It must be in the form of ";
 	    $body .= "<code>user\@isp.net</code>.\n";
-	    $body .= "Perhaps you meant to type ";
-	    $body .= "<code>$rec{'email'}\@aol.com</code>?\n";
+	    if ($rec{'email'} !~ /\@/)
+	    {
+		$body .= "Perhaps you meant to type ";
+		$body .= "<code>$rec{'email'}\@aol.com</code>?\n";
+	    }
 	    $body .= "</strong></p>\n\n";
 
-	    $blank_entries =~ s/email//g;
+	    $empty_fields =~ s/email//g;
 	}
 
-	@blankies = split(/\s+/, $blank_entries);
-	if (@blankies)
+	@empty_fields = split(/\s+/, $empty_fields);
+	if (@empty_fields)
 	{
 	    $body .= "<p class=\"alert\"><strong>It appears that\n";
 	    $body .= "the following required fields were blank:";
 	    $body .= "</strong></p>\n\n<ul>\n";
 
-	    foreach(@blankies)
+	    foreach(@empty_fields)
 	    {
 		$body .= "<li>" . $field_descr{$_} . "\n";
 	    }
