@@ -2,7 +2,7 @@
 
 #
 # mails a welcome, update, confirm, or massmail message to members
-# $Id: aid_welcome,v 5.32 2002/06/16 18:08:12 mradwin Exp mradwin $
+# $Id: aid_welcome,v 5.33 2002/06/17 19:58:37 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -52,86 +52,103 @@ Mutually exclusive optional message types (instead of 'welcome' e-mail):
     -u            Send 'update' e-mail.
     -c            Send 'confirmation' e-mail.
     -m <textfile> Massmail the contents of <textfile>.
+    -s <textfile> Special massmail contents of <textfile>.
 ";
 
 $directory_name = &aid_config('short_school') . ' Alumni Internet Directory';
 
 %confirm_parameters = 
     (
-     'subject',  $directory_name,
-     'log',      'confirm',
-     'intro', 
+     'subject'	=>	$directory_name,
+     'log'	=>	'confirm',
+     'sleep'	=>	$default_sleep,
+     'listing'	=>	1,
+     'intro'	=>
      "You were sent this address verification message because
 it has been 6 months since we last confirmed your
 Directory listing.  Please make sure your infromation
 below is still current.  If everything you see below is
 correct, NO ACTION IS REQUIRED ON YOUR PART.\n\n",
 
-     'textfile', '',
-     'closing',  '',
-     'sleep',    $default_sleep,
+     'textfile'	=>	'',
+     'closing'	=>	'',
      );
 
 %welcome_parameters = 
     (
-     'subject',  $directory_name,
-     'log',      'welcome',
-     'intro',    
+     'subject'	=>	$directory_name,
+     'log'	=>	'welcome',
+     'sleep'	=>	$default_sleep,
+     'listing'	=>	1,
+     'intro'	=>
      "Welcome!  Your submission has been processed and you
 are now listed on-line in the Directory.\n\n",
-     'textfile', '',
-     'closing',
+     'textfile'	=>	'',
+     'closing'	=>
 "
 Otherwise, if everything you see above is correct,
 you're all set.
 
 Once again, welcome to the Alumni Internet Directory!
 ",
-     'sleep',    $default_sleep,
      );
 
 %update_parameters = 
     (
-     'subject',  $directory_name,
-     'log',      'update',
-     'intro',
+     'subject'	=>	$directory_name,
+     'log'	=>	'update',
+     'sleep'	=>	$default_sleep,
+     'listing'	=>	1,
+     'intro'	=>
      "Your contact information has been updated and the
 changes are now visible on-line.\n\n",
 
-     'textfile', '',
-     'closing',
+     'textfile'	=>	'',
+     'closing'	=>
 "
 Otherwise, if everything you see above is correct,
 you're all set.
 ",
-     'sleep',    $default_sleep,
      );
 
 %massmail_parameters = 
     (
-     'subject',  $directory_name,
-     'log',      'massmail',
-     'intro',
+     'subject'	=>	$directory_name,
+     'log'	=>	'massmail',
+     'sleep'	=>	$default_massmail_sleep,
+     'listing'	=>	1,
+     'intro'	=>
      "Per your request, your quarterly digest of the
 Directory appears at the end of this message.\n\n",
-     'textfile', '',
-     'closing',
+     'textfile'	=>	'',
+     'closing'	=>
 "
 You also may change your quarterly digest preference
 by visiting the above URL.
 
 ",
-     'sleep',    $default_massmail_sleep,
+     );
+
+%special_parameters = 
+    (
+     'subject'	=>	$directory_name,
+     'log'	=>	'special',
+     'sleep'	=>	$default_massmail_sleep,
+     'listing'	=>	0,
+     'intro'	=>	'',
+     'textfile'	=>	'',
+     'closing'	=>	'',
      );
 
 @args = @ARGV;
 
-getopts('hd:r:ucm:l:a') || die "$usage\n";
+getopts('hd:r:ucm:l:as:') || die "$usage\n";
 $opt_h && die "$usage\n";
 $opt_h = $opt_h;                # avoid warning
 $a = $b = 0;                    # avoid warning
 die "$0: Too many mutually-exclusive options\n$usage\n"
-    if (($opt_c ? 1 : 0) + ($opt_u ? 1 : 0) + ($opt_m ? 1 : 0)) > 1;
+    if (($opt_c ? 1 : 0) + ($opt_u ? 1 : 0) + ($opt_m ? 1 : 0) +
+	($opt_s ? 1 : 0)) > 1;
 die "$0: No database file specified\n$usage\n" unless $ARGV[0];
 die "$0: No target ids specified\n$usage\n" unless ($ARGV[1] || $opt_a);
 die "$0: Option -m requires -r\n$usage\n" 
@@ -141,14 +158,16 @@ die "$0: Option -a requires -r\n$usage\n"
 
 %params = $opt_c ? %confirm_parameters : 
     $opt_u ? %update_parameters :
+    $opt_s ? %special_parameters :
     $opt_m ? %massmail_parameters :
     %welcome_parameters;
 
 $logfile = $opt_l ? $opt_l :
     &aid_config('aiddir') . "logs/" . $params{'log'} . '.log';
 
-if ($opt_m) {
-    open(TEXTFILE,$opt_m) || die "$0: Can't open $opt_m: $!\n";
+if ($opt_s || $opt_m) {
+    my $f = $opt_s || $opt_m;
+    open(TEXTFILE,$f) || die "$0: Can't open $f: $!\n";
     while(<TEXTFILE>) { $params{'textfile'} .= $_; }
     close(TEXTFILE);
 }
@@ -274,7 +293,13 @@ sub mail_user
 	return 0;
     }
 
-    $message = &message_body(*rec) . $params{'textfile'} .
+    if ($params{'listing'}) {
+	$message = &message_body(*rec);
+    } else {
+	$message = '';
+    }
+
+    $message .= $params{'textfile'} .
 	"\n-- \n" . &aid_config('short_school') . 
 	" Alumni Internet Directory\n" .
 	"http://" . &aid_config('master_srv') . &aid_config('master_path');
