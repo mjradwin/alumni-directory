@@ -4,7 +4,7 @@
 #     FILE: mvhsaid.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: MVHS Alumni Internet Directory CGI interface
-#      $Id: mvhsaid,v 3.35 1998/11/05 17:24:45 mradwin Exp mradwin $
+#      $Id: mvhsaid,v 3.36 1998/11/06 18:55:22 mradwin Exp mradwin $
 #
 
 require 'aid_util.pl';
@@ -24,7 +24,7 @@ if (defined($ENV{'PATH_INFO'}) && $ENV{'PATH_INFO'} =~ m,^/vcard/,) {
     $in{'vcard'} =~ s,^/vcard/(\d+).*$,$1,;
 }
 
-$rcsid = '$Id: mvhsaid,v 3.35 1998/11/05 17:24:45 mradwin Exp mradwin $'; #'fnt
+$rcsid = '$Id: mvhsaid,v 3.36 1998/11/06 18:55:22 mradwin Exp mradwin $'; #'fnt
 
 # special flags: version, update, vcard, about
 #
@@ -32,7 +32,7 @@ $rcsid = '$Id: mvhsaid,v 3.35 1998/11/05 17:24:45 mradwin Exp mradwin $'; #'fnt
 # instead of processing a form request.
 if (defined($in{'version'})) {
     select(STDOUT);  $| = 1;
-    print "Content-type: text/plain\n\n$rcsid\r\n";
+    print "Content-type: text/plain\r\n\r\n$rcsid\r\n";
     print &aid_config('rcsid'), "\r\n";
     exit(0);
 
@@ -79,10 +79,10 @@ if (defined($in{'version'})) {
 	if (defined($db[$in{'vcard'}])) {
 	    &send_vcard($db[$in{'vcard'}]);
 	} else {
-	    &send_upd_real(*aid_util'blank_entry,'');
+	    &send_upd_real(*aid_util'blank_entry,''); #'#
 	}
     } else {
-	&send_upd_real(*aid_util'blank_entry,'');
+	&send_upd_real(*aid_util'blank_entry,''); #'#
     }
     exit(0);
 
@@ -91,10 +91,34 @@ if (defined($in{'version'})) {
     if (defined($db[$in{'about'}])) {
 	&send_about($db[$in{'about'}]);
     } else {
-	&send_upd_real(*aid_util'blank_entry,'');
+	&send_upd_real(*aid_util'blank_entry,''); #'#
     }
     exit(0);
 
+} elsif (defined($in{'download'})) {
+    $in{'plusminus'} = defined $in{'plusminus'} && 
+	($in{'plusminus'} eq 'on' || $in{'plusminus'} == 1) ? 1 : 0;
+
+    if ($in{'email'} !~ /[^\@]+\@([^\.]+\.)+\w\w\w?/)
+    {
+	$blankp = ($in{'email'} =~ /^\s*$/ || $in{'email'} eq '(your email)');
+
+	select(STDOUT);  $| = 1;
+	print "Content-type: text/html\r\n\r\n";
+	print &common_html_hdr(-1, ($blankp ? 'Blank' : 'Invalid') .
+			       ' Email Address',1);
+	print "\n";
+	print "<p>You must submit a valid, non-blank email address to ";
+	print "download address books.\n";
+	print "<p>Please <a href=\"" . &aid_config('master_path') .
+	    "download/\">try again</a>.</p>\n";
+	print &common_html_ftr(-1);
+    }
+    elsif (defined $in{'format'} && defined $in{'year'})
+    {
+	&send_address_book($in{'format'},$in{'year'},$in{'plusminus'});
+    }
+    exit(0);
 }
 
 
@@ -103,7 +127,7 @@ if (defined($in{'version'})) {
 foreach (@required_headers) {
     if (!defined($in{$_})) {
 	# wrong form
-	&send_upd_real(*aid_util'blank_entry,'');
+	&send_upd_real(*aid_util'blank_entry,''); #'#
 	exit(0);
     }
 }
@@ -218,7 +242,7 @@ sub confirm_submission {
     local($cgi_path) = &aid_config('cgi_path');
 
     select(STDOUT);  $| = 1;
-    print "Content-type: text/html\n\n";
+    print "Content-type: text/html\r\n\r\n";
     print &common_html_hdr(-1,'Please confirm your submission',1);
     print "\n<p>\n<strong><font color=\"#" . $aid_util'star_fg . "\">"; #'#
     print "Please confirm that all of the below information is
@@ -290,7 +314,7 @@ EOM
 ");
 
     select(STDOUT);  $| = 1;
-    print "Content-type: text/html\n\n";
+    print "Content-type: text/html\r\n\r\n";
     print &common_html_hdr(-1,'Your submission is confirmed and queued',1);
 
     $fullname = &inorder_fullname(*in);
@@ -329,7 +353,7 @@ sub send_upd_real {
     local(*rec,$blank_entries) = @_;
 
     select(STDOUT);  $| = 1;
-    print "Content-type: text/html\n\n";
+    print "Content-type: text/html\r\n\r\n";
 
     print &common_html_hdr(-1,
 			   (($rec{'id'} == -1) ? 
@@ -349,7 +373,7 @@ sub send_about {
     $rec{'message'} = &aid_get_usertext($rec{'id'});
 
     select(STDOUT);  $| = 1;
-    print "Content-type: text/html\n\n";
+    print "Content-type: text/html\r\n\r\n";
     print &common_html_hdr(-1,$fullname,1);
     print "<p>Here is more detailed information about $fullname.\n";
     print "To update this entry, please review the information and\n";
@@ -383,8 +407,48 @@ sub send_vcard {
     local(%rec) = &aid_split($rawdata);
 
     select(STDOUT);  $| = 1;
-    print "Content-type: text/x-vCard\n\n";
+    print "Content-type: text/x-vcard\r\n\r\n";
     print &aid_vcard_text(*rec);
+}
+
+
+sub send_address_book {
+    local($format,$year,$plusminus_p) = @_;
+    local(@class_db) = &aid_class_db($dbfile);
+    local($_,%rec,$minyr,$maxyr);
+    local($subtype) = 'plain';
+
+    if ($format eq 'o') {
+	$subtype = 'x-csv';
+    } elsif ($format eq 'v') {
+	$subtype = 'directory';
+    } elsif ($format eq 'l') {
+	$subtype = 'ldif';
+    } elsif ($format eq 'n') {
+	$subtype = 'html';
+    }
+
+    if ($plusminus_p) {
+	$minyr = $year - 3;
+	$maxyr = $year + 3;
+    } else {
+	$minyr = $maxyr = $year;
+    }
+    
+    select(STDOUT);  $| = 1;
+    print "Content-type: text/$subtype;charset=ISO-8859-1\r\n\r\n";
+    &aid_book_write_prefix(*STDOUT,$format);
+    foreach (@class_db)
+    {
+	next unless defined $_ && $_ ne '';
+	%rec = &aid_parse($_);
+	next unless $rec{'valid'};
+	next unless ($rec{'year'} <= $maxyr && $rec{'year'} >= $minyr);
+
+	&aid_book_write_entry(*STDOUT,$format,*rec);
+    }
+
+    &aid_book_write_suffix(*STDOUT,$format);
 }
 
 
@@ -393,7 +457,7 @@ sub send_upd_notfound {
     local($_);
 
     select(STDOUT);  $| = 1;
-    print "Content-type: text/html\n\n";
+    print "Content-type: text/html\r\n\r\n";
     print &common_html_hdr(-1,'Update Your Directory Entry',1);
     print "\n";
     print "<p>Unable to find existing entry with email address\n";
@@ -412,7 +476,7 @@ sub send_upd_list {
     local(%rec);
 
     select(STDOUT);  $| = 1;
-    print "Content-type: text/html\n\n";
+    print "Content-type: text/html\r\n\r\n";
     print &common_html_hdr(-1,'Update Your Directory Entry',1);
     print "\n";
     
@@ -469,7 +533,7 @@ sub panic {
     local($[) = 0;
 
     select(STDOUT);  $| = 1;
-    print "Content-type: text/plain\n\n";
+    print "Content-type: text/plain\r\n\r\n";
     print $_[0], "\r\n";
 
     exit;

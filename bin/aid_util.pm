@@ -2,11 +2,11 @@
 #     FILE: aid_util.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: perl library routines for the Alumni Internet Directory
-#      $Id: aid_util.pl,v 3.80 1998/11/10 01:33:52 mradwin Exp mradwin $
+#      $Id: aid_util.pl,v 3.81 1998/11/13 18:56:46 mradwin Exp mradwin $
 #
 
 $aid_util'rcsid =
- '$Id: aid_util.pl,v 3.80 1998/11/10 01:33:52 mradwin Exp mradwin $';
+ '$Id: aid_util.pl,v 3.81 1998/11/13 18:56:46 mradwin Exp mradwin $';
 
 # ----------------------------------------------------------------------
 # CONFIGURATION
@@ -34,7 +34,6 @@ $aid_util'rcsid =
      'aiddir',       '/home/users/mradwin/mvhs/',
      'sendmail',     '/usr/sbin/sendmail',
      'mailprog',     '/usr/bin/mail',
-     'echo',         '/bin/echo',
      'cat',          '/bin/cat',
      'cp',           '/bin/cp',
      'make',         '/usr/bin/make',
@@ -59,7 +58,7 @@ $aid_util'rcsid =
  "Add/Update," . $aid_util'config{'master_path'} . "add/", #'#
  "Reunions,"   . $aid_util'config{'master_path'} . "etc/reunions.html", #'#
  "Links,"      . $aid_util'config{'master_path'} . "etc/links.html",    #'#
- "Download,"   . $aid_util'config{'master_path'} . "books/",        #'#
+ "Download,"   . $aid_util'config{'master_path'} . "download/",        #'#
  "FAQ,"        . $aid_util'config{'master_path'} . "etc/faq.html",     #'#
  "Acceptable&nbsp;Use/Privacy,"
                . $aid_util'config{'master_path'} . "etc/copyright.html", #'#
@@ -359,7 +358,7 @@ sub aid_split {
 
     local($_) = @_;
     local($[) = 0;
-    local(@fields) = split(/$FIELD_SEP/);
+    local(@fields) = defined $_ ? split(/$FIELD_SEP/) : ();
     local($i);
     local(%rec);
 
@@ -433,6 +432,7 @@ sub aid_create_db {
     open(INFILE,$filename) || die "Can't open $filename: $!\n";
     while(<INFILE>) {
 	chop;
+	next unless defined $_ && $_ !~ /^\s*$/;
 	$db[(split(/$FIELD_SEP/o))[$ID_INDEX]] = $_;
     }
     close(INFILE);
@@ -462,8 +462,26 @@ sub aid_alpha_db {
 	push(@datakeys, "\L$rec{'last'},$rec{'first'},$rec{'married'}\E");
     }
 
-    @alpha = @db[sort bydatakeys $[..$#db];
-    @alpha;
+    @db[sort bydatakeys $[..$#db];
+}
+
+sub aid_class_db {
+    package aid_util;
+
+    local($filename) = @_;
+    local(@db) = &main'aid_create_db($filename);   #'#
+    local(%rec);
+    local($[) = 0;
+    local($_);
+
+    @datakeys = ();
+
+    foreach (@db) {
+	%rec = &main'aid_split($_);  #'#
+	push(@datakeys, "\L$rec{'year'},$rec{'last'},$rec{'first'},$rec{'married'}\E");
+    }
+
+    @db[sort bydatakeys $[..$#db];
 }
 
 sub aid_vcard_path {
@@ -502,7 +520,7 @@ sub aid_get_usertext {
     local($text,$inFile,*TEXTFILE);
 
     $text = '';
-    $inFile = &main'aid_newsfile($id);
+    $inFile = &main'aid_newsfile($id); #'#
 
     if (-r $inFile) {
 	open(TEXTFILE,$inFile) || die "Can't open $inFile: $!\n";
@@ -1192,5 +1210,126 @@ sub aid_class_jump_bar {
 
     $retval;
 }
+
+
+
+sub aid_book_write_prefix {
+    package aid_util;
+
+    local(*BOOK,$option) = @_;
+    local($school) = &main'aid_config('school'); #'#
+
+    # special case for netscape
+    if ($option eq 'n') {
+	print BOOK "<!DOCTYPE NETSCAPE-Addressbook-file-1>
+<!-- This is an automatically generated file.
+It will be read and overwritten.
+Do Not Edit! -->
+<TITLE>$school Alumni Address book</TITLE>
+<H1>$school Alumni Address book</H1>
+
+<DL><p>\n";
+    }
+
+    elsif ($option eq 'o') {
+	print BOOK
+	    "\"Title\",\"First Name\",\"Middle Name\",\"Last Name\",\"Suffix\",\"Company\",\"Department\",\"Job Title\",\"Business Street\",\"Business Street 2\",\"Business Street 3\",\"Business City\",\"Business State\",\"Business Postal Code\",\"Business Country\",\"Home Street\",\"Home Street 2\",\"Home Street 3\",\"Home City\",\"Home State\",\"Home Postal Code\",\"Home Country\",\"Other Street\",\"Other Street 2\",\"Other Street 3\",\"Other City\",\"Other State\",\"Other Postal Code\",\"Other Country\",\"Assistant's Phone\",\"Business Fax\",\"Business Phone\",\"Business Phone 2\",\"Callback\",\"Car Phone\",\"Company Main Phone\",\"Home Fax\",\"Home Phone\",\"Home Phone 2\",\"ISDN\",\"Mobile Phone\",\"Other Fax\",\"Other Phone\",\"Pager\",\"Primary Phone\",\"Radio Phone\",\"TTY/TDD Phone\",\"Telex\",\"Account\",\"Anniversary\",\"Assistant's Name\",\"Billing Information\",\"Birthday\",\"Categories\",\"Children\",\"E-mail Address\",\"E-mail Display Name\",\"E-mail 2 Address\",\"E-mail 2 Display Name\",\"E-mail 3 Address\",\"E-mail 3 Display Name\",\"Gender\",\"Government ID Number\",\"Hobby\",\"Initials\",\"Keywords\",\"Language\",\"Location\",\"Mileage\",\"Notes\",\"Office Location\",\"Organizational ID Number\",\"PO Box\",\"Private\",\"Profession\",\"Referred By\",\"Spouse\",\"User 1\",\"User 2\",\"User 3\",\"User 4\",\"Web Page\"\r\n";
+    }
+}
+
+sub aid_book_write_entry {
+    package aid_util;
+
+    local(*BOOK,$option,*rec) = @_;
+    local($long_last) = $rec{'last'};
+
+    $long_last .= " $rec{'married'}" if $rec{'married'} ne '';
+
+    $option eq 'p' && print BOOK "$rec{'alias'}\t$long_last, $rec{'first'}\t$rec{'email'}\t\t$rec{'school'} $rec{'year'}\n";
+    $option eq 'e' && print BOOK "$rec{'alias'} = $long_last; $rec{'first'}, $rec{'school'} $rec{'year'} = $rec{'email'}\n";
+    $option eq 'b' && print BOOK "alias $rec{'alias'}\t$rec{'email'}\n";
+    $option eq 'w' && print BOOK "<$rec{'alias'}>\r\n>$rec{'first'} $long_last <$rec{'email'}>\r\n<$rec{'alias'}>\r\n>$rec{'school'} $rec{'year'}\r\n";
+    $option eq 'm' && print BOOK "alias $rec{'alias'} $rec{'email'}\r\nnote $rec{'alias'} <name:$rec{'first'} $long_last>$rec{'school'} $rec{'year'}\r\n";
+
+    # netscape is a bigger sucker
+    if ($option eq 'n') {
+	print BOOK "    <DT><A HREF=\"mailto:$rec{'email'}\" ";
+	print BOOK "NICKNAME=\"$rec{'alias'}\">$rec{'first'} $long_last</A>\n";
+	print BOOK "<DD>$rec{'school'} $rec{'year'}\n";
+    }
+
+    elsif ($option eq 'l') {
+        print BOOK "dn: cn=$rec{'first'} $long_last,mail=$rec{'email'}\r\n";
+	print BOOK "modifytimestamp: ";
+	$vdate = &main'aid_vdate($rec{'time'}); #'#
+	$vdate =~ s/T//;
+	print BOOK "$vdate\r\n";
+        print BOOK "cn: $rec{'first'} $long_last\r\n";
+	if ($rec{'married'} ne '') {
+	    print BOOK "sn: $rec{'married'}\r\n";
+	} else {
+	    print BOOK "sn: $rec{'last'}\r\n";
+	}
+        print BOOK "givenname: $rec{'first'}\r\n";
+        print BOOK "objectclass: top\r\nobjectclass: person\r\n";
+        print BOOK "mail: $rec{'email'}\r\n";
+	if ($rec{'location'} =~ /^(.*),\s+(\w\w)$/) {
+	    print BOOK "locality: $1\r\n";
+	    print BOOK "st: $2\r\n";
+	} else {
+	    print BOOK "locality: $rec{'location'}\r\n" if $rec{'location'} ne '';
+	}
+        print BOOK "o: $rec{'school'}\r\n";
+	if ($rec{'year'} =~ /^\d+$/) {
+	    print BOOK "ou: Class of $rec{'year'}\r\n";
+	} else {
+	    print BOOK "ou: $rec{'year'}\r\n";
+	}
+        print BOOK "homeurl: $rec{'www'}\r\n" if $rec{'www'} ne '';
+        print BOOK "xmozillanickname: $rec{'alias'}\r\n";
+        print BOOK "\r\n";
+    }
+    
+    # lots of data for a vCard
+    elsif ($option eq 'v') {
+	print BOOK &main'aid_vcard_text(*rec), "\r\n"; #'#
+    }
+
+    elsif ($option eq 'o') {
+	print BOOK "\"\",\"$rec{'first'}\",";
+	if ($rec{'married'} ne '') {
+	    print BOOK "\"$rec{'last'}\",\"$rec{'married'}\",";
+	} else {
+	    print BOOK "\"\",\"$rec{'last'}\",";
+	}
+
+	print BOOK "\"\",\"$rec{'school'} $rec{'year'}\",\"\",";
+#	print BOOK "\"\",\"$rec{'school'}\",";
+#	if ($rec{'year'} =~ /^\d+$/) {
+#	    print BOOK "\"Class of $rec{'year'}\",";
+#	} else {
+#	    print BOOK "\"$rec{'year'}\",";
+#	}
+
+	print BOOK "\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",";
+
+	if ($rec{'location'} =~ /^(.*),\s+(\w\w)$/) {
+	    print BOOK "\"$1\",\"$2\",";
+	} else {
+	    print BOOK "\"$rec{'location'}\",\"\",";
+	}
+
+	print BOOK "\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"MVHS Alumni\",\"\",\"$rec{'email'}\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"$rec{'www'}\"\r\n";
+    }
+}
+
+sub aid_book_write_suffix {
+    package aid_util;
+
+    local(*BOOK,$option) = @_;
+
+    $option eq 'n' && print BOOK "</DL><p>\n";
+}
+
 
 1;
