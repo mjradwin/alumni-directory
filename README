@@ -1,7 +1,7 @@
 Alumni Internet Directory README file
-$Id: README,v 5.3 1999/06/24 22:35:47 mradwin Exp mradwin $
+$Id: README,v 5.4 1999/06/25 16:47:49 mradwin Exp mradwin $
 
-------------------------------------------------------------------------
+========================================================================
  Copyright (c) 1995-1999  Michael John Radwin
 
  This program is free software; you can redistribute it and/or modify
@@ -17,31 +17,41 @@ $Id: README,v 5.3 1999/06/24 22:35:47 mradwin Exp mradwin $
  You should have received a copy of the GNU General Public License
  along with this program; if not, write to the Free Software
  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-------------------------------------------------------------------------
+========================================================================
 
 DISCLAIMER: This is not very well packaged code.  It's not packaged at
 all.  Don't come here expecting something you plop in a directory,
 twiddle a few things, and you're off and using it.
 
-To set up the Alumni Internet Directory, you'll need to edit the
-following things (and probably several more):
+To set up the Alumni Internet Directory, do the following:
 
+1. Customize these files for your School/Unix/Apache setup
+------------------------------------------------------------------------
 bin/generic_config.pl:
-  copy this file to customize for your high school (change all GHS
-  and Generic High School references to your own school)
+  Copy this file to customize for your high school.  Change all GHS and
+  Generic High School references to your own school name, all e-mail
+  addresses, and pathnames for various web/source directory scripts,
+  etc.  Make sure the pathnames match with the ones used in the
+  Makefile.
 
 bin/aid_util.pl:
-  change the "require 'generic_config.pl'" line to your particular school
+  Change the "require 'generic_config.pl'" line near the top of the file to
+  your particular school_config.pl file.
 
 Makefile:
-  SCHOOL, WWWROOT, WWWDIR, CGIDIR
+  Edit the SCHOOL, WWWROOT, WWWDIR, CGIDIR, and possibly other
+  variables, making sure that they're consistent with the
+  school_config.pl file.
 
 data/*.include:
-  [all text]
+  Customize the HTML code for your school.  These files get a header and
+  a footer attached to them, and then get copied verbatim out to the web
+  directory.
 
-data/working.db:
-  You'll need to create this file, but there's no script to do it
-  automatically.  I'd suggest running these commands:
+
+2. Create a data/working.db file and put at least one entry in it
+------------------------------------------------------------------------
+  There's no script to do it automatically, so run these commands:
     $ perl -e 'dbmopen(%DB,"data/working",0666); dbmclose(%DB);'
     $ ./bin/aid_edit_entry data/working.db -1
 
@@ -55,26 +65,52 @@ data/working.db:
     * yr [graduation year]
   You also might put an URL the 'w' key (complete with leading "http://").
 
-After editing Makefile and the .pl configuration files appropriately, do
-a 'make symlinks' to set up symbolic links from the web's cgi-bin
-directory to the bin directory.
 
-If you've successfully created a working.db file and done a 'make
-symlinks', you should be able to do a 'make all' and actually get
-something to work.
-
-One more note -- 'make symlinks' will do this for you automatically, but
-you should be aware of it if it fails for some reason -- if you're using
-Apache and a directory other than cgi-bin for your binaries, you'll also
-need to create a .htaccess file in your web's bin directory with this
-directive:
-
-  SetHandler cgi-script
-
-If that doesn't work (or you're using another web server), you might
-need to rename all of the cgi binaries with the extension .cgi.
-
+3. Install CGI scripts, .htaccess files, and default.css (style sheet)
 ------------------------------------------------------------------------
+A simple 'make install' should do the trick, but check to make sure that
+the permissions are set correctly.  You may need to chmod the files to
+make them world-readable and possibly world-executable.
+
+'make install' creates a .htaccess file in your cgi-bin directory to
+tell apache that all of the scripts (form, go, vcard, etc.) are CGI
+scripts and not content via the directive "SetHandler cgi-script". This
+is ususally only relevant if you're using a "bin" subdirectory of the
+public_html/school directory instead of a standard "cgi-bin" script.
+
+If your Apache won't accept that configuration directive, or you're
+using another web server, you'll probably need to rename all of the cgi
+binaries with the extension .cgi, and be sure to update your
+school_config.pl file appropriately.
+
+
+4. Generate static HTML pages
+------------------------------------------------------------------------
+If all has gone well up to this point, 'make all' should copy your
+data/working.db into the web directory's master.db location.  Then it
+will use the various scripts in the bin dir to generate all of the
+Graduating Class/Alphabetical listings and the index.html, FAQ, reunions
+page, download page, etc.
+
+
+5. You're up and running!
+------------------------------------------------------------------------
+As you get new submissions in your e-mail inbox, run ./bin/aid_addname
+and then delete the submission e-mails.  aid_addname reads the spool
+file and modifies data/working.db, invokes 'make all' to push out the
+new static HTML pages, and then invokes aid_welcome to e-mail the new
+members to tell them that their submission has been received.
+
+aid_bounce will help you manage people who's email has been bouncing (I
+usually let e-mail bounce for 6 months before I make their record
+invalid).
+
+In addition to notifying new/updated alumni that their submissions have
+been processed, aid_welcome can also be used for sending out the
+quarterly digests or bi-yearly verification messages.
+
+
+========================================================================
 Michael John Radwin
 michael@radwin.org
 http://www.radwin.org/michael/
