@@ -2,7 +2,7 @@
 
 #
 # does the html version of the grad-date address list
-# $Id: aid_class_html,v 3.26 1999/03/02 01:26:34 mradwin Exp mradwin $
+# $Id: aid_class_html,v 3.27 1999/03/02 03:24:17 mradwin Exp mradwin $
 #
 
 require 'aid_util.pl';
@@ -80,7 +80,9 @@ foreach $year (@years)
     }
     else
     {
-	$opt_t || print FMTOUT "<a name=\"gradother\">" if $prev =~ /^\d+$/;
+	$opt_t || print FMTOUT "<a name=\"gradother\" " .
+	    "href=\"" . &aid_config('master_path') . "class/other.html\">"
+		if $prev =~ /^\d+$/;
 	print FMTOUT "Faculty/Staff";
 	$opt_t || print FMTOUT "</a>" if $prev =~ /^\d+$/;
 	print FMTOUT ' ' x (13 - length("Faculty/Staff"));
