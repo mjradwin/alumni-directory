@@ -4,7 +4,7 @@
 #     FILE: form.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: Alumni Internet Directory CGI form-submission interface
-#      $Id: form,v 5.34 2000/08/02 17:04:53 mradwin Exp mradwin $
+#      $Id: form,v 5.35 2000/08/02 18:28:00 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -36,7 +36,7 @@ use CGI::Carp qw(fatalsToBrowser);
 # configuration
 $dbmfile = &aid_config('dbmfile');
 
-$rcsid = '$Id: form,v 5.34 2000/08/02 17:04:53 mradwin Exp mradwin $'; #'fnt
+$rcsid = '$Id: form,v 5.35 2000/08/02 18:28:00 mradwin Exp mradwin $'; #'fnt
 
 $listing_upd_title = 'Modify Your Directory Listing';
 $listing_add_title = 'Join the Directory';
@@ -328,7 +328,7 @@ sub queue_submission {
     $cgi{'c'} = $cgi{'u'}
 	unless defined $cgi{'c'} && $cgi{'c'} =~ /^\d+$/;
     $cgi{'h'} = &remote_host() unless defined $cgi{'h'};
-    $cgi{'b'} = 0;
+    $cgi{'lm'} = $cgi{'b'} = 0;
     $cgi{'n'} =~ s/\015\012/\n/g;
     $cgi{'n'} =~ s/\015/\n/g;
     $cgi{'n'} =~ s/[ \t]+\n/\n/g;
@@ -448,6 +448,24 @@ http://" . &aid_config('master_srv') . &aid_config('master_path') . "\n";
 		 "\">" . &aid_config('admin_email') . "</a>\n" .
 		 "with error code <b>$randkey</b>.")
 	if $status == 0;
+
+    # success sending email; update last-mail timestamp
+    $dbw = tie(%DBW, 'DB_File', $dbmfilew, O_CREAT|O_RDWR, 0644,
+		   $DB_File::DB_HASH)
+	or die "$dbmfilew: $!\n";
+
+    $fdw = $dbw->fd;
+    open(DB_FHW, "+<&=$fdw") || die "dup $!";
+    unless (flock (DB_FHW, LOCK_EX)) { die "flock: $!" }
+
+    $cgi{'lm'} = time;
+    $DBW{$randkey} = $cgi{'id'} . "\0" . &aid_db_pack_rec(*cgi);
+
+    $dbw->sync;
+    flock(DB_FHW, LOCK_UN);
+    undef $dbw;
+    untie(%DBW);
+    close(DB_FHW);
 
     print "Content-Type: text/html\015\012\015\012";
     print &aid_common_html_hdr(20,'Final Step: verify e-mail address',1);
