@@ -4,7 +4,7 @@
 #     FILE: mvhsaid.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: MVHS Alumni Internet Directory CGI interface
-#      $Id: mvhsaid,v 1.10 1997/03/26 17:43:22 mjr Exp mjr $
+#      $Id: mvhsaid,v 1.11 1997/03/27 01:20:46 mjr Exp mjr $
 #
 
 require 'mv_util.pl';
@@ -33,7 +33,7 @@ close(SUBMIT_FTR);
 # debugging: what version is installed?
 if (defined($in{'version'})) {
     print @submit_hdr, "\n";
-    print '<pre>Version: $Id: mvhsaid,v 1.10 1997/03/26 17:43:22 mjr Exp mjr $</pre>', "\n";
+    print '<pre>Version: $Id: mvhsaid,v 1.11 1997/03/27 01:20:46 mjr Exp mjr $</pre>', "\n";
     print @submit_ftr, "\n";
     
     exit(0);
@@ -139,86 +139,11 @@ EOM
     print "<p>Thank you!  The following information is queued for submission\n";
     print "in the MVHS Alumni Internet Directory:</p>\n";
 
-    print &about_text(";;$in{'request'};$in{'last'};$in{'first'};$in{'married'};$in{'school'};$in{'grad'};$in{'mail'};$in{'homepage'};$in{'location'}",1), "\n";
+    print &about_text(";;$in{'request'};$in{'last'};$in{'first'};$in{'married'};$in{'school'};$in{'grad'};$in{'mail'};$in{'homepage'};$in{'location'}",1,1), "\n";
 
     print @submit_ftr, "\n";
 }
 
-sub about_text {
-    require 'ctime.pl';
-
-    local($retval);
-    local($rawdata,$show_req_p) = @_;
-    local($time,$id,$req,$last,$first,$married,
-	  $school,$year,$email,$homepage,$location) = split(/;/, $rawdata);
-
-    $retval = "<pre>\n";
-    $retval .= "First Name        : ";
-    $retval .= ($first eq '') ? "\n" : "<strong>$first</strong>\n";
-
-    $retval .= "Last/Maiden Name  : <strong>$last</strong>\n";
-    $retval .= "Married Name      : ";
-    $retval .= ($married eq '') ? "(same as last name)\n" 
-	: "<strong>$married</strong>\n";
-    
-    $retval .= "\n";
-    $retval .= "School            : <strong>$school</strong>\n";
-    $retval .= "Grad. Year        : <strong>$year</strong>\n";
-
-    $retval .= "\n";
-    $retval .= "Email             : ";
-    $retval .= "<strong><a href=\"mailto:$email\">$email</a></strong>\n";
-    $retval .= "Web Page          : ";
-    $retval .= ($homepage eq '') ? "(none)\n" 
-	: "<strong><a href=\"$homepage\">$homepage</a></strong>\n";
-
-    $retval .= "Location          : ";
-    $retval .= ($location eq '') ? "\n" : "<strong>$location</strong>\n";
-
-    if ($show_req_p) {
-	$retval .= "\n";
-	$retval .= "Send Email Updates: ";
-	$retval .= ($req == 2) ? "yes (sorted by graduating class)\n" :
-	    ($req == 1) ? "yes (sorted by name)\n" : "no\n";
-    } 
-
-    if ($time ne '') {
-	$retval .= "\n";
-	$retval .= "Last Updated      : ";
-	$retval .= &ctime($time);
-    }
-
-    $retval .= "</pre>\n";
-
-    if ($time ne '') {
-	$retval .= &modify_html($id,&inorder_fullname($first,$last,$married));
-    }
-
-    return $retval;
-}
-
-sub modify_html {
-    local($id,$name) = @_;
-    local($cgi) = &mv_config('cgi_path');
-
-    return "
-<!-- borrowed from gamelan -->
-To update the entry for this person or any of his/her resource
-entries, please click the button below.
-
-<form method=get action=\"$cgi\">
-<center><input type=hidden name=\"update\" value=\"$id\">
-<input type=submit value=\"Update $name\">
-</center>
-</form>
-
-<strong>Note:</strong> To avoid malicious modification by other
-people passing through, we mail the original user about the change
-(plus the new user if the email changes). The honor system has worked
-for us so far; please don't abuse it and force us to install an
-annoying password door.<p>
-";
-}
 
 
 sub bydatakeys { $datakeys[$a] cmp $datakeys[$b] }
@@ -261,7 +186,7 @@ sub send_about {
     print @submit_hdr, "\n<br>\n";
     print &tableheader(&inorder_fullname($first,$last,$married),
 		       1, "ffff99", 1);
-    print &about_text($_[0], 0), "\n";
+    print &about_text($_[0],0,1), "\n";
     print @submit_ftr, "\n";
 }
 
