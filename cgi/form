@@ -4,7 +4,7 @@
 #     FILE: mvhsaid.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: MVHS Alumni Internet Directory CGI interface
-#      $Id: mvhsaid,v 3.34 1998/11/03 01:28:01 mradwin Exp mradwin $
+#      $Id: mvhsaid,v 3.35 1998/11/05 17:24:45 mradwin Exp mradwin $
 #
 
 require 'aid_util.pl';
@@ -24,7 +24,7 @@ if (defined($ENV{'PATH_INFO'}) && $ENV{'PATH_INFO'} =~ m,^/vcard/,) {
     $in{'vcard'} =~ s,^/vcard/(\d+).*$,$1,;
 }
 
-$rcsid = '$Id: mvhsaid,v 3.34 1998/11/03 01:28:01 mradwin Exp mradwin $'; #'fnt
+$rcsid = '$Id: mvhsaid,v 3.35 1998/11/05 17:24:45 mradwin Exp mradwin $'; #'fnt
 
 # special flags: version, update, vcard, about
 #
@@ -298,7 +298,9 @@ EOM
 
 <p>The entry for <strong>$fullname</strong> has been added
 to the submission queue, but it has <em>not</em> yet been published in
-the Directory.  Processing your submission can take up to 48 hours.</p>
+the Directory.  Processing your submission can take up to 48 hours.
+If your submission was made Monday-Friday between 9am and 5pm Pacific
+Time, your submission will probably be processed within an hour.</p>
 
 <p>Email will be sent to <code><strong>$in{'email'}</strong></code>
 confirming receipt of this submission when it it processed.
