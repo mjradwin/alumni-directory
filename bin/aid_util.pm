@@ -2,11 +2,11 @@
 #     FILE: aid_util.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: perl library routines for the Alumni Internet Directory
-#      $Id: aid_util.pl,v 4.8 1999/02/03 00:52:24 mradwin Exp mradwin $
+#      $Id: aid_util.pl,v 4.9 1999/02/03 21:51:46 mradwin Exp mradwin $
 #
 
 $aid_util'rcsid =
- '$Id: aid_util.pl,v 4.8 1999/02/03 00:52:24 mradwin Exp mradwin $';
+ '$Id: aid_util.pl,v 4.9 1999/02/03 21:51:46 mradwin Exp mradwin $';
 $aid_util'caldate = &aid_caldate(time); #'#
 
 # ----------------------------------------------------------------------
@@ -472,7 +472,7 @@ sub aid_vcard_path {
 
     local($id) = @_;
 
-    $config{'cgi_path'} . "/vcard/${id}.vcf";
+    $config{'nph_cgi_path'} . "/vcard/${id}.vcf";
 }
 
 
@@ -620,7 +620,7 @@ sub submit_body {
 are required.  All other fields are optional.</p>\n\n";
 
     $body . "
-<form method=post action=\"" . $config{'cgi_path'} . "/sub\"> 
+<form method=post action=\"" . $config{'nph_cgi_path'} . "/sub\"> 
 <table border=0 summary=\"\">
 <tr><td align=right><input type=\"submit\" value=\"Next&nbsp;&gt;\">
 &nbsp;
@@ -819,7 +819,8 @@ sub aid_verbose_entry {
     $retval .= "<a href=\"" . &main'aid_vcard_path($rec{'id'}) . "\">"; #'#
     $retval .= "vCard</a>";
     $retval .= "&nbsp;|&nbsp;";
-    $retval .= "<a href=\"" . $config{'cgi_path'} . "/dyn?about=$rec{'id'}\">";
+    $retval .= "<a href=\"" . $config{'nph_cgi_path'} .
+	"/dyn?about=$rec{'id'}\">";
     $retval .= "update</a>";
     $retval .= "]</small>\n";
     
@@ -874,32 +875,32 @@ sub aid_vcard_text {
     local($v_fn,$v_n,$retval);
 
     if ($rec{'married'} ne '') {
-	$v_n  = "N:$rec{'married'};$rec{'first'};$rec{'last'}\r\n";
-	$v_fn = "FN:$rec{'first'} $rec{'last'} $rec{'married'}\r\n";
+	$v_n  = "N:$rec{'married'};$rec{'first'};$rec{'last'}\015\012";
+	$v_fn = "FN:$rec{'first'} $rec{'last'} $rec{'married'}\015\012";
     } else {
-	$v_n  = "N:$rec{'last'};$rec{'first'}\r\n";
-	$v_fn = "FN:$rec{'first'} $rec{'last'}\r\n";
+	$v_n  = "N:$rec{'last'};$rec{'first'}\015\012";
+	$v_fn = "FN:$rec{'first'} $rec{'last'}\015\012";
     }
 
-    $retval  = "Begin:vCard\r\n";
+    $retval  = "Begin:vCard\015\012";
     $retval .= $v_n;
     $retval .= $v_fn;
     $retval .= "ORG:$rec{'school'};";
     if ($rec{'year'} =~ /^\d+$/) {
-	$retval .= "Class of $rec{'year'}\r\n";
+	$retval .= "Class of $rec{'year'}\015\012";
     } else {
-	$retval .= "$rec{'year'}\r\n";
+	$retval .= "$rec{'year'}\015\012";
     }
-    $retval .= "EMAIL;PREF;INTERNET:$rec{'email'}\r\n";
+    $retval .= "EMAIL;PREF;INTERNET:$rec{'email'}\015\012";
     if ($rec{'location'} =~ /^(.*),\s+(\w\w)$/) {
-	$retval .= "ADR:;;;$1;\U$2\E\r\n";
+	$retval .= "ADR:;;;$1;\U$2\E\015\012";
     } else {
-	$retval .= "ADR:;;;$rec{'location'}\r\n" if $rec{'location'} ne '';
+	$retval .= "ADR:;;;$rec{'location'}\015\012" if $rec{'location'} ne '';
     }
-    $retval .= "URL:$rec{'www'}\r\n" if $rec{'www'} ne '';
-    $retval .= "REV:" . &main'aid_vdate($rec{'time'}) . "\r\n"; #'#
-    $retval .= "VERSION:2.1\r\n";
-    $retval .= "End:vCard\r\n";
+    $retval .= "URL:$rec{'www'}\015\012" if $rec{'www'} ne '';
+    $retval .= "REV:" . &main'aid_vdate($rec{'time'}) . "\015\012"; #'#
+    $retval .= "VERSION:2.1\015\012";
+    $retval .= "End:vCard\015\012";
 
     $retval;
 }
@@ -1238,7 +1239,7 @@ Do Not Edit! -->
 
     elsif ($option eq 'o') {
 	print BOOK
-	    "\"Title\",\"First Name\",\"Middle Name\",\"Last Name\",\"Suffix\",\"Company\",\"Department\",\"Job Title\",\"Business Street\",\"Business Street 2\",\"Business Street 3\",\"Business City\",\"Business State\",\"Business Postal Code\",\"Business Country\",\"Home Street\",\"Home Street 2\",\"Home Street 3\",\"Home City\",\"Home State\",\"Home Postal Code\",\"Home Country\",\"Other Street\",\"Other Street 2\",\"Other Street 3\",\"Other City\",\"Other State\",\"Other Postal Code\",\"Other Country\",\"Assistant's Phone\",\"Business Fax\",\"Business Phone\",\"Business Phone 2\",\"Callback\",\"Car Phone\",\"Company Main Phone\",\"Home Fax\",\"Home Phone\",\"Home Phone 2\",\"ISDN\",\"Mobile Phone\",\"Other Fax\",\"Other Phone\",\"Pager\",\"Primary Phone\",\"Radio Phone\",\"TTY/TDD Phone\",\"Telex\",\"Account\",\"Anniversary\",\"Assistant's Name\",\"Billing Information\",\"Birthday\",\"Categories\",\"Children\",\"E-mail Address\",\"E-mail Display Name\",\"E-mail 2 Address\",\"E-mail 2 Display Name\",\"E-mail 3 Address\",\"E-mail 3 Display Name\",\"Gender\",\"Government ID Number\",\"Hobby\",\"Initials\",\"Keywords\",\"Language\",\"Location\",\"Mileage\",\"Notes\",\"Office Location\",\"Organizational ID Number\",\"PO Box\",\"Private\",\"Profession\",\"Referred By\",\"Spouse\",\"User 1\",\"User 2\",\"User 3\",\"User 4\",\"Web Page\"\r\n";
+	    "\"Title\",\"First Name\",\"Middle Name\",\"Last Name\",\"Suffix\",\"Company\",\"Department\",\"Job Title\",\"Business Street\",\"Business Street 2\",\"Business Street 3\",\"Business City\",\"Business State\",\"Business Postal Code\",\"Business Country\",\"Home Street\",\"Home Street 2\",\"Home Street 3\",\"Home City\",\"Home State\",\"Home Postal Code\",\"Home Country\",\"Other Street\",\"Other Street 2\",\"Other Street 3\",\"Other City\",\"Other State\",\"Other Postal Code\",\"Other Country\",\"Assistant's Phone\",\"Business Fax\",\"Business Phone\",\"Business Phone 2\",\"Callback\",\"Car Phone\",\"Company Main Phone\",\"Home Fax\",\"Home Phone\",\"Home Phone 2\",\"ISDN\",\"Mobile Phone\",\"Other Fax\",\"Other Phone\",\"Pager\",\"Primary Phone\",\"Radio Phone\",\"TTY/TDD Phone\",\"Telex\",\"Account\",\"Anniversary\",\"Assistant's Name\",\"Billing Information\",\"Birthday\",\"Categories\",\"Children\",\"E-mail Address\",\"E-mail Display Name\",\"E-mail 2 Address\",\"E-mail 2 Display Name\",\"E-mail 3 Address\",\"E-mail 3 Display Name\",\"Gender\",\"Government ID Number\",\"Hobby\",\"Initials\",\"Keywords\",\"Language\",\"Location\",\"Mileage\",\"Notes\",\"Office Location\",\"Organizational ID Number\",\"PO Box\",\"Private\",\"Profession\",\"Referred By\",\"Spouse\",\"User 1\",\"User 2\",\"User 3\",\"User 4\",\"Web Page\"\015\012";
     }
 }
 
@@ -1253,8 +1254,8 @@ sub aid_book_write_entry {
     $option eq 'p' && print BOOK "$rec{'alias'}\t$long_last, $rec{'first'}\t$rec{'email'}\t\t$rec{'school'} $rec{'year'}\n";
     $option eq 'e' && print BOOK "$rec{'alias'} = $long_last; $rec{'first'}, $rec{'school'} $rec{'year'} = $rec{'email'}\n";
     $option eq 'b' && print BOOK "alias $rec{'alias'}\t$rec{'email'}\n";
-    $option eq 'w' && print BOOK "<$rec{'alias'}>\r\n>$rec{'first'} $long_last <$rec{'email'}>\r\n<$rec{'alias'}>\r\n>$rec{'school'} $rec{'year'}\r\n";
-    $option eq 'm' && print BOOK "alias $rec{'alias'} $rec{'email'}\r\nnote $rec{'alias'} <name:$rec{'first'} $long_last>$rec{'school'} $rec{'year'}\r\n";
+    $option eq 'w' && print BOOK "<$rec{'alias'}>\015\012>$rec{'first'} $long_last <$rec{'email'}>\015\012<$rec{'alias'}>\015\012>$rec{'school'} $rec{'year'}\015\012";
+    $option eq 'm' && print BOOK "alias $rec{'alias'} $rec{'email'}\015\012note $rec{'alias'} <name:$rec{'first'} $long_last>$rec{'school'} $rec{'year'}\015\012";
 
     # netscape is a bigger sucker
     if ($option eq 'n') {
@@ -1264,40 +1265,40 @@ sub aid_book_write_entry {
     }
 
     elsif ($option eq 'l') {
-        print BOOK "dn: cn=$rec{'first'} $long_last,mail=$rec{'email'}\r\n";
+        print BOOK "dn: cn=$rec{'first'} $long_last,mail=$rec{'email'}\015\012";
 	print BOOK "modifytimestamp: ";
 	$vdate = &main'aid_vdate($rec{'time'}); #'#
 	$vdate =~ s/T//;
-	print BOOK "$vdate\r\n";
-        print BOOK "cn: $rec{'first'} $long_last\r\n";
+	print BOOK "$vdate\015\012";
+        print BOOK "cn: $rec{'first'} $long_last\015\012";
 	if ($rec{'married'} ne '') {
-	    print BOOK "sn: $rec{'married'}\r\n";
+	    print BOOK "sn: $rec{'married'}\015\012";
 	} else {
-	    print BOOK "sn: $rec{'last'}\r\n";
+	    print BOOK "sn: $rec{'last'}\015\012";
 	}
-        print BOOK "givenname: $rec{'first'}\r\n";
-        print BOOK "objectclass: top\r\nobjectclass: person\r\n";
-        print BOOK "mail: $rec{'email'}\r\n";
+        print BOOK "givenname: $rec{'first'}\015\012";
+        print BOOK "objectclass: top\015\012objectclass: person\015\012";
+        print BOOK "mail: $rec{'email'}\015\012";
 	if ($rec{'location'} =~ /^(.*),\s+(\w\w)$/) {
-	    print BOOK "locality: $1\r\n";
-	    print BOOK "st: $2\r\n";
+	    print BOOK "locality: $1\015\012";
+	    print BOOK "st: $2\015\012";
 	} else {
-	    print BOOK "locality: $rec{'location'}\r\n" if $rec{'location'} ne '';
+	    print BOOK "locality: $rec{'location'}\015\012" if $rec{'location'} ne '';
 	}
-        print BOOK "o: $rec{'school'}\r\n";
+        print BOOK "o: $rec{'school'}\015\012";
 	if ($rec{'year'} =~ /^\d+$/) {
-	    print BOOK "ou: Class of $rec{'year'}\r\n";
+	    print BOOK "ou: Class of $rec{'year'}\015\012";
 	} else {
-	    print BOOK "ou: $rec{'year'}\r\n";
+	    print BOOK "ou: $rec{'year'}\015\012";
 	}
-        print BOOK "homeurl: $rec{'www'}\r\n" if $rec{'www'} ne '';
-        print BOOK "xmozillanickname: $rec{'alias'}\r\n";
-        print BOOK "\r\n";
+        print BOOK "homeurl: $rec{'www'}\015\012" if $rec{'www'} ne '';
+        print BOOK "xmozillanickname: $rec{'alias'}\015\012";
+        print BOOK "\015\012";
     }
     
     # lots of data for a vCard
     elsif ($option eq 'v') {
-	print BOOK &main'aid_vcard_text(*rec), "\r\n"; #'#
+	print BOOK &main'aid_vcard_text(*rec), "\015\012"; #'#
     }
 
     elsif ($option eq 'o') {
@@ -1324,7 +1325,7 @@ sub aid_book_write_entry {
 	    print BOOK "\"$rec{'location'}\",\"\",";
 	}
 
-	print BOOK "\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"$config{'short_school'} Alumni\",\"\",\"$rec{'email'}\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"$rec{'www'}\"\r\n";
+	print BOOK "\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"$config{'short_school'} Alumni\",\"\",\"$rec{'email'}\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"$rec{'www'}\"\015\012";
     }
 }
 
