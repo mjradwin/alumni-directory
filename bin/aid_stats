@@ -1,6 +1,6 @@
 #!/usr/bin/perl -w
 
-# $Id: aid_stats,v 1.10 1999/02/24 21:06:25 mradwin Exp mradwin $
+# $Id: aid_stats,v 1.11 1999/03/09 02:11:04 mradwin Exp mradwin $
 
 require 'aid_util.pl';
 require 'ctime.pl';
@@ -19,7 +19,7 @@ $opt_h = $opt_h;		# avoid warning
 
 $ARGV[0] =~ s/\.db$//;
 die "can't open $ARGV[0].db\n" unless -r "$ARGV[0].db";
-dbmopen(DB,$ARGV[0],0444);
+dbmopen(%DB,$ARGV[0],0444);
 
 die "no __class__ key!\n" unless defined $DB{'__class__'};
 
@@ -100,4 +100,4 @@ print FMTOUT "\n----------------------------------------------------------------
 print FMTOUT &ctime(time);
 
 close(FMTOUT);
-dbmclose(DB);
+dbmclose(%DB);

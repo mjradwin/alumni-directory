@@ -2,7 +2,7 @@
 
 #
 # makes a list of e-mail addresses, comma separated.
-# $Id$
+# $Id: aid_rawlist,v 1.5 1999/02/24 20:42:19 mradwin Exp mradwin $
 #
 
 require 'aid_util.pl';
@@ -21,7 +21,7 @@ $opt_h = $opt_h;		# avoid warning
 
 $ARGV[0] =~ s/\.db$//;
 die "can't open $ARGV[0].db\n" unless -r "$ARGV[0].db";
-dbmopen(DB,$ARGV[0],0444);
+dbmopen(%DB,$ARGV[0],0444);
 
 open(FMTOUT,">$ARGV[1]") || die "Can't open $ARGV[1]: $!\n";
 
@@ -38,7 +38,7 @@ while (($key,$val) = each %DB)
     }
 }
 
-dbmclose(DB);
+dbmclose(%DB);
 
 # cut off the last comma and space
 chop $output;

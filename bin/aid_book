@@ -2,7 +2,7 @@
 
 #
 # generates address books in several formats
-# $Id: aid_book,v 3.20 1999/02/16 18:21:50 mradwin Exp mradwin $
+# $Id: aid_book,v 3.21 1999/02/24 20:37:19 mradwin Exp mradwin $
 #
 
 require 'aid_util.pl';
@@ -37,7 +37,7 @@ die "$usage\n" unless
 
 $ARGV[0] =~ s/\.db$//;
 die "can't open $ARGV[0].db\n" unless -r "$ARGV[0].db";
-dbmopen(DB,$ARGV[0],0444);
+dbmopen(%DB,$ARGV[0],0444);
 
 die "no __alpha__ key!\n" unless defined $DB{'__alpha__'};
 
@@ -79,7 +79,7 @@ foreach $id (@alpha_ids)
 
 }
 
-dbmclose(DB);
+dbmclose(%DB);
 
 $opt_p && &aid_book_write_suffix(*BOOKp,'p');
 $opt_e && &aid_book_write_suffix(*BOOKe,'e');

@@ -2,7 +2,7 @@
 
 #
 # does the html version of the grad-date address list
-# $Id: aid_class_html,v 3.29 1999/03/04 17:34:06 mradwin Exp mradwin $
+# $Id: aid_class_html,v 3.30 1999/03/09 18:10:32 mradwin Exp mradwin $
 #
 
 require 'aid_util.pl';
@@ -28,7 +28,7 @@ $blank_gif = ($opt_t) ? "" : &aid_image_tag('blank');
 
 $ARGV[0] =~ s/\.db$//;
 die "can't open $ARGV[0].db\n" unless -r "$ARGV[0].db";
-dbmopen(DB,$ARGV[0],0444);
+dbmopen(%DB,$ARGV[0],0444);
 
 $prefix = $opt_a ? 'awalt_' : ($opt_w ? 'www_' : '');
 $affix = $opt_a ? '_awalt' : ($opt_w ? '_www' : '');
@@ -132,7 +132,7 @@ print STDERR "\n";
 $opt_t || print FMTOUT "</pre>\n";
 $opt_t || print FMTOUT &common_html_ftr($pageno);
 
-dbmclose(DB);
+dbmclose(%DB);
 close(FMTOUT);
 utime $time, $time, $ARGV[1] unless $opt_t;
 

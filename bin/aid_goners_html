@@ -2,7 +2,7 @@
 
 #
 # does the html version of the invalid address list
-# $Id: aid_goners_html,v 3.20 1999/02/27 02:00:14 mradwin Exp mradwin $
+# $Id: aid_goners_html,v 3.21 1999/03/02 01:26:34 mradwin Exp mradwin $
 #
 
 require 'aid_util.pl';
@@ -12,7 +12,7 @@ die "usage: $0 infile.db outfile.html\n" if !$ARGV[0] || !$ARGV[1];
 
 $ARGV[0] =~ s/\.db$//;
 die "can't open $ARGV[0].db\n" unless -r "$ARGV[0].db";
-dbmopen(DB,$ARGV[0],0444);
+dbmopen(%DB,$ARGV[0],0444);
 
 die "no __alpha__ key!\n" unless defined $DB{'__alpha__'};
 
@@ -52,7 +52,7 @@ foreach $id (@alpha_ids)
 print FMTOUT "</pre>\n";
 print FMTOUT &common_html_ftr(-1, "Invalid&nbsp;Addresses");
 
-dbmclose(DB);
+dbmclose(%DB);
 close(FMTOUT);
 utime $time, $time, $ARGV[1];
 

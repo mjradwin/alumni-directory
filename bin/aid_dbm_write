@@ -1,6 +1,6 @@
 #!/usr/bin/perl -w
 
-# $Id: aid_dbm_write,v 1.15 1999/03/03 20:33:12 mradwin Exp mradwin $
+# $Id: aid_dbm_write,v 1.16 1999/03/09 18:10:32 mradwin Exp mradwin $
 
 require 'aid_util.pl';
 require 'getopts.pl';
@@ -29,7 +29,7 @@ print STDERR "\n";
 $ARGV[1] =~ s/\.db$//;
 
 print STDERR "making binary db...";
-dbmopen(DB, $ARGV[1], 0666);
+dbmopen(%DB, $ARGV[1], 0666);
 
 $DB{'__created__'} = pack("N", time);
 
@@ -156,7 +156,7 @@ print STDERR ".";
 $DB{'__t_goner__'} = pack("N", $latest_goner);
 print STDERR ".";
 
-dbmclose(DB);
+dbmclose(%DB);
 
 print STDERR ".";
 print STDERR "\n";

@@ -4,7 +4,7 @@
 # does a short list, either compact or verbose, sorted by graduating
 # class with a jump bar
 #
-# $Id: aid_shortlist_html,v 1.14 1999/03/02 03:24:17 mradwin Exp mradwin $
+# $Id: aid_shortlist_html,v 1.15 1999/03/02 17:39:57 mradwin Exp mradwin $
 #
 
 require 'aid_util.pl';
@@ -38,7 +38,7 @@ $blank_gif = $opt_t ? '' : &aid_image_tag('blank');
 
 $ARGV[0] =~ s/\.db$//;
 die "can't open $ARGV[0].db\n" unless -r "$ARGV[0].db";
-dbmopen(DB,$ARGV[0],0444);
+dbmopen(%DB,$ARGV[0],0444);
 
 die "no __class__ key!\n" unless defined $DB{'__class__'};
 
@@ -127,7 +127,7 @@ if (!$opt_v) {
 
 $opt_t || print FMTOUT &common_html_ftr(5);
 
-dbmclose(DB);
+dbmclose(%DB);
 close(FMTOUT);
 utime $time, $time, $ARGV[1] unless $opt_t;
 

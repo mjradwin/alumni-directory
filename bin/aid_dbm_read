@@ -1,6 +1,6 @@
 #!/usr/bin/perl -w
 
-# $Id: aid_dbm_read,v 1.10 1999/03/02 23:25:36 mradwin Exp mradwin $
+# $Id: aid_dbm_read,v 1.11 1999/03/03 20:33:12 mradwin Exp mradwin $
 
 require 'aid_util.pl';
 require 'getopts.pl';
@@ -28,7 +28,7 @@ $opt_f = $opt_f;		# avoid warning
 $ARGV[0] =~ s/\.db$//;
 die "can't open $ARGV[0].db\n" unless -r "$ARGV[0].db";
 
-dbmopen(DB, $ARGV[0], 0444);
+dbmopen(%DB, $ARGV[0], 0444);
 
 if ($opt_t)
 {
@@ -44,7 +44,10 @@ if ($opt_t)
     foreach (sort { $a <=> $b } @ids)
     {
 	%rec = &aid_db_unpack_rec($_,$DB{$_});
-	print DATA &aid_join(*rec), "\n";
+	print DATA &aid_join(*rec);
+#	print DATA ';', &old_encode_base64($rec{'message'},'')
+#	    if ($rec{'message'} ne '');
+	print DATA "\n";
     } 
     close(DATA);
 }
@@ -111,7 +114,7 @@ else
     }
 }
 
-dbmclose(DB);
+dbmclose(%DB);
 exit 0;
 
 # ugh. touch these variables so we don't get "possible typo" warnings.

@@ -2,7 +2,7 @@
 
 #
 # does the html verbose pages
-# $Id: aid_multi_alpha_html,v 3.28 1999/03/02 03:24:17 mradwin Exp mradwin $
+# $Id: aid_multi_alpha_html,v 3.29 1999/03/05 01:08:15 mradwin Exp mradwin $
 #
 
 require 'aid_util.pl';
@@ -20,7 +20,7 @@ $opt_h = $opt_h;		# avoid warning
 
 $ARGV[0] =~ s/\.db$//;
 die "can't open $ARGV[0].db\n" unless -r "$ARGV[0].db";
-dbmopen(DB,$ARGV[0],0444);
+dbmopen(%DB,$ARGV[0],0444);
 
 die "no __alpha__ key!\n" unless defined $DB{'__alpha__'};
 $time = unpack("N",$DB{'__t__'});
@@ -59,7 +59,7 @@ foreach $id (@alpha_ids)
     print FMTOUT &html_pre_entry(*rec,'',1);
 }
 print STDERR "\n";
-dbmclose(DB);
+dbmclose(%DB);
 
 print FMTOUT "</pre>\n";
 print FMTOUT &common_html_ftr(1);

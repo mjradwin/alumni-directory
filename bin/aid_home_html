@@ -2,7 +2,7 @@
 
 #
 # does the html version of just home pages
-# $Id: aid_home_html,v 3.27 1999/02/27 02:00:14 mradwin Exp mradwin $
+# $Id: aid_home_html,v 3.28 1999/03/02 01:26:34 mradwin Exp mradwin $
 #
 
 require 'aid_util.pl';
@@ -47,7 +47,7 @@ if ($opt_i)
 else
 {
     die "can't open ${dbmfile}.db\n" unless -r "${dbmfile}.db";
-    dbmopen(DB,$dbmfile,0444);
+    dbmopen(%DB,$dbmfile,0444);
 
     die "no __t__ key!\n" unless defined $DB{'__t__'};
     $time = unpack("N",$DB{'__t__'});
@@ -56,10 +56,10 @@ else
 if ($opt_i && $opt_p == 0)
 {
     die "can't open ${dbmfile}.db\n" unless -r "${dbmfile}.db";
-    dbmopen(DB,$dbmfile,0444);
+    dbmopen(%DB,$dbmfile,0444);
     die "no __t__ key!\n" unless defined $DB{'__t__'};
     $time = unpack("N",$DB{'__t__'});
-    dbmclose(DB);
+    dbmclose(%DB);
 }
 
 open(OUTFILE,">$outfile") || die "Can't open $outfile: $!\n";
@@ -136,7 +136,7 @@ years after mine.</label>
 }
 print OUTFILE &common_html_ftr($opt_p);
 
-dbmclose(DB) unless $opt_i;
+dbmclose(%DB) unless $opt_i;
 close(OUTFILE);
 utime $time, $time, $outfile;
 

@@ -2,7 +2,7 @@
 
 #
 # does the html multi_class pages
-# $Id: aid_multi_class_html,v 3.25 1999/02/27 02:00:14 mradwin Exp mradwin $
+# $Id: aid_multi_class_html,v 3.26 1999/03/02 01:26:34 mradwin Exp mradwin $
 #
 
 require 'aid_util.pl';
@@ -20,7 +20,7 @@ $opt_h = $opt_h;		# avoid warning
 
 $ARGV[0] =~ s/\.db$//;
 die "can't open $ARGV[0].db\n" unless -r "$ARGV[0].db";
-dbmopen(DB,$ARGV[0],0444);
+dbmopen(%DB,$ARGV[0],0444);
 
 die "no __years__ key!\n" unless defined $DB{'__years__'};
 
@@ -58,7 +58,7 @@ foreach $year (@years)
 }
 
 $time = unpack("N",$DB{'__t__'});
-dbmclose(DB);
+dbmclose(%DB);
 print STDERR "\n";
 
 # index page
