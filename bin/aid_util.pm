@@ -2,7 +2,7 @@
 #     FILE: aid_util.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: perl library routines for the Alumni Internet Directory
-#      $Id: aid_util.pl,v 5.20 1999/06/16 17:58:03 mradwin Exp mradwin $
+#      $Id: aid_util.pl,v 5.21 1999/06/17 03:16:01 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -21,7 +21,7 @@
 #   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #
 
-require 'awalt_config.pl';
+require 'mvhs_config.pl';
 require 'aid_config.pl';
 require 'aid_submit.pl';
 
@@ -660,8 +660,8 @@ sub aid_common_intro_para
     local($info) = "The <tt>" . $image_tag{'info'} .
 	"</tt>\nicon lets you get more detailed information about an alumnus.";
 
-    "<p><small>Any alumni marked with\n<small>" . $image_tag{'new'} . 
-    "</small>\nhave been added to the Directory last month.\n" .
+    "<p><small>Any alumni marked with\n" . $image_tag{'new'} . 
+    "\nhave been added to the Directory last month.\n" .
     "Alumni marked with\n" . $image_tag{'updated'} . 
     "\nhave updated their information within the past month.\n" .
     ($_[0] ? $info : '') .
