@@ -2,7 +2,7 @@
 #     FILE: aid_config.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: configuration for Alumni Internet Directory
-#      $Id: aid_config.pl,v 1.11 1999/03/17 18:14:15 mradwin Exp mradwin $
+#      $Id: aid_config.pl,v 1.12 1999/03/26 19:42:57 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -44,6 +44,7 @@
      'confirm_cgi',  '/cgi-bin/mvhsaid/cnf',
      'index_page',   'index.html',
      'wwwdir',       '/home/web/radwin.org/docs/mvhs-alumni/',
+     'dbmfile',      '/home/web/radwin.org/docs/mvhs-alumni/master.db',
      'aiddir',       '/home/users/mradwin/mvhs/',
      'sendmail',     '/usr/sbin/sendmail',
      'mailprog',     '/usr/bin/mail',

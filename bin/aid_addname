@@ -1,6 +1,6 @@
 #!/usr/bin/perl -w
 
-# $Id: aid_addname,v 3.28 1999/03/26 03:07:49 mradwin Exp mradwin $
+# $Id: aid_addname,v 3.29 1999/03/26 19:41:22 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -154,7 +154,7 @@ sub rebuild
 sub mail_welcome
 {
     local($cmd);
-    local($dbfile) = &aid_config('wwwdir') . 'master.db';
+    local($dbmfile) = &aid_config('dbmfile');
 
     chdir &aid_config('aiddir') || die "can't chdir: $!\n";
 
@@ -162,14 +162,14 @@ sub mail_welcome
     if (@new_ids)
     {
 	print STDERR ' new(', join(' ', @new_ids), ')';
-	$cmd = "./bin/aid_welcome $dbfile " . join(' ', @new_ids);
+	$cmd = "./bin/aid_welcome $dbmfile " . join(' ', @new_ids);
 	system $cmd || die "failed to run $cmd: $!\n";
     }
 
     if (@upd_ids)
     {
 	print STDERR ' upd(', join(' ', @upd_ids), ')';
-	$cmd = "./bin/aid_welcome -u $dbfile " . join(' ', @upd_ids);
+	$cmd = "./bin/aid_welcome -u $dbmfile " . join(' ', @upd_ids);
 	system $cmd || die "failed to run $cmd: $!\n";
     }
 

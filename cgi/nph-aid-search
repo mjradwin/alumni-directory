@@ -26,7 +26,8 @@ print "Server: ", $ENV{'SERVER_SOFTWARE'}, "\015\012"
     if defined $ENV{'SERVER_SOFTWARE'};
 print "Connection: close\015\012";
 
-$dbmfile = &aid_config('wwwdir') . 'master';
+$dbmfile = &aid_config('dbmfile');
+$dbmfile =~ s/\.db$//;
 
 &CgiDie(&aid_config('short_school') . " Alumni: Script Error",
 	"The database is unreadable.\n" .

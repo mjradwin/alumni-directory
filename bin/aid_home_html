@@ -2,7 +2,7 @@
 
 #
 # does the html version of just home pages
-# $Id: aid_home_html,v 3.31 1999/03/17 22:04:29 mradwin Exp mradwin $
+# $Id: aid_home_html,v 3.32 1999/03/26 19:41:22 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -51,7 +51,9 @@ die "$usage\n" unless defined($opt_t);
 
 $infile = $opt_i;
 $outfile = $ARGV[0];
-$dbmfile = &aid_config('wwwdir') . 'master';
+
+$dbmfile = &aid_config('dbmfile');
+$dbmfile =~ s/\.db$//;
 
 if ($opt_i)
 {
