@@ -2,7 +2,7 @@
 #     FILE: aid_util.pm
 #   AUTHOR: Michael J. Radwin
 #    DESCR: perl library routines for the Alumni Internet Directory
-#      $Id: aid_util.pm,v 6.7 2003/10/30 07:28:18 mradwin Exp mradwin $
+#      $Id: aid_util.pm,v 6.8 2003/10/30 17:56:04 mradwin Exp mradwin $
 #
 # Copyright (c) 2003  Michael J. Radwin.
 # All rights reserved.
@@ -59,6 +59,11 @@ require 'school_config.pl';
 use strict;
 
 package aid_util;
+
+my($VERSION) = '$Revision: 1.152 $$';
+if ($VERSION =~ /(\d+)\.(\d+)/) {
+    $VERSION = "$1.$2";
+}
 
 @aid_util::req_descr_long =  
     (
@@ -598,6 +603,10 @@ sub sendmail_v2
     }
     $cc = "Cc: $cc\n" if $cc ne '';
 
+    my $hostname = `/bin/hostname -f`;
+    chomp($hostname);
+    my $mid = "AID.$VERSION." . time() . ".$$\@$hostname";
+
     $message =
 "From: $from <$return_path>
 To: $to
@@ -605,6 +614,8 @@ ${cc}Organization: $aid_util::config{'school'} Alumni Internet Directory
 ${xtrahead}MIME-Version: 1.0
 Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: QUOTED-PRINTABLE
+X-Mailer: alumni internet directory mail v$VERSION
+Message-ID: <$mid>
 Subject: $subject
 ";
 
