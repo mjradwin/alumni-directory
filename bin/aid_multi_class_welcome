@@ -1,6 +1,6 @@
 #!/usr/local/bin/perl5 -w
 
-# $Id: aid_multi_class_welcome,v 5.11 2001/02/01 20:27:53 mradwin Exp mradwin $
+# $Id: aid_multi_class_welcome,v 5.12 2001/02/01 20:34:43 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -81,7 +81,10 @@ foreach (@years)
 
     if (@mail_ids)
     {
-	next unless -r "${dir}/${_}.txt";
+	unless (-r "${dir}/${_}.txt") {
+	    warn "can't find ${dir}/${_}.txt; skipping $_\n";
+	    next;
+	}
 
 	@mail_ids = sort { $a <=> $b } @mail_ids;
 
