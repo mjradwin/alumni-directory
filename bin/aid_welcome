@@ -2,7 +2,7 @@
 
 #
 # mails a welcome, update, confirm, or massmail message to members
-# $Id: aid_welcome,v 3.42 1999/04/05 16:26:17 mradwin Exp mradwin $
+# $Id: aid_welcome,v 3.43 1999/04/05 23:00:02 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -76,26 +76,6 @@ are now listed on-line in the Directory.
 "
 Otherwise, if everything you see above is correct,
 you're all set.
-
-Want to network with other alumni?  Sign up for the
-MVHS or Awalt Group on PlanetAll if you want to share
-password-protected, detailed address book information
-(birthdays, phone numbers, etc.) with others alumni.
-People will only be allowed to access your information
-with your permission, and you can share as much or as
-little as you want.
-
-MVHS on PlanetAll:
-  http://www.planetall.com/main.asp?cid=1520098&gid=6602
-
-Awalt on PlanetAll:
-  http://www.planetall.com/main.asp?cid=1520098&gid=77847
-
-You might also be interested in joining the MVHS Club
-on Yahoo!  The Club adds a Chat Room and Message Boards
-to the services currently provided by this Directory:
-
-  http://clubs.yahoo.com/clubs/mountainviewhighschool
 
 Once again, welcome to the Alumni Internet Directory!
 ",
