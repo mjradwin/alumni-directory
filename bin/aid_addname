@@ -1,6 +1,6 @@
 #!/usr/bin/perl -w
 
-# $Id: aid_addname,v 3.12 1998/05/17 05:30:36 mradwin Exp mradwin $
+# $Id: aid_addname,v 3.13 1998/05/19 20:36:52 mradwin Exp mradwin $
 
 require 'getopts.pl';
 require 'aid_util.pl';
@@ -88,11 +88,11 @@ sub readspool {
 		write(STDOUT);
 		close(NEWSOUT);
 
-		$logFile = &aid_config('aiddir') . "logs/additions.log";
-		system "$echo 'MESSAGE $newsFile' >> $logFile"
-		    || die "failed to $echo 'MESSAGE $newsFile' >> $logFile: $!\n";
-		system "$cat $newsFile >> $logFile"
-		    || die "failed to $cat $newsFile >> $logFile: $!\n";
+#		$logFile = &aid_config('aiddir') . "logs/additions.log";
+#		system "$echo 'MESSAGE $newsFile' >> $logFile"
+#		    || die "failed to $echo 'MESSAGE $newsFile' >> $logFile: $!\n";
+#		system "$cat $newsFile >> $logFile"
+#		    || die "failed to $cat $newsFile >> $logFile: $!\n";
 
 		$newsp = 1;	# they had a What's New? message
 	    }
@@ -148,7 +148,7 @@ sub addname {
     local($rawdata) = @_;
     local($[) = 0;
     local($_);
-    local($dbFile,$newmailFile,$updFile,$logFile,@db);
+    local($dbFile,$newmailFile,$updFile,$logFile,@db,%oldrec);
     local(%rec) = &aid_split($rawdata);
     local($addme,$tmpFile,*LOG,*TMP);
 
@@ -166,9 +166,13 @@ sub addname {
 	$addme = &aid_join(*rec);
 	system "$echo '$addme' >> $newmailFile"
 	    || die "failed to $echo '$addme' >> $newmailFile: $!\n";
+	print     "new - ";
+	print LOG "new - ";
+
     } else {
-	print     "==> UPDATE ", $db[$rec{'id'}], "\n";
-	print LOG "==> UPDATE ", $db[$rec{'id'}], "\n";
+	%oldrec = &aid_split($db[$rec{'id'}]);
+	print     "upd ", $oldrec{'email'}, " ";
+	print LOG "upd ", $oldrec{'email'}, " ";
 	$addme = $rawdata;
 	system "$echo '$addme' >> $updFile"
 	    || die "failed to $echo '$addme' >> $updFile: $!\n";
