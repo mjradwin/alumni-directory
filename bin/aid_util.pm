@@ -2,11 +2,11 @@
 #     FILE: aid_util.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: perl library routines for the Alumni Internet Directory
-#      $Id: aid_util.pl,v 3.32 1998/06/08 22:38:02 mradwin Exp mradwin $
+#      $Id: aid_util.pl,v 3.33 1998/07/06 16:36:16 mradwin Exp mradwin $
 #
 
 $aid_util'rcsid =
- '$Id: aid_util.pl,v 3.32 1998/06/08 22:38:02 mradwin Exp mradwin $';
+ '$Id: aid_util.pl,v 3.33 1998/07/06 16:36:16 mradwin Exp mradwin $';
 
 # ----------------------------------------------------------------------
 # CONFIGURATION
@@ -139,7 +139,7 @@ for ($i = 0; $i <= $#aid_util'field_names; $i++) { #'#
 
 $aid_util'blank_entry{'id'}      = -1;      #'#
 $aid_util'blank_entry{'valid'}   = 1;       #'#
-$aid_util'blank_entry{'request'} = 2;       #'#
+$aid_util'blank_entry{'request'} = 3;       #'#
 $aid_util'blank_entry{'reunion'} = 1;       #'#
 $aid_util'blank_entry{'bounces'} = 0;       #'#
 $aid_util'blank_entry{'message'} = '';      #'#
@@ -504,7 +504,7 @@ sub submit_body {
 
     $rec{'homepage'} = 'http://' if $rec{'homepage'} eq '';
 
-    for ($i = 0; $i < 3; $i++) {
+    for ($i = 0; $i < 4; $i++) {
 	$reqchk[$i] = ($rec{'request'} == $i) ? ' checked' : '';
     }
     $reunion_chk = ($rec{'reunion'} == 1) ? ' checked' : '';
@@ -631,10 +631,12 @@ are required.  All other fields are optional.</p>\n\n";
   an updated copy</a> of the Directory to my email address every 3 
   months:<br>
   &nbsp;&nbsp;&nbsp;&nbsp;<input type=radio name=\"request\"
-  value=\"1\"$reqchk[1]>&nbsp;&nbsp;Sorted by name.<br>
-  &nbsp;&nbsp;&nbsp;&nbsp;<input type=radio name=\"request\" 
-  value=\"2\"$reqchk[2]>&nbsp;&nbsp;Sorted by graduating class.<br>
+  value=\"3\"$reqchk[3]>&nbsp;&nbsp;Only new and changed alumni entries.<br>
   &nbsp;&nbsp;&nbsp;&nbsp;<input type=radio name=\"request\"
+  value=\"2\"$reqchk[2]>&nbsp;&nbsp;All alumni, sorted by graduating class.<br>
+  &nbsp;&nbsp;&nbsp;&nbsp;<input type=radio name=\"request\"
+  value=\"1\"$reqchk[1]>&nbsp;&nbsp;All alumni, sorted by name.<br>
+  &nbsp;&nbsp;&nbsp;&nbsp;<input type=radio name=\"request\" 
   value=\"0\"$reqchk[0]>&nbsp;&nbsp;No e-mail except for address
   verification (once per year).</font>
   <input type=\"hidden\" name=\"id\" value=\"$rec{'id'}\">
@@ -864,6 +866,7 @@ sub about_text {
 	$retval .= ($rec{'request'} == 2) ?
 	    "yes (sorted by graduating class)\n" :
 	    ($rec{'request'} == 1) ? "yes (sorted by name)\n" : 
+	    ($rec{'request'} == 3) ? "yes (new and changed entries)\n" : 
 		"only address verification\n";
     } 
 
