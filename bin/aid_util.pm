@@ -2,7 +2,7 @@
 #     FILE: mv_util.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: perl library routines for the MVHS Alumni Internet Directory
-#      $Id: mv_util.pl,v 1.30 1997/08/22 17:13:54 mjr Exp mjr $
+#      $Id: mv_util.pl,v 1.31 1997/08/25 23:57:14 mjr Exp mjr $
 #
 
 CONFIG: {
@@ -14,7 +14,6 @@ CONFIG: {
 	 'admin_email',  "mjr\@acm.org",
 	 'admin_school', "Mountain View High School, Class of '93",
 	 'admin_phone',  "408-536-2554",
-	 'admin_usmail', "2814 Cozumel Cir., Santa Clara, CA 95051",
 	 'admin_url',    "http://umop-ap.com/~mjr/",
 	 'master_url',   "http://umop-ap.com/~mjr/mvhs/",
 	 'master_path',  "/~mjr/mvhs/",
@@ -350,7 +349,6 @@ sub message_footer {
 	$config{'admin_school'} . "\n\n" .
 	"Email     : " . $config{'admin_email'} . "\n" .
 	"WWW       : " . $config{'admin_url'} . "\n" .
-	"U.S. Mail : " . $config{'admin_usmail'} . "\n" .
 	"Phone     : " . $config{'admin_phone'};
 }
 
@@ -508,11 +506,13 @@ sub common_html_ftr {
     $ftr .= "</font> ]</p>\n";
     
     return $ftr . "
-<blockquote><a name=\"disclaimer\">This</a> address list is provided
-solely for the information of alumni of Mountain View High School and
-Awalt High School.  Any solicitation of business, information,
-contributions or other response from individuals listed in this
-publication is forbidden.</blockquote>
+
+<blockquote><a name=\"disclaimer\">Acceptable use</a>: this directory is
+provided solely for the information of alumni of Mountain View High
+School and Awalt High School.  Any solicitation of business,
+information, contributions or other response from individuals listed in
+this publication is forbidden.</blockquote>
+
 <hr noshade size=1>
 
 <p><a href=\"" . $config{'admin_url'} .
