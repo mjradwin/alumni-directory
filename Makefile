@@ -2,7 +2,7 @@
 #     FILE: Makefile
 #   AUTHOR: Michael J. Radwin
 #    DESCR: Makefile for building the Alumni Internet Directory
-#      $Id: Makefile,v 3.51 1999/02/16 19:18:25 mradwin Exp mradwin $
+#      $Id: Makefile,v 3.52 1999/02/16 19:21:49 mradwin Exp mradwin $
 #
 
 WWWROOT=/home/web/radwin.org
@@ -16,7 +16,6 @@ MV=/bin/mv -f
 CP=/bin/cp -pf
 
 ADR_MASTER=$(MVHSDIR)/data/master.adr
-ADR_CLASS=$(MVHSDIR)/data/class.adr
 
 BIN_MULTI_ALPHA=$(MVHSDIR)/bin/aid_multi_alpha_html
 BIN_ALPHA=$(MVHSDIR)/bin/aid_alpha_html
@@ -90,8 +89,8 @@ $(AWALT):	$(DBFILE) $(BIN_CLASS)
 
 RECENT=$(WWWDIR)/recent.html
 recent:	$(RECENT)
-$(RECENT):	$(ADR_CLASS) $(BIN_RECENT)
-	$(BIN_RECENT) -v -m1 $(ADR_CLASS) $(RECENT)
+$(RECENT):	$(DBFILE) $(BIN_RECENT)
+	$(BIN_RECENT) -v -m1 $(DBFILE) $(RECENT)
 
 GONERS=$(WWWDIR)/invalid.html
 goners:	$(GONERS)
@@ -100,8 +99,8 @@ $(GONERS):	$(DBFILE) $(BIN_GONERS)
 
 PAGES=$(WWWDIR)/pages.html
 pages:	$(PAGES)
-$(PAGES):	$(ADR_CLASS) $(BIN_PAGES)
-	$(BIN_PAGES) -w $(ADR_CLASS) $(PAGES)
+$(PAGES):	$(DBFILE) $(BIN_PAGES)
+	$(BIN_PAGES) -w $(DBFILE) $(PAGES)
 
 MULTI_CLASS=$(WWWDIR)/class/index.html
 multi_class:	$(MULTI_CLASS)
@@ -195,17 +194,14 @@ $(BOOKS2):	$(DBFILE) $(BIN_BOOK)
 	$(BIN_BOOK) -p $(WWWDIR)/books/pine.txt $(DBFILE)
 	$(RM) $(WWWDIR)/books/pine.txt.lu
 
-$(ADR_CLASS):	$(ADR_MASTER)
-	sort -f -t\; +12 -13 +2 -5 $(ADR_MASTER) > $(ADR_CLASS)
-
 alpha.txt:	$(DBFILE) $(BIN_ALPHA)
 	$(BIN_ALPHA) -t $(DBFILE) alpha.txt
 
-class.txt:	$(ADR_CLASS) $(BIN_CLASS)
+class.txt:	$(DBFILE) $(BIN_CLASS)
 	$(BIN_CLASS) -t $(DBFILE) class.txt
 
-recent.txt:	$(ADR_CLASS) $(BIN_RECENT)
-	$(BIN_RECENT) -m3 -t $(ADR_CLASS) recent.txt
+recent.txt:	$(DBFILE) $(BIN_RECENT)
+	$(BIN_RECENT) -m3 -t $(DBFILE) recent.txt
 
 tar:
 	( cd $(MVHSDIR)/.. ; tar cfz $(WWWDIR)/etc/mvhsaid.tar.gz $(TARFILES) )
@@ -217,5 +213,4 @@ chmod:
 	( cd $(WWWDIR) ; chmod -R a+rX * )
 
 clean:
-	$(RM) TAGS class.txt alpha.txt recent.txt \
-	$(ADR_CLASS)
+	$(RM) TAGS class.txt alpha.txt recent.txt
