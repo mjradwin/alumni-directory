@@ -1,6 +1,6 @@
 #!/usr/local/bin/perl -w
 
-# $Id: aid_edit_entry,v 5.17 2001/08/14 16:20:54 mradwin Exp mradwin $
+# $Id: aid_edit_entry,v 5.18 2001/09/16 16:57:51 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -26,7 +26,7 @@ unshift(@INC, $dirname);
 use DB_File;
 
 require 'aid_util.pl';
-require 'getopts.pl';
+use Getopt::Std;
 require 'ctime.pl';
 
 $0 =~ s,.*/,,;  # basename
@@ -37,7 +37,7 @@ $usage = "usage: $0 [-hduf] infile.db userid
     -f        Force creation of non-consecutive entry.
 ";
 
-&Getopts('hduf') || die "$usage\n";
+getopts('hduf') || die "$usage\n";
 $opt_h && die "$usage\n";
 $opt_h = $opt_h;		# avoid warning
 $opt_d = $opt_d;		# avoid warning
@@ -104,7 +104,7 @@ $note_end_str = '_AID_END_NOTE_';
 $tmpfile = '/tmp/aid_edit_entry.' . $$;
 
 open(TMPFILE,">$tmpfile") || die "$tmpfile: $!\n";
-print TMPFILE '# $Id: aid_edit_entry,v 5.17 2001/08/14 16:20:54 mradwin Exp mradwin $', "\n";
+print TMPFILE '# $Id: aid_edit_entry,v 5.18 2001/09/16 16:57:51 mradwin Exp mradwin $', "\n";
 print TMPFILE "# record last touched: ",
  (($rec{'f'} > $rec{'b'}) ? &ctime($rec{'f'}) : &ctime($rec{'b'}));
 

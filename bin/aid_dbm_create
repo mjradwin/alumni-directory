@@ -1,6 +1,6 @@
 #!/usr/local/bin/perl -w
 
-# $Id: aid_dbm_create,v 1.5 2001/09/16 16:57:51 mradwin Exp mradwin $
+# $Id: aid_dbm_create,v 1.6 2001/11/26 20:59:17 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -27,7 +27,7 @@ use DB_File;
 use Config::IniFiles;
 
 require 'aid_util.pl';
-require 'getopts.pl';
+use Getopt::Std;
 
 $0 =~ s,.*/,,;  # basename
 $usage = "usage: $0 [-hq] outfile.db infile.ini
@@ -35,7 +35,7 @@ $usage = "usage: $0 [-hq] outfile.db infile.ini
     -q        Quiet.
 ";
 
-&Getopts('hq') || die "$usage\n";
+getopts('hq') || die "$usage\n";
 $opt_h && die "$usage\n";
 defined $ARGV[0] || die "$usage\n";
 defined $ARGV[1] || die "$usage\n";

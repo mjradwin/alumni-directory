@@ -2,7 +2,7 @@
 
 #
 # does the html version of the invalid address list
-# $Id: aid_goners_html,v 5.9 2000/06/01 23:34:10 mradwin Exp mradwin $
+# $Id: aid_goners_html,v 5.10 2001/09/16 16:57:51 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -28,7 +28,7 @@ unshift(@INC, $dirname);
 use DB_File;
 
 require 'aid_util.pl';
-require 'getopts.pl';
+use Getopt::Std;
 
 $0 =~ s,.*/,,;  # basename
 $usage = "usage: $0 [-hq] [-i <keys>] infile.db outfile.html
@@ -37,7 +37,7 @@ $usage = "usage: $0 [-hq] [-i <keys>] infile.db outfile.html
     -i <keys> Incremental update only for list of keys.
 ";
 
-&Getopts('hi:q') || die "$usage\n";
+getopts('hi:q') || die "$usage\n";
 $opt_h && die "$usage\n";
 $ARGV[0] || die "$usage\n";
 $ARGV[1] || die "$usage\n";

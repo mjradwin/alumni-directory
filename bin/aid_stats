@@ -1,6 +1,6 @@
 #!/usr/local/bin/perl -w
 
-# $Id: aid_stats,v 5.15 2000/04/25 18:22:58 mradwin Exp mradwin $
+# $Id: aid_stats,v 5.16 2001/09/16 16:57:51 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -27,7 +27,7 @@ use DB_File;
 
 require 'aid_util.pl';
 require 'ctime.pl';
-require 'getopts.pl';
+use Getopt::Std;
 
 $0 =~ s,.*/,,;  # basename
 $usage = "usage: $0 [-ht] infile.db outfile
@@ -35,7 +35,7 @@ $usage = "usage: $0 [-ht] infile.db outfile
     -t        Text only.
 ";
 
-&Getopts('ht') || die "$usage\n";
+getopts('ht') || die "$usage\n";
 $opt_h && die "$usage\n";
 $ARGV[0] || die "$usage\n";
 $ARGV[1] || die "$usage\n";

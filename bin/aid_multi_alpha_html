@@ -2,7 +2,7 @@
 
 #
 # does the html verbose pages
-# $Id: aid_multi_alpha_html,v 5.20 2000/06/04 18:51:43 mradwin Exp mradwin $
+# $Id: aid_multi_alpha_html,v 5.21 2001/09/16 16:57:51 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -28,7 +28,7 @@ unshift(@INC, $dirname);
 use DB_File;
 
 require 'aid_util.pl';
-require 'getopts.pl';
+use Getopt::Std;
 
 $0 =~ s,.*/,,;  # basename
 $usage = "usage: $0 [-hq] [-i <keys>] infile.db
@@ -37,7 +37,7 @@ $usage = "usage: $0 [-hq] [-i <keys>] infile.db
     -i <keys> Incremental update only for list of keys.
 ";
 
-&Getopts('hi:q') || die "$usage\n";
+getopts('hi:q') || die "$usage\n";
 $opt_h && die "$usage\n";
 $ARGV[0] || die "$usage\n";
 $opt_h = $opt_h;		# avoid warning

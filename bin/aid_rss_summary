@@ -4,7 +4,7 @@
 #     FILE: aid_rss_summary.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: creates an RDF Site Summary for the Directory
-#      $Id: aid_rss_summary,v 1.9 2000/12/18 04:03:50 mradwin Exp mradwin $
+#      $Id: aid_rss_summary,v 1.10 2001/09/16 16:57:51 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -31,14 +31,14 @@ use DB_File;
 
 require 'aid_util.pl';
 require 'ctime.pl';
-require 'getopts.pl';
+use Getopt::Std;
 
 $0 =~ s,.*/,,;  # basename
 $usage = "usage: $0 [-h] infile.db outfile.rdf
     -h        Display usage information.
 ";
 
-&Getopts('h') || die "$usage\n";
+getopts('h') || die "$usage\n";
 $opt_h && die "$usage\n";
 $ARGV[0] || die "$usage\n";
 $ARGV[1] || die "$usage\n";

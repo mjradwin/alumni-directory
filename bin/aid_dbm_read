@@ -1,6 +1,6 @@
 #!/usr/local/bin/perl -w
 
-# $Id: aid_dbm_read,v 5.18 2001/11/01 19:56:37 mradwin Exp mradwin $
+# $Id: aid_dbm_read,v 5.19 2001/11/26 21:55:00 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -27,7 +27,7 @@ use DB_File;
 use Fcntl qw(:DEFAULT :flock);
 
 require 'aid_util.pl';
-require 'getopts.pl';
+use Getopt::Std;
 require 'ctime.pl';
 
 $0 =~ s,.*/,,;  # basename
@@ -44,7 +44,7 @@ $usage = "usage: $0 [-hofacgi] [-u file | -I file | -d year] infile.db [key]
     -d year   Display alumni from <year> that don't want reunion email.
 ";
 
-&Getopts('hofacu:d:giI:') || die "$usage\n";
+getopts('hofacu:d:giI:') || die "$usage\n";
 $opt_h && die "$usage\n";
 $ARGV[0] || die "$usage\n";
 

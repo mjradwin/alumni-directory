@@ -2,7 +2,7 @@
 
 #
 # does the html version of just home pages
-# $Id: aid_home_html,v 5.19 2000/06/26 16:35:45 mradwin Exp mradwin $
+# $Id: aid_home_html,v 5.20 2001/09/16 16:57:51 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -28,7 +28,7 @@ unshift(@INC, $dirname);
 use DB_File;
 
 require 'aid_util.pl';
-require 'getopts.pl';
+use Getopt::Std;
 
 $0 =~ s,.*/,,;  # basename
 $usage = "usage: $0 [-hq] {-s,-d,-f <file>} [-i <keys>] -p <pg> -t <txt> out.html
@@ -45,7 +45,7 @@ $usage = "usage: $0 [-hq] {-s,-d,-f <file>} [-i <keys>] -p <pg> -t <txt> out.htm
 Either -s, -d or -f must be supplied.  They are mutuallly exclusive.
 ";
 
-&Getopts('hst:f:p:di:q') || die "$usage\n";
+getopts('hst:f:p:di:q') || die "$usage\n";
 $opt_h && die "$usage\n";
 $opt_h = $opt_h;		# avoid warning
 $opt_q = $opt_q;		# avoid warning

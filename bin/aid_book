@@ -2,7 +2,7 @@
 
 #
 # generates address books in several formats
-# $Id: aid_book,v 5.5 2000/02/29 21:55:00 mradwin Exp mradwin $
+# $Id: aid_book,v 5.6 2001/09/16 16:57:51 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -28,7 +28,7 @@ unshift(@INC, $dirname);
 use DB_File;
 
 require 'aid_util.pl';
-require 'getopts.pl';
+use Getopt::Std;
 
 $0 =~ s,.*/,,;  # basename
 $usage = "usage: $0 [-h] infile.db -{p,e,b,w,m,n,l,v,o} outfile
@@ -47,7 +47,7 @@ $usage = "usage: $0 [-h] infile.db -{p,e,b,w,m,n,l,v,o} outfile
 
 # get the command-line options and die if there is a bad option or
 # there are no filenames
-&Getopts('hp:e:b:w:m:n:l:v:o:') || die "$usage\n";
+getopts('hp:e:b:w:m:n:l:v:o:') || die "$usage\n";
 $opt_h && die "$usage\n";
 $ARGV[0] || die "$usage\n";
 $opt_h = $opt_h;		# avoid warning

@@ -2,7 +2,7 @@
 
 #
 # makes a list of e-mail addresses, comma separated.
-# $Id: aid_rawlist,v 5.4 2000/02/29 21:55:00 mradwin Exp mradwin $
+# $Id: aid_rawlist,v 5.5 2001/09/16 16:57:51 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -28,14 +28,14 @@ unshift(@INC, $dirname);
 use DB_File;
 
 require 'aid_util.pl';
-require 'getopts.pl';
+use Getopt::Std;
 
 $0 =~ s,.*/,,;  # basename
 $usage = "usage: $0 [-h] [-c class] infile.db outfile
     -h        Display usage information.
 ";
 
-&Getopts('hc:') || die "$usage\n";
+getopts('hc:') || die "$usage\n";
 $opt_h && die "$usage\n";
 $ARGV[0] || die "$usage\n";
 $ARGV[1] || die "$usage\n";

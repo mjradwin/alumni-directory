@@ -2,7 +2,7 @@
 
 #
 # does the html multi_class pages
-# $Id: aid_multi_class_html,v 5.24 2002/01/06 20:05:13 mradwin Exp mradwin $
+# $Id: aid_multi_class_html,v 5.25 2002/01/07 01:52:02 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -30,7 +30,7 @@ use Time::Local;
 use POSIX qw(strftime);
 
 require 'aid_util.pl';
-require 'getopts.pl';
+use Getopt::Std;
 
 $0 =~ s,.*/,,;  # basename
 $usage = "usage: $0 [-hq] [-i <keys>] infile.db [reunions.db]
@@ -39,7 +39,7 @@ $usage = "usage: $0 [-hq] [-i <keys>] infile.db [reunions.db]
     -i <keys> Incremental update only for list of keys.
 ";
 
-&Getopts('hi:q') || die "$usage\n";
+getopts('hi:q') || die "$usage\n";
 $opt_h && die "$usage\n";
 $ARGV[0] || die "$usage\n";
 $opt_h = $opt_h;		# avoid warning

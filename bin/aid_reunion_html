@@ -3,7 +3,7 @@
 #
 # generates reunion info page
 #
-# $Id: aid_reunion_html,v 1.11 2001/05/15 05:35:30 mradwin Exp mradwin $
+# $Id: aid_reunion_html,v 1.12 2001/09/16 16:57:51 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -30,14 +30,14 @@ use DB_File;
 use Time::Local;
 
 require 'aid_util.pl';
-require 'getopts.pl';
+use Getopt::Std;
 
 $0 =~ s,.*/,,;  # basename
 $usage = "usage: $0 [-h] reunions.db outfile
     -h        Display usage information.
 ";
 
-&Getopts('h') || die "$usage\n";
+getopts('h') || die "$usage\n";
 $opt_h && die "$usage\n";
 $ARGV[0] || die "$usage\n";
 $ARGV[1] || die "$usage\n";
