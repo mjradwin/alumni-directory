@@ -2,7 +2,7 @@
 #     FILE: aid_util.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: perl library routines for the Alumni Internet Directory
-#      $Id: aid_util.pl,v 5.6 1999/06/03 17:35:19 mradwin Exp mradwin $
+#      $Id: aid_util.pl,v 5.7 1999/06/03 18:45:48 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -657,10 +657,12 @@ sub aid_common_link_table
     package aid_util;
 
     local($[) = 0;
-    local($page) = @_;
+    local($page,$nopara,$nosmall) = @_;
     local($html,$name,$url,$idx);
 
-    $html = "<p align=\"center\"><small>";
+    $html  = '';
+    $html .= '<p align="center">' unless $nopara;
+    $html .= '<small>' unless $nosmall;
 
     foreach $idx (0 .. $#page_idx) {
 	($name, $url) = split(/,/, $page_idx[$idx]);
@@ -681,7 +683,9 @@ sub aid_common_link_table
         }
 	$html .= ' - ' unless $idx == $#second_idx;
     }
-    $html .= "</small></p>";
+
+    $html .= '</small>' unless $nosmall;
+    $html .= '</p>' unless $nopara;
     
     $html;
 }
@@ -734,6 +738,7 @@ sub aid_common_html_hdr
 	'<strong>' . &main'tableheader_internal($title,1,$cell_fg) . #'#
 	    "</strong>\n";
     $tablehdr .= "<br />$subtitle\n" if defined $subtitle && $subtitle ne '';
+    $tablehdr .= ($title eq '' ? '' : "<br /><br />");
     $tablehdr .= "\n";
 
     $titletag = ($page == 0) ?
@@ -776,8 +781,8 @@ $timestamp</small></font></p>
 </td></tr>
 <tr><td bgcolor=\"#$cell_bg\" align=\"center\">
 ";
-    $hdr .= $tablehdr . &main'aid_common_link_table($page); #'#
-    $hdr .= "</td></tr>\n</table>\n\n<!--BAD-DOG-->\n\n";
+    $hdr .= $tablehdr . &main'aid_common_link_table($page,1,0) . #'#
+	    "</td></tr>\n</table>\n\n<!--BAD-DOG-->\n";
 
     $hdr;
 }
