@@ -2,7 +2,7 @@
 #     FILE: mv_util.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: perl library routines for the MVHS Alumni Internet Directory
-#      $Id: mv_util.pl,v 1.51 1997/10/23 00:36:31 mjr Exp mjr $
+#      $Id: mv_util.pl,v 1.52 1997/10/27 22:20:22 mjr Exp mjr $
 #
 
 CONFIG: {
@@ -236,7 +236,7 @@ sub submit_body {
 
     if ($id != -1) {
 	$tableh = 
-	    &tableheader("Update Your Directory Listing", 1, "ffff99", 1);
+	    &tableheader("Update Your Directory Listing", 1, "ffff99", "000000", 1);
 	$tableh .= "\n<p>Please update the following information";
 	$tableh .= " and hit the <strong>Submit</strong> button.</p>\n\n";
 	$tableh .= "<p>Fields marked with a <font color=\"#ff0000\">*</font>";
@@ -244,7 +244,7 @@ sub submit_body {
 
     } else {
 	$tableh =
-	    &tableheader("Add a Listing to the Directory", 1, "ffff99", 1);
+	    &tableheader("Add a Listing to the Directory", 1, "ffff99", "000000", 1);
 
 	$tableh .= "
 <p>Thanks for adding a name to the MVHS Alumni Internet Directory!  If
