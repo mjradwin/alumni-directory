@@ -35,7 +35,7 @@ $dbmfile =~ s/\.db$//;
 	"\">email " . &aid_config('admin_name') . "</a>.")
     unless -r "${dbmfile}.db";
 
-dbmopen(DB,$dbmfile,0444);
+dbmopen(%DB,$dbmfile,0444);
 
 if (!&ReadParse() || !defined($in{'q'}) || $in{'q'} =~ /^\s*$/)
 {
@@ -55,7 +55,7 @@ if (defined $DB{'_alpha'})
 }
 else
 {
-    dbmclose(DB);
+    dbmclose(%DB);
     &CgiDie(&aid_config('short_school') . " Alumni: Script Error",
 	    "The alphabetic database is unavailable.\n" .
 	    "Please <a href=\"mailto:" . &aid_config('admin_email') .
@@ -128,7 +128,7 @@ if ($#results == -1)
     &print_search_form($in{'q'},$in{'y'});
     print &aid_common_html_ftr(6);
 
-    dbmclose(DB);
+    dbmclose(%DB);
     close(STDOUT);
     exit(0);
 }
@@ -170,7 +170,7 @@ else
 }
 
 
-dbmclose(DB);
+dbmclose(%DB);
 close(STDOUT);
 exit(0);
 

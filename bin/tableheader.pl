@@ -3,7 +3,7 @@
 #   AUTHOR: Michael J. Radwin
 #    DESCR: generates small-caps HTML headers with colored tables
 #     DATE: Mon Nov 11 23:52:52 EST 1996
-#      $Id: tableheader.pl,v 3.13 1999/01/29 19:47:43 mradwin Exp mradwin $
+#      $Id: tableheader.pl,v 3.14 1999/03/26 19:43:18 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -38,7 +38,7 @@ sub tableheader {
     package tableheader;
 
     local($result,$fn_size,$bgcolor,$fgcolor,$width);
-    local($data,$size,$color,$fontcolor,$wide,$align,$valign,
+    local($data,$color,$wide,$align,$valign,
 	  $pretext,$posttext) = @_;
 
     $bgcolor = "bgcolor=\"#$color\"";
@@ -135,4 +135,5 @@ sub tableheader_internal {
     $result .= "</font>";
     $result;
 }
+
 1;
