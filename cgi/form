@@ -4,7 +4,7 @@
 #     FILE: mvhsaid.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: Alumni Internet Directory CGI interface
-#      $Id: mvhsaid,v 3.57 1999/02/08 21:20:44 mradwin Exp mradwin $
+#      $Id: mvhsaid,v 3.58 1999/02/09 22:38:59 mradwin Exp mradwin $
 #
 
 require 'aid_util.pl';
@@ -21,8 +21,8 @@ if ($ENV{'SCRIPT_NAME'} =~ m,/nph-,)
 
 # configuration
 $mailprog = &aid_config('mailprog');
-$dbfile = &aid_config('wwwdir') . "master.adr";
-$rcsid = '$Id: mvhsaid,v 3.57 1999/02/08 21:20:44 mradwin Exp mradwin $'; #'fnt
+$dbmfile = &aid_config('wwwdir') . 'master';
+$rcsid = '$Id: mvhsaid,v 3.58 1999/02/09 22:38:59 mradwin Exp mradwin $'; #'fnt
 
 @required_headers = ('id', 'first', 'last', 'school', 'year', 'email');
 
@@ -55,10 +55,10 @@ if (defined($in{'version'})) {
 
 } elsif (defined($in{'update'})) {
     if ($in{'update'} =~ /^\d+$/) {
-	@db = &aid_create_db($dbfile);
-	if (defined($db[$in{'update'}])) {
-	    %updateme = &aid_split($db[$in{'update'}]);
-	    $updateme{'message'} = &aid_get_usertext($in{'update'});
+	dbmopen(DB,$dbmfile,0444);
+	if (defined $DB{$in{'update'}}) {
+	    %updateme = &aid_db_unpack_rec($in{'update'},$DB{$in{'update'}});
+	    dbmclose(DB);
 	    &send_upd_real(*updateme,'');
 
 	} else {
@@ -66,15 +66,17 @@ if (defined($in{'version'})) {
 	}
 
     } elsif ($in{'update'} =~ /^\s*[^@]+@[^\.]+\./) {
-	@db = &aid_create_db($dbfile);
 	$in{'update'} =~ s/^\s*//;
 	$in{'update'} =~ s/\s*$//;
 	$in{'update'} = "\L$in{'update'}\E";
-	for (@db) {
-	    next unless defined($_) && $_ ne '';
-	    %updateme = &aid_split($_);
-	    if ("\L$updateme{'email'}\E" eq $in{'update'}) {
-		$updateme{'message'} = &aid_get_usertext($updateme{'id'});
+
+	dbmopen(DB,$dbmfile,0444);
+	if (defined $DB{$in{'update'}}) {
+	    $id = unpack("n",$DB{$in{'update'}});
+	    if ($id > 0)
+	    {
+		%updateme = &aid_db_unpack_rec($id,$DB{$id});
+		dbmclose(DB);
 		&send_upd_real(*updateme,'');
 		close(STDOUT);
 		exit(0);
@@ -94,9 +96,11 @@ if (defined($in{'version'})) {
 
 } elsif (defined($in{'vcard'})) {
     if ($in{'vcard'} =~ /^\d+$/) {
-	@db = &aid_create_db($dbfile);
-	if (defined($db[$in{'vcard'}])) {
-	    &send_vcard($db[$in{'vcard'}]);
+	dbmopen(DB,$dbmfile,0444);
+	if (defined $DB{$in{'vcard'}}) {
+	    %rec = &aid_db_unpack_rec($in{'vcard'},$DB{$in{'vcard'}});
+	    dbmclose(DB);
+	    &send_vcard(*rec);
 	} else {
 	    &send_upd_real(*aid_util'blank_entry,''); #'#
 	}
@@ -107,9 +111,11 @@ if (defined($in{'version'})) {
     exit(0);
 
 } elsif (defined($in{'about'}) && $in{'about'} =~ /^\d+$/) {
-    @db = &aid_create_db($dbfile);
-    if (defined($db[$in{'about'}])) {
-	&send_about($db[$in{'about'}]);
+    dbmopen(DB,$dbmfile,0444);
+    if (defined $DB{$in{'about'}}) {
+	%rec = &aid_db_unpack_rec($in{'about'},$DB{$in{'about'}});
+	dbmclose(DB);
+	&send_about(*rec);
     } else {
 	&send_upd_real(*aid_util'blank_entry,''); #'#
     }
@@ -385,12 +391,9 @@ sub send_upd_real {
 }
 
 sub send_about {
-    local($rawdata) = @_;
-    local(%rec) = &aid_split($rawdata);
+    local(*rec) = @_;
     local($fullname) = &inorder_fullname(*rec);
     local($html_name) = &aid_html_escape($fullname);
-
-    $rec{'message'} = &aid_get_usertext($rec{'id'});
 
     print "Content-Type: text/html\015\012\015\012";
     print &common_html_hdr(-1,$fullname,1);
@@ -422,9 +425,9 @@ it and force us to install a password door.</p>
 }
 
 sub send_vcard {
-    local($rawdata) = @_;
-    local(%rec) = &aid_split($rawdata);
+    local(*rec) = @_;
 
+    print "Last-Modified: ", &aid_http_date($rec{'time'}), "\015\012";
     print "Content-Type: text/x-vcard\015\012\015\012";
     print &aid_vcard_text(*rec);
 }
@@ -432,7 +435,7 @@ sub send_vcard {
 
 sub send_address_book {
     local($format,$year,$plusminus_p) = @_;
-    local(@class_db) = &aid_class_db($dbfile);
+    local(@class_ids,%DB);
     local($_,%rec,$minyr,$maxyr);
     local($subtype) = 'plain';
 
@@ -452,18 +455,33 @@ sub send_address_book {
     } else {
 	$minyr = $maxyr = $year;
     }
+
+    dbmopen(DB,$dbmfile,0444);
+    if (defined $DB{'__class__'})
+    {
+	@class_ids = unpack("n*",$DB{'__class__'});
+    }
+    else
+    {
+	dbmclose(DB);
+	&CgiDie(&aid_config('short_school') . " Alumni: Script Error",
+		"The class database is unavailable.\n" .
+		"Please <a href=\"mailto:" . &aid_config('admin_email') .
+		"\">email " . &aid_config('admin_name') . "</a>.");
+    }
     
     print "Content-Type: text/$subtype;charset=ISO-8859-1\015\012\015\012";
     &aid_book_write_prefix(*STDOUT,$format);
-    foreach (@class_db)
+    foreach (@class_ids)
     {
-	next unless defined $_ && $_ ne '';
-	%rec = &aid_parse($_);
+	%rec = &aid_db_unpack_rec($_,$DB{$_});
+
 	next unless $rec{'valid'};
 	next unless ($rec{'year'} <= $maxyr && $rec{'year'} >= $minyr);
 
 	&aid_book_write_entry(*STDOUT,$format,*rec);
     }
+    dbmclose(DB);
 
     &aid_book_write_suffix(*STDOUT,$format);
 }
@@ -486,10 +504,24 @@ sub send_upd_notfound {
 
 sub send_upd_list {
     local($_);
-    local(@db) = &aid_alpha_db($dbfile);
+    local(@alpha_ids,%DB);
     local($fullname,$affil,$len);
     local($initial,$anchor);
     local(%rec);
+
+    dbmopen(DB,$dbmfile,0444);
+    if (defined $DB{'__alpha__'})
+    {
+	@alpha_ids = unpack("n*",$DB{'__alpha__'});
+    }
+    else
+    {
+	dbmclose(DB);
+	&CgiDie(&aid_config('short_school') . " Alumni: Script Error",
+		"The alphabetic database is unavailable.\n" .
+		"Please <a href=\"mailto:" . &aid_config('admin_email') .
+		"\">email " . &aid_config('admin_name') . "</a>.");
+    }
 
     print "Content-Type: text/html\015\012\015\012";
     print &common_html_hdr(-1,'Update Your Directory Entry',1);
@@ -502,9 +534,8 @@ sub send_upd_list {
     print "---------------------------------------------------------------------------\n";
 
     $initial = "z";
-    foreach (@db) {
-	next if $_ eq '';
-	%rec = &aid_split($_);
+    foreach (@alpha_ids) {
+	%rec = &aid_db_unpack_rec($_,$DB{$_});
 
 	$cur_initial = substr($rec{'last'}, 0, 1);
 	$cur_initial = "\L${cur_initial}\E";
@@ -526,8 +557,12 @@ sub send_upd_list {
 	print $rec{'email'};
 	print "\n";
     }
+    dbmclose(DB);
+
     print "</pre>\n\n";
     print &common_html_ftr(-1);
+
+    1;
 }
 
 sub jump_bar {
