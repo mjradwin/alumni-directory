@@ -2,7 +2,7 @@
 
 #
 # does the html multi_class pages
-# $Id: aid_multi_class_html,v 5.32 2003/05/20 01:09:20 mradwin Exp mradwin $
+# $Id: aid_multi_class_html,v 5.33 2003/07/14 15:32:47 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -229,7 +229,6 @@ foreach $year (@years)
 	print FMTOUT "</ul>\n<hr noshade=\"noshade\" size=\"1\">\n\n";
     }
 
-    if ($opt_d) {
     foreach $id (@ids)
     {
 	%rec = &aid_db_unpack_rec($id,$DB{$id});
@@ -237,6 +236,7 @@ foreach $year (@years)
 
 	print FMTOUT &aid_verbose_entry(*rec);
 
+	if ($opt_d) {
 	my $out2 = sprintf("%s%s/%06d.html",
 			   &aid_config('wwwdir'), "detail", $id);
 	open(FMTOUT2,">$out2") || die "Can't open $out2: $!\n";
@@ -248,7 +248,7 @@ foreach $year (@years)
 	print FMTOUT2 &aid_common_html_ftr(-2,$rec{'u'});
 	close(FMTOUT2);
 	utime $rec{'u'}, $rec{'u'}, $out2;
-    }
+    	}
     }
 
     print FMTOUT &aid_common_html_ftr(2,$time);
