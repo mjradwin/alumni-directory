@@ -2,7 +2,7 @@
 
 #
 # does the html version of just home pages
-# $Id: aid_home_html,v 3.16 1999/02/01 17:57:10 mradwin Exp mradwin $
+# $Id: aid_home_html,v 3.17 1999/02/03 19:06:02 mradwin Exp mradwin $
 #
 
 require 'aid_util.pl';
@@ -59,19 +59,22 @@ if ($opt_s) {
 	next unless $rec{'valid'};
 	&aid_build_yearlist(*years,$rec{'year'});
     }
-    print OUTFILE "<p>Before downloading nickname files and address books
+    print OUTFILE "<p>Before downloading nickname and address book files
 for your e-mail program, please read the
 <a href=\"", &aid_config('master_path'), "etc/copyright.html\">Acceptable
 Use Policy</a>.</p>
 
-<p>You may need to use the \"import\" feature on your mailreader to
-merge the address book with your own.  Aliases (also called nicknames)
-are of the form <code><strong>flllllll</strong></code> where
+<p>You may need to use the \"import\" feature to merge the address book
+with your own.  Aliases (also called nicknames) are of the form
+<code><strong>flllllll</strong></code> where
 <code><strong>f</strong></code> is first initial and
-<code><strong>l</strong></code> is last name.</p>\n\n";
+<code><strong>l</strong></code> is last name.  If there are duplicates
+such as John Smith and Jane Smith, then the first one will be
+<code><strong>jsmith</strong></code> and the second will be
+<code><strong>jsmith2</strong></code>.</p>\n\n";
 
     print OUTFILE "<p><form method=\"get\" action=\"";
-    print OUTFILE &aid_config('cgi_path') . "/download.txt\">\n";
+    print OUTFILE &aid_config('cgi_path') . "/mvhs.txt\">\n";
     print OUTFILE "<input type=\"hidden\" name=\"download\" value=\"1\">\n\n";
 
     print OUTFILE "<label for=\"email\">Your e-mail address:&nbsp;</label>\n";
