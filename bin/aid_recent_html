@@ -2,7 +2,7 @@
 
 #
 # does the html version of the recent address list
-# $Id: aid_recent_html,v 3.12 1998/09/18 23:42:12 mradwin Exp mradwin $
+# $Id: aid_recent_html,v 3.13 1998/10/09 20:52:58 mradwin Exp mradwin $
 #
 
 require 'aid_util.pl';
@@ -27,8 +27,7 @@ if (!$opt_t) {
 print FMTOUT &common_html_hdr(5,'Recent Additions to the Directory',1);
 print FMTOUT
 "<p>All entries on this page have been added to the Directory within the
-last month.  The most recent additions or updates are at the top of the
-page.</p>\n\n";
+last month.</p>\n\n";
 }
 
 $opt_m = 1 unless $opt_m;
@@ -56,8 +55,10 @@ if ($opt_t) {
 	print FMTOUT ' ' x (40 - (length($fullname) + $len));
 	print FMTOUT $rec{'email'}, "\n";
     }
+
 } else {
-    while (defined($_ = pop(@newbies))) {
+#    while (defined($_ = pop(@newbies))) {
+    while (defined($_ = shift(@newbies))) {
 	%rec = &aid_parse($_);
 	&aid_write_verbose_entry(*FMTOUT,*rec,1,1);
     }
