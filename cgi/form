@@ -4,10 +4,8 @@
 #     FILE: mvhsaid.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: Alumni Internet Directory CGI interface
-#      $Id: mvhsaid,v 3.51 1999/02/02 00:05:00 mradwin Exp mradwin $
+#      $Id: mvhsaid,v 3.52 1999/02/04 19:21:53 mradwin Exp mradwin $
 #
-
-select(STDOUT);  $| = 1;
 
 if ($ENV{'SCRIPT_NAME'} =~ m,/nph-,)
 {
@@ -22,7 +20,7 @@ require 'cgi-lib.pl';
 # configuration
 $mailprog = &aid_config('mailprog');
 $dbfile = &aid_config('wwwdir') . "master.adr";
-$rcsid = '$Id: mvhsaid,v 3.51 1999/02/02 00:05:00 mradwin Exp mradwin $'; #'fnt
+$rcsid = '$Id: mvhsaid,v 3.52 1999/02/04 19:21:53 mradwin Exp mradwin $'; #'fnt
 
 @required_headers = ('id', 'first', 'last', 'school', 'year', 'email');
 
@@ -38,6 +36,7 @@ if (defined($ENV{'PATH_INFO'}) && $ENV{'PATH_INFO'} =~ m,^/vcard/,)
 if (!&ReadParse())
 {
     &send_upd_real(*aid_util'blank_entry,'');  #')#
+    close(STDOUT);
     exit(0);
 }
 
@@ -49,6 +48,7 @@ if (defined($in{'version'})) {
     print "Content-Type: text/plain\015\012\015\012$rcsid\015\012";
     print &aid_config('rcsid'), "\015\012",
 	"cgi-lib.pl version ", $cgi_lib'version, "\015\012"; #'#
+    close(STDOUT);
     exit(0);
 
 } elsif (defined($in{'update'})) {
@@ -74,6 +74,7 @@ if (defined($in{'version'})) {
 	    if ("\L$updateme{'email'}\E" eq $in{'update'}) {
 		$updateme{'message'} = &aid_get_usertext($updateme{'id'});
 		&send_upd_real(*updateme,'');
+		close(STDOUT);
 		exit(0);
 	    }
 	}
@@ -86,6 +87,7 @@ if (defined($in{'version'})) {
 	&send_upd_notfound($in{'update'});
 
     }
+    close(STDOUT);
     exit(0);
 
 } elsif (defined($in{'vcard'})) {
@@ -99,6 +101,7 @@ if (defined($in{'version'})) {
     } else {
 	&send_upd_real(*aid_util'blank_entry,''); #'#
     }
+    close(STDOUT);
     exit(0);
 
 } elsif (defined($in{'about'}) && $in{'about'} =~ /^\d+$/) {
@@ -108,6 +111,7 @@ if (defined($in{'version'})) {
     } else {
 	&send_upd_real(*aid_util'blank_entry,''); #'#
     }
+    close(STDOUT);
     exit(0);
 
 } elsif (defined($in{'download'})) {
@@ -132,6 +136,7 @@ if (defined($in{'version'})) {
     {
 	&send_address_book($in{'format'},$in{'year'},$in{'plusminus'});
     }
+    close(STDOUT);
     exit(0);
 }
 
@@ -139,6 +144,7 @@ if (defined($in{'version'})) {
 # no special flags, so this should be a submission-processing request.
 # did they access this with the right form?
 foreach (@required_headers) {
+    select(STDOUT); $| = 1;
     &CgiDie(&aid_config('short_school') . " Alumni: Script Error",
 	    "The required form data was not present or something is awry.\n" .
 	    "Please <a href=\"" . &aid_config('master_path') .
@@ -241,6 +247,7 @@ if (@blank_fields)
 {
     delete $in{'time'};
     &send_upd_real(*in,join(' ', @blank_fields));
+    close(STDOUT);
     exit(0);
 }
 
@@ -256,6 +263,7 @@ if (defined($in{'revise'})) {
     &confirm_submission();
 }
 
+close(STDOUT);
 exit(0);
 
 
