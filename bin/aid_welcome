@@ -2,7 +2,7 @@
 
 #
 # mails a welcome or update note to everyone in targets.adr
-# $Id: aid_welcome,v 1.27 1998/01/03 11:32:52 mradwin Exp $
+# $Id: aid_welcome,v 1.26 1998/01/03 11:38:28 mjr Exp mjr $
 #
 
 require 'aid_util.pl';
@@ -19,6 +19,7 @@ $usage = 'usage: aid_welcome [-h] [-u | -c] targets.adr
 $opt_h && die "$usage\n";
 ($opt_c && $opt_u) && die "$usage\n";
 $ARGV[0] || die "$usage\n";
+$opt_h = $opt_h;                # avoid warning
 
 $logfile = &aid_config('aiddir') . "logs/welcome.log";
 $subject = ($opt_c) ? 'Confirming your MVHS Alumni Internet Directory entry' :
