@@ -2,7 +2,7 @@
 
 #
 # mails a welcome, update, confirm, or massmail message to members
-# $Id: aid_welcome,v 5.10 1999/08/04 18:55:15 mradwin Exp mradwin $
+# $Id: aid_welcome,v 5.11 1999/08/11 17:49:08 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -166,7 +166,7 @@ $params{'sleep'} = $opt_d if defined $opt_d;
 $dbmfile = shift;
 $dbmfile =~ s/\.db$//;
 die "$0: ${dbmfile}.db: $!\n" unless -r "${dbmfile}.db";
-die "$0: ${dbmfile}.db: $!\n" unless -w "${dbmfile}.db";
+die "$0: ${dbmfile}.db not writeable\n" unless -w "${dbmfile}.db";
 
 dbmopen(%DB,$dbmfile,0666);
 die "invalid DB: ${dbmfile}.db\n" unless defined $DB{'_class'};
@@ -221,6 +221,7 @@ else
 	}
 
 	%rec = &aid_db_unpack_rec($_,$DB{$_});
+	$time = time;
 	&mail_user($time, *rec);
 	$rec{'lm'} = $time;
 	$DB{$rec{'id'}} = &aid_db_pack_rec(*rec);
