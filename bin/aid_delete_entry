@@ -1,6 +1,6 @@
 #!/usr/bin/perl -w
 
-# $Id: aid_delete_entry,v 1.1 1999/06/01 05:33:53 mradwin Exp mradwin $
+# $Id: aid_delete_entry,v 1.2 1999/06/07 18:33:10 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -74,7 +74,12 @@ delete $DB{$email};
 local($joined) = &aid_ampersand_join(*rec);
 warn "$0: deleting $joined\n";
 
+# rebuilding the secondary keys will reconstruct _nextid.  Let's keep it
+# so we don't have duplicate people with the same id
+$prevnextid = $DB{'_nextid'};
 local(@diffs) = &aid_rebuild_secondary_keys(*DB,0);
+$DB{'_nextid'} = $prevnextid;
+
 if ($opt_d)
 {
     foreach (@diffs)
