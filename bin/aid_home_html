@@ -2,7 +2,7 @@
 
 #
 # does the html version of just home pages
-# $Id: aid_home_html,v 5.16 2000/06/26 16:10:41 mradwin Exp mradwin $
+# $Id: aid_home_html,v 5.17 2000/06/26 16:32:20 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -131,7 +131,7 @@ such as John Smith and Jane Smith, then the first one will be
 
 <p>For help on importing into your e-mail application, please see <a
 href=\"", &aid_config('master_path'), 
-"etc/faq.html#download">instructions</a>.</p>\n\n";
+"etc/faq.html#download\">instructions</a>.</p>\n\n";
 
     print OUTFILE "<form method=\"get\" action=\"";
     print OUTFILE &aid_config('download_cgi') . "\">\n";
