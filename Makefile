@@ -2,7 +2,7 @@
 #     FILE: Makefile
 #   AUTHOR: Michael J. Radwin
 #    DESCR: Makefile for building the Alumni Internet Directory
-#      $Id: Makefile,v 3.49 1999/02/09 01:00:45 mradwin Exp mradwin $
+#      $Id: Makefile,v 3.50 1999/02/16 17:58:39 mradwin Exp mradwin $
 #
 
 WWWROOT=/home/web/radwin.org
@@ -16,10 +16,7 @@ MV=/bin/mv -f
 CP=/bin/cp -pf
 
 ADR_MASTER=$(MVHSDIR)/data/master.adr
-ADR_ALPHA=$(MVHSDIR)/data/alpha.adr
 ADR_CLASS=$(MVHSDIR)/data/class.adr
-ADR_AWALT=$(MVHSDIR)/data/awalt.adr
-ADR_DATE=$(MVHSDIR)/data/date.adr
 
 BIN_MULTI_ALPHA=$(MVHSDIR)/bin/aid_multi_alpha_html
 BIN_ALPHA=$(MVHSDIR)/bin/aid_alpha_html
@@ -58,36 +55,38 @@ all:	$(CGIDIR)/nph-mvhsaid \
 	recent multi_class multi_alpha \
 	pages class awalt goners download books2
 
-ADRFILE=$(WWWDIR)/master.adr
+$(CGIDIR)/nph-mvhsaid: $(CGIDIR)/mvhsaid
+	$(CP) $(CGIDIR)/mvhsaid $(CGIDIR)/nph-mvhsaid
+
 DBFILE=$(WWWDIR)/master.db
+$(DBFILE):	$(ADR_MASTER) $(BIN_DBM_WRITE) $(AID_UTIL_PL)
+	$(RM) ./master.db
+	$(BIN_DBM_WRITE) $(ADR_MASTER) ./master.db
+	$(RM) $(DBFILE)
+	$(MV) ./master.db $(DBFILE)
+	chmod 0444 $(DBFILE)
+
+ADRFILE=$(WWWDIR)/master.adr
 adrfile:	$(ADRFILE) $(DBFILE)
 $(ADRFILE):	$(ADR_MASTER)
 	$(CP) $(ADR_MASTER) $(WWWDIR)
 
-$(CGIDIR)/nph-mvhsaid: $(CGIDIR)/mvhsaid
-	$(CP) $(CGIDIR)/mvhsaid $(CGIDIR)/nph-mvhsaid
-
-$(DBFILE):	$(ADR_MASTER) $(BIN_DBM_WRITE) $(AID_UTIL_PL)
-	$(RM) ./master.db
-	$(BIN_DBM_WRITE) $(ADR_MASTER) ./master.db
-	$(MV) ./master.db $(WWWDIR)/master.db
-
 MULTI_ALPHA=$(WWWDIR)/alpha/a-index.html
 multi_alpha:	$(MULTI_ALPHA)
-$(MULTI_ALPHA):	$(ADR_ALPHA) $(BIN_MULTI_ALPHA)
-	$(BIN_MULTI_ALPHA) $(ADR_ALPHA)
+$(MULTI_ALPHA):	$(DBFILE) $(BIN_MULTI_ALPHA)
+	$(BIN_MULTI_ALPHA) $(DBFILE)
 
 CLASS=$(WWWDIR)/class/all.html
 class:	$(CLASS)
-$(CLASS):	$(ADR_CLASS) $(BIN_CLASS)
+$(CLASS):	$(DBFILE) $(BIN_CLASS)
 	mkdir -p $(WWWDIR)/class
-	$(BIN_CLASS) $(ADR_CLASS) $(CLASS)
+	$(BIN_CLASS) $(DBFILE) $(CLASS)
 
 AWALT=$(WWWDIR)/class/awalt.html
 awalt:	$(AWALT)
-$(AWALT):	$(ADR_AWALT) $(BIN_CLASS)
+$(AWALT):	$(DBFILE) $(BIN_CLASS)
 	mkdir -p $(WWWDIR)/class
-	$(BIN_CLASS) -a $(ADR_AWALT) $(AWALT)
+	$(BIN_CLASS) -a $(DBFILE) $(AWALT)
 
 RECENT=$(WWWDIR)/recent.html
 recent:	$(RECENT)
@@ -96,8 +95,8 @@ $(RECENT):	$(ADR_CLASS) $(BIN_RECENT)
 
 GONERS=$(WWWDIR)/invalid.html
 goners:	$(GONERS)
-$(GONERS):	$(ADR_ALPHA) $(BIN_GONERS)
-	$(BIN_GONERS) $(ADR_ALPHA) $(GONERS)
+$(GONERS):	$(DBFILE) $(BIN_GONERS)
+	$(BIN_GONERS) $(DBFILE) $(GONERS)
 
 PAGES=$(WWWDIR)/pages.html
 pages:	$(PAGES)
@@ -166,7 +165,7 @@ $(ADDUPDATE):	$(MVHSDIR)/data/add.include $(BIN_HOME)
 
 DOWNLOAD=$(WWWDIR)/download/index.html
 download:	$(DOWNLOAD)
-$(DOWNLOAD):	$(ADR_CLASS) $(BIN_HOME) $(AID_UTIL_PL)
+$(DOWNLOAD):	$(BIN_HOME) $(AID_UTIL_PL)
 	mkdir -p $(WWWDIR)/download
 	$(BIN_HOME) -d -p13 \
 		-t 'Download Nickname and Address Book files' \
@@ -174,7 +173,7 @@ $(DOWNLOAD):	$(ADR_CLASS) $(BIN_HOME) $(AID_UTIL_PL)
 
 BOOKS=$(WWWDIR)/books/mvhs.vdir
 books:	$(BOOKS)
-$(BOOKS):	$(ADR_ALPHA) $(BIN_BOOK)
+$(BOOKS):	$(DBFILE) $(BIN_BOOK)
 	mkdir -p $(WWWDIR)/books
 	$(BIN_BOOK) \
 		-p $(WWWDIR)/books/pine.txt \
@@ -186,32 +185,21 @@ $(BOOKS):	$(ADR_ALPHA) $(BIN_BOOK)
 		-l $(WWWDIR)/books/address-book.ldif \
 		-o $(WWWDIR)/books/outlook.csv \
 		-v $(BOOKS) \
-		$(ADR_ALPHA)
+		$(DBFILE)
 	$(RM) $(WWWDIR)/books/pine.txt.lu
 
 BOOKS2=$(WWWDIR)/books/pine.txt
 books2:	$(BOOKS2)
-$(BOOKS2):	$(ADR_ALPHA) $(BIN_BOOK)
+$(BOOKS2):	$(DBFILE) $(BIN_BOOK)
 	mkdir -p $(WWWDIR)/books
-	$(BIN_BOOK) \
-		-p $(WWWDIR)/books/pine.txt \
-		$(ADR_ALPHA)
+	$(BIN_BOOK) -p $(WWWDIR)/books/pine.txt $(DBFILE)
 	$(RM) $(WWWDIR)/books/pine.txt.lu
-
-$(ADR_ALPHA):	$(ADR_MASTER)
-	sort -f -t\; +2 -5 $(ADR_MASTER) > $(ADR_ALPHA)
 
 $(ADR_CLASS):	$(ADR_MASTER)
 	sort -f -t\; +12 -13 +2 -5 $(ADR_MASTER) > $(ADR_CLASS)
 
-$(ADR_AWALT):	$(ADR_CLASS)
-	grep -i awalt $(ADR_CLASS) > $(ADR_AWALT)
-
-$(ADR_DATE):	$(ADR_MASTER)
-	sort -f -t\; +9 -10 $(ADR_MASTER) > $(ADR_DATE)
-
-alpha.txt:	$(ADR_ALPHA) $(BIN_ALPHA)
-	$(BIN_ALPHA) -t $(ADR_ALPHA) alpha.txt
+alpha.txt:	$(DBFILE) $(BIN_ALPHA)
+	$(BIN_ALPHA) -t $(DBFILE) alpha.txt
 
 class.txt:	$(ADR_CLASS) $(BIN_CLASS)
 	$(BIN_CLASS) -t $(ADR_CLASS) class.txt
@@ -230,4 +218,4 @@ chmod:
 
 clean:
 	$(RM) TAGS class.txt alpha.txt recent.txt \
-	$(ADR_CLASS) $(ADR_ALPHA) $(ADR_DATE) $(ADR_AWALT)
+	$(ADR_CLASS)
