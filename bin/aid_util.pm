@@ -2,11 +2,11 @@
 #     FILE: aid_util.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: perl library routines for the Alumni Internet Directory
-#      $Id: aid_util.pl,v 2.18 1998/05/15 23:49:09 mradwin Exp mradwin $
+#      $Id: aid_util.pl,v 2.19 1998/05/16 01:55:16 mradwin Exp mradwin $
 #
 
 $aid_util'rcsid =
- '$Id: aid_util.pl,v 2.18 1998/05/15 23:49:09 mradwin Exp mradwin $';
+ '$Id: aid_util.pl,v 2.19 1998/05/16 01:55:16 mradwin Exp mradwin $';
 
 # ----------------------------------------------------------------------
 # CONFIGURATION
@@ -745,8 +745,8 @@ sub aid_write_verbose_entry {
 	print FMTOUT "</a></strong></dt>\n";
     }
 
-    print FMTOUT "<dt>Email: <tt><strong><a href=\"mailto:$rec{'email'}\">$rec{'email'}</a></strong></tt></dt>\n";
-    print FMTOUT "<dt>Web Page: <tt><strong><a href=\"$rec{'homepage'}\">$rec{'homepage'}</a></strong></tt></dt>\n"
+    print FMTOUT "<dt>Email: <code><strong><a href=\"mailto:$rec{'email'}\">$rec{'email'}</a></strong></code></dt>\n";
+    print FMTOUT "<dt>Web Page: <code><strong><a href=\"$rec{'homepage'}\">$rec{'homepage'}</a></strong></code></dt>\n"
 	if $rec{'homepage'} ne '';
     print FMTOUT "<dt>Location: <strong>$rec{'location'}</strong></dt>\n"
 	if $rec{'location'} ne '';
@@ -952,7 +952,7 @@ sub common_html_ftr {
 	"\n<font size=\"-1\">" .
 	"Copyright &copy; 1998 " . $config{'admin_name'} . " &lt;" .
 	"<a\nhref=\"mailto:" . $config{'admin_email'} . 
-	"\"><tt>" . $config{'admin_email'} . "</tt></a>&gt;</font>\n\n" .
+	"\"><code>" . $config{'admin_email'} . "</code></a>&gt;</font>\n\n" .
 	"<!-- end common_html_ftr -->\n\n</body>\n</html>\n";
 
     $ftr;
@@ -996,10 +996,10 @@ sub common_html_hdr {
 <table cellspacing=0 cellpadding=6 border=1 width=\"100%\">
   <tr>
     <td bgcolor=\"#$header_bg\" valign=middle><p align=left><font size=\"+2\"
-    color=\"#$header_fg\"><strong><tt>$config{'school'} Alumni
-    Internet Directory</tt></strong></font>
+    color=\"#$header_fg\"><strong><code>$config{'school'} Alumni
+    Internet Directory</code></strong></font>
     </p><p align=right><font size=\"-1\" 
-    color=\"#$header_fg\"><i>$timestamp</i></font></p>
+    color=\"#$header_fg\"><em>$timestamp</em></font></p>
     </td>
   </tr>
   <tr>
