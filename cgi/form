@@ -4,7 +4,7 @@
 #     FILE: form.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: Alumni Internet Directory CGI form-submission interface
-#      $Id: form,v 5.8 1999/06/21 18:50:11 mradwin Exp mradwin $
+#      $Id: form,v 5.9 1999/06/22 18:52:08 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -44,7 +44,7 @@ $mailprog = &aid_config('mailprog');
 $dbmfile = &aid_config('dbmfile');
 $dbmfile =~ s/\.db$//;
 
-$rcsid = '$Id: form,v 5.8 1999/06/21 18:50:11 mradwin Exp mradwin $'; #'fnt
+$rcsid = '$Id: form,v 5.9 1999/06/22 18:52:08 mradwin Exp mradwin $'; #'fnt
 
 $listing_upd_title = 'Modify Your Directory Listing';
 $listing_upl_title = 'Select a Listing to Modify';
@@ -268,7 +268,7 @@ exit(0);
 
 sub confirm_submission {
     print "Content-Type: text/html\015\012\015\012";
-    print &aid_common_html_hdr(-1,$listing_sub_title,1);
+    print &aid_common_html_hdr(20,$listing_sub_title,1);
 
     print "<form method=\"post\" action=\"", &aid_config('confirm_cgi');
     print "/$in{'id'}" if $in{'id'} != -1;
@@ -314,7 +314,7 @@ to edit your listing.
     $in{'u'} = time unless defined $in{'u'};
     print "<div class=\"about\">", &aid_verbose_entry(*in,1,1,1), 
           "</div></form>\n";
-    print &aid_common_html_ftr(-1);
+    print &aid_common_html_ftr(20);
 }
 
 sub queue_submission {
@@ -380,7 +380,7 @@ EOM
     $fullname = &aid_inorder_fullname(*in);
 
     print "Content-Type: text/html\015\012\015\012";
-    print &aid_common_html_hdr(-1,
+    print &aid_common_html_hdr(20,
 			   (($in{'id'} == -1 ? 'Welcome, ' : 'Thank You, ') .
 			    $fullname . '!'),
 			   1);
@@ -405,7 +405,7 @@ for behind-the-scenes details.</p>
 ";
 
     print &aid_config('html_ad');
-    print &aid_common_html_ftr(-1);
+    print &aid_common_html_ftr(20);
 }
 
 
@@ -414,7 +414,7 @@ sub send_upd_real {
 
     print "Content-Type: text/html\015\012\015\012";
 
-    print &aid_common_html_hdr(-1,
+    print &aid_common_html_hdr(20,
 			   (($rec{'id'} == -1) ? 
 			    $listing_add_title : 
 			    'Modify listing for ' .
@@ -423,7 +423,7 @@ sub send_upd_real {
 			   defined $rec{'u'} ? $rec{'u'} : undef);
 
     print &aid_submit_body(*rec,$empty_fields);
-    print &aid_common_html_ftr(-1,
+    print &aid_common_html_ftr(20,
 			       defined $rec{'u'} ? $rec{'u'} : undef);
 }
 
@@ -434,7 +434,7 @@ sub send_upd_notfound {
     $notfound = &aid_html_entify_str($notfound);
 
     print "Content-Type: text/html\015\012\015\012";
-    print &aid_common_html_hdr(-1,$listing_upd_title,1);
+    print &aid_common_html_hdr(20,$listing_upd_title,1);
     print "\n";
     print "<p>Sorry, a listing with the address\n";
     print "<code><strong>$notfound</strong></code>\n";
@@ -442,7 +442,7 @@ sub send_upd_notfound {
     print "<p>Please check the spelling and <a href=\""
 	. &aid_config('master_path') .  "add/\">try again</a>.</p>\n";
 
-    print &aid_common_html_ftr(-1);
+    print &aid_common_html_ftr(20);
 }
 
 sub send_upd_list {
@@ -467,7 +467,7 @@ sub send_upd_list {
     }
 
     print "Content-Type: text/html\015\012\015\012";
-    print &aid_common_html_hdr(-1,$listing_upl_title,1);
+    print &aid_common_html_hdr(20,$listing_upl_title,1);
     print "\n";
     
     print "<p>Please select an alumnus to modify from the list below.\nThe list is quite long, so it may take a while to display all alumni.</p>\n";
@@ -496,7 +496,7 @@ sub send_upd_list {
     dbmclose(%DB);
 
     print "</pre>\n\n";
-    print &aid_common_html_ftr(-1);
+    print &aid_common_html_ftr(20);
 
     1;
 }

@@ -4,7 +4,7 @@
 #     FILE: about.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: Alumni Internet Directory CGI "About" page generation
-#      $Id: about,v 5.4 1999/06/08 19:39:27 mradwin Exp mradwin $
+#      $Id: about,v 5.5 1999/06/21 20:12:22 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -85,7 +85,7 @@ sub send_about
     print "Last-Modified: ", &aid_http_date($rec{'u'}), "\015\012";
     print "Content-Type: text/html\015\012\015\012";
 
-    print &aid_common_html_hdr(-1,$fullname,1,$rec{'u'});
+    print &aid_common_html_hdr(20,$fullname,1,$rec{'u'});
     print "<p>Here is more detailed information about $html_name.\n<br />";
     print "To modify this listing, please click the button below.</p>\n\n";
     print &aid_about_text(*rec,0,1,1), "\n";
@@ -103,7 +103,7 @@ mail the original user about the change (plus the new user if the e-mail
 changes). The honor system has worked for us so far; please don't abuse
 it and force us to install a password door.</p>
 ";
-    print &aid_common_html_ftr(-1,$rec{'u'});
+    print &aid_common_html_ftr(20,$rec{'u'});
 
     1;
 }
