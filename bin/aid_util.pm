@@ -2,7 +2,7 @@
 #     FILE: aid_util.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: perl library routines for the Alumni Internet Directory
-#      $Id: aid_util.pl,v 4.86 1999/04/09 00:58:41 mradwin Exp mradwin $
+#      $Id: aid_util.pl,v 4.87 1999/04/09 01:19:09 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -1170,7 +1170,228 @@ sub aid_db_unpack_rec
      ) = split(/\0/, substr($val, $pack_len));
 
     %rec;
-};
+}
+
+sub aid_rebuild_secondary_keys
+{
+    package aid_util;
+
+    local(*DB,$quiet,$debug) = @_;
+    local(%old_db,%new_db);
+    local($key,$val,$id);
+    local(@diffs) = ();
+
+    local($latest) = 0;
+    local($latest_www) = 0;
+    local($latest_awalt) = 0;
+    local($latest_goner) = 0;
+    local(%awalt) = ();
+    local(%class_members) = ();
+    local(%class_latest) = ();
+    local(%www_class_members) = ();
+    local(@datakeys) = ();
+    local(@alpha_ids) = ();
+    local(%alpha_members) = ();
+    local(%alpha_latest) = ();
+
+    # first pass -- gather all names with alpha data
+    print STDERR "$0: fixing up generated keys..." unless $quiet;
+    while(($key,$val) = each(%DB))
+    {
+	if ($key =~ /^\d+$/)
+	{
+	    %rec = &main'aid_db_unpack_rec($key,$val); #'#;
+	    push(@datakeys,
+		 "\L$rec{'sn'}\0$rec{'gn'}\0$rec{'mi'}\0$rec{'mn'}\0$rec{'yr'}\E\0" . $key);
+	}
+	elsif ($key =~ /^_/)
+	{
+	    $old_db{$key} = $val;
+	}
+    }
+    print STDERR "." unless $quiet;
+    
+    # can't delete while iterating, so do it now
+    while(($key,$val) = each(%old_db))
+    {
+	delete $DB{$key};
+    }
+
+    # now sort by alpha
+    foreach (sort { $a cmp $b } @datakeys)
+    {
+	$id = (split(/\0/))[5];
+	die "split failed: id $id invalid: $_" unless $id =~ /^\d+$/;
+	push(@alpha_ids,$id);
+    }
+    undef(@datakeys);		# garbage-collect
+    print STDERR "." unless $quiet;
+
+    # second pass - timestamps and lists
+    $DB{'_created'} = pack("N", time);
+    foreach $id (@alpha_ids)
+    {
+	%rec = &main'aid_db_unpack_rec($id,$DB{$id}); #'#;
+
+	if ($rec{'v'})
+	{
+	    $latest = $rec{'u'} if $rec{'u'} > $latest;
+
+	    $ln_key = substr($rec{'sn'},0,1);
+	    $ln_key = "\L$ln_key\E";
+	    if (defined $alpha_members{$ln_key})
+	    {
+		$alpha_members{$ln_key} .= ' ' . $rec{'id'};
+		$alpha_latest{$ln_key}   = $rec{'u'} if
+		    $rec{'u'} > $alpha_latest{$ln_key};
+	    }
+	    else
+	    {
+		$alpha_members{$ln_key}  =       $rec{'id'};
+		$alpha_latest{$ln_key}   =       $rec{'u'};
+	    }
+
+	    $ykey = ($rec{'yr'} =~ /^\d+$/) ? $rec{'yr'} : 'other';
+	    if (defined $class_members{$ykey})
+	    {
+		$class_members{$ykey} .= ' ' . $rec{'id'};
+		$class_latest{$ykey}   =       $rec{'u'} if
+		    $rec{'u'} > $class_latest{$ykey};
+	    }
+	    else
+	    {
+		$class_members{$ykey}  =       $rec{'id'};
+		$class_latest{$ykey}   =       $rec{'u'};
+	    }
+
+	    if ($rec{'w'} ne '')
+	    {
+		$latest_www = $rec{'u'} if $rec{'u'} > $latest_www;
+		if (defined $www_class_members{$ykey})
+		{
+		    $www_class_members{$ykey} .= ' ' . $rec{'id'};
+		}
+		else
+		{
+		    $www_class_members{$ykey}  =       $rec{'id'};
+		}
+	    }
+
+	    if ($rec{'s'} == $aid_util'school_awalt ||
+		$rec{'s'} == $aid_util'school_both)
+	    {
+		$latest_awalt = $rec{'u'} if $rec{'u'} > $latest_awalt;
+
+		if (defined $awalt{$ykey})
+		{
+		    $awalt{$ykey} .= ' ' . $rec{'id'};
+		}
+		else
+		{
+		    $awalt{$ykey}  =       $rec{'id'};
+		}
+	    }
+	}
+	else
+	{
+	    $latest_goner = $rec{'b'} if $rec{'b'} > $latest_goner;
+	    $latest_goner = $rec{'f'} if $rec{'f'} > $latest_goner;
+	}
+
+    }
+    print STDERR "." unless $quiet;
+
+    $DB{'_alpha'} = pack("n*", @alpha_ids);
+
+    @class_ids = ();
+    @years = sort keys %class_members;
+    $DB{'_years'} = pack("n*",grep(/\d+/,@years));
+
+    foreach $ykey (@years)
+    {
+	@alpha_ids = split(/ /, $class_members{$ykey});
+	$DB{"_${ykey}"} = pack("n*", @alpha_ids);
+	$DB{"_t_${ykey}"} = pack("N", $class_latest{$ykey});
+	$new_db{"_${ykey}"} = $new_db{"_t_${ykey}"} = 1;
+	push(@class_ids, @alpha_ids);
+    }
+    print STDERR "." unless $quiet;
+
+    $DB{'_class'} = pack("n*", @class_ids);
+
+    # now do years, but only for www
+    @years = sort keys %www_class_members;
+    $DB{'_www_years'} = pack("n*",grep(/\d+/,@years));
+    foreach $ykey (@years)
+    {
+	$DB{"_www_${ykey}"} = pack("n*", split(/ /, $www_class_members{$ykey}));
+	$new_db{"_www_${ykey}"} = 1;
+    }
+    print STDERR "." unless $quiet;
+
+    # now do years, but only for awalt
+    @years = sort keys %awalt;
+    $DB{'_awalt_years'} = pack("n*",grep(/\d+/,@years));
+    foreach $ykey (@years)
+    {
+	$DB{"_awalt_${ykey}"} = pack("n*", split(/ /, $awalt{$ykey}));
+	$new_db{"_awalt_${ykey}"} = 1;
+    }
+    print STDERR "." unless $quiet;
+
+    $DB{'_t'} = pack("N", $latest);
+    $DB{'_t_www'} = pack("N", $latest_www);
+    $DB{'_t_awalt'} = pack("N", $latest_awalt);
+    $DB{'_t_goner'} = pack("N", $latest_goner);
+
+    while (($key,$val) = each(%alpha_members))
+    {
+	$DB{"_a_${key}"} = pack("n*", split(/ /, $val));
+	$new_db{"_a_${key}"} = 1;
+    }
+
+    while (($key,$val) = each(%alpha_latest))
+    {
+	$DB{"_t_${key}"} = pack("N", $val);
+	$new_db{"_t_${key}"} = 1;
+    }
+    print STDERR ".\n" unless $quiet;
+
+    # static keys (always present)
+    $new_db{'_created'} = $new_db{'_alpha'} =  $new_db{'_years'} =
+	$new_db{'_class'} = $new_db{'_www_years'} = $new_db{'_awalt_years'} =
+	    $new_db{'_t'} = $new_db{'_t_www'} = $new_db{'_t_awalt'} =
+		$new_db{'_t_goner'} = 1;
+
+    while (($key,$val) = each(%DB))
+    {
+	next unless $key =~ /^_/;
+	die "invariant failed: key=$key in DB but not in new_db\n"
+	    unless defined $new_db{$key};
+
+	if (! defined $old_db{$key})
+	{
+	    warn "$key: new\n" if $debug;
+	    push(@diffs,$key);
+	}
+	elsif ($val ne $old_db{$key})
+	{
+	    warn "$key: changed\n" if $debug;
+	    push(@diffs,$key);
+	}
+    }
+
+    while (($key,$val) = each(%old_db))
+    {
+	if (! defined $new_db{$key})
+	{
+	    warn "$key: del\n" if $debug;
+	    push(@diffs,$key);
+	}
+    }
+
+    @diffs;
+}
 
 sub aid_url_escape
 {
@@ -1270,6 +1491,7 @@ if ($^W && 0)
     $aid_util'site_tags = '';
     $aid_util'header_bg = '';
     $aid_util'body_link = '';
+    &aid_rebuild_secondary_keys();
 }
 
 1;
