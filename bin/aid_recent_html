@@ -23,25 +23,12 @@ print FMTOUT "------------------------------------------------------------------
 
 while(<MVHS>) {
     chop;
-    ($time,$id,$req,$last,$first,$school,$year,$email,$alias,$homepage) = &mv_parse($_);
+    ($time,$id,$req,$last,$first,
+     $school,$year,$email,$alias,$homepage) = &mv_parse($_);
     next unless &is_new($time);
 
-    if ($first) {
-       $fullname = "$last, $first";
-    } else {
-       $fullname = $last;
-    }
-
-    if ($year =~ /^\d+$/) {
-	$affil  = "  '$year";
-	$affil .= " $school" 
-	    if $school ne 'MVHS' && $school ne '';
-    } else {
-	$affil  = "  [$school $year]";
-    }
-    $affil_tmp = $affil;
-    $affil_tmp =~ s/<[^>]+>//g;
-    $affil_len = length($affil_tmp);
+    $fullname = &fullname($first, $last);
+    $affil = &affiliate($year, $school);
 
     print FMTOUT "<a name=\"$alias\"";
     print FMTOUT " href=\"$homepage\"" if $homepage ne '';
@@ -49,7 +36,7 @@ while(<MVHS>) {
     print FMTOUT $fullname;
     print FMTOUT "</a>";
     print FMTOUT $affil;
-    print FMTOUT ' ' x (42 - (length($fullname) + $affil_len));
+    print FMTOUT ' ' x (42 - (length($fullname) + length($affil)));
     print FMTOUT "<a href=\"mailto:", $email, "\">", $email, "</a>";
     print FMTOUT "\n";
 }

@@ -47,7 +47,8 @@ print FMTOUT "------------------------------------------------------------------
 $lastInitial = "Z";
 while(<MVHS>) {
     chop;
-    ($time,$id,$req,$last,$first,$school,$year,$email,$alias,$homepage) = &mv_parse($_);
+    ($time,$id,$req,$last,$first,
+     $school,$year,$email,$alias,$homepage) = &mv_parse($_);
 
     if ($lastInitial ne substr($last, 0, 1)) {
 	$lastInitial = substr($last, 0, 1);
@@ -57,22 +58,9 @@ while(<MVHS>) {
 	$opt_t || print FMTOUT "</a> (<a href=\"$htmlname\">top</a>)";
 	print FMTOUT "\n";
     }
-    if ($first) {
-       $fullname = "$last, $first";
-    } else {
-       $fullname = $last;
-    }
 
-    if ($year =~ /^\d+$/) {
-	$affil  = "  '$year";
-	$affil .= " $school" 
-	    if $school ne 'MVHS' && $school ne '';
-    } else {
-	$affil  = "  [$school $year]";
-    }
-    $affil_tmp = $affil;
-    $affil_tmp =~ s/<[^>]+>//g;
-    $affil_len = length($affil_tmp);
+    $fullname = &fullname($first, $last);
+    $affil = &affiliate($year, $school);
 
     print FMTOUT '  ';
     $opt_t || print FMTOUT "<a name=\"$alias\"";
@@ -81,7 +69,7 @@ while(<MVHS>) {
     print FMTOUT $fullname;
     $opt_t || print FMTOUT "</a>";
     print FMTOUT $affil;
-    print FMTOUT ' ' x (40 - (length($fullname) + $affil_len));
+    print FMTOUT ' ' x (40 - (length($fullname) + length($affil)));
     $opt_t || print FMTOUT "<a href=\"mailto:", $email, "\">";
     print FMTOUT $email;
     $opt_t || print FMTOUT "</a>";

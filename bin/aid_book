@@ -36,9 +36,16 @@ open(MVHS,$ARGV[0]) || die "Can't open $ARGV[0]: $!\n";
 open(BOOK,">$ARGV[1]") || die "Can't open $ARGV[1]: $!\n";
 
 # special case for netscape
-$opt_n && print BOOK "<TITLE>MVHS Alumni Address book</TITLE>\n";
-$opt_n && print BOOK "<H1>MVHS Alumni Address book</H1>\n\n";
-$opt_n && print BOOK "<DL><p>\n";
+if ($opt_n) {
+    print BOOK "<!DOCTYPE NETSCAPE-Addressbook-file-1>
+<!-- This is an automatically generated file.
+It will be read and overwritten.
+Do Not Edit! -->
+<TITLE>MVHS Alumni Address book</TITLE>
+<H1>MVHS Alumni Address book</H1>
+
+<DL><p>\n";
+}
 
 while(<MVHS>) {
     chop;

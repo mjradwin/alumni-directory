@@ -47,7 +47,8 @@ $lastYear = '00';
 $first_fac_staff = 0;
 while(<MVHS>) {
     chop;
-    ($time,$id,$req,$last,$first,$school,$year,$email,$alias,$homepage) = &mv_parse($_);
+    ($time,$id,$req,$last,$first,
+     $school,$year,$email,$alias,$homepage) = &mv_parse($_);
 
     if ($lastYear ne $year) {
 	$lastYear = $year;
@@ -64,18 +65,13 @@ while(<MVHS>) {
 	    print FMTOUT "\n<a name=\"$hashYear\">Class of '$lastYear</a>  (<a href=\"$htmlname\">top</a>)\n";
 	}
     }
-    if ($first) {
-       $fullname = "$last, $first";
-    } else {
-       $fullname = $last;
-    }
+
+    $fullname = &fullname($first, $last);
 
     if ($school ne 'MVHS' && $school ne '') {
 	$affil     = "  [$school]";
-	$affil_len = length("  [$school]");
     } else {
 	$affil     = "";
-	$affil_len = 0;
     }
 
     print FMTOUT '  ';
@@ -85,7 +81,7 @@ while(<MVHS>) {
     print FMTOUT $fullname;
     print FMTOUT "</a>";
     print FMTOUT $affil;
-    print FMTOUT ' ' x (40 - (length($fullname) + $affil_len));
+    print FMTOUT ' ' x (40 - (length($fullname) + length($affil)));
     print FMTOUT "<a href=\"mailto:", $email, "\">", $email, "</a>";
     print FMTOUT " <img alt=\"[new]\" WIDTH=28 HEIGHT=11 SRC=\"new.gif\">" if &is_new($time);
     print FMTOUT "\n";
