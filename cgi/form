@@ -4,7 +4,7 @@
 #     FILE: mvhsaid.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: Alumni Internet Directory CGI interface
-#      $Id: mvhsaid,v 3.81 1999/03/09 17:19:34 mradwin Exp mradwin $
+#      $Id: mvhsaid,v 3.82 1999/03/09 18:03:59 mradwin Exp mradwin $
 #
 
 require 'aid_util.pl';
@@ -22,7 +22,7 @@ if ($ENV{'SCRIPT_NAME'} =~ m,/nph-,)
 # configuration
 $mailprog = &aid_config('mailprog');
 $dbmfile = &aid_config('wwwdir') . 'master';
-$rcsid = '$Id: mvhsaid,v 3.81 1999/03/09 17:19:34 mradwin Exp mradwin $'; #'fnt
+$rcsid = '$Id: mvhsaid,v 3.82 1999/03/09 18:03:59 mradwin Exp mradwin $'; #'fnt
 
 $listing_upd_title = 'Update Your Directory Listing';
 $listing_upl_title = 'Select a Listing to Update';
@@ -66,7 +66,7 @@ if (defined($in{'version'})) {
 
 } elsif (defined($in{'update'})) {
     if ($in{'update'} =~ /^\d+$/) {
-	dbmopen(DB,$dbmfile,0444);
+	dbmopen(%DB,$dbmfile,0444);
 	if (defined $DB{$in{'update'}}) {
 	    %updateme = &aid_db_unpack_rec($in{'update'},$DB{$in{'update'}});
 	    &send_upd_real(*updateme,'');
@@ -74,27 +74,27 @@ if (defined($in{'version'})) {
 	} else {
 	    &send_upd_real(*aid_util'blank_entry,'');  #'#
 	}
-	dbmclose(DB);
+	dbmclose(%DB);
 
     } elsif ($in{'update'} =~ /^\s*[^@]+@[^\.]+\./) {
 	$in{'update'} =~ s/^\s*//;
 	$in{'update'} =~ s/\s*$//;
 	$in{'update'} = "\L$in{'update'}\E";
 
-	dbmopen(DB,$dbmfile,0444);
+	dbmopen(%DB,$dbmfile,0444);
 	if (defined $DB{$in{'update'}}) {
 	    $id = unpack("n",$DB{$in{'update'}});
 	    if ($id > 0)
 	    {
 		%updateme = &aid_db_unpack_rec($id,$DB{$id});
-		dbmclose(DB);
+		dbmclose(%DB);
 		&send_upd_real(*updateme,'');
 		close(STDOUT);
 		exit(0);
 	    }
 	}
 	&send_upd_notfound($in{'update'});
-	dbmclose(DB);
+	dbmclose(%DB);
 
     } elsif ($in{'update'} =~ /^\s*$/) {
 	&send_upd_list();
@@ -108,14 +108,14 @@ if (defined($in{'version'})) {
 
 } elsif (defined($in{'vcard'})) {
     if ($in{'vcard'} =~ /^\d+$/) {
-	dbmopen(DB,$dbmfile,0444);
+	dbmopen(%DB,$dbmfile,0444);
 	if (defined $DB{$in{'vcard'}}) {
 	    %rec = &aid_db_unpack_rec($in{'vcard'},$DB{$in{'vcard'}});
 	    &send_vcard(*rec);
 	} else {
 	    &send_upd_real(*aid_util'blank_entry,''); #'#
 	}
-	dbmclose(DB);
+	dbmclose(%DB);
 
     } else {
 	&send_upd_real(*aid_util'blank_entry,''); #'#
@@ -124,14 +124,14 @@ if (defined($in{'version'})) {
     exit(0);
 
 } elsif (defined($in{'about'}) && $in{'about'} =~ /^\d+$/) {
-    dbmopen(DB,$dbmfile,0444);
+    dbmopen(%DB,$dbmfile,0444);
     if (defined $DB{$in{'about'}}) {
 	%rec = &aid_db_unpack_rec($in{'about'},$DB{$in{'about'}});
 	&send_about(*rec);
     } else {
 	&send_upd_real(*aid_util'blank_entry,''); #'#
     }
-    dbmclose(DB);
+    dbmclose(%DB);
     close(STDOUT);
     exit(0);
 
@@ -492,14 +492,14 @@ sub send_address_book {
 	$minyr = $maxyr = $year;
     }
 
-    dbmopen(DB,$dbmfile,0444);
+    dbmopen(%DB,$dbmfile,0444);
     if (defined $DB{'__class__'})
     {
 	@class_ids = unpack("n*",$DB{'__class__'});
     }
     else
     {
-	dbmclose(DB);
+	dbmclose(%DB);
 	&CgiDie(&aid_config('short_school') . " Alumni: Script Error",
 		"The class database is unavailable.\n" .
 		"Please <a href=\"mailto:" . &aid_config('admin_email') .
@@ -517,7 +517,7 @@ sub send_address_book {
 
 	&aid_book_write_entry(*STDOUT,$format,*rec);
     }
-    dbmclose(DB);
+    dbmclose(%DB);
 
     &aid_book_write_suffix(*STDOUT,$format);
 }
@@ -546,14 +546,14 @@ sub send_upd_list {
     local($initial,$anchor);
     local(%rec);
 
-    dbmopen(DB,$dbmfile,0444);
+    dbmopen(%DB,$dbmfile,0444);
     if (defined $DB{'__alpha__'})
     {
 	@alpha_ids = unpack("n*",$DB{'__alpha__'});
     }
     else
     {
-	dbmclose(DB);
+	dbmclose(%DB);
 	&CgiDie(&aid_config('short_school') . " Alumni: Script Error",
 		"The alphabetic database is unavailable.\n" .
 		"Please <a href=\"mailto:" . &aid_config('admin_email') .
@@ -594,7 +594,7 @@ sub send_upd_list {
 	print $rec{'email'};
 	print "\n";
     }
-    dbmclose(DB);
+    dbmclose(%DB);
 
     print "</pre>\n\n";
     print &common_html_ftr(-1);
