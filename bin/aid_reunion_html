@@ -3,7 +3,7 @@
 #
 # generates reunion info page
 #
-# $Id: aid_reunion_html,v 1.8 2000/05/25 00:29:05 mradwin Exp mradwin $
+# $Id: aid_reunion_html,v 1.9 2000/05/30 16:28:38 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -101,6 +101,20 @@ print FMTOUT "<h2>Upcoming reunions</h2>\n";
 
 print FMTOUT "<h2>Past reunions</h2>\n";
 &aid_write_reunion_hash(*FMTOUT, \%past);
+
+print FMTOUT "<hr noshade=\"noshade\" size=\"1\">
+<center>
+<form method=\"post\" action=\"http://minder.netmind.com/mindit.shtml\">
+<input type=\"submit\"
+ value=\"Receive e-mail when this page changes (courtesy of NetMind)\">
+<input type=\"hidden\" name=\"UPDATE_PERIOD\" value=\"7\">
+<input type=\"hidden\" name=\"EMAIL\" value=\"\">
+<input type=\"hidden\" name=\"URL\"
+ value=\"http://" .  &aid_config('master_srv') . &aid_config('master_path') . 
+"etc/reunions.html\">
+</form>
+</center>
+";
 
 print FMTOUT &aid_common_html_ftr(11,$time);
 
