@@ -2,7 +2,7 @@
 #     FILE: Makefile
 #   AUTHOR: Michael J. Radwin
 #    DESCR: Makefile for building the Alumni Internet Directory
-#      $Id: Makefile,v 3.34 1998/11/02 18:19:56 mradwin Exp mradwin $
+#      $Id: Makefile,v 3.35 1998/11/03 18:00:37 mradwin Exp mradwin $
 #
 
 WWWROOT=/home/web/radwin.org
@@ -129,7 +129,7 @@ COPYRIGHT=$(WWWDIR)/etc/copyright.html
 copyright:	$(COPYRIGHT)
 $(COPYRIGHT):	$(MVHSDIR)/data/copyright.include $(BIN_HOME)
 	$(BIN_HOME) -p15 -i $(MVHSDIR)/data/copyright.include \
-		-t 'Acceptable Use and Copyright' \
+		-t 'Acceptable Use - Privacy Statement - Copyright' \
 		$(COPYRIGHT)
 
 SUBMIT=$(WWWDIR)/add/new.html
