@@ -45,7 +45,7 @@ books:	alpha.adr
 	./mv_book -w alpha.adr ${WWWDIR}/eudora.txt
 	./mv_book -m alpha.adr ${WWWDIR}/eudorapro.txt
 	./mv_book -n alpha.adr ${WWWDIR}/address-book.html
-	./mv_book -v alpha.adr ${WWWDIR}/vcard.vcf
+	./mv_book -v alpha.adr ${WWWDIR}/mvhs.vcf
 	touch books
 
 alpha.adr:	mvhs.adr

@@ -4,10 +4,9 @@
 # mails everyone the nifty mvhs address list
 #
 @INC=('/u/mjr/doc/mvhs', '/usr/local/lib/perl');
-require 'ctime.pl';
 require 'mv_util.pl';
-$today = &ctime(time);
-chop $today;
+
+$today = localtime;
 
 die "Usage: mv_welcome targets.adr\n" if !$ARGV[0];
 open(LOG,">>welcome.log") || die "Can't open welcome.log: $!\n";

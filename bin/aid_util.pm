@@ -164,7 +164,7 @@ sub submit_body {
 	= &mv_parse($_[0]);
 
     $homepage = 'http://' if $homepage eq '';
-    $req = (req) ? ' checked' : '';
+    $req = ($req) ? ' checked' : '';
 
     return "<br>
 <table cellspacing=0 cellpadding=1 border=0 width=\"100%\">
@@ -256,16 +256,15 @@ href=\"mailto:mjr\@cs.brown.edu\"><tt>mjr\@cs.brown.edu</tt></a></p>
 
 sub common_html_hdr {
     package mv_util;
-    require 'ctime.pl';
 
     local($page, $page_name) = @_;
     local($h1, $h2, $h3, $h4);
     local($name, $url);
-    local($today) = &'ctime(time);
+    local($today);
 
     ($page_name) = split(/,/, $page_idx[$page]) unless $page_name;
     $page_name =~ s/&nbsp;/ /g;
-    chop $today;
+    $today = localtime;
 
     $h1 = "<html>
 <head>
