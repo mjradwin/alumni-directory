@@ -1,6 +1,6 @@
 #!/usr/local/bin/perl5 -w
 
-# $Id: aid_staging_look,v 1.4 2001/01/09 21:36:12 mradwin Exp $
+# $Id: aid_staging_resend,v 1.1 2001/01/26 18:29:24 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -41,8 +41,13 @@ $opt_h && die "$usage\n";
 my($dbmfile) = &aid_config('staging');
 die "$dbmfile: $!\n" unless -r $dbmfile;
 
-tie(%DB, 'DB_File', $dbmfile, O_RDONLY, 0444, $DB_File::DB_HASH)
+my(%DB,$db,$fd);
+$db = tie(%DB, 'DB_File', $dbmfile, O_CREAT|O_RDWR, 0644,
+	   $DB_File::DB_HASH)
     or die "$dbmfile: $!\n";
+
+$fd = $db->fd;
+open(DB_FH, "+<&=$fd") || die "dup $!";
 
 foreach $key (@ARGV)
 {
@@ -63,8 +68,17 @@ foreach $key (@ARGV)
 		&aid_sendmail_v2($return_path,$from,$subject,$body,@recip);
 	}
 
-	($affil,undef) = &aid_affiliate(*rec,0);
+	next unless $status;
 
+	# update timestamp
+	unless (flock (DB_FH, LOCK_EX)) { die "flock: $!" }
+	$rec{'lm'} = time;
+	$DB{$key} = $rec{'id'} . "\0" . &aid_db_pack_rec(*rec);
+	$db->sync;
+	flock(DB_FH, LOCK_UN);
+
+	# display something to stdout
+	($affil,undef) = &aid_affiliate(*rec,0);
 	print &aid_inorder_fullname(*rec), $affil, " <",
 	$rec{'e'}, ">\n",
 	"web submission: ", &ctime($rec{'u'}),
@@ -74,7 +88,10 @@ foreach $key (@ARGV)
     }
 }
 
+undef $db;
 untie(%DB);
+close(DB_FH);
+
 exit 0;
 
 # avoid warnings
