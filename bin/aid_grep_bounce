@@ -1,6 +1,6 @@
 #!/usr/bin/perl -w
 
-# $Id: aid_grep_bounce,v 5.4 1999/06/07 18:32:25 mradwin Exp mradwin $
+# $Id: aid_grep_bounce,v 5.5 1999/11/30 20:06:35 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -57,13 +57,13 @@ sub readspool {
 
 	    $bouncers{"\L$_\E"} = 1;
 	}
-	elsif (/^E-mail\s+: /)
+	elsif (/^\s*>*\s*E-mail\s+: /)
 	{
-	    s/^E-mail\s+: //;
+	    s/^\s*>*\s*E-mail\s+: //;
 	    s/\s*$//;
 	    $bouncers{"\L$_\E"} = 1;
 	}
-	elsif (/^From: $from_pattern/o)
+	elsif (/^\s*>*\s*From: $from_pattern/o)
 	{
 	    $_ = <SPOOL>;
 	    if (/To:.*<([^>]+)>/)
@@ -71,7 +71,7 @@ sub readspool {
 		$bouncers{"\L$1\E"} = 1;
 	    }
 	}
-	elsif (/^Subject: $directory_name \[.+-(\d+)\]/o)
+	elsif (/^\s*>*\s*Subject: $directory_name \[.+-(\d+)\]/o)
 	{
 	    $bouncers{$1} = 1;
 	}
