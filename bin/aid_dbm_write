@@ -1,6 +1,6 @@
 #!/usr/bin/perl -w
 
-# $Id: aid_dbm_write,v 1.4 1999/02/05 01:42:17 mradwin Exp mradwin $
+# $Id: aid_dbm_write,v 1.5 1999/02/05 18:34:12 mradwin Exp mradwin $
 
 require 'aid_util.pl';
 require 'getopts.pl';
@@ -31,6 +31,7 @@ for (@db)
 {
     next unless defined($_) && $_ ne '';
     %rec = &aid_parse($_);
+    $rec{'message'} = &aid_get_usertext($rec{'id'});
 
     $DB{$rec{'id'}} = 
 	pack("C3N4",
@@ -52,7 +53,8 @@ for (@db)
 	     $rec{'www'},
 	     $rec{'location'},
 	     $rec{'inethost'},
-	     $rec{'alias'}
+	     $rec{'alias'},
+	     $rec{'message'}
 	     );
 
     $DB{"\L$rec{'email'}\E"} = pack("n", $rec{'id'});
