@@ -2,7 +2,7 @@
 
 #
 # does the html version of the invalid address list
-# $Id: aid_goners_html,v 3.10 1998/05/17 05:18:53 mradwin Exp mradwin $
+# $Id: aid_goners_html,v 3.11 1998/05/18 17:17:31 mradwin Exp mradwin $
 #
 
 require 'aid_util.pl';
@@ -25,6 +25,8 @@ while(<DATA>) {
     chop;
     %rec = &aid_split($_);
     next unless $rec{'valid'} == 0;
+
+    $rec{'email'} =~ s/^[^\@]+\@/\@/;
 
     $fullname = &fullname(*rec);
     ($affil,$len) = &affiliate(*rec,0);
