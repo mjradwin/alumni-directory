@@ -2,7 +2,7 @@
 #     FILE: Makefile
 #   AUTHOR: Michael J. Radwin
 #    DESCR: Makefile for building the Alumni Internet Directory
-#      $Id: Makefile,v 3.33 1998/11/02 18:01:52 mradwin Exp mradwin $
+#      $Id: Makefile,v 3.34 1998/11/02 18:19:56 mradwin Exp mradwin $
 #
 
 WWWROOT=/home/web/radwin.org
@@ -93,7 +93,7 @@ index:	$(INDEX)
 $(INDEX):	$(MVHSDIR)/data/index.include $(BIN_HOME) $(AID_UTIL_PL) \
 		$(ADR_MASTER)
 	$(BIN_HOME) -p0 -i $(MVHSDIR)/data/index.include \
-		-t 'Welcome to the MVHS Alumni Internet Directory!' \
+		-t '' \
 		$(INDEX)
 
 REUNIONS=$(WWWDIR)/etc/reunions.html
