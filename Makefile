@@ -2,7 +2,7 @@
 #     FILE: Makefile
 #   AUTHOR: Michael J. Radwin
 #    DESCR: Makefile for building the Alumni Internet Directory
-#      $Id: Makefile,v 3.74 1999/04/06 17:31:22 mradwin Exp mradwin $
+#      $Id: Makefile,v 3.75 1999/04/15 21:11:50 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -161,7 +161,7 @@ LINKS_TS=$(WWWDIR)/etc/.links.html
 links:	$(LINKS_TS)
 $(LINKS_TS):	$(AIDDIR)/data/links.include $(BIN_HOME)
 	$(BIN_HOME) -p12 -i $(AIDDIR)/data/links.include \
-		-t 'Other MVHS and Awalt Web Resources' \
+		-t 'Other MVHS and Awalt Resources' \
 		$(LINKS)
 
 FAQ=$(WWWDIR)/etc/faq.html
@@ -177,7 +177,7 @@ COPYRIGHT_TS=$(WWWDIR)/etc/.copyright.html
 copyright:	$(COPYRIGHT_TS)
 $(COPYRIGHT_TS):	$(AIDDIR)/data/copyright.include $(BIN_HOME)
 	$(BIN_HOME) -p16 -i $(AIDDIR)/data/copyright.include \
-		-t 'Acceptable Use - Privacy Statement - Copyright' \
+		-t 'Acceptable Use, Privacy Statement, Copyright' \
 		$(COPYRIGHT)
 
 STATS=$(WWWDIR)/etc/stats.html
