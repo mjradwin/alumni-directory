@@ -2,7 +2,7 @@
 
 #
 # does the html version of the grad-date address list
-# $Id: aid_class_html,v 5.8 1999/06/25 17:07:00 mradwin Exp mradwin $
+# $Id: aid_class_html,v 5.9 1999/06/28 18:39:31 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -66,13 +66,13 @@ $pageno = $opt_w ? 4 : -1;
 
 if ($opt_c)
 {
-    die "no _${prefix}${opt_c} key!\n"
+    die "no _${prefix}${opt_c} key!"
 	unless defined $DB{"_${prefix}${opt_c}"};
     @years = ($opt_c);
 }
 else
 {
-    die "no _${prefix}years key!\n"
+    die "no _${prefix}years key!"
 	unless defined $DB{"_${prefix}years"};
     @years = unpack("n*",$DB{"_${prefix}years"});
     push(@years, 'other') if defined $DB{"_${prefix}other"};
@@ -96,7 +96,7 @@ select(STDOUT); $| = 1;
 $prev = '1900';
 foreach $year (@years)
 {
-    die "no ${prefix}${year} key!\n" unless defined $DB{"_${prefix}${year}"};
+    die "no ${prefix}${year} key!" unless defined $DB{"_${prefix}${year}"};
     print STDOUT "." unless $opt_q;
     @ids = unpack("n*",$DB{"_${prefix}${year}"});
 

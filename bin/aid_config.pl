@@ -2,7 +2,7 @@
 #     FILE: aid_config.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: configuration variables for Alumni Internet Directory
-#      $Id: aid_config.pl,v 5.8 1999/06/22 18:57:47 mradwin Exp mradwin $
+#      $Id: aid_config.pl,v 5.9 1999/06/22 19:10:48 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -42,7 +42,7 @@ $ht_empty_close_tag = '>';
      'yes (alumni from my graduating class)',
      );
 
-die "NO CONFIG DEFINED!!\n" unless defined %aid_util'config; #'#
+die "NO CONFIG DEFINED!!" unless defined %aid_util'config; #'#
 
 @aid_util'page_idx = #'#
 (
@@ -180,7 +180,7 @@ sub aid_config
 
     local($[) = 0;
 
-    die "NO CONFIG $_[0]!\n" if !defined($config{$_[0]});
+    die "NO CONFIG $_[0]!" if !defined($config{$_[0]});
     $config{$_[0]};
 }
 
@@ -191,7 +191,7 @@ sub aid_image_tag
 
     local($[) = 0;
 
-    die "NO IMAGE_TAG $_[0]!\n" if !defined($image_tag{$_[0]});
+    die "NO IMAGE_TAG $_[0]!" if !defined($image_tag{$_[0]});
     $image_tag{$_[0]};
 }
 

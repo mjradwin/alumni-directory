@@ -2,7 +2,7 @@
 #     FILE: aid_util.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: perl library routines for the Alumni Internet Directory
-#      $Id: aid_util.pl,v 5.26 1999/06/28 19:12:48 mradwin Exp mradwin $
+#      $Id: aid_util.pl,v 5.27 1999/06/28 19:16:47 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -1272,7 +1272,7 @@ sub aid_rebuild_secondary_keys
     while (($key,$val) = each(%DB))
     {
 	next unless $key =~ /^_/;
-	die "invariant failed: key=$key in DB but not in new_db\n"
+	die "invariant failed: key=$key in DB but not in new_db"
 	    unless defined $new_db{$key};
 
 	if (! defined $old_db{$key})

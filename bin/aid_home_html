@@ -2,7 +2,7 @@
 
 #
 # does the html version of just home pages
-# $Id: aid_home_html,v 5.8 1999/06/11 20:23:15 mradwin Exp mradwin $
+# $Id: aid_home_html,v 5.9 1999/06/25 16:27:39 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -83,7 +83,7 @@ else
     die "can't open ${dbmfile}.db\n" unless -r "${dbmfile}.db";
     dbmopen(%DB,$dbmfile,0444);
 
-    die "no _t key!\n" unless defined $DB{'_t'};
+    die "no _t key!" unless defined $DB{'_t'};
     $time = unpack("N",$DB{'_t'});
 }
 
@@ -91,7 +91,7 @@ if ($opt_f && $opt_p == 0)
 {
     die "can't open ${dbmfile}.db\n" unless -r "${dbmfile}.db";
     dbmopen(%DB,$dbmfile,0444);
-    die "no _t key!\n" unless defined $DB{'_t'};
+    die "no _t key!" unless defined $DB{'_t'};
     $time = unpack("N",$DB{'_t'});
     dbmclose(%DB);
 }
@@ -103,7 +103,7 @@ if ($opt_s) {
     print OUTFILE &aid_submit_body(*blank_entry,'');
 
 } elsif ($opt_d) {
-    die "no _years key!\n" unless defined $DB{'_years'};
+    die "no _years key!" unless defined $DB{'_years'};
     @years = unpack("n*",$DB{'_years'});
     push(@years, 'other') if defined $DB{'_other'};
 

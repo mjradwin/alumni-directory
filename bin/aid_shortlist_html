@@ -4,7 +4,7 @@
 # does a short list, either compact or verbose, sorted by graduating
 # class with a jump bar
 #
-# $Id: aid_shortlist_html,v 5.2 1999/06/07 18:32:25 mradwin Exp mradwin $
+# $Id: aid_shortlist_html,v 5.3 1999/06/08 19:29:01 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -60,7 +60,7 @@ $ARGV[0] =~ s/\.db$//;
 die "can't open $ARGV[0].db\n" unless -r "$ARGV[0].db";
 dbmopen(%DB,$ARGV[0],0444);
 
-die "no _class key!\n" unless defined $DB{'_class'};
+die "no _class key!" unless defined $DB{'_class'};
 
 open(FMTOUT,">$ARGV[1]") || die "Can't open $ARGV[1]: $!\n";
 
