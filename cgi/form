@@ -4,10 +4,10 @@
 #     FILE: mvhsaid.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: MVHS Alumni Internet Directory CGI interface
-#      $Id: mvhsaid,v 2.7 1998/05/15 20:06:57 mradwin Exp mradwin $
+#      $Id: mvhsaid,v 2.8 1998/05/16 02:06:10 mradwin Exp $
 #
 
-require 'aid_util.pl';
+require 'aid_util_new.pl';
 require 'cgi-lib.pl';
 
 # configuration
@@ -24,7 +24,7 @@ if (defined($ENV{'PATH_INFO'}) && $ENV{'PATH_INFO'} =~ m,^/vcard/,) {
     $in{'vcard'} =~ s,^/vcard/(\d+).*$,$1,;
 }
 
-$rcsid = '$Id: mvhsaid,v 2.7 1998/05/15 20:06:57 mradwin Exp mradwin $'; #'fnt
+$rcsid = '$Id: mvhsaid,v 2.8 1998/05/16 02:06:10 mradwin Exp $'; #'fnt
 
 # special flags: version, update, vcard, about
 #
@@ -121,7 +121,8 @@ if ($in{'year'} =~ /^\d\d$/) {
     }
 }
 
-#$in{'request'} = (defined($in{'request'})) ? 1 : 0;
+$in{'reunion'} = (defined $in{'reunion'} && 
+		  ($in{'reunion'} eq 'on' || $in{'reunion'} == 1)) ? 1 : 0;
 $in{'school'} = ($in{'school'} eq 'Other' && $in{'sch_other'} ne '') ? 
     $in{'sch_other'} : $in{'school'};
 
@@ -152,6 +153,8 @@ $in{'married'} = "\L$in{'married'}\E"
 $in{'first'} = "\u$in{'first'}";
 $in{'last'} = "\u$in{'last'}";
 $in{'married'} = "\u$in{'married'}";
+
+$in{'homepage'} = '' if $in{'homepage'} eq 'http://';
 
 # did they check the "other" box for school, but not fill in any text?
 if ($in{'school'} eq 'Other') {
@@ -187,9 +190,6 @@ exit(0);
 sub confirm_submission {
     local($cgi_path) = &aid_config('cgi_path');
 
-    # a little more cleanup and then update the db.
-    $in{'homepage'} = '' if $in{'homepage'} eq 'http://';
-
     select(STDOUT);  $| = 1;
     print "Content-type: text/html\n\n";
     print &common_html_hdr(-1,'Please confirm your submission',1);
@@ -220,11 +220,12 @@ to edit your entry.  If everything is correct, please hit the
 sub queue_submission {
     require 'ctime.pl';
 
-    # a little more cleanup and then update the db.
-    $in{'homepage'} = '' if $in{'homepage'} eq 'http://';
+    # set the times and then update the db.
     $in{'time'} = time;
+    $in{'fresh'} = $in{'time'};
     $in{'created'} = $in{'created'} ne '' ? $in{'created'} : $in{'time'};
     $in{'inethost'} = $ENV{'REMOTE_HOST'};
+    $in{'bounces'} = 0;
     $date = &ctime($in{'time'});
     $mailto = &aid_config('mailto');
     $mailsubj = &aid_config('mailsubj');
