@@ -2,11 +2,11 @@
 #     FILE: aid_util.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: perl library routines for the Alumni Internet Directory
-#      $Id: aid_util.pl,v 4.33 1999/03/02 22:51:17 mradwin Exp mradwin $
+#      $Id: aid_util.pl,v 4.34 1999/03/03 20:11:14 mradwin Exp mradwin $
 #
 
 $aid_util'rcsid =
- '$Id: aid_util.pl,v 4.33 1999/03/02 22:51:17 mradwin Exp mradwin $';
+ '$Id: aid_util.pl,v 4.34 1999/03/03 20:11:14 mradwin Exp mradwin $';
 
 # ----------------------------------------------------------------------
 # CONFIGURATION
@@ -643,15 +643,15 @@ are required.  All other fields are optional.</p>\n";
 
     $body . "
 <form method=post action=\"" . $config{'submit_cgi'} . "\"> 
-<table border=0 summary=\"\">
-<tr><td align=right><input type=\"submit\" value=\"Next&nbsp;&gt;\">
-&nbsp;
+
+<div align=right>
 <input type=\"reset\" value=\"Start Over\">
-</td></tr>
-<tr><td>
+&nbsp;
+<input type=\"submit\" value=\"Next&nbsp;&gt;\">
+</div>
+
 <div class=\"about\">
-<table border=0 width=\"100%\" summary=\"\">
-<tr><td><table border=0 cellspacing=7 summary=\"\">
+\<table border=0 cellspacing=7 summary=\"\">
 <tr>
   <td valign=top><label for=\"first\">First Name</label></td>
   <td>$star</td>
@@ -757,15 +757,14 @@ are required.  All other fields are optional.</p>\n";
   </td>
 </tr>
 </table>
-</td></tr>
-</table>
 </div>
-</td></tr>
-<tr><td align=right><input type=\"submit\" value=\"Next&nbsp;&gt;\">
-&nbsp;
+
+<div align=right>
 <input type=\"reset\" value=\"Start Over\">
-</td></tr>
-</table>
+&nbsp;
+<input type=\"submit\" value=\"Next&nbsp;&gt;\">
+</div>
+
 </form>
 
 ";
