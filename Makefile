@@ -2,7 +2,7 @@
 #     FILE: Makefile
 #   AUTHOR: Michael J. Radwin
 #    DESCR: Makefile for building the Alumni Internet Directory
-#      $Id: Makefile,v 3.91 1999/05/27 21:16:03 mradwin Exp mradwin $
+#      $Id: Makefile,v 3.92 1999/05/27 21:57:01 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -21,10 +21,10 @@
 #   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #
 
-SCHOOL=mvhs
+SCHOOL=awalt
 WWWROOT=/home/web/radwin.org
-WWWDIR=$(WWWROOT)/docs/$(SCHOOL)-alumni
-CGIDIR=$(WWWROOT)/cgi-bin
+WWWDIR=$(WWWROOT)/docs/$(SCHOOL)
+CGIDIR=$(WWWROOT)/docs/$(SCHOOL)/bin
 DATADIR=$(HOME)/$(SCHOOL)/data
 BINDIR=$(HOME)/$(SCHOOL)/bin
 CGISRC=$(HOME)/$(SCHOOL)/cgi
@@ -32,8 +32,7 @@ AID_UTIL_PL=$(BINDIR)/aid_util.pl
 AID_SUBMIT_PL=$(BINDIR)/aid_submit.pl
 
 TAR_AIDDIR=$(SCHOOL)
-TAR_IMGDIR=web/images
-TAR_WWWDIR=web/$(SCHOOL)-alumni
+TAR_WWWDIR=web/$(SCHOOL)
 
 MKDIR=/bin/mkdir -p
 RM=/bin/rm -f
@@ -62,16 +61,21 @@ SNAPSHOTFILES= \
 all:	index submit \
 	addupdate reunions links faq copyright \
 	recent multi_class multi_alpha \
-	pages awalt goners download \
-	stats pine_book
+	pages goners download stats pine_book
 
 SYMLINKS=$(AID_SUBMIT_PL) $(AID_UTIL_PL) $(BINDIR)/aid_config.pl \
-	$(BINDIR)/$(SCHOOL)_config.pl $(BINDIR)/tableheader.pl
+	$(BINDIR)/$(SCHOOL)_config.pl $(BINDIR)/tableheader.pl \
+	$(CGISRC)/cgi-lib.pl
 symlinks:
+	$(MKDIR) $(WWWDIR)
+	echo 'AddType text/html;charset=ISO-8859-1 html' > $(WWWDIR)/.htaccess
+	echo 'Options -Indexes' >> $(WWWDIR)/.htaccess
+	$(MKDIR) $(CGIDIR)
 	(cd $(CGIDIR) ; /bin/ln -sf $(SYMLINKS) .; \
-	 $(CP) $(CGISRC)/$(SCHOOL)aid $(CGISRC)/nph-aid-search \
+	 $(CP) $(CGISRC)/form $(CGISRC)/search $(CGISRC)/alumni.txt \
 	       $(CGISRC)/vcard $(CGISRC)/about $(CGISRC)/yab . )
 	(cd $(WWWDIR) ; /bin/ln -sf $(CGISRC)/default.css . )
+	echo 'SetHandler cgi-script' > $(CGIDIR)/.htaccess
 
 DBFILE=$(WWWDIR)/master.db
 dbfile:	$(DBFILE)
@@ -83,25 +87,12 @@ $(DBFILE):	$(ADR_MASTER) $(BINDIR)/aid_dbm_write $(AID_UTIL_PL)
 	chmod 0444 $(DBFILE)
 	$(BINDIR)/aid_dbm_read -u ./data/master.u $(DBFILE)
 
-#VCARD_TS=$(WWWDIR)/vcard/.created
-#vcard:	$(VCARD_TS)
-#$(VCARD_TS):	$(DBFILE) $(BINDIR)/aid_write_vcards
-#	$(MKDIR) $(WWWDIR)/vcard
-#	$(BINDIR)/aid_write_vcards $(DBFILE) $(WWWDIR)/vcard $(MOD_IDS)
-
 MULTI_ALPHA=$(WWWDIR)/alpha/a-index.html
 MULTI_ALPHA_TS=$(WWWDIR)/alpha/.z-index.html
 multi_alpha:	$(MULTI_ALPHA_TS)
 $(MULTI_ALPHA_TS):	$(DBFILE) $(BINDIR)/aid_multi_alpha_html
 	$(MKDIR) $(WWWDIR)/alpha
 	$(BINDIR)/aid_multi_alpha_html $(DBFILE)
-
-AWALT=$(WWWDIR)/class/awalt.html
-AWALT_TS=$(WWWDIR)/class/.awalt.html
-awalt:	$(AWALT_TS)
-$(AWALT_TS):	$(DBFILE) $(BINDIR)/aid_class_html
-	$(MKDIR) $(WWWDIR)/class
-	$(BINDIR)/aid_class_html -a $(DBFILE) $(AWALT)
 
 RECENT=$(WWWDIR)/recent.html
 RECENT_TS=$(WWWDIR)/.recent.html
@@ -150,7 +141,7 @@ links:	$(LINKS_TS)
 $(LINKS_TS):	$(DATADIR)/links.include $(BINDIR)/aid_home_html
 	$(MKDIR) $(WWWDIR)/etc
 	$(BINDIR)/aid_home_html -p12 -i $(DATADIR)/links.include \
-		-t 'Other MVHS and Awalt Resources' \
+		-t 'Links and Other Alumni Directories' \
 		$(LINKS)
 
 FAQ=$(WWWDIR)/etc/faq.html
