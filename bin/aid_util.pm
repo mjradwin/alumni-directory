@@ -2,11 +2,11 @@
 #     FILE: aid_util.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: perl library routines for the Alumni Internet Directory
-#      $Id: aid_util.pl,v 3.81 1998/11/13 18:56:46 mradwin Exp mradwin $
+#      $Id: aid_util.pl,v 3.82 1998/11/26 00:54:01 mradwin Exp mradwin $
 #
 
 $aid_util'rcsid =
- '$Id: aid_util.pl,v 3.81 1998/11/13 18:56:46 mradwin Exp mradwin $';
+ '$Id: aid_util.pl,v 3.82 1998/11/26 00:54:01 mradwin Exp mradwin $';
 
 # ----------------------------------------------------------------------
 # CONFIGURATION
@@ -136,7 +136,7 @@ $aid_util'ID_INDEX    = 0;     #'# position that the ID key is in datafile
     'id',	'',
     'valid',	'',
     'last',	'Last/Maiden Name',
-    'married',	'Married Name',
+    'married',	'Married Last Name',
     'first',	'First Name',
     'request',	'',
     'reunion',	'',
@@ -650,7 +650,7 @@ are required.  All other fields are optional.</p>\n\n";
 </tr>
 <tr>
   <td colspan=2 valign=top><font color=\"#$cell_fg\"><label
-  for=\"married\">Married Name</label></font><br>
+  for=\"married\">Married Last Name</label></font><br>
   <font color=\"#$cell_fg\" size=\"-1\">(if different from maiden name)</font></td>
   <td valign=top><input type=text name=\"married\" size=35
   value=\"$rec{'married'}\" id=\"married\"></td>
@@ -919,7 +919,7 @@ sub about_text {
     $retval .= "</strong>" if $do_html_p;
     $retval .= "\n";
     
-    $retval .= "Married Name       : ";
+    $retval .= "Married Last Name  : ";
     if ($rec{'married'} eq '') {
 	$retval .= "(same as last name)";
     } else {
