@@ -2,7 +2,7 @@
 
 #
 # mails a welcome, update, confirm, or massmail message to members
-# $Id: aid_welcome,v 3.45 1999/05/06 16:37:45 mradwin Exp mradwin $
+# $Id: aid_welcome,v 3.46 1999/05/06 16:48:16 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -222,7 +222,7 @@ exit(0);
 sub mail_user
 {
     local(*rec) = @_;
-    local($message,$name);
+    local($message,$name,$mailto);
 
     if ($rec{'v'} == 0)
     {
@@ -246,22 +246,24 @@ sub mail_user
     $name .= " $rec{'sn'}";
     $name .= " $rec{'mn'}"
 	if defined $rec{'mn'} && $rec{'mn'} ne '';
-    
-    &aid_sendmail($rec{'e'}, $name,
+    $name =~ s/\"/\'/g;
+
+    $mailto = "\"$name\" <$rec{'e'}>";
+    if ($opt_u && defined $rec{'eo'} &&
+	$rec{'eo'} ne '' && $rec{'eo'} ne $rec{'e'})
+    {
+	$mailto .= ", \"$name\" <$rec{'eo'}>";
+    }
+
+    &aid_sendmail($mailto,
 		  &aid_config('admin_email'), &aid_config('admin_name'),
 		  $params{'subject'} . " [AID-$rec{'id'}]",
 		  $message);
     print LOG time, " - $rec{'id'} - $rec{'e'}\n";
 
-    if ($opt_u && defined $rec{'eo'} &&
-	$rec{'eo'} ne '' && $rec{'eo'} ne $rec{'e'})
-    {
-	&aid_sendmail($rec{'eo'}, $name,
-		      &aid_config('admin_email'), &aid_config('admin_name'),
-		      $params{'subject'} . " [AID-$rec{'id'}]",
-		      $message);
-	print LOG time, " - $rec{'id'} - $rec{'eo'} - OLD\n";
-    }
+    print LOG time, " - $rec{'id'} - $rec{'eo'} - OLD\n"
+	if ($opt_u && defined $rec{'eo'} &&
+	    $rec{'eo'} ne '' && $rec{'eo'} ne $rec{'e'});
 
     1;
 } 
