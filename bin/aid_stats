@@ -1,6 +1,6 @@
 #!/usr/bin/perl -w
 
-# $Id: aid_stats,v 5.2 1999/06/01 04:17:48 mradwin Exp mradwin $
+# $Id: aid_stats,v 5.4 1999/06/08 19:29:01 mradwin Exp $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -117,9 +117,10 @@ $median_update_weeks = ($now - $median_update_time) / (60 * 60 * 24 * 7);
 $avg_tenure_weeks = ($now - $avg_join_time) / (60 * 60 * 24 * 7);
 $median_tenure_weeks = ($now - $median_join_time) / (60 * 60 * 24 * 7);
 
+$time = time;
 if (!$opt_t)
 {
-    print FMTOUT &aid_common_html_hdr(15,'Member Statistics',0,time);
+    print FMTOUT &aid_common_html_hdr(15,'Member Statistics',0,$time);
     print FMTOUT "<pre>";
 }
 else
@@ -197,12 +198,12 @@ printf FMTOUT "median  time since update  : %.0f weeks\n", $median_update_weeks;
 if (!$opt_t)
 {
     print FMTOUT "</pre>\n";
-    print FMTOUT &aid_common_html_ftr(15);
+    print FMTOUT &aid_common_html_ftr(15,$time);
 }
 else
 {
     print FMTOUT "\n------------------------------------------------------------------------\n";
-    print FMTOUT &ctime(time);
+    print FMTOUT &ctime($time);
 }
 
 close(FMTOUT);
