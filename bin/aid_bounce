@@ -1,0 +1,65 @@
+#!/usr/bin/perl -w
+
+# $Id$
+
+require 'getopts.pl';
+require 'aid_util.pl';
+
+$usage = 'usage: aid_bounce [-h] [ids...]
+    -h        Display usage information.
+
+Bumps up the bounce field for every id or email address listed on the
+command line.
+';
+
+&Getopts('h') || die "$usage\n";
+$opt_h && die "$usage\n";
+$opt_h = $opt_h;                # avoid warning
+
+$cp   = &aid_config('cp');
+-x $cp   || die "$cp   is not executable!";
+
+$dbFile = &aid_config('aiddir') . "data/master.adr";
+@db = &aid_create_db($dbFile);
+
+for (@db) {
+    %rec = &aid_split($_);
+    $addrs{"\L$rec{'email'}\E"} = $rec{'id'};
+}
+
+for (@ARGV) {
+    print "Bumping bounce for $_\n";
+    if (/^\d+$/) {
+	if (defined @db[$_]) {
+	    %rec = &aid_split(@db[$_]);
+	    $rec{'bounce'}++;
+	    @db[$_] = &aid_join(*rec);
+	} else {
+	    warn "can't find id $_\n";
+	    next;
+	}
+    } else {
+	if (defined $addrs{$_}) {
+	    %rec = &aid_split(@db[$addrs{$_}]);
+	    $rec{'bounce'}++;
+	    @db[$addrs{$_}] = &aid_join(*rec);
+	} else {
+	    warn "can't find email addr $_\n";
+	    next;
+	}
+    }
+}
+
+$tmpFile = "/tmp/aid_add.$$";
+open(TMP, ">$tmpFile") || die "Can't open $tmpFile: $!\n";
+for (@db) {
+    next unless defined($_) && $_ ne '';
+    print TMP $_, "\n";
+}
+close(TMP);
+
+system "$cp -f $tmpFile $dbFile"
+    || die "failed to $cp -f $tmpFile $dbFile: $!\n";
+unlink($tmpFile) || die "couldn't unlink $tmpFile: $!\n";
+
+
