@@ -2,7 +2,7 @@
 #     FILE: Makefile
 #   AUTHOR: Michael J. Radwin
 #    DESCR: Makefile for building the Alumni Internet Directory
-#      $Id: Makefile,v 3.76 1999/04/15 21:21:17 mradwin Exp mradwin $
+#      $Id: Makefile,v 3.77 1999/04/27 06:31:59 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -61,9 +61,7 @@ TARFILES= \
 	$(TAR_AIDDIR)/bin/aid_* \
 	$(TAR_AIDDIR)/data/test.adr \
 	$(TAR_AIDDIR)/data/*.include \
-	$(TAR_IMGDIR)/vcard.gif \
-	$(TAR_WWWDIR)/default.css \
-	$(TAR_WWWDIR)/*.gif
+	$(TAR_WWWDIR)/default.css
 
 SNAPSHOTFILES= \
 	$(TAR_AIDDIR) \
@@ -72,9 +70,7 @@ SNAPSHOTFILES= \
 	$(TAR_AIDDIR)/cgi-bin/mvhsaid \
 	$(TAR_AIDDIR)/cgi-bin/nph-aid-search \
 	$(TAR_AIDDIR)/cgi-bin/nph-vcard \
-	$(TAR_IMGDIR)/vcard.gif \
 	$(TAR_WWWDIR)/default.css \
-	$(TAR_WWWDIR)/*.gif \
 	$(TAR_WWWDIR)/.htaccess \
 	$(TAR_WWWDIR)/master.db
 
