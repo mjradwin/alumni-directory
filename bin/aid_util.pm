@@ -2,7 +2,7 @@
 #     FILE: aid_util.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: perl library routines for the Alumni Internet Directory
-#      $Id: aid_util.pl,v 5.73 2000/08/02 18:28:49 mradwin Exp mradwin $
+#      $Id: aid_util.pl,v 5.74 2000/08/02 18:29:53 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -898,11 +898,17 @@ sub aid_book_write_entry {
     }
 
     elsif ($option eq 'o') {
-	print BOOK "\"\",\"$rec{'gn'}\",";
-	if ($rec{'mn'} ne '') {
-	    print BOOK "\"$rec{'sn'}\",\"$rec{'mn'}\",";
+	%rec_copy = %rec;
+	$rec_copy{'gn'} =~ s/"/'/g;
+	$rec_copy{'sn'} =~ s/"/'/g;
+	$rec_copy{'mn'} =~ s/"/'/g;
+	$mi =~ s/"/'/g;
+
+	print BOOK "\"\",\"$rec_copy{'gn'}\",";
+	if ($rec_copy{'mn'} ne '') {
+	    print BOOK "\"$rec_copy{'sn'}\",\"$rec_copy{'mn'}\",";
 	} else {
-	    print BOOK "\"$mi\",\"$rec{'sn'}\",";
+	    print BOOK "\"$mi\",\"$rec_copy{'sn'}\",";
 	}
 
 	print BOOK "\"\",\"$config{'short_school'} $rec{'yr'}\",\"\",";
