@@ -4,7 +4,7 @@
 #     FILE: aid_rss_summary.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: creates an RDF Site Summary for the Directory
-#      $Id: aid_rss_summary,v 1.13 2002/10/31 20:48:16 mradwin Exp mradwin $
+#      $Id: aid_rss_summary,v 1.14 2002/11/20 18:06:21 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -34,7 +34,7 @@ require 'ctime.pl';
 use Getopt::Std;
 
 $0 =~ s,.*/,,;  # basename
-$usage = "usage: $0 [-h] infile.db outfile.rdf
+my $usage = "usage: $0 [-h] infile.db outfile.rdf
     -h        Display usage information.
 ";
 
@@ -44,52 +44,29 @@ $ARGV[0] || die "$usage\n";
 $ARGV[1] || die "$usage\n";
 $opt_h = $opt_h;		# avoid warning
 
-$dbmfile = shift;
+my $dbmfile = shift;
+my %DB;
 tie(%DB, 'DB_File', $dbmfile, O_RDONLY, 0444, $DB_File::DB_HASH)
     or die "$dbmfile: $!\n";
 
 die "corrupt/missing _t key!" unless defined $DB{'_t'} && $DB{'_t'} ne '';
-$time = unpack("N",$DB{'_t'});
+my $time = unpack("N",$DB{'_t'});
 
-die "corrupt/missing _class key!"
-    unless defined $DB{'_class'} && $DB{'_class'} ne '';
-@class = unpack("n*", $DB{'_class'});
+die "corrupt/missing _nextid key!"
+    unless defined $DB{'_nextid'} && $DB{'_nextid'} ne '';
 
-$newest = 0;
-if (defined $DB{'_nextid'})
+my %id_by_ts;
+for (my $i = $DB{'_nextid'} - 1; $i > 0; $i--)
 {
-    for ($i = $DB{'_nextid'} - 1; $i > 0; $i--)
+    if (defined $DB{$i})
     {
-	if (defined $DB{$i})
-	{
-	    %rec = &aid_db_unpack_rec($i,$DB{$i});
-	    next unless $rec{'v'};
-	    $newest = $i;
-	    %newest = %rec;
-	    last;
-	}
+	my %rec = &aid_db_unpack_rec($i,$DB{$i});
+	next unless $rec{'v'};
+	$id_by_ts{$i} = $rec{'u'};
     }
 }
 
-die "corrupt database: couldn't find a valid newest entry!" if ($newest == 0);
-
-foreach (@class)
-{
-    %rec = &aid_db_unpack_rec($_,$DB{$_});
-    next unless $rec{'v'};
-    $upd{$rec{'u'}} = $rec{'id'};
-}
-
-$found = 0;
-foreach (sort {$b <=> $a} keys %upd)
-{
-    next if $_ == $newest{'u'};
-    %rec = &aid_db_unpack_rec($upd{$_},$DB{$upd{$_}});
-    $found = 1;
-    last;
-}
-
-$outfile = shift;
+my $outfile = shift;
 open(FMTOUT,">$outfile") || die "Can't open $outfile: $!\n";
 
 # find out the next reunion
@@ -121,25 +98,30 @@ if ($ARGV[0])
 
 print FMTOUT
 "<?xml version=\"1.0\" encoding=\"iso-8859-1\"?>
-<!DOCTYPE rss PUBLIC \"-//Netscape Communications//DTD RSS 0.91//EN\"
-\t\"http://my.netscape.com/publish/formats/rss-0.91.dtd\">
 <rss version=\"0.91\">
 <channel>
 
 <title>" . &aid_config('short_school') . " Alumni Internet Directory</title>
 <link>http://" . &aid_config('master_srv') . &aid_config('master_path') .
-    "</link>
+    "recent.html</link>
 <description>" . &aid_config('descr_long') . "</description>
 <language>en-us</language>
 
 ";
 
-if ($found)
+my @ids;
+foreach my $i (sort {$id_by_ts{$b} <=> $id_by_ts{$a}} keys %id_by_ts)
 {
+    push(@ids, $i);
+    last if scalar(@ids) == 10;
+}
+
+foreach my $i (@ids) {
+    my %rec = &aid_db_unpack_rec($i,$DB{$i});
     print FMTOUT
 "<item>
-<title>Updated " . &aid_caldate($rec{'u'}) . ": " . 
-    &aid_html_entify_str(&aid_inorder_fullname(*rec)) . "</title>
+<title>" .  &aid_html_entify_str(&aid_inorder_fullname(*rec)) .
+" - " . &aid_caldate($rec{'u'}) . "</title>
 <link>http://" . &aid_config('master_srv') .
     &aid_about_path(*rec,0) . "</link>
 <description>Class of " . &aid_html_entify_str($rec{'yr'}), ".";
@@ -151,27 +133,13 @@ if ($found)
     print FMTOUT "</description>\n</item>\n\n";
 }
 
-print FMTOUT
-"<item>
-<title>Joined " . &aid_caldate($newest{'c'}) . ": " .
-    &aid_html_entify_str(&aid_inorder_fullname(*newest)) . "</title>
-<link>http://" . &aid_config('master_srv') .
-    &aid_about_path(*newest,0) . "</link>
-<description>Class of " . &aid_html_entify_str($newest{'yr'}), ".";
-
-if ($newest{'n'}) {
-    print FMTOUT " ", &aid_html_entify_str($newest{'n'});
-}
-
-print FMTOUT "</description>\n</item>\n\n";
-
 if ($reunion_yr ne 'x')
 {
     my($refname,$title);
     if ($reunion_yr =~ /^\d+$/)
     {
-	$refname = "r$key";
-	$title = "Class of $key";
+	$refname = "r$reunion_yr";
+	$title = "Class of $reunion_yr";
     }
     else
     {
@@ -207,8 +175,8 @@ close(FMTOUT);
 utime $time, $time, $outfile;
 
 # touch timestamp
-$now = time;
-$ts = $outfile;
+my $now = time;
+my $ts = $outfile;
 $ts =~ s,([^/]+)$,\.$1,;
 open(TS,">$ts") && close(TS);
 utime $now, $now, $ts;
