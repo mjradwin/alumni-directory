@@ -17,6 +17,9 @@ $opt_h && die "$usage\n";
 $ARGV[0] || die "$usage\n";
 $ARGV[1] || die "$usage\n";
 
+$info_gif = "<img src=\"" . &mv_config('master_path') . "info.gif\" " .
+    "height=12 width=12 hspace=4 border=0 alt=\"[i]\">";
+
 open(DATAPRE,$ARGV[0]) || die "Can't open $ARGV[0]: $!\n";
 open(FMTOUT,">$ARGV[1]") || die "Can't open $ARGV[1]: $!\n";
 
@@ -26,13 +29,10 @@ if (!$opt_t) {
     $title  = $opt_a ? 'Awalt ' : '';
     $title .= "Alumni Listed by Graduating Class";
     print FMTOUT &tableheader($title, 1, 'ffff99', '000000', 1);
-    print FMTOUT '
-<p>Any entries marked with <img src="new.gif" alt="[new]" width="28"
-height="11"> have been added to the Directory within the last month.
-The <img src="info.gif" height=12 width=12 hspace=4 border=0
-alt="[i]"> icon lets you get more detailed information about an
-alumnus.</p>
-';
+    print FMTOUT "<p>Any entries marked with " . &new_gif(0) .
+"have been added to the Directory within the last month.  The
+$info_gif
+icon lets you get more detailed information about an alumnus.</p>\n";
     print FMTOUT "<p><a name=\"top\">Index</a>: <tt>";
 
     $lastYear = '1900';
@@ -60,7 +60,6 @@ alumnus.</p>
     print FMTOUT "</tt></p>\n\n<pre>";
 }
 
-$info_gif = "<img src=\"info.gif\" height=12 width=12 hspace=4 border=0 alt=\"[i]\">";
 $blank_gif = ($opt_t) ? "" :
     "<img src=\"blank.gif\" height=12 width=12 hspace=4 border=0 alt=\"\">";
 $cgi = &mv_config('cgi_path');
@@ -119,7 +118,7 @@ while(<DATA>) {
     $opt_t || print FMTOUT "<a href=\"mailto:", $email, "\">";
     print FMTOUT $email;
     $opt_t || print FMTOUT "</a>";
-    $opt_t || print FMTOUT " <img alt=\"[new]\" WIDTH=28 HEIGHT=11 SRC=\"new.gif\">" if &is_new($time);
+    $opt_t || print FMTOUT " " . &new_gif(1) if &is_new($time);
     print FMTOUT "\n";
 }
 

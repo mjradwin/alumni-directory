@@ -14,8 +14,6 @@ $usage = 'usage: mv_verbose_html [-h] infile.adr
 $opt_h && die "$usage\n";
 $ARGV[0] || die "$usage\n";
 
-$new_gif = "<img src=\"" . &mv_config('master_path') . "new.gif\" " .
-    "width=28 height=11 alt=\"[new]\">";
 $info_gif = "<img src=\"" . &mv_config('master_path') . "info.gif\" " .
     "height=12 width=12 hspace=4 border=0 alt=\"[i]\">";
 
@@ -41,7 +39,7 @@ for(;;) {
     print FMTOUT "<br>";
     $title  = ($year =~ /^\d+$/) ? "Class of $year" : "Faculty and Staff";
     print FMTOUT &tableheader($title, 1, 'ffff99', '000000', 1);
-    print FMTOUT "<p>Any entries marked with\n$new_gif\n";
+    print FMTOUT "<p>Any entries marked with\n" . &new_gif(0) . "\n";
     print FMTOUT "have been added to the Directory within the last month.  ";
     print FMTOUT "The\n$info_gif\nicon lets you get more detailed ";
     print FMTOUT "information about an alumnus.</p>\n\n";
@@ -109,7 +107,7 @@ sub write_entry {
     print FMTOUT "height=32 width=32 border=0 align=right ";
     print FMTOUT "alt=\"[vCard]\"></a>";
     print FMTOUT "<strong>$fullname</strong>";
-    print FMTOUT " <img alt=\"[new]\" width=28 height=11 src=\"" . &mv_config('master_path') . "new.gif\">" if &is_new($time);
+    print FMTOUT " " . &new_gif(1) if &is_new($time);
     print FMTOUT "</font>\n";
 
     print FMTOUT "<dt>School: <strong>$school</strong>\n" 

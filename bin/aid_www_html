@@ -26,13 +26,10 @@ print FMTOUT &common_html_hdr(5,1);
 print FMTOUT "<br>";
 print FMTOUT &tableheader("Alumni with Web Pages", 1, 'ffff99',
 '000000', 1);
-print FMTOUT '
-<p>Any entries marked with <img src="new.gif" alt="[new]" width="28"
-height="11"> have been added to the Directory within the last month.
-The <img src="info.gif" height=12 width=12 hspace=4 border=0
-alt="[i]"> icon lets you get more detailed information about an
-alumnus.</p>
-';
+print FMTOUT "<p>Any entries marked with " . &new_gif(0) .
+"have been added to the Directory within the last month.  The
+$info_gif
+icon lets you get more detailed information about an alumnus.</p>\n";
 print FMTOUT "<pre>";
 print FMTOUT "Name and Graduation Year$blank_gif                  Email\n";
 print FMTOUT "---------------------------------------------------------------------------\n";
@@ -56,7 +53,7 @@ while(<DATA>) {
     print FMTOUT $affil;
     print FMTOUT ' ', ' ' x (41 - (length($fullname) + $len));
     print FMTOUT "<a href=\"mailto:", $email, "\">", $email, "</a>";
-    print FMTOUT " <img alt=\"[new]\" WIDTH=28 HEIGHT=11 SRC=\"new.gif\">" if &is_new($time);
+    print FMTOUT " " . &new_gif(1) if &is_new($time);
     print FMTOUT "\n";
 }
 
