@@ -2,11 +2,11 @@
 #     FILE: aid_util.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: perl library routines for the Alumni Internet Directory
-#      $Id: aid_util.pl,v 3.73 1998/11/04 18:41:28 mradwin Exp mradwin $
+#      $Id: aid_util.pl,v 3.74 1998/11/05 17:24:45 mradwin Exp mradwin $
 #
 
 $aid_util'rcsid =
- '$Id: aid_util.pl,v 3.73 1998/11/04 18:41:28 mradwin Exp mradwin $';
+ '$Id: aid_util.pl,v 3.74 1998/11/05 17:24:45 mradwin Exp mradwin $';
 
 # ----------------------------------------------------------------------
 # CONFIGURATION
@@ -1173,7 +1173,8 @@ sub aid_class_jump_bar {
 
 	$retval .= " href=\"${href_begin}${year}${href_end}\">"
 	    unless defined $hilite && $year eq $hilite;
-	$retval .= ($year eq 'other') ? "Faculty/Staff" : $year % 100;
+	$retval .= ($year eq 'other') ? "Faculty/Staff" :
+	    sprintf("%02d", $year % 100);
 	$retval .= "</a>"
 	    unless defined $hilite && $year eq $hilite && !$first;
 
