@@ -2,7 +2,7 @@
 
 #
 # mails a welcome or update note to everyone in targets.adr
-# $Id: aid_welcome,v 3.26 1999/03/04 00:59:16 mradwin Exp mradwin $
+# $Id: aid_welcome,v 3.27 1999/03/04 20:04:44 mradwin Exp mradwin $
 #
 
 require 'aid_util.pl';
@@ -125,6 +125,8 @@ die "$0: Too many mutually-exclusive options\n$usage\n"
 die "$0: No target file specified\n$usage\n" unless $ARGV[0];
 die "$0: Option -m requires -r\n$usage\n" 
     if defined($opt_m) && !defined($opt_r);
+die "$0: Option -c requires -r\n$usage\n" 
+    if defined($opt_c) && !defined($opt_r);
 
 %params = $opt_c ? %confirm_parameters : 
     $opt_u ? %update_parameters :
