@@ -2,7 +2,7 @@
 #     FILE: aid_config.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: configuration variables for Alumni Internet Directory
-#      $Id: aid_config.pl,v 1.18 1999/04/06 17:04:53 mradwin Exp mradwin $
+#      $Id: aid_config.pl,v 1.19 1999/04/06 17:09:36 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -22,7 +22,7 @@
 #
 
 $aid_util'rcsid =
- '$Id: aid_config.pl,v 1.18 1999/04/06 17:04:53 mradwin Exp mradwin $';
+ '$Id: aid_config.pl,v 1.19 1999/04/06 17:09:36 mradwin Exp mradwin $';
 
 # radwin.org (FreeBSD 2.2.2) configuration
 %aid_util'config =   #'#
@@ -312,6 +312,30 @@ if ($^W && 0)
     &aid_config('');
     $aid_util'disclaimer = '';
     $aid_util'site_tags = '';
+    $aid_util'second_idx = ''; # line 150.
+    $aid_util'school_awalt = ''; # line 102.
+    $aid_util'page_idx = ''; # line 139.
+    $aid_util'ID_INDEX = ''; # line 177.
+    $aid_util'req_descr_long = ''; # line 121.
+    $aid_util'FIELD_SEP = ''; # line 176.
+    $aid_util'pics_label = ''; # line 161.
+    $aid_util'body_vlink = ''; # line 118.
+    $aid_util'school_both = ''; # line 103.
+    $aid_util'body_bg = ''; # line 115.
+    $aid_util'body_fg = ''; # line 116.
+    $aid_util'pack_len = ''; # line 227.
+    $aid_util'star_fg = ''; # line 113.
+    $aid_util'pack_format = ''; # line 226.
+    $aid_util'school_name = ''; # line 106.
+    $aid_util'cell_bg = ''; # line 112.
+    $aid_util'school_affil = ''; # line 105.
+    $aid_util'aid_aliases = ''; # line 174.
+    $aid_util'header_bg = ''; # line 109.
+    $aid_util'header_fg = ''; # line 110.
+    $aid_util'noindex = ''; # line 173.
+    $aid_util'field_names = ''; # line 178.
+    $aid_util'req_descr = ''; # line 130.
+    $aid_util'body_link = ''; # line 117.
 }
 
 1;

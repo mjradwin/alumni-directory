@@ -2,7 +2,7 @@
 #     FILE: aid_submit.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: submission form for Alumni Internet Directory
-#      $Id$
+#      $Id: aid_submit.pl,v 1.1 1999/04/06 17:04:36 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -95,6 +95,7 @@ are required.  All other fields are optional.</p>
 
     $body .= "\n<form method=\"post\" action=\"" . $config{'submit_cgi'};
     $body .= "/$rec{'id'}" if $rec{'id'} != -1;
+    $body .= "/new" if $rec{'id'} == -1;
     $body .= "\">\n\n" . $instr . "\n\n";
     
     $body . "<table border=\"0\" cellspacing=\"7\">
@@ -266,6 +267,8 @@ Please review the above information and click the
 if ($^W && 0)
 {
     &aid_submit_body();
+    $aid_util'star_fg = '';
+    $aid_util'field_descr = '';
 }
 
 1;
