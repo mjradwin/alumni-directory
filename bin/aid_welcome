@@ -2,7 +2,7 @@
 
 #
 # mails a welcome or update note to everyone in targets.adr
-# $Id: aid_welcome,v 1.30 1998/01/27 20:07:00 mjr Exp mradwin $
+# $Id: aid_welcome,v 1.31 1998/01/27 21:05:19 mjr Exp mjr $
 #
 
 require 'aid_util.pl';
@@ -81,11 +81,12 @@ sub message_body {
 	"\nSince you asked not to receive the Alumni Internet Directory via email,
 this is the only notice you will receive.\n" : '';
     local($confirming) = $opt_c ? 
-	"\nAs a service to alumni who do not have Web access, I will email a copy
-of the most current Directory to everyone listed in it (including
-yourself) in a couple of weeks.  Please make sure your entry below is
+	"
+Next week, I will email a copy of the most current Directory to you and
+other alumni who requested it.  Please make sure your entry below is
 still current.  If everything you see below is correct, NO ACTION IS
-REQUIRED ON YOUR PART.\n" : '';
+REQUIRED ON YOUR PART.
+" : '';
     local($closing) = $opt_m ?
 	"\nIf you don't want to receive periodic mail like this, change the
 periodic mailings option on your update page to \"No, please do not send
