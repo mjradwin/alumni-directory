@@ -2,7 +2,7 @@
 
 #
 # does the html version of just home pages
-# $Id: aid_home_html,v 3.29 1999/03/09 20:50:23 mradwin Exp mradwin $
+# $Id: aid_home_html,v 3.30 1999/03/17 22:03:04 mradwin Exp mradwin $
 #
 
 require 'aid_util.pl';
@@ -113,9 +113,9 @@ years after mine.</label>
 
 <label for=\"format\">Format:&nbsp;</label>
 <select name=\"format\" id=\"format\">
-<option value=\"n\">Netscape 2.x
-<option value=\"n\">Netscape 3.x
-<option value=\"l\">Netscape 4.x
+<option value=\"n\">Netscape 2.x .HTML
+<option value=\"n\">Netscape 3.x .HTML
+<option value=\"l\">Netscape 4.x .LDIF
 <option value=\"w\">Eudora 2.x
 <option value=\"m\">Eudora 3.x
 <option value=\"m\">Eudora 4.x
