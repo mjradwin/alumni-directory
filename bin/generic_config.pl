@@ -2,7 +2,7 @@
 #     FILE: generic_config.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: configuration variables for Alumni Internet Directory
-#      $Id: generic_config.pl,v 5.13 2000/04/25 01:31:38 mradwin Exp mradwin $
+#      $Id: generic_config.pl,v 5.14 2000/04/25 18:22:35 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -22,7 +22,7 @@
 #
 
 $aid_util::rcsid =
- '$Id: generic_config.pl,v 5.13 2000/04/25 01:31:38 mradwin Exp mradwin $';
+ '$Id: generic_config.pl,v 5.14 2000/04/25 18:22:35 mradwin Exp mradwin $';
 
 # Generic HS on bogus-domain.org (FreeBSD 2.2.2) configuration
 %aid_util::config =  
@@ -35,6 +35,8 @@ $aid_util::rcsid =
      'admin_url',    'http://www.bogus-domain.org/~jsmith/',
      'master_srv',   'www.bogus-domain.org',
      'master_path',  '/~jsmith/generic/',
+     'verify_cgi',   '/~jsmith/generic/bin/verify',
+     'remove_cgi',   '/~jsmith/generic/bin/remove',
      'search_cgi',   '/~jsmith/generic/bin/search',
      'vcard_cgi',    '/~jsmith/generic/bin/vcard',
      'goners_cgi',   '/~jsmith/generic/bin/form/gone',
@@ -48,6 +50,8 @@ $aid_util::rcsid =
      'index_page',   'index.html',
      'wwwdir',       '/home/jsmith/public_html/generic/',
      'dbmfile',      '/home/jsmith/public_html/generic/master.db',
+     'staging',      '/home/jsmith/public_html/generic/staging.db',
+     'reunions',     '/home/jsmith/public_html/generic/reunions.db',
      'aiddir',       '/home/jsmith/generic/',
      'smtp_svr',     'smtp.bogus-domain.net',
      'make',         '/usr/bin/make',
