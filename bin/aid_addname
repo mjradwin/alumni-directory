@@ -1,6 +1,6 @@
 #!/usr/local/bin/perl5 -w
 
-# $Id: aid_addname,v 5.17 2000/05/30 23:46:00 mradwin Exp mradwin $
+# $Id: aid_addname,v 5.18 2000/05/30 23:58:44 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -47,6 +47,7 @@ $dbmfile = &aid_config('aiddir') . "data/working.db";
 
 $make = &aid_config('make');
 -x $make || die "$0: $make is not executable!";
+$make .= " -s" if $opt_q;
 
 @new_ids = ();
 @upd_ids = ();
