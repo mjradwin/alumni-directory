@@ -4,7 +4,7 @@
 #     FILE: alumni.txt.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: Address Book/Nicknames Downloading module
-#      $Id: alumni.txt,v 5.5 2000/02/29 21:02:09 mradwin Exp mradwin $
+#      $Id: alumni.txt,v 5.6 2000/04/25 00:42:01 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -45,7 +45,7 @@ if (! keys %in)
 	      "download/\">try again</a>.");
 }
 
-$in{'plusminus'} = defined $in{'plusminus'} && 
+$plusminus_p = defined $in{'plusminus'} && 
     ($in{'plusminus'} eq 'on' || $in{'plusminus'} == 1) ? 1 : 0;
 
 if (! &is_email_okay($in{'email'}))
@@ -62,7 +62,7 @@ if (! &is_email_okay($in{'email'}))
 }
 elsif (defined $in{'format'} && defined $in{'year'})
 {
-    &send_address_book($in{'format'},$in{'year'},$in{'plusminus'});
+    &send_address_book($in{'format'},$in{'year'},$plusminus_p);
 }
 else
 {
