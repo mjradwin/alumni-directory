@@ -2,7 +2,7 @@
 #     FILE: aid_config.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: configuration for Alumni Internet Directory
-#      $Id: aid_config.pl,v 1.5 1999/02/05 18:50:29 mradwin Exp mradwin $
+#      $Id: aid_config.pl,v 1.6 1999/02/11 17:01:15 mradwin Exp mradwin $
 #
 
 # radwin.org (FreeBSD 2.2.2) configuration
@@ -19,13 +19,13 @@
      'image_path',   '/images/',
      'search_cgi',   '/cgi-bin/nph-aid-search',
      'vcard_cgi',    '/cgi-bin/nph-vcard',
-     'goners_cgi',   '/cgi-bin/nph-mvhsaid/gone',
-     'download_cgi', '/cgi-bin/nph-mvhsaid/mvhs.txt',
-     'go_cgi',       '/cgi-bin/nph-mvhsaid/go',
-     'about_cgi',    '/cgi-bin/nph-mvhsaid/dyn',
-     'submit_cgi',   '/cgi-bin/nph-mvhsaid/sub',
-     'update_cgi',   '/cgi-bin/nph-mvhsaid/upd',
-     'confirm_cgi',  '/cgi-bin/nph-mvhsaid/cnf',
+     'goners_cgi',   '/cgi-bin/mvhsaid/gone',
+     'download_cgi', '/cgi-bin/mvhsaid/mvhs.txt',
+     'go_cgi',       '/cgi-bin/mvhsaid/go',
+     'about_cgi',    '/cgi-bin/mvhsaid/dyn',
+     'submit_cgi',   '/cgi-bin/mvhsaid/sub',
+     'update_cgi',   '/cgi-bin/mvhsaid/upd',
+     'confirm_cgi',  '/cgi-bin/mvhsaid/cnf',
      'index_page',   'index.html',
      'wwwdir',       '/home/web/radwin.org/docs/mvhs-alumni/',
      'aiddir',       '/home/users/mradwin/mvhs/',
