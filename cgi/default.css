@@ -20,6 +20,19 @@ strong.y {
   text-align: center;
 }
 
+div.example {
+  border: none;
+  color: black;
+  background: #eeeeee;
+}
+
+pre.example {
+  color: black;
+  margin-left: 1em;
+  margin-right: 1em;
+  background: #eeeeee;
+}
+
 div.about {
   border: none;
   color: black;
