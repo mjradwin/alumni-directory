@@ -2,7 +2,7 @@
 
 #
 # generates address books in several formats
-# $Id: aid_book,v 2.2 1998/05/15 20:06:57 mradwin Exp mradwin $
+# $Id: aid_book,v 2.3 1998/05/17 01:02:30 mradwin Exp mradwin $
 #
 
 require 'aid_util.pl';

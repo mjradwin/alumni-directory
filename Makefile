@@ -2,10 +2,9 @@
 #     FILE: Makefile
 #   AUTHOR: Michael J. Radwin
 #    DESCR: Makefile for building the Alumni Internet Directory
-#      $Id: Makefile,v 1.60 1998/05/17 04:08:28 mradwin Exp mradwin $
+#      $Id: Makefile,v 1.61 1998/05/17 04:11:02 mradwin Exp mradwin $
 #
 
-HOMEDIR=/home/users/mradwin
 WWWDIR=/home/web/radwin.org/docs/mvhs-alumni
 RM=/bin/rm -f
 
@@ -160,7 +159,7 @@ tar:
 	gzip -f $(WWWDIR)/mvhsaid.tar
 
 snapshot:
-	( cd $(HOMEDIR) ; tar cf $(WWWDIR)/snapshot.tar $(SNAPSHOTFILES) )
+	( cd $(HOME) ; tar cf $(WWWDIR)/snapshot.tar $(SNAPSHOTFILES) )
 	gzip -f $(WWWDIR)/snapshot.tar
 
 chmod:

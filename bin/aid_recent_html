@@ -2,7 +2,7 @@
 
 #
 # does the html version of the recent address list
-# $Id: aid_recent_html,v 2.3 1998/05/15 20:06:57 mradwin Exp mradwin $
+# $Id: aid_recent_html,v 2.4 1998/05/17 01:02:30 mradwin Exp mradwin $
 #
 
 require 'aid_util.pl';

@@ -2,7 +2,7 @@
 
 #
 # does the html verbose pages
-# $Id: aid_alpha2_html,v 1.1 1998/05/17 03:27:23 mradwin Exp mradwin $
+# $Id: aid_alpha2_html,v 1.2 1998/05/17 03:46:47 mradwin Exp mradwin $
 #
 
 require 'aid_util.pl';

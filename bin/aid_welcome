@@ -2,7 +2,7 @@
 
 #
 # mails a welcome or update note to everyone in targets.adr
-# $Id: aid_welcome,v 2.4 1998/05/17 01:48:46 mradwin Exp mradwin $
+# $Id: aid_welcome,v 2.5 1998/05/17 02:24:18 mradwin Exp $
 #
 
 require 'aid_util.pl';
@@ -13,8 +13,9 @@ $pname = 'aid_welcome';
 $usage = "usage: $pname [options] targets.adr
     -h            Display usage information.
     -d <secs>     Sleep for <secs> seconds between sending email
-                  (default 15 for -m, 0 for all others).
+                  (default 10 for -m, 0 for all others).
     -r <reqtype>  Request type (0, 1 or 2) (only valid with -m and -c).
+    -l <logfile>  Log to <logfile> instead of default.
 
 Mutually exclusive optional message types (instead of 'welcome' email):
     -u            Send 'update' email.
@@ -78,7 +79,7 @@ Mutually exclusive optional message types (instead of 'welcome' email):
      'sleep',    '10',
      );
 
-&Getopts('hd:r:ucm:') || die "$usage\n";
+&Getopts('hd:r:ucm:l:') || die "$usage\n";
 $opt_h && die "$usage\n";
 $opt_h = $opt_h;                # avoid warning
 die "$pname: Too many mutually-exclusive options\n$usage\n"
@@ -92,7 +93,8 @@ die "$pname: Option -m requires -r\n$usage\n"
     $opt_m ? %massmail_parameters :
     %welcome_parameters;
 
-$logfile = &aid_config('aiddir') . "logs/" . $params{'log'} . '.log';
+$logfile = $opt_l ? $opt_l :
+    &aid_config('aiddir') . "logs/" . $params{'log'} . '.log';
 
 if ($opt_m) {
     open(TEXTFILE,$opt_m) || die "$pname: Can't open $opt_m: $!\n";
