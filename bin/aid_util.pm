@@ -2,7 +2,7 @@
 #     FILE: mv_util.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: perl library routines for the MVHS Alumni Internet Directory
-#      $Id: mv_util.pl,v 1.66 1997/12/20 22:46:24 mjr Exp mjr $
+#      $Id: mv_util.pl,v 1.67 1997/12/21 01:35:51 mjr Exp mjr $
 #
 
 CONFIG: {
@@ -283,7 +283,7 @@ sub submit_body {
 	$tableh .= "\n<p>Please update the following information";
 	$tableh .= " and hit the <strong>Next&nbsp;&gt;</strong> button.</p>\n\n";
 	$tableh .= "<p>Fields marked with a <font color=\"#ff0000\">*</font>";
-	$tableh .= " are required.  All other fields are optional.";
+	$tableh .= " are required.  All other fields are optional.</p>\n\n";
 
     } else {
 	$tableh =
@@ -292,24 +292,22 @@ sub submit_body {
 	$tableh .= "
 <p>Thanks for adding a name to the MVHS Alumni Internet Directory!  If
 you'd like to update your existing entry, please see the 
-<a href=\"" . $config{'cgi_path'} . "?update\">update page</a>.
+<a href=\"" . $config{'cgi_path'} . "?update\">update page</a>.  
+To update the entry for an alumnus with an invalid address, please see
+the <a href=\"" . $config{'master_path'} . "invalid.html\">invalid
+addresses page</a>.</p>
 
-To add a new entry, please enter the following information and hit the
-<strong>Next&nbsp;&gt;</strong> button.</p>
-
-<p>Fields marked with a $star are required.
-All other fields are optional.";
+<p>To add a new entry, please enter the following information and hit
+the <strong>Next&nbsp;&gt;</strong> button. Fields marked with a $star
+are required.  All other fields are optional.</p>\n\n";
     }
 
     if ($interactivep && $blank) {
-	$tableh .= "\n<font color=\"#ff0000\"><strong>You left one or more";
-	$tableh .= " required fields blank.  Please fill them in below";
-	$tableh .= " and resubmit.</strong></font>";
+	$tableh .= "<p><font color=\"#ff0000\"><strong>You left one or more ";
+	$tableh .= "required fields blank.\nPlease fill them in below ";
+	$tableh .= "and resubmit.</strong></font></p>\n\n";
     }
 	
-    $tableh .= "</p>\n\n";
-
-    
     return "<br>\n" . $tableh . "
 <form method=post action=\"" . $config{'cgi_path'} . "\"> 
 <table border=0>
