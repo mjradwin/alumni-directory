@@ -1,0 +1,270 @@
+#!/usr/local/bin/perl
+
+#
+#     FILE: mvhsaid.pl
+#   AUTHOR: Michael J. Radwin
+#    DESCR: MVHS Alumni Internet Directory CGI interface
+#      $Id: mjr-mvhs.cgi,v 1.4 1997/03/23 19:40:06 mjr Exp mjr $
+#
+
+require 'mv_util.pl';
+require 'cgi-lib.pl';
+
+# configuration
+$mailprog = &mv_config('mailprog');
+$dbfile = &mv_config('wwwdir') . "mvhs.adr";
+$hdr_file = &mv_config('wwwdir') . ".submit.hdr";
+$ftr_file = &mv_config('wwwdir') . ".submit.ftr";
+
+@required_headers = ('id', 'last', 'first', 'school', 'grad', 'mail');
+
+print "Content-type: text/html\n\n";
+
+open(SUBMIT_HDR,$hdr_file) || &panic("Can't open $hdr_file: $!");
+@submit_hdr = <SUBMIT_HDR>;
+close(SUBMIT_HDR);
+
+open(SUBMIT_FTR,$ftr_file) || &panic("Can't open $ftr_file: $!");
+@submit_ftr = <SUBMIT_FTR>;
+close(SUBMIT_FTR);
+
+&ReadParse;
+
+# debugging: what version is installed?
+if (defined($in{'version'})) {
+    print @submit_hdr, "\n";
+    print '<pre>Version: $Id: mjr-mvhs.cgi,v 1.4 1997/03/23 19:40:06 mjr Exp mjr $</pre>', "\n";
+    print @submit_ftr, "\n";
+    
+    exit(0);
+}
+
+# dynamic form here if they set the update flag
+if (defined($in{'update'})) {
+    if ($in{'update'} =~ /^\d+$/) {
+	@db = &mv_create_db($dbfile);
+	if (defined($db[$in{'update'}])) {
+	    &send_upd_real($db[$in{'update'}],1,0);
+	} else {
+	    &send_upd_list;
+	}
+    } else {
+	&send_upd_list;
+    }
+    exit(0);
+}
+
+# the undocumented "about" feature
+if ($in{'about'} =~ /^\d+$/) {
+    @db = &mv_create_db($dbfile);
+    if (defined($db[$in{'about'}])) {
+	&send_about($db[$in{'about'}]);
+    } else {
+	&send_upd_real(";-1;1;;;;MVHS;;;",0,0);
+    }
+    exit(0);
+}
+
+
+# no update flag; did they access this with the right form?
+foreach (@required_headers) {
+    if (!defined($in{$_})) {
+	# wrong form
+	&send_upd_real(";-1;1;;;;MVHS;;;",0,0);
+	exit(0);
+    }
+}
+
+
+# okay, we've got the right form.  clean up the input.
+
+# remove apostropies and leading year from gradyear field
+# e.g. '93 -> 93, 1993 -> 93
+$in{'grad'} =~ s/^\'(\d+)\s*$/$1/;
+$in{'grad'} =~ s/^19(\d+)\s*$/$1/;
+$in{'grad'} =~ s/^20(\d+)\s*$/$1/;
+
+$in{'request'} = (defined($in{'request'})) ? 1 : 0;
+$in{'school'} = ($in{'school'} eq 'Other' && $in{'sch_other'} ne '') ? 
+    $in{'sch_other'} : $in{'school'};
+
+
+# did they have the required fields?
+if ($in{'school'} eq 'Other') {
+    &send_upd_real(";$in{'id'};$in{'request'};$in{'last'};$in{'first'};$in{'married'};$in{'school'};$in{'grad'};$in{'mail'};$in{'homepage'}",1,1);
+    exit(0);
+}
+
+foreach (@required_headers) {
+    if ($in{$_} =~ /^\s*$/) {
+	&send_upd_real(";$in{'id'};$in{'request'};$in{'last'};$in{'first'};$in{'married'};$in{'school'};$in{'grad'};$in{'mail'};$in{'homepage'}",1,1);
+	exit(0);
+    }
+}
+
+&queue_submission;
+exit(0);
+
+sub queue_submission {
+    require 'tableheader.pl';
+
+    # a little more cleanup and then update the db.
+    $in{'homepage'} = '' if $in{'homepage'} eq 'http://';
+    $time = time;
+    $mailto = &mv_config('admin_email');
+
+    system("$mailprog $mailto <<'EOM'
+Dear mjr,
+
+This was submitted to the MVHS address database:
+
+$time;$in{'id'};$in{'request'};$in{'last'};$in{'first'};$in{'married'};$in{'school'};$in{'grad'};$in{'mail'};$in{'homepage'}
+
+The kind soul who submitted it was using the web from $ENV{'REMOTE_HOST'}
+
+EOM
+");
+
+    print @submit_hdr, "\n";
+
+    print "<br>\n";
+    print &tableheader("Your submission is queued", 1, "ffff99", 1);
+    print "<p>Thank you!  The following information is queued for submission\n";
+    print "in the MVHS Alumni Internet Directory:</p>\n";
+
+    print &about_text(";;$in{'request'};$in{'last'};$in{'first'};$in{'married'};$in{'school'};$in{'grad'};$in{'mail'};$in{'homepage'}",1), "\n";
+
+    print @submit_ftr, "\n";
+}
+
+sub about_text {
+    local($retval);
+    local($rawdata,$show_req_p) = @_;
+    local($time,$id,$req,$last,$first,$married,
+	  $school,$year,$email,$homepage) = split(/;/, $rawdata);
+
+    $retval = "<pre>\n";
+    $retval .= "First Name      : <strong>$first</strong>\n";
+    $retval .= "Last/Maiden Name: <strong>$last</strong>\n";
+    $retval .= "Married Name    : ";
+    $retval .= ($married eq '') ? "(same as last name)\n" 
+	: "<strong>$married</strong>\n";
+    
+    $retval .= "\n";
+    $retval .= "School          : <strong>$school</strong>\n";
+    $retval .= "Grad. Year      : <strong>$year</strong>\n";
+
+    $retval .= "\n";
+    $retval .= "Email           : ";
+    $retval .= "<strong><a href=\"mailto:$email\">$email</a></strong>\n";
+    $retval .= "Web Page        : ";
+    $retval .= ($homepage eq '') ? "(none)\n" 
+	: "<strong><a href=\"$homepage\">$homepage</a></strong>\n";
+
+    if ($show_req_p) {
+	$retval .= "Send Updates    : ";
+	$retval .= ($req) ? "yes\n" : "no\n";
+    }
+
+    $retval .= "</pre>\n";
+}
+
+
+sub bydatakeys { $datakeys[$a] cmp $datakeys[$b] }
+sub mv_alpha_db {
+    local(@db) = &mv_create_db($_[0]);
+    local(@alpha, @fields);
+    local($_);
+
+    @datakeys = ();
+
+    foreach (@db) {
+	@fields = split(/;/);
+	push(@datakeys, "$fields[3];$fields[4]");
+    }
+
+    @alpha = @db[sort bydatakeys $[..$#db];
+    return @alpha;
+}
+
+
+sub send_upd_real {
+    local($[) = 0;
+    local($rawdata,$interactivep,$blank) = @_;
+
+    print @submit_hdr, "\n";
+    print &submit_body($rawdata,$interactivep,$blank);
+    print @submit_ftr, "\n";
+}
+
+
+
+sub send_about {
+    require 'tableheader.pl';
+     
+    local($[) = 0;
+    local($_);
+    local($time,$id,$req,$last,$first,$married,
+	  $school,$year,$email,$homepage) = split(/;/, $_[0]);
+
+    print @submit_hdr, "\n<br>\n";
+    print &tableheader(&inorder_fullname($first,$last,$married),
+		       1, "ffff99", 1);
+    print &about_text($_[0], 0), "\n";
+    print @submit_ftr, "\n";
+}
+
+
+sub send_upd_list {
+    require 'tableheader.pl';
+     
+    local($[) = 0;
+    local($_);
+    local(@db) = &mv_alpha_db($dbfile);
+    local($fullname);
+    local($time,$req,$id,$last,$first,$married,$school,$year,$email,$homepage);
+
+    print @submit_hdr, "\n";
+    print "<br>\n";
+    print &tableheader("Update Your Directory Listing", 1, "ffff99", 1);
+    print "\n";
+    print "<p>Please select an entry to update from the list below.<p>\n";
+    print "<pre>";
+    print "Name and Graduation Year                  Email\n";
+    print "---------------------------------------------------------------------------\n";
+
+    foreach (@db) {
+	next if $_ eq '';
+	($time,$id,$req,$last,$first,$married,
+	 $school,$year,$email,$homepage) = split(/;/);
+
+	$fullname = &fullname($first,$last,$married);
+
+	if ($year =~ /^\d+$/) {
+	    $affil  = "  '$year";
+	    $affil .= " $school" 
+		if $school ne 'MVHS' && $school ne '';
+	} else {
+	    $affil  = "  [$school $year]";
+	}
+	$affil_tmp = $affil;
+	$affil_tmp =~ s/<[^>]+>//g;
+	$affil_len = length($affil_tmp);
+
+	print "<a href=\"", &mv_config('cgi_path'), "?update=$id\">";
+	print $fullname;
+	print "</a>";
+	print $affil;
+	print ' ' x (42 - (length($fullname) + $affil_len));
+	print $email;
+	print "\n";
+    }
+    print "</pre>\n\n";
+    print @submit_ftr, "\n";
+}
+
+sub panic {
+    print $_[0], "\n";
+
+    exit;
+}
