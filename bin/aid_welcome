@@ -2,7 +2,7 @@
 
 #
 # mails a welcome or update note to everyone in targets.adr
-# $Id: aid_welcome,v 2.3 1998/05/17 01:00:04 mradwin Exp mradwin $
+# $Id: aid_welcome,v 2.4 1998/05/17 01:48:46 mradwin Exp mradwin $
 #
 
 require 'aid_util.pl';
@@ -28,7 +28,7 @@ Mutually exclusive optional message types (instead of 'welcome' email):
      'log',      'confirm',
      'intro', 
 "\nYou were sent this address verification message because it has been\n" .
-"at least one year since you last updated your Directory entry.\n" .
+"at least one year since we last confirmed your Directory entry.\n" .
 "Please make sure your entry below is still current.  If everything\n" .
 "you see below is correct, NO ACTION IS REQUIRED ON YOUR PART.\n",
      'textfile', '',
@@ -114,12 +114,12 @@ while(<TARGET>) {
     chop;
     %rec = &aid_split($_);
     next unless $rec{'valid'};
-    next unless $rec{'email'};
+    next unless defined $rec{'email'} && $rec{'email'} ne '';
     next if $opt_m && $rec{'request'} != $opt_r;
 
     if ($opt_c) {
 	next if defined $opt_r && $rec{'request'} != $opt_r;
-	next unless &is_old($rec{'time'});
+	next unless &is_old($rec{'fresh'});
     }
 
     $message = &message_body($_) . $params{'textfile'} . &message_footer;
