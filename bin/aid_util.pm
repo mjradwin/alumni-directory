@@ -2,7 +2,7 @@
 #     FILE: mv_util.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: perl library routines for the MVHS Alumni Internet Directory
-#      $Id: mv_util.pl,v 1.41 1997/10/08 00:10:06 mjr Exp mjr $
+#      $Id: mv_util.pl,v 1.42 1997/10/08 00:22:08 mjr Exp mjr $
 #
 
 CONFIG: {
@@ -576,6 +576,10 @@ sub common_html_hdr {
     local($page,$norobots) = @_;
     local($h1, $h2, $h3, $h4, $html_head);
     local($name, $url);
+    local($timestamp);
+
+    $timestamp = ($page == 0) ? 'Last update to Directory: ' :
+	'Last update to this page: ';
 
     $h1 = "<body bgcolor=\"#ffffff\" link=\"#0000cc\" text=\"#000000\" vlink=\"#990099\">
 <hr noshade size=1>
@@ -605,7 +609,7 @@ sub common_html_hdr {
 </tr>
 <tr>
   <td align=right valign=bottom bgcolor=\"#ffffcc\"><font size=\"-1\"
-  color=\"#000000\"><i>This page generated: " . &ctime(time) . "</i></font>
+  color=\"#000000\"><i>$timestamp" . &ctime(time) . "</i></font>
   </td>
 </tr>
 </table>
