@@ -2,11 +2,11 @@
 #     FILE: aid_util.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: perl library routines for the Alumni Internet Directory
-#      $Id: aid_util.pl,v 4.34 1999/03/03 20:11:14 mradwin Exp mradwin $
+#      $Id: aid_util.pl,v 4.35 1999/03/03 22:54:52 mradwin Exp mradwin $
 #
 
 $aid_util'rcsid =
- '$Id: aid_util.pl,v 4.34 1999/03/03 20:11:14 mradwin Exp mradwin $';
+ '$Id: aid_util.pl,v 4.35 1999/03/03 22:54:52 mradwin Exp mradwin $';
 
 # ----------------------------------------------------------------------
 # CONFIGURATION
@@ -574,7 +574,7 @@ sub submit_body {
 
     local($[) = 0;
     local($_);
-    local($body);
+    local($body,$instr);
     local($star) = "<font color=\"#$star_fg\">*</font>";
     local(*rec_arg,$blank_entries) = @_;
     local(%rec) = &main'rec_html_entify(*rec_arg); #'#
@@ -633,46 +633,51 @@ sub submit_body {
 	}
     }
 
-    $body .= "<p>Please ";
-    $body .= (($rec{'id'} != -1) ? "update" : "enter");
-    $body .= " the following information and hit the
-<strong>Next&nbsp;&gt;</strong> button.</p>
-
-<p>Fields marked with a $star
-are required.  All other fields are optional.</p>\n";
+    $instr = "<p>Please " . (($rec{'id'} != -1) ? "update" : "enter") .
+    " the following information about yourself.<br>
+Fields marked with a $star
+are required.  All other fields are optional.</p>
+";
 
     $body . "
 <form method=post action=\"" . $config{'submit_cgi'} . "\"> 
 
-<div align=right>
-<input type=\"reset\" value=\"Start Over\">
-&nbsp;
-<input type=\"submit\" value=\"Next&nbsp;&gt;\">
-</div>
+$instr
 
-<div class=\"about\">
-\<table border=0 cellspacing=7 summary=\"\">
+<table border=0 cellspacing=7>
+
+<tr><td colspan=3 bgcolor=\"#$header_bg\">
+<font size=\"+1\"><strong>1. Full Name</strong></font>
+</td></tr>
 <tr>
-  <td valign=top><label for=\"first\">First Name</label></td>
+  <td valign=top align=right><label
+  for=\"first\"><strong>First Name:</strong></label></td>
   <td>$star</td>
   <td valign=top><input type=text name=\"first\" size=35 
   value=\"$rec{'first'}\" id=\"first\"></td>
 </tr>
 <tr>
-  <td valign=top><label for=\"last\">Last Name/Maiden Name</label><br>
+  <td valign=top align=right><label 
+  for=\"last\"><strong>Last Name/Maiden Name:</strong></label><br>
   <small>(your last name in high school)</small></td>
   <td>$star</td>
   <td valign=top><input type=text name=\"last\" size=35
   value=\"$rec{'last'}\" id=\"last\"></td>
 </tr>
 <tr>
-  <td colspan=2 valign=top><label for=\"married\">Married Last Name</label><br>
+  <td valign=top align=right><label
+  for=\"married\"><strong>Married Last Name:</strong></label><br>
   <small>(if different from maiden name)</small></td>
+  <td>&nbsp;</td>
   <td valign=top><input type=text name=\"married\" size=35
-  value=\"$rec{'married'}\" id=\"married\"></td>
+  value=\"$rec{'married'}\" id=\"married\"><br><br></td>
 </tr>
+
+<tr><td colspan=3 bgcolor=\"#$header_bg\">
+<font size=\"+1\"><strong>2. Graduating Class</font>
+</td></tr>
 <tr>
-  <td valign=top>High School</td>
+  <td valign=top align=right><strong>High School:</strong></td>
   <td>$star</td>
   <td valign=top><input type=radio name=\"school\" id=\"school_$config{'short_school'}\"
   value=\"$config{'short_school'}\"$primary_checked><label
@@ -689,39 +694,57 @@ are required.  All other fields are optional.</p>\n";
   name=\"sch_other\" size=27 value=\"$rec{'school'}\"></td>
 </tr>
 <tr>
-  <td valign=top><label for=\"year\">Graduation year or affiliation</label><br>
+  <td valign=top align=right><label
+  for=\"year\"><strong>Graduation year or affiliation:</strong></label><br>
   <small>(such as 1993, 2001, or Teacher)</small></td>
   <td>$star</td>
   <td valign=top><input type=text name=\"year\" size=35
-  value=\"$rec{'year'}\" id=\"year\"></td>
+  value=\"$rec{'year'}\" id=\"year\"><br><br></td>
 </tr>
+
+<tr><td colspan=3 bgcolor=\"#$header_bg\">
+<font size=\"+1\"><strong>3. Contact Info</strong></font>
+</td></tr>
 <tr>
-  <td valign=top><label for=\"email\">E-mail address</label><br>
+  <td valign=top align=right><label
+  for=\"email\"><strong>E-mail address:</strong></label><br>
   <small>(such as chester\@aol.com)</small></td>
   <td>$star</td>
   <td valign=top><input type=text name=\"email\" size=35
   value=\"$rec{'email'}\" id=\"email\"></td>
 </tr>
 <tr>
-  <td colspan=2 valign=top><label for=\"www\">Personal Web Page</label></td>
+  <td valign=top align=right><label
+  for=\"www\"><strong>Personal Web Page:</strong></label></td>
+  <td>&nbsp;</td>
   <td valign=top><input type=text name=\"www\" size=35
   value=\"$rec{'www'}\" id=\"www\"></td>
 </tr>
 <tr>
-  <td colspan=2 valign=top><label for=\"location\">Location</label><br>
+  <td valign=top align=right><label
+  for=\"location\"><strong>Location:</strong></label><br>
   <small>(your city, school, or company)</small></td>
+  <td>&nbsp;</td>
   <td valign=top><input type=text name=\"location\" size=35
-  value=\"$rec{'location'}\" id=\"location\"></td>
+  value=\"$rec{'location'}\" id=\"location\"><br><br></td>
 </tr>
+
+<tr><td colspan=3 bgcolor=\"#$header_bg\">
+<font size=\"+1\"><strong>4. What's New?</strong></font>
+</td></tr>
 <tr>
   <td colspan=3>
-  <br><label for=\"message\"><strong>What's New?</strong>
+  <label for=\"message\">
   Let your classmates know what you've been doing since<br>graduation,
   or any important bits of news you'd like to share.</label><br>
   <textarea name=\"message\" rows=10 cols=55 wrap=hard
-  id=\"message\">$rec{'message'}</textarea>
+  id=\"message\">$rec{'message'}</textarea><br><br>
   </td>
 </tr>
+
+<tr><td colspan=3 bgcolor=\"#$header_bg\">
+<font size=\"+1\"><strong>5. E-mail Updates</strong></font>
+</td></tr>
 <tr>
   <td colspan=3><small><input type=checkbox
   name=\"reunion\" id=\"reunion\" $reunion_chk><label
@@ -754,19 +777,25 @@ are required.  All other fields are optional.</p>\n";
   <input type=\"hidden\" name=\"id\" value=\"$rec{'id'}\">
   <input type=\"hidden\" name=\"created\" value=\"$rec{'created'}\">
   <input type=\"hidden\" name=\"valid\" value=\"1\">
+  <br><br>
   </td>
 </tr>
-</table>
-</div>
 
-<div align=right>
-<input type=\"reset\" value=\"Start Over\">
-&nbsp;
-<input type=\"submit\" value=\"Next&nbsp;&gt;\">
-</div>
+<tr><td colspan=3 bgcolor=\"#$header_bg\">
+<font size=\"+1\"><strong>6. Continue</strong></font>
+</td></tr>
+
+<tr>
+<td colspan=3>
+Please review the above information and click the
+<strong>Next&nbsp;&gt;</strong> button to continue.
+<br><input type=\"submit\" value=\"Next&nbsp;&gt;\">
+</td>
+</tr>
+
+</table>
 
 </form>
-
 ";
 
 }

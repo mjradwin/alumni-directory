@@ -4,7 +4,7 @@
 #     FILE: mvhsaid.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: Alumni Internet Directory CGI interface
-#      $Id: mvhsaid,v 3.71 1999/03/03 20:14:08 mradwin Exp mradwin $
+#      $Id: mvhsaid,v 3.72 1999/03/03 22:54:44 mradwin Exp mradwin $
 #
 
 require 'aid_util.pl';
@@ -22,7 +22,7 @@ if ($ENV{'SCRIPT_NAME'} =~ m,/nph-,)
 # configuration
 $mailprog = &aid_config('mailprog');
 $dbmfile = &aid_config('wwwdir') . 'master';
-$rcsid = '$Id: mvhsaid,v 3.71 1999/03/03 20:14:08 mradwin Exp mradwin $'; #'fnt
+$rcsid = '$Id: mvhsaid,v 3.72 1999/03/03 22:54:44 mradwin Exp mradwin $'; #'fnt
 
 $listing_upd_title = 'Step 1: Update Your Directory Listing';
 $listing_upl_title = 'Select a Listing to Update';
@@ -297,19 +297,6 @@ sub confirm_submission {
     print "Content-Type: text/html\015\012\015\012";
     print &common_html_hdr(-1,$listing_sub_title,1);
 
-    print "<p class=\"alert\"><strong>
-Please confirm that all of the below information is correct.
-</strong></p>
-
-<ul>
-<li>If you have made any mistakes, select the
-<strong>&lt;&nbsp;Back</strong> button to edit your listing.
-<li>If everything is correct, please hit the
-<strong>Finish&nbsp;&gt;</strong> button.
-</ul>\n";
-
-    print &about_text(*in,1,1,0), "\n";
-
     print "<form method=post action=\"", &aid_config('confirm_cgi'), "\">\n";
     %newrec = &rec_html_entify(*in);
     foreach (keys %newrec) {
@@ -318,12 +305,46 @@ Please confirm that all of the below information is correct.
 	print " value=\"$newrec{$_}\">\n";
     }
 
-    print "\n<div align=right>\n";
-    print "<input type=submit name=\"revise\" value=\"&lt;&nbsp;Back\">\n";
-    print "&nbsp;\n";
-    print "<input type=submit name=\"confirmed\" value=\"Finish&nbsp;&gt;\">\n";
-    print"</div>\n\n";
-    print "</form>\n";
+    print "
+<table border=0 cellspacing=7>
+
+<tr><td bgcolor=\"#$aid_util'header_bg\">
+<font size=\"+1\"><strong>7. Final Review</strong></font>
+</td></tr>
+
+<tr><td>
+Please confirm that all of the below information is correct.
+<br>
+</td></tr>
+
+<tr><td>
+";
+
+    print &about_text(*in,1,1,0), "\n";
+
+    print "
+</td></tr>
+
+<tr><td bgcolor=\"#$aid_util'header_bg\">
+<font size=\"+1\"><strong>8. Finish or Edit Listing Again</strong></font>
+</td></tr>
+
+<tr><td>
+<ul>
+<li>If you have made any mistakes, select the
+<strong>&lt;&nbsp;Back</strong> button
+to edit your listing.
+<li>If everything is correct, please hit the
+<strong>Finish&nbsp;&gt;</strong> button.
+</ul>
+<input type=submit name=\"revise\" value=\"&lt;&nbsp;Back\">
+&nbsp;
+<input type=submit name=\"confirmed\" value=\"Finish&nbsp;&gt;\">
+</td></tr>
+
+</table>
+</form>
+";
 
     print &common_html_ftr(-1);
 }
