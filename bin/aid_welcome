@@ -1,8 +1,8 @@
 #!/usr/bin/perl -w
 
 #
-# mails a welcome or update note to everyone in targets.adr
-# $Id: aid_welcome,v 3.34 1999/03/15 01:42:19 mradwin Exp mradwin $
+# mails a welcome, update, confirm, or massmail message to members
+# $Id: aid_welcome,v 3.35 1999/03/23 18:29:20 mradwin Exp mradwin $
 #
 
 require 'aid_util.pl';
@@ -10,11 +10,12 @@ require 'getopts.pl';
 require 'ctime.pl';
 
 $0 =~ s,.*/,,;  # basename
-$usage = "usage: $0 [options] targets.adr
+$usage = "usage: $0 [options] infile.db [target ids...]
     -h            Display usage information.
+    -a            Mail all users in <infile.db> matching -r <reqtype>.
     -d <secs>     Sleep for <secs> seconds between sending e-mail
                   (default 10 for -m, 0 for all others).
-    -r <reqtype>  Request type (0-3) (only valid with -m and -c).
+    -r <reqtype>  Request type [0-4] (only valid with -m and -a).
     -l <logfile>  Log to <logfile> instead of default.
 
 Mutually exclusive optional message types (instead of 'welcome' e-mail):
@@ -103,13 +104,14 @@ you're all set.
      'intro',
 "
 Per your request, your quarterly digest of the
-Directory appears at the end of this message.  To
-change your e-mail digest preferences, update your
-listing online at the below update URL.
+Directory appears at the end of this message.
 ",
      'textfile', '',
      'closing',
 "
+You also may change your quarterly digest preference
+by visiting the above URL.
+
 The following information is provided solely for the
 Mountain View High School and Awalt High School
 communities.  Any redistribution outside of this
@@ -122,16 +124,17 @@ from individuals listed below is forbidden.
 
 @args = @ARGV;
 
-&Getopts('hd:r:ucm:l:') || die "$usage\n";
+&Getopts('hd:r:ucm:l:a') || die "$usage\n";
 $opt_h && die "$usage\n";
 $opt_h = $opt_h;                # avoid warning
 die "$0: Too many mutually-exclusive options\n$usage\n"
     if (($opt_c ? 1 : 0) + ($opt_u ? 1 : 0) + ($opt_m ? 1 : 0)) > 1;
-die "$0: No target file specified\n$usage\n" unless $ARGV[0];
+die "$0: No database file specified\n$usage\n" unless $ARGV[0];
+die "$0: No target ids specified\n$usage\n" unless ($ARGV[1] || $opt_a);
 die "$0: Option -m requires -r\n$usage\n" 
     if defined($opt_m) && !defined($opt_r);
-die "$0: Option -c requires -r\n$usage\n" 
-    if defined($opt_c) && !defined($opt_r);
+die "$0: Option -a requires -r\n$usage\n" 
+    if defined($opt_a) && !defined($opt_r);
 
 %params = $opt_c ? %confirm_parameters : 
     $opt_u ? %update_parameters :
@@ -149,9 +152,14 @@ if ($opt_m) {
 
 $params{'sleep'} = $opt_d if defined $opt_d;
 
-open(LOG,">>$logfile") || die "$0: Can't open $logfile: $!\n";
-open(TARGET,$ARGV[0]) || die "$0: Can't open $ARGV[0]: $!\n";
+$dbfile = shift;
+$dbfile =~ s/\.db$//;
+die "can't open ${dbfile}.db\n" unless -r "${dbfile}.db";
 
+dbmopen(%DB, $dbfile, 0444);
+die "invalid DB: ${dbfile}.db\n" unless defined $DB{'__class__'};
+
+open(LOG,">>$logfile") || die "$0: Can't open $logfile: $!\n";
 select(LOG); $| = 1; select(STDOUT);
 
 $today = &ctime(time);
@@ -159,19 +167,71 @@ chop $today;
 
 print LOG "# [$today] - $0 ", join(' ', @args), "\n";
 
-while(<TARGET>) {
-    chop;
-    %rec = &aid_split($_);
-    next unless $rec{'valid'};
-    next unless defined $rec{'email'} && $rec{'email'} ne '';
-    next if $opt_m && $rec{'request'} != $opt_r;
+if ($opt_a)
+{
+    while (($key,$val) = each(%DB))
+    {
+	if ($key =~ /^\d+$/)
+	{
+	    %rec = &aid_db_unpack_rec($key,$val);
 
-    if ($opt_c) {
-	next if defined $opt_r && $rec{'request'} != $opt_r;
-	next unless &is_old($rec{'fresh'});
+	    next unless $rec{'valid'};
+	    next if $opt_m && $rec{'request'} != $opt_r;
+
+	    if ($opt_c)
+	    {
+		next unless $rec{'request'} == 0;
+		next unless &is_old($rec{'fresh'});
+	    }
+
+	    &mail_user(*rec);
+	}
+    }
+}
+else
+{
+    foreach (@ARGV)
+    {
+	unless (/^\d+$/)
+	{
+	    warn "$0: skipping target `$_' (invalid id)\n";
+	    next;
+	}
+    
+	unless (defined $DB{$_})
+	{
+	    warn "$0: skipping target `$_' (missing from ${dbfile}.db)\n";
+	    next;
+	}
+
+	%rec = &aid_db_unpack_rec($_,$DB{$_});
+	&mail_user(*rec);
+    }
+}
+
+close(LOG);
+dbmclose(%DB);
+exit(0);
+
+
+sub mail_user
+{
+    local(*rec) = @_;
+    local($message,$name);
+
+    if ($rec{'valid'} == 0)
+    {
+	warn "$0: skipping target `$rec{'id'}' (valid bit is off)\n";
+	return 0;
     }
 
-    $message = &message_body($_) . $params{'textfile'} . &message_footer;
+    unless (defined $rec{'email'} && $rec{'email'} ne '')
+    {
+	warn "$0: skipping target `$rec{'id'}' (has no email address)\n";
+	return 0;
+    }
+
+    $message = &message_body(*rec) . $params{'textfile'} . &message_footer;
 
     $name  = $rec{'first'};
     $name .= " $rec{'middle'}."
@@ -195,15 +255,14 @@ while(<TARGET>) {
 		  $message);
 	print LOG time, " - $rec{'id'} - $rec{'email_old'} - OLD\n";
     }
- 
-    sleep $params{'sleep'} if $params{'sleep'} > 0;
-}
 
-exit(0);
+    1;
+} 
+
 
 sub message_body {
     local($[) = 0;
-    local(%rec) = &aid_split($_[0]);
+    local(*rec) = @_;
     local($denied) = $rec{'request'} == 0 ?
 	"
 Since you asked not to receive quarterly Directory
