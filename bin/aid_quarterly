@@ -1,8 +1,8 @@
 #!/bin/sh
 
 #
-# massmails quarlerly messages
-# $Id: aid_welcome,v 5.16 1999/11/29 19:00:29 mradwin Exp $
+# massmails quarterly messages
+# $Id: aid_quarterly,v 1.1 1999/11/29 19:05:28 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -21,15 +21,20 @@
 #   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #
 
+set -x
 date=`/bin/date '+%Y%m%d'`
 
 make recent.txt alpha.txt class.txt
 ./bin/aid_welcome -a -r1 -m alpha.txt  -l logs/massmail-${date}-1.log data/working.db
 ./bin/aid_welcome -a -r2 -m class.txt  -l logs/massmail-${date}-2.log data/working.db
 ./bin/aid_welcome -a -r3 -m recent.txt -l logs/massmail-${date}-3.log data/working.db
-rm recent.txt alpha.txt class.txt
+rm -f recent.txt alpha.txt class.txt .recent.txt .alpha.txt .class.txt
 
 mkdir classonly
 ./bin/aid_multi_class_txt data/working.db classonly
 ./bin/aid_multi_class_welcome data/working.db classonly
 rm -rf classonly
+
+cat logs/massmail-${date}-?.log > logs/massmail-${date}.log
+
+rm -f logs/massmail-${date}-?.log
