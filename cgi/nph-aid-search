@@ -109,6 +109,11 @@ if ($#results == -1)
     print "\nin <strong>Faculty/Staff</strong>"
 	if defined $in{'y'} && $in{'y'} eq 'other';
     print ".</p>\n";
+
+    print "<p>For some reasons why you might not find who you're looking\n";
+    print "for, please see the <a href=\"", &aid_config('master_path');
+    print "etc/faq.html#incomplete\">Frequently Asked Questions</a>.</p>\n";
+
     &print_search_form($in{'q'},$in{'y'});
     print &common_html_ftr(6);
 
