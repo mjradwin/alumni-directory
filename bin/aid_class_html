@@ -2,7 +2,7 @@
 
 #
 # does the html version of the grad-date address list
-# $Id: aid_class_html,v 5.4 1999/06/08 19:29:01 mradwin Exp mradwin $
+# $Id: aid_class_html,v 5.5 1999/06/11 16:23:29 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -46,6 +46,12 @@ $opt_h = $opt_h;		# avoid warning
 
 @incremental = ($opt_i ? split(/[,\s]+/, $opt_i) : ());
 
+if (@incremental && $opt_w && (! grep(/_t_www/, @incremental)))
+{
+    print STDOUT "incremental www avoided; no _t_www key.\n";
+    exit(0);
+}
+
 $info_gif = &aid_image_tag('info');
 $blank_gif = ($opt_t) ? '' : &aid_image_tag('blank') . ' ';
 
@@ -70,16 +76,6 @@ else
 	unless defined $DB{"_${prefix}years"};
     @years = unpack("n*",$DB{"_${prefix}years"});
     push(@years, 'other');
-}
-
-if (@incremental && $opt_w)
-{
-    if (! grep(/_t_www/, @incremental))
-    {
-	print STDOUT "incremental www avoided; no _t_www key.\n";
-	dbmclose(%DB);
-	exit(0);
-    }
 }
 
 open(FMTOUT,">$ARGV[1]") || die "Can't open $ARGV[1]: $!\n";
