@@ -2,7 +2,7 @@
 
 #
 # does the html multi_class pages
-# $Id: aid_multi_class_html,v 5.28 2002/04/03 00:24:47 mradwin Exp mradwin $
+# $Id: aid_multi_class_html,v 5.29 2003/04/22 00:47:29 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -184,7 +184,7 @@ foreach $year (@years)
 	    if ($date eq "TBA")
 	    {
 		$prefix = "Upcoming";
-		$long_date = "TBA";
+		$long_date = "Date To Be Announced";
 	    }
 	    else
 	    {
