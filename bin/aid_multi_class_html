@@ -2,7 +2,7 @@
 
 #
 # does the html multi_class pages
-# $Id: aid_multi_class_html,v 5.30 2003/04/22 00:53:50 mradwin Exp mradwin $
+# $Id: aid_multi_class_html,v 5.31 2003/05/15 00:30:45 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -234,6 +234,18 @@ foreach $year (@years)
 	next unless $rec{'v'};
 
 	print FMTOUT &aid_verbose_entry(*rec);
+
+	my $out2 = sprintf("%s%s/%06d.html",
+			   &aid_config('wwwdir'), "detail", $id);
+	open(FMTOUT2,">$out2") || die "Can't open $out2: $!\n";
+
+	print FMTOUT2 &aid_common_html_hdr(-2,
+					   &aid_inorder_fullname(*rec),
+					   1,$rec{'u'},$title);
+	print FMTOUT2 &aid_verbose_entry(*rec,1);
+	print FMTOUT2 &aid_common_html_ftr(-2,$rec{'u'});
+	close(FMTOUT2);
+	utime $rec{'u'}, $rec{'u'}, $out2;
     }
 
     print FMTOUT &aid_common_html_ftr(2,$time);
