@@ -1,6 +1,6 @@
 #!/usr/bin/perl -w
 
-# $Id: aid_edit_entry,v 5.1 1999/05/31 21:20:48 mradwin Exp mradwin $
+# $Id: aid_edit_entry,v 5.2 1999/06/01 04:43:45 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -67,7 +67,12 @@ else
 {
     %rec = %aid_util'blank_entry; #';
     $rec{'c'} = $rec{'u'} = $rec{'f'} = time;
+    if (! defined $DB{'_nextid'})
+    {
+	$DB{'_nextid'} = 1;
+    }
     $id = $rec{'id'} = $DB{'_nextid'};
+    # don't set nextid here; rebuild_secondary_keys will get it
 }
 
 $note_beg_str = &aid_config('note_beg_str');
@@ -75,7 +80,7 @@ $note_end_str = &aid_config('note_end_str');
 $tmpfile = '/tmp/aid_edit_entry.' . $$;
 
 open(TMPFILE,">$tmpfile") || die "$tmpfile: $!\n";
-print TMPFILE '# $Id: aid_edit_entry,v 5.1 1999/05/31 21:20:48 mradwin Exp mradwin $', "\n"; #'#
+print TMPFILE '# $Id: aid_edit_entry,v 5.2 1999/06/01 04:43:45 mradwin Exp mradwin $', "\n"; #'#
 print TMPFILE "# record last touched: ",
  (($rec{'f'} > $rec{'b'}) ? &ctime($rec{'f'}) : &ctime($rec{'b'}));
 
