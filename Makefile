@@ -2,7 +2,7 @@
 #     FILE: Makefile
 #   AUTHOR: Michael J. Radwin
 #    DESCR: Makefile for building the MVHS Alumni Internet Directory
-#      $Id: Makefile,v 1.38 1997/12/21 01:35:51 mjr Exp mjr $
+#      $Id: Makefile,v 1.39 1997/12/21 02:23:48 mjr Exp mjr $
 #
 
 HOMEDIR=/home/divcom/mjr
@@ -97,16 +97,18 @@ submit:	$(WWWDIR)/add.html
 $(WWWDIR)/add.html:	bin/mv_home_html mv_util.pl
 	bin/mv_home_html -s -p6 $(WWWDIR)/add.html
 
-books:	data/alpha.adr bin/mv_book
-	bin/mv_book -p data/alpha.adr $(WWWDIR)/pine.txt
-	bin/mv_book -e data/alpha.adr $(WWWDIR)/elm.txt
-	bin/mv_book -b data/alpha.adr $(WWWDIR)/berkeley.txt
-	bin/mv_book -w data/alpha.adr $(WWWDIR)/eudora.txt
-	bin/mv_book -m data/alpha.adr $(WWWDIR)/eudorapro.txt
-	bin/mv_book -n data/alpha.adr $(WWWDIR)/address-book.html
-	bin/mv_book -l data/alpha.adr $(WWWDIR)/address-book.ldif
-	bin/mv_book -v data/alpha.adr $(WWWDIR)/mvhs.vcf
-	touch books
+books:	$(WWWDIR)/mvhs.vcf
+$(WWWDIR)/mvhs.vcf:	data/alpha.adr bin/mv_book
+	bin/mv_book \
+		-p $(WWWDIR)/pine.txt \
+		-e $(WWWDIR)/elm.txt \
+		-b $(WWWDIR)/berkeley.txt \
+		-w $(WWWDIR)/eudora.txt \
+		-m $(WWWDIR)/eudorapro.txt \
+		-n $(WWWDIR)/address-book.html \
+		-l $(WWWDIR)/address-book.ldif \
+		-v $(WWWDIR)/mvhs.vcf \
+		data/alpha.adr
 
 data/gsort.adr:	data/goners.adr
 	sort -t\; +3 -6 data/goners.adr > data/gsort.adr

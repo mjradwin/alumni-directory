@@ -7,7 +7,7 @@
 require 'mv_util.pl';
 require 'getopts.pl';
 
-$usage = 'usage: mv_book [-h] -{p,e,b,w,m,n,l,v} infile.adr outfile
+$usage = 'usage: mv_book [-h] infile.adr -{p,e,b,w,m,n,l,v} outfile
     -h        Display usage information.
 
     -p        Pine address book
@@ -22,30 +22,34 @@ $usage = 'usage: mv_book [-h] -{p,e,b,w,m,n,l,v} infile.adr outfile
 
 # get the command-line options and die if there is a bad option or
 # there are no filenames
-&Getopts('hpebwmnlv') || die "$usage\n";
+&Getopts('hp:e:b:w:m:n:l:v:') || die "$usage\n";
 $opt_h && die "$usage\n";
 $ARGV[0] || die "$usage\n";
-$ARGV[1] || die "$usage\n";
 
 # must have at least 1 option
-$sum = $opt_p + $opt_e + $opt_b + $opt_w + $opt_m + $opt_n + $opt_l +
-    $opt_v;
-die "$usage\n" unless $sum == 1;
+die "$usage\n" unless
+    $opt_p || $opt_e || $opt_b || $opt_w || 
+    $opt_m || $opt_n || $opt_l || $opt_v;
 
 open(DATA,$ARGV[0]) || die "Can't open $ARGV[0]: $!\n";
-open(BOOK,">$ARGV[1]") || die "Can't open $ARGV[1]: $!\n";
 
-# special case for netscape
-if ($opt_n) {
-    print BOOK "<!DOCTYPE NETSCAPE-Addressbook-file-1>
-<!-- This is an automatically generated file.
-It will be read and overwritten.
-Do Not Edit! -->
-<TITLE>MVHS Alumni Address book</TITLE>
-<H1>MVHS Alumni Address book</H1>
+$opt_p && open(BOOKp,">$opt_p") || die "Can't open $opt_p: $!\n";
+$opt_e && open(BOOKe,">$opt_e") || die "Can't open $opt_e: $!\n";
+$opt_b && open(BOOKb,">$opt_b") || die "Can't open $opt_b: $!\n";
+$opt_w && open(BOOKw,">$opt_w") || die "Can't open $opt_w: $!\n";
+$opt_m && open(BOOKm,">$opt_m") || die "Can't open $opt_m: $!\n";
+$opt_n && open(BOOKn,">$opt_n") || die "Can't open $opt_n: $!\n";
+$opt_l && open(BOOKl,">$opt_l") || die "Can't open $opt_l: $!\n";
+$opt_v && open(BOOKv,">$opt_v") || die "Can't open $opt_v: $!\n";
 
-<DL><p>\n";
-}
+$opt_p && &write_prefix(*BOOKp,'p');
+$opt_e && &write_prefix(*BOOKe,'e');
+$opt_b && &write_prefix(*BOOKb,'b');
+$opt_w && &write_prefix(*BOOKw,'w');
+$opt_m && &write_prefix(*BOOKm,'m');
+$opt_n && &write_prefix(*BOOKn,'n');
+$opt_l && &write_prefix(*BOOKl,'l');
+$opt_v && &write_prefix(*BOOKv,'v');
 
 while(<DATA>) {
     chop;
@@ -59,22 +63,91 @@ while(<DATA>) {
 	$aliases{$alias} = 1;
     }
 
+    $opt_p && &write_entry(*BOOKp,'p',
+			   $time,$id,$req,$last,$first,$married,
+			   $school,$year,$email,$alias,$homepage,$location);
+    $opt_e && &write_entry(*BOOKe,'e',
+                           $time,$id,$req,$last,$first,$married,
+                           $school,$year,$email,$alias,$homepage,$location);
+    $opt_b && &write_entry(*BOOKb,'b',
+                           $time,$id,$req,$last,$first,$married,
+                           $school,$year,$email,$alias,$homepage,$location);
+    $opt_w && &write_entry(*BOOKw,'w',
+                           $time,$id,$req,$last,$first,$married,
+                           $school,$year,$email,$alias,$homepage,$location);
+    $opt_m && &write_entry(*BOOKm,'m',
+                           $time,$id,$req,$last,$first,$married,
+                           $school,$year,$email,$alias,$homepage,$location);
+    $opt_n && &write_entry(*BOOKn,'n',
+                           $time,$id,$req,$last,$first,$married,
+                           $school,$year,$email,$alias,$homepage,$location);
+    $opt_l && &write_entry(*BOOKl,'l',
+                           $time,$id,$req,$last,$first,$married,
+                           $school,$year,$email,$alias,$homepage,$location);
+    $opt_v && &write_entry(*BOOKv,'v',
+                           $time,$id,$req,$last,$first,$married,
+                           $school,$year,$email,$alias,$homepage,$location);
+}
+
+close(DATA);
+
+$opt_p && &write_suffix(*BOOKp,'p');
+$opt_e && &write_suffix(*BOOKe,'e');
+$opt_b && &write_suffix(*BOOKb,'b');
+$opt_w && &write_suffix(*BOOKw,'w');
+$opt_m && &write_suffix(*BOOKm,'m');
+$opt_n && &write_suffix(*BOOKn,'n');
+$opt_l && &write_suffix(*BOOKl,'l');
+$opt_v && &write_suffix(*BOOKv,'v');
+
+$opt_p && close(BOOKp);
+$opt_e && close(BOOKe);
+$opt_b && close(BOOKb);
+$opt_w && close(BOOKw);
+$opt_m && close(BOOKm);
+$opt_n && close(BOOKn);
+$opt_l && close(BOOKl);
+$opt_v && close(BOOKv);
+
+exit(0);
+
+sub write_prefix {
+    local(*BOOK,$option) = @_;
+
+    # special case for netscape
+    if ($option eq 'n') {
+	print BOOK "<!DOCTYPE NETSCAPE-Addressbook-file-1>
+<!-- This is an automatically generated file.
+It will be read and overwritten.
+Do Not Edit! -->
+<TITLE>MVHS Alumni Address book</TITLE>
+<H1>MVHS Alumni Address book</H1>
+
+<DL><p>\n";
+    }
+}
+
+sub write_entry {
+    local(*BOOK,$option,
+	  $time,$id,$req,$last,$first,$married,
+	  $school,$year,$email,$alias,$homepage,$location) = @_;
+    
     $last = "$last $married" if $married ne '';
 
-    $opt_p && print BOOK "$alias\t$last, $first\t$email\t\t$school $year\n";
-    $opt_e && print BOOK "$alias = $last; $first, $school $year = $email\n";
-    $opt_b && print BOOK "alias $alias\t$email\n";
-    $opt_w && print BOOK "<$alias>\n>$first $last <$email>\n<$alias>\n>$school $year\n";
-    $opt_m && print BOOK "alias $alias $email\nnote $alias <name:$first $last>$school $year\n";
+    $option eq 'p' && print BOOK "$alias\t$last, $first\t$email\t\t$school $year\n";
+    $option eq 'e' && print BOOK "$alias = $last; $first, $school $year = $email\n";
+    $option eq 'b' && print BOOK "alias $alias\t$email\n";
+    $option eq 'w' && print BOOK "<$alias>\n>$first $last <$email>\n<$alias>\n>$school $year\n";
+    $option eq 'm' && print BOOK "alias $alias $email\nnote $alias <name:$first $last>$school $year\n";
 
     # netscape is a bigger sucker
-    if ($opt_n) {
+    if ($option eq 'n') {
 	print BOOK "    <DT><A HREF=\"mailto:$email\" ";
 	print BOOK "NICKNAME=\"$alias\">$first $last</A>\n";
 	print BOOK "<DD>$school $year\n";
     }
 
-    elsif ($opt_l) {
+    elsif ($option eq 'l') {
         print BOOK "dn: cn=$first $last,mail=$email\n";
         print BOOK "cn: $first $last\n";
         print BOOK "sn: $last\n";
@@ -88,7 +161,7 @@ while(<DATA>) {
     }
     
     # lots of data for a vCard
-    elsif ($opt_v) {
+    elsif ($option eq 'v') {
 	print BOOK "Begin:vCard\nORG:$school $year;\nFN:$first $last\n";
 	print BOOK "N:$last;$first\nEMAIL;PREF;INTERNET:$email\n";
 	print BOOK "URL:$homepage\n" if $homepage ne '';
@@ -96,8 +169,9 @@ while(<DATA>) {
     }
 }
 
-$opt_n && print BOOK "</DL><p>\n";
-close(DATA);
-close(BOOK);
+sub write_suffix {
+    local(*BOOK,$option) = @_;
 
-exit(0);
+    $option eq 'n' && print BOOK "</DL><p>\n";
+}
+
