@@ -2,7 +2,7 @@
 #     FILE: aid_util.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: perl library routines for the Alumni Internet Directory
-#      $Id: aid_util.pl,v 5.90 2001/05/24 18:13:29 mradwin Exp mradwin $
+#      $Id: aid_util.pl,v 5.91 2001/08/14 16:20:43 mradwin Exp $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -36,7 +36,7 @@ sub aid_caldate
 
     my($time) = @_;
 
-    &POSIX::strftime("%v", localtime($time));
+    &POSIX::strftime("%e-%b-%Y", localtime($time));
 }
 
 sub aid_vdate {
