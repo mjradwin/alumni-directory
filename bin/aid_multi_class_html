@@ -2,7 +2,7 @@
 
 #
 # does the html verbose pages
-# $Id$
+# $Id: mv_verbose_html,v 1.6 1997/12/22 22:31:42 mjr Exp mjr $
 #
 
 require 'mv_util.pl';
@@ -16,9 +16,6 @@ $usage = 'usage: mv_verbose_html [-h] infile.adr
 &Getopts('h') || die "$usage\n";
 $opt_h && die "$usage\n";
 $ARGV[0] || die "$usage\n";
-
-$info_gif = "<img src=\"" . &mv_config('master_path') . "info.gif\" " .
-    "height=12 width=12 hspace=4 border=0 alt=\"[i]\">";
 
 open(DATA,$ARGV[0]) || die "Can't open $ARGV[0]: $!\n";
 
@@ -44,7 +41,7 @@ for(;;) {
     print FMTOUT &tableheader($title, 1, 'ffff99', '000000', 1);
     print FMTOUT "<p>Any entries marked with\n" . &new_gif(0) . "\n";
     print FMTOUT "have been added to the Directory within the last month.  ";
-    print FMTOUT "The\n$info_gif\nicon lets you get more detailed ";
+    print FMTOUT "Clicking on a name lets you get more detailed ";
     print FMTOUT "information about an alumnus.</p>\n\n";
 
     &write_entry(*FMTOUT,$_);
@@ -109,7 +106,9 @@ sub write_entry {
     print FMTOUT "<img src=\"" . &mv_config('master_path') . "vcard.gif\" ";
     print FMTOUT "height=32 width=32 border=0 align=right ";
     print FMTOUT "alt=\"[vCard]\"></a>";
+    print FMTOUT "<a href=\"" . &mv_config('cgi_path') . "?about=$id\">";
     print FMTOUT "<strong>$fullname</strong>";
+    print FMTOUT "</a>"
     print FMTOUT " " . &new_gif(1) if &is_new($time);
     print FMTOUT "</font>\n";
 
@@ -123,8 +122,6 @@ sub write_entry {
     print FMTOUT "<dt>Location: <strong>$location</strong>\n"
 	if $location ne '';
     print FMTOUT "<dt>Updated: ";
-    print FMTOUT "<a href=\"" . &mv_config('cgi_path') . 
-	"?about=$id\">$info_gif</a>\n";
     print FMTOUT "<strong>" . &today($time) . "</strong>\n";
 
     $message = &mv_get_usertext($id);
