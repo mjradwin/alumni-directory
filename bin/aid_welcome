@@ -2,7 +2,7 @@
 
 #
 # mails a welcome or update note to everyone in targets.adr
-# $Id: aid_welcome,v 3.10 1998/05/17 05:18:53 mradwin Exp mradwin $
+# $Id: aid_welcome,v 3.11 1998/05/26 18:51:12 mradwin Exp mradwin $
 #
 
 require 'aid_util.pl';
@@ -67,15 +67,7 @@ Mutually exclusive optional message types (instead of 'welcome' email):
 "\nIf you don't want to receive periodic mail like this, change the\n" .
 "periodic mailings option on your update page to \"No email except for\n" .
 "address verification.\"\n\n" .
-"========================================================================\n" .
-"\nAs a service to those alumni who don't have Web access, I've attached\n" .
-"the most recent version of the Alumni Internet Directory below.  Please\n" .
-"read the acceptable use policy before using any email addresses listed\n" .
-"below:\n\n" .
-"   This directory is provided solely for the information of alumni\n" .
-"   of Mountain View High School and Awalt High School. Any solicitation\n" .
-"   of business, information, contributions or other response from\n" .
-"   individuals listed in this publication is forbidden.\n\n",
+"========================================================================\n\n",
      'sleep',    '10',
      );
 
