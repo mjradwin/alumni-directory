@@ -1,6 +1,6 @@
 #!/usr/bin/perl -w
 
-# $Id: aid_dbm_read,v 1.16 1999/03/27 04:25:18 mradwin Exp mradwin $
+# $Id: aid_dbm_read,v 1.17 1999/04/05 16:26:17 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -26,21 +26,19 @@ require 'ctime.pl';
 $0 =~ s,.*/,,;  # basename
 $usage = "usage: $0 [-houfac] [-t adr] infile.db [key]
     -h        Display usage information.
-    -o        Display old users (fresh < 1 year ago).
-    -u        Display users whose upd time is equal to creation time.
+    -o        Display old users (fresh < 6 months ago).
     -f        Display users whose upd time is within 2 weeks of creation time.
     -a        Display all valid, sorted by alpha.
     -c        Display all valid, sorted by class.
     -t adr    Write text address file to <adr>.
 ";
 
-&Getopts('houfact:') || die "$usage\n";
+&Getopts('hofact:') || die "$usage\n";
 $opt_h && die "$usage\n";
 $ARGV[0] || die "$usage\n";
 $opt_h = $opt_h;		# avoid warning
 $opt_c = $opt_c;		# avoid warning
 $opt_a = $opt_a;		# avoid warning
-$opt_u = $opt_u;		# avoid warning
 $opt_f = $opt_f;		# avoid warning
 $opt_o = $opt_o;		# avoid warning
 
@@ -81,24 +79,11 @@ elsif ($opt_o)
     for (@ids)
     {
 	%rec = &aid_db_unpack_rec($_,$DB{$_});
-	next unless $rec{'v'};
-	next unless $rec{'q'} == 0;
+	next unless $rec{'v'} == 1 &&
+	    $rec{'q'} == 0 && $rec{'b'} == 0;
 	next unless &aid_is_old($rec{'f'});
 	($affil,$i) = &aid_affiliate(*rec,0);
-	print $rec{'sn'}, ", ", $rec{'gn'}, $affil, "\n";
-    }
-}
-elsif ($opt_u)
-{
-    die "no _class key in $ARGV[0].db\n" unless defined $DB{'_class'};
-    @ids = unpack("n*", $DB{'_class'});
-    for (@ids)
-    {
-	%rec = &aid_db_unpack_rec($_,$DB{$_});
-	next unless $rec{'v'};
-	next unless $rec{'u'} == $rec{'c'};
-	($affil,$i) = &aid_affiliate(*rec,0);
-	print $rec{'sn'}, ", ", $rec{'gn'}, $affil, "\n";
+	print $rec{'id'}, ' - ', $rec{'sn'}, ', ', $rec{'gn'}, $affil, "\n";
     }
 }
 elsif ($opt_f)
@@ -112,7 +97,7 @@ elsif ($opt_f)
 	next if $rec{'u'} == $rec{'c'};
 	next unless &aid_is_new($rec{'u'}) && &aid_is_new($rec{'c'});
 	($affil,$i) = &aid_affiliate(*rec,0);
-	print $rec{'sn'}, ", ", $rec{'gn'}, $affil, "\n";
+	print $rec{'id'}, ' - ', $rec{'sn'}, ', ', $rec{'gn'}, $affil, "\n";
     }
 }
 elsif ($opt_a)
@@ -124,7 +109,7 @@ elsif ($opt_a)
 	%rec = &aid_db_unpack_rec($_,$DB{$_});
 	next unless $rec{'v'};
 	($affil,$i) = &aid_affiliate(*rec,0);
-	print $rec{'sn'}, ", ", $rec{'gn'}, $affil, "\n";
+	print $rec{'id'}, ' - ', $rec{'sn'}, ', ', $rec{'gn'}, $affil, "\n";
     }
 }
 elsif ($opt_c)
@@ -136,7 +121,7 @@ elsif ($opt_c)
 	%rec = &aid_db_unpack_rec($_,$DB{$_});
 	next unless $rec{'v'};
 	($affil,$i) = &aid_affiliate(*rec,0);
-	print $rec{'sn'}, ", ", $rec{'gn'}, $affil, "\n";
+	print $rec{'id'}, ' - ', $rec{'sn'}, ', ', $rec{'gn'}, $affil, "\n";
     }
 }
 else
