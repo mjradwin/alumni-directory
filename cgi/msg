@@ -4,7 +4,7 @@
 #     FILE: msg.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: Alumni Internet Directory update redirector
-#      $Id: msg,v 1.7 2003/05/15 00:20:18 mradwin Exp mradwin $
+#      $Id: msg,v 6.1 2003/08/25 06:01:07 mradwin Exp mradwin $
 #
 #   Copyright (c) 2003  Michael John Radwin
 #
@@ -54,7 +54,7 @@ if (defined($in{'to'}) && $in{'to'} =~ /^\d+$/)
     %rec = aid_util::db_unpack_rec($id,$val);
     my $hash = md5_hex($rec{'e'});
     my $name = email_name();
-    my $e = "$name &lt;" . aid_protect_email($rec{'e'}) . "&gt;";
+    my $e = "$name &lt;" . aid_util::protect_email($rec{'e'}) . "&gt;";
 
     print "Content-Type: text/html\015\012\015\012";
     print aid_util::common_html_hdr(9, 'Send Message', 1);
@@ -105,7 +105,7 @@ elsif (defined($in{'id'}) && $in{'id'} =~ /^\d+$/ && $in{'hash'} &&
 	print "Content-Type: text/html\015\012\015\012";
 	print aid_util::common_html_hdr(9, 'Invalid Email Address', 1);
 
-	my $h = aid_html_entify_str($from);
+	my $h = aid_util::html_entify_str($from);
 	
 	print <<_EOHTML_;
 <p><font color=\"red\">Your e-mail address
@@ -114,7 +114,7 @@ elsif (defined($in{'id'}) && $in{'id'} =~ /^\d+$/ && $in{'hash'} &&
 _EOHTML_
 
 	my $name = email_name();
-	my $e = "$name &lt;" . aid_protect_email($rec{'e'}) . "&gt;";
+	my $e = "$name &lt;" . aid_util::protect_email($rec{'e'}) . "&gt;";
 	form($e,$id,$hash,$from,$subject,$message);
 
 	print aid_util::common_html_ftr(9);
@@ -138,7 +138,7 @@ _EOHTML_
 
     aid_util::cgi_die('ERROR: Unable to send e-mail',
 		 "We're sorry, we were unable to send e-mail to\n" .
-		 "<b>" . aid_protect_email($rec{'e'}) . "</b>.\n" .
+		 "<b>" . aid_util::protect_email($rec{'e'}) . "</b>.\n" .
 		 "<p>This may be a problem with our\n" .
 		 "server or perhaps with the target e-mail address.\n" .
 		 "Please try again in a few minutes.<p>If you continue\n" .
@@ -178,7 +178,7 @@ sub check_blank
     my($title,$val,$id,$hash) = @_;
 
     my $name = email_name();
-    my $e = "$name &lt;" . aid_protect_email($rec{'e'}) . "&gt;";
+    my $e = "$name &lt;" . aid_util::protect_email($rec{'e'}) . "&gt;";
     my $from = $in{'from'};
     my $subject = $in{'subject'};
     my $message = $in{'message'};
@@ -205,9 +205,9 @@ sub form
     my $action = aid_util::config('message_cgi');
     my $t = POSIX::strftime("%a, %d %b %Y %H:%M:%S", localtime(time()));
 
-    $from = aid_html_entify_str($from);
-    $subject = aid_html_entify_str($subject);
-    $message = aid_html_entify_str($message);
+    $from = aid_util::html_entify_str($from);
+    $subject = aid_util::html_entify_str($subject);
+    $message = aid_util::html_entify_str($message);
 
     print <<_EOHTML_;
 <form method="post" action="$action/post">
