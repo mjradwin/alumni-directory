@@ -2,7 +2,7 @@
 
 #
 # does the html verbose pages
-# $Id: aid_multi_alpha_html,v 5.12 1999/06/28 23:36:24 mradwin Exp mradwin $
+# $Id: aid_multi_alpha_html,v 5.13 1999/06/29 01:08:09 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -84,13 +84,13 @@ foreach $initial (@initials)
 	unless defined $DB{$key} && $DB{$key} ne '';
     @alpha_ids = unpack("n*",$DB{$key});
 
-    $outFile = &aid_config('wwwdir') . "alpha/${initial}-index.html";
+    $outFile = &aid_config('wwwdir') . "alpha/${initial}.html";
     open(FMTOUT,">$outFile") || die "Can't open $outFile: $!\n";
 
     $extra_meta  = "\n<link rel=\"contents\" href=\"./\" title=\"Alphabetically\">";
-    $extra_meta .= "\n<link rel=\"prev\" href=\"$init_prev{$initial}-index.html\" title=\"`\u$init_prev{$initial}' Alumni\">"
+    $extra_meta .= "\n<link rel=\"prev\" href=\"$init_prev{$initial}.html\" title=\"`\u$init_prev{$initial}' Alumni\">"
 	if defined $init_prev{$initial};
-    $extra_meta .= "\n<link rel=\"next\" href=\"$init_next{$initial}-index.html\" title=\"`\u$init_next{$initial}' Alumni\">"
+    $extra_meta .= "\n<link rel=\"next\" href=\"$init_next{$initial}.html\" title=\"`\u$init_next{$initial}' Alumni\">"
 	if defined $init_next{$initial};
 
     print FMTOUT &aid_common_html_hdr(1,"`\u$initial' Alumni",1,$time,
@@ -182,7 +182,7 @@ sub alpha_jump_bar {
     {
 	$retval .= (($regular eq $i) ?
 		    "\U${i}\E\n" :
-		    "<a href=\"${i}-index.html\">\U${i}\E</a>\n");
+		    "<a href=\"${i}.html\">\U${i}\E</a>\n");
     }
 
     $retval;
