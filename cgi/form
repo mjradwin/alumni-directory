@@ -4,7 +4,7 @@
 #     FILE: mvhsaid.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: MVHS Alumni Internet Directory CGI interface
-#      $Id: mvhsaid,v 1.31 1997/10/16 21:19:40 mjr Exp mjr $
+#      $Id: mvhsaid,v 1.32 1997/10/16 21:27:58 mjr Exp mjr $
 #
 
 require 'mv_util.pl';
@@ -22,7 +22,7 @@ $dbfile = &mv_config('wwwdir') . "mvhs.adr";
 if (defined($in{'version'})) {
     select(STDOUT);  $| = 1;
     print "Content-type: text/plain\n\n";
-    print '$Id: mvhsaid,v 1.31 1997/10/16 21:19:40 mjr Exp mjr $', "\n";
+    print '$Id: mvhsaid,v 1.32 1997/10/16 21:27:58 mjr Exp mjr $', "\n";
     exit(0);
 }
 
@@ -196,6 +196,8 @@ EOM
     print &tableheader("Your submission is confirmed and queued", 1, "ffff99", 1);
     print "<p>Thank you for your submission!\n";
     print "The entry below has been added to the submission queue\n";
+    print "(see <a href=\"" . &mv_config('master_path') . "tech.html\">";
+    print "tech notes</a> for details)\n";
     print "and will be processed in about a day:</p>\n";
 
     print &about_text(";;$in{'request'};$in{'last'};$in{'first'};$in{'married'};$in{'school'};$in{'grad'};$in{'mail'};$in{'homepage'};$in{'location'}",1,1), "\n";
