@@ -4,7 +4,7 @@
 #     FILE: mvhsaid.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: MVHS Alumni Internet Directory CGI interface
-#      $Id: mvhsaid,v 3.38 1998/12/01 23:37:36 mradwin Exp mradwin $
+#      $Id: mvhsaid,v 3.39 1998/12/02 21:12:01 mradwin Exp mradwin $
 #
 
 require 'aid_util.pl';
@@ -24,7 +24,7 @@ if (defined($ENV{'PATH_INFO'}) && $ENV{'PATH_INFO'} =~ m,^/vcard/,) {
     $in{'vcard'} =~ s,^/vcard/(\d+).*$,$1,;
 }
 
-$rcsid = '$Id: mvhsaid,v 3.38 1998/12/01 23:37:36 mradwin Exp mradwin $'; #'fnt
+$rcsid = '$Id: mvhsaid,v 3.39 1998/12/02 21:12:01 mradwin Exp mradwin $'; #'fnt
 
 # special flags: version, update, vcard, about
 #
@@ -152,6 +152,7 @@ foreach $key (keys(%in)) {
 # remove apostropies and add a leading year to gradyear field
 $in{'year'} =~ s/^class\s+of\s*//i;
 $in{'year'} =~ s/^\'(\d\d)$/$1/;
+$in{'year'} = '0' . $in{'year'} if $in{'year'} =~ /^\d$/;
 
 # Year 2000 stuff: make 2-digit year fields be 4 digits.
 # either 20 years in the future, or 80 years in the past.
