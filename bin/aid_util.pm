@@ -2,11 +2,11 @@
 #     FILE: aid_util.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: perl library routines for the Alumni Internet Directory
-#      $Id: aid_util.pl,v 1.97 1998/01/27 21:14:34 mjr Exp mjr $
+#      $Id: aid_util.pl,v 1.98 1998/02/23 21:03:49 mjr Exp mjr $
 #
 
 $aid_util'rcsid =
- '$Id: aid_util.pl,v 1.97 1998/01/27 21:14:34 mjr Exp mjr $';
+ '$Id: aid_util.pl,v 1.98 1998/02/23 21:03:49 mjr Exp mjr $';
 
 # ----------------------------------------------------------------------
 # CONFIGURATION
@@ -120,7 +120,7 @@ $aid_util'config{'master_srv'} . $aid_util'config{'master_path'} . #'font-lock
 "\" on \"1996.04.04T08:15-0500\" r (n 0 s 0 v 0 l 0))'>";
 
 $aid_util'site_tags = #'font-lock
-"<meta name=\"keywords\" content=\"Mountain View High School, Alumni, MVHS, Awalt High School, Mountain View, Los Altos, California, reunion, Radwin\">\n<meta name=\"description\" content=\"Email and web page directory of alumni, students, faculty and staff from Mountain View High School (MVHS) and Chester F. Awalt High School in Mountain View, California.  Updated $aid_util'caldate.\">";
+"<meta name=\"keywords\" content=\"Mountain View High School, Alumni, MVHS, Awalt High School, Mountain View, Los Altos, California, reunion, Radwin\">\n<meta name=\"description\" content=\"Alumni email and web page directory for Mountain View High School (MVHS) and Awalt High School in Mountain View, CA. Updated $aid_util'caldate.\">";
 
 $aid_util'noindex = "<meta name=\"robots\" content=\"noindex\">"; #'font-lock
 %aid_util'aid_aliases = ();   #' global alias hash repository 
