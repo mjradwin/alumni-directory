@@ -2,7 +2,7 @@
 #     FILE: aid_util.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: perl library routines for the Alumni Internet Directory
-#      $Id: aid_util.pl,v 5.21 1999/06/17 03:16:01 mradwin Exp mradwin $
+#      $Id: aid_util.pl,v 5.22 1999/06/18 03:13:36 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -412,7 +412,7 @@ sub aid_verbose_entry {
 	$retval .= "</a>";
 	$retval .= "&nbsp;|&nbsp;";
 	$retval .= "<a\nhref=\"" . $config{'about_cgi'} . "/$rec{'id'}\">";
-	$retval .= "update</a>";
+	$retval .= "modify</a>";
 	$retval .= "]</small>\n";
     }
 
