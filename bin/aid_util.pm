@@ -2,11 +2,11 @@
 #     FILE: aid_util.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: perl library routines for the Alumni Internet Directory
-#      $Id: aid_util.pl,v 1.85 1998/01/03 11:32:37 mradwin Exp $
+#      $Id: aid_util.pl,v 1.84 1998/01/03 11:37:47 mjr Exp mjr $
 #
 
 $aid_util'rcsid =
- '$Id: aid_util.pl,v 1.85 1998/01/03 11:32:37 mradwin Exp $';
+ '$Id: aid_util.pl,v 1.84 1998/01/03 11:37:47 mjr Exp mjr $';
 
 # ----------------------------------------------------------------------
 # CONFIGURATION
@@ -40,27 +40,27 @@ $aid_util'rcsid =
      );
 
 # albert.corp.adobe.com configuration
-%aid_util'config =  #'font-lock
-    ('admin_name',   'Michael John Radwin',
-     'admin_email',  "mjr\@acm.org",
-     'school',       'Mountain View High School',
-     'admin_school', "Mountain View High School, Class of '93",
-     'admin_phone',  '408-536-2554',
-     'admin_url',    'http://slimy.com/~mjr/',
-     'master_srv',   'albert.corp.adobe.com',
-     'master_path',  '/~mradwin/mvhs/',
-     'cgi_path',     '/~mradwin/mvhs/cgi-bin/mvhsaid.cgi',
-     'index_page',   'index.html',
-     'wwwdir',       '/user/mradwin/public_html/mvhs/',
-     'newsdir',      '/user/mradwin/public_html/mvhs/whatsnew/',
-     'aiddir',       '/user/mradwin/mvhs/',
-     'sendmail',     '/usr/lib/sendmail',
-     'mailprog',     '/usr/ucb/mail',
-     'mailto',       "mradwin",
-     'mailsubj',     'MVHSAID',
-     'spoolfile',    '/var/mail/mradwin', 
-     'rcsid',        "$aid_util'rcsid",
-     );
+# %aid_util'config =  #'font-lock
+#     ('admin_name',   'Michael John Radwin',
+#      'admin_email',  "mjr\@acm.org",
+#      'school',       'Mountain View High School',
+#      'admin_school', "Mountain View High School, Class of '93",
+#      'admin_phone',  '408-536-2554',
+#      'admin_url',    'http://slimy.com/~mjr/',
+#      'master_srv',   'albert.corp.adobe.com',
+#      'master_path',  '/~mradwin/mvhs/',
+#      'cgi_path',     '/~mradwin/mvhs/cgi-bin/mvhsaid.cgi',
+#      'index_page',   'index.html',
+#      'wwwdir',       '/user/mradwin/public_html/mvhs/',
+#      'newsdir',      '/user/mradwin/public_html/mvhs/whatsnew/',
+#      'aiddir',       '/user/mradwin/mvhs/',
+#      'sendmail',     '/usr/lib/sendmail',
+#      'mailprog',     '/usr/ucb/mail',
+#      'mailto',       "mradwin",
+#      'mailsubj',     'MVHSAID',
+#      'spoolfile',    '/var/mail/mradwin', 
+#      'rcsid',        "$aid_util'rcsid",
+#      );
 
 # foo.metamorphosis.net configuration
 #%aid_util'config =   #'font-lock

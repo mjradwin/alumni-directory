@@ -1,6 +1,6 @@
 #!/usr/local/bin/perl -w
 
-# $Id: aid_addname,v 1.11 1998/01/03 11:32:52 mradwin Exp $
+# $Id: aid_addname,v 1.10 1998/01/03 11:38:28 mjr Exp mjr $
 
 require 'getopts.pl';
 require 'aid_util.pl';
@@ -13,6 +13,9 @@ $usage = 'usage: aid_addname [-hmw] [mailspoolfile]
 
 &Getopts('hmw') || die "$usage\n";
 $opt_h && die "$usage\n";
+$opt_h = $opt_h;                # avoid warning
+$opt_m = $opt_m;                # avoid warning
+$opt_w = $opt_w;                # avoid warning
 
 &readspool(($ARGV[0]) ? $ARGV[0] : &aid_config('spoolfile'));
 &rebuild() unless $opt_m;
@@ -36,7 +39,7 @@ sub readspool {
     local($spoolFile) = @_;
     local($[) = 0;
     local($_);
-    local($id,$newsFile,*SPOOL);
+    local($id,$logFile,$newsFile,*SPOOL);
 
     open(SPOOL, $spoolFile) || die "can't open $spoolFile: $!\n";
     print "reading spool...\n";
@@ -66,6 +69,10 @@ sub readspool {
 		$message = $message_bak;
 		write(STDOUT);
 		close(NEWSOUT);
+
+		$logFile = &aid_config('aiddir') . "logs/additions.log";
+		system("echo 'MESSAGE $newsFile' >> $logFile");
+		system("cat $newsFile >> $logFile");
 	    }
 	}
     }
@@ -138,7 +145,7 @@ sub addname {
     $tmpFile = "/tmp/aid_add.$$";
     open(TMP, ">$tmpFile") || die "Can't open $tmpFile: $!\n";
     for (@db) {
-	next if $_ eq '';
+	next unless defined($_) && $_ ne '';
 	print TMP $_, "\n";
     }
     close(TMP);
