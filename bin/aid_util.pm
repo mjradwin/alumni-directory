@@ -2,11 +2,11 @@
 #     FILE: aid_util.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: perl library routines for the Alumni Internet Directory
-#      $Id: aid_util.pl,v 1.102 1998/03/20 04:37:53 mjr Exp mjr $
+#      $Id: aid_util.pl,v 1.103 1998/03/20 04:41:29 mjr Exp mjr $
 #
 
 $aid_util'rcsid =
- '$Id: aid_util.pl,v 1.102 1998/03/20 04:37:53 mjr Exp mjr $';
+ '$Id: aid_util.pl,v 1.103 1998/03/20 04:41:29 mjr Exp mjr $';
 
 # ----------------------------------------------------------------------
 # CONFIGURATION
@@ -710,7 +710,8 @@ sub aid_write_verbose_entry {
     if ($rec{'year'} =~ /^\d+$/ && $display_year) {
 	print FMTOUT "<dt>Year:  <strong>$rec{'year'}</strong></dt>\n";
     } else {
-	print FMTOUT "<dt>Affiliation:  <strong>$rec{'year'}</strong></dt>\n";
+	print FMTOUT "<dt>Affiliation:  <strong>$rec{'year'}</strong></dt>\n"
+	    unless $rec{'year'} =~ /^\d+$/;
     }
 
     print FMTOUT "<dt>Email: <tt><strong><a href=\"mailto:$rec{'email'}\">$rec{'email'}</a></strong></tt></dt>\n";
