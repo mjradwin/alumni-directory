@@ -2,7 +2,7 @@
 #     FILE: mv_util.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: perl library routines for the MVHS Alumni Internet Directory
-#      $Id: mv_util.pl,v 1.25 1997/07/02 17:58:58 mjr Exp mjr $
+#      $Id: mv_util.pl,v 1.26 1997/07/29 00:05:40 mjr Exp mjr $
 #
 
 CONFIG: {
@@ -13,21 +13,15 @@ CONFIG: {
 	('admin_name',   "Michael John Radwin",
 	 'admin_email',  "mjr\@acm.org",
 	 'admin_school', "Mountain View High School, Class of '93",
-	 'admin_phone',  "401-863-6418",
-	 'admin_usmail', "Brown University, Box 4505, Providence, RI, 02912",
-#	 'admin_url',    "http://www.cs.brown.edu/people/mjr/",
+	 'admin_phone',  "408-536-2554",
+	 'admin_usmail', "2814 Cozumel Cir., Santa Clara, CA 95051",
 	 'admin_url',    "http://umop-ap.com/~mjr/",
 	 'master_url',   "http://umop-ap.com/~mjr/mvhs/",
-#	 'master_url',   "http://www.cs.brown.edu/people/mjr/mvhs/",
 	 'cgi_url',      "http://umop-ap.com/cgi-bin/cgiwrap/mjr/mvhsaid",
-#	 'cgi_url',      "http://www.cs.brown.edu/cgi-bin/mjr-mvhs.cgi",
 	 'cgi_path',     "/cgi-bin/cgiwrap/mjr/mvhsaid",
-#	 'cgi_path',     "/cgi-bin/mjr-mvhs.cgi",
 	 'index_page',	 "index.html",
 	 'wwwdir',       "/home/divcom/mjr/public_html/mvhs/",
-#	 'wwwdir',       "/pro/web/web/people/mjr/mvhs/",
 	 'mvhsdir',      "/home/divcom/mjr/mvhs/",
-#	 'mvhsdir',      "/home/mjr/doc/mvhs/",
 	 'sendmail',     "/usr/lib/sendmail",
 	 'mailprog',     "/usr/ucb/mail",
 	 'mailto',       "mjr\@divcom",
