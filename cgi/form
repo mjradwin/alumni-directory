@@ -4,7 +4,7 @@
 #     FILE: mvhsaid.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: MVHS Alumni Internet Directory CGI interface
-#      $Id: mvhsaid,v 3.22 1998/09/18 23:56:04 mradwin Exp mradwin $
+#      $Id: mvhsaid,v 3.23 1998/09/23 22:11:10 mradwin Exp mradwin $
 #
 
 require 'aid_util.pl';
@@ -24,7 +24,7 @@ if (defined($ENV{'PATH_INFO'}) && $ENV{'PATH_INFO'} =~ m,^/vcard/,) {
     $in{'vcard'} =~ s,^/vcard/(\d+).*$,$1,;
 }
 
-$rcsid = '$Id: mvhsaid,v 3.22 1998/09/18 23:56:04 mradwin Exp mradwin $'; #'fnt
+$rcsid = '$Id: mvhsaid,v 3.23 1998/09/23 22:11:10 mradwin Exp mradwin $'; #'fnt
 
 # special flags: version, update, vcard, about
 #
@@ -284,16 +284,27 @@ EOM
     print &common_html_hdr(-1,'Your submission is confirmed and queued',1);
 
     $fullname = &inorder_fullname(*in);
-    print "<p>The entry for <strong>$fullname</strong> has been\n";
-    print "added to the submission queue, but it has <em>not</em> been\n";
-    print "added to the Directory yet.\n";
-    print "Processing your submission usually takes two days.</p>\n";
+    print "
 
-    print "<p>Email will be sent to <code>$in{'email'}</code> confirming\n";
-    print "receipt of this submission when it it processed.\n";
-    print "See the <a href=\"" . &aid_config('master_path') .
-	"tech.html#submit\">";
-    print "submission tech note</a> for behind-the-scenes details.</p>\n";
+<p>The entry for <strong>$fullname</strong> has been added
+to the submission queue, but it has <em>not</em> yet been published in
+the Directory.  Processing your submission can take up to 48 hours.</p>
+
+<p>Email will be sent to <code>$in{'email'}</code> confirming
+receipt of this submission when it it processed.
+See the <a href=\"" . &aid_config('master_path') . 
+"tech.html#submit\">submission tech note</a>
+for behind-the-scenes details.</p>
+
+<p>In the meantime, if you'd like to use chat and message boards with
+other MVHS and Awalt alumni, join the
+<a href=\"http://clubs.yahoo.com/clubs/mountainviewhighschool\">MVHS Yahoo!
+Club</a>.  Sign up for the
+<a href=\"http://www.planetall.com/registration/basic/recruit.asp?pcustomerid=1520098&Groupid=6602&Source=40\">MVHS
+Group on PlanetAll</a> if you want to share your detailed address book
+information (birthdays, phone numbers, etc.) with only the contacts you
+select.</p>
+";
 
     print &common_html_ftr(-1);
 }
@@ -326,10 +337,8 @@ sub send_about {
     print "Content-type: text/html\n\n";
     print &common_html_hdr(-1,$fullname,1);
     print "<p>Here is more detailed information about $fullname.\n";
-    print "If you're not running Netscape Communicator 4.x, see the\n";
-    print "<a href=\"" . &aid_config('master_path') . "tech.html#vcard\">";
-    print "vCard tech note</a>\n";
-    print "for plugin information.\n<p>\n\n";
+    print "To update this entry, please review the information and\n";
+    print "click the button below.\n<p>\n\n";
     print &about_text(*rec,0,1,1), "\n";
     print &modify_button($rec{'id'}, &inorder_fullname(*rec));
     print &common_html_ftr(-1);
@@ -341,13 +350,10 @@ sub modify_button {
 
     "
 <!-- borrowed from gamelan -->
-<p>
-To update the entry for this person, please click the button below.
 
 <form method=get action=\"$cgi_path/upd\">
-<center><input type=hidden name=\"update\" value=\"$id\">
+<input type=hidden name=\"update\" value=\"$id\">
 <input type=submit value=\"Update $name\">
-</center>
 </form>
 
 To avoid malicious modification by other people passing through, we
