@@ -2,7 +2,7 @@
 #     FILE: mv_util.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: perl library routines for the MVHS Alumni Internet Directory
-#      $Id: mv_util.pl,v 1.72 1997/12/22 20:30:08 mjr Exp mjr $
+#      $Id: mv_util.pl,v 1.73 1997/12/31 18:31:22 mjr Exp mjr $
 #
 
 CONFIG: {
@@ -601,7 +601,7 @@ sub common_html_ftr {
     package mv_util;
 
     local($page) = @_;
-    local($rcsid) = '<!-- $Id$ -->';
+    local($rcsid) = '<!-- $Id: mv_util.pl,v 1.73 1997/12/31 18:31:22 mjr Exp mjr $ -->';
     local($ftr);
 
     $ftr = "
@@ -620,7 +620,7 @@ $rcsid
         }
 	$ftr .= " || " unless $idx == $#page_idx;
     }
-    $ftr .= "<br>\n";
+    $ftr .= "\n  <br>";
     foreach $idx (0 .. $#second_idx) {
 	($name, $url) = split(/,/, $second_idx[$idx]);
         if ($idx == ($page - 10)) {
@@ -630,10 +630,9 @@ $rcsid
         }
 	$ftr .= " || " unless $idx == $#second_idx;
     }
-    $ftr .= "</font></p>\n";
+    $ftr .= "\n</font></p>\n";
     
     $ftr .= "
-
 <blockquote><a name=\"disclaimer\">Acceptable use</a>: this directory is
 provided solely for the information of alumni of Mountain View High
 School and Awalt High School.  Any solicitation of business,
@@ -665,7 +664,7 @@ sub common_html_hdr {
     local($h1, $h2, $h3, $h4, $html_head);
     local($name, $url);
     local($timestamp);
-    local($rcsid) = '<!-- $Id$ -->';
+    local($rcsid) = '<!-- $Id: mv_util.pl,v 1.73 1997/12/31 18:31:22 mjr Exp mjr $ -->';
 
     $timestamp = ($page == 0) ? 'Last update to Directory: ' :
 	'Last update to this page: ';
