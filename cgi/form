@@ -4,7 +4,7 @@
 #     FILE: mvhsaid.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: MVHS Alumni Internet Directory CGI interface
-#      $Id: mvhsaid,v 3.37 1998/11/26 00:54:01 mradwin Exp mradwin $
+#      $Id: mvhsaid,v 3.38 1998/12/01 23:37:36 mradwin Exp mradwin $
 #
 
 require 'aid_util.pl';
@@ -24,7 +24,7 @@ if (defined($ENV{'PATH_INFO'}) && $ENV{'PATH_INFO'} =~ m,^/vcard/,) {
     $in{'vcard'} =~ s,^/vcard/(\d+).*$,$1,;
 }
 
-$rcsid = '$Id: mvhsaid,v 3.37 1998/11/26 00:54:01 mradwin Exp mradwin $'; #'fnt
+$rcsid = '$Id: mvhsaid,v 3.38 1998/12/01 23:37:36 mradwin Exp mradwin $'; #'fnt
 
 # special flags: version, update, vcard, about
 #
@@ -141,6 +141,7 @@ foreach $key (keys(%in)) {
     $in{$key} = '' if $in{$key} =~ m|^n/a$|i;
     $in{$key} = '' if $in{$key} =~ m|^none$|i;
     $in{$key} = '' if $in{$key} =~ m|^\(none\)$|i;
+    $in{$key} = '' if $in{$key} =~ m|^\(blank\)$|i;
 }
 
 foreach $key (keys(%in)) {
@@ -205,6 +206,10 @@ $in{'www'} = '' if $in{'www'} eq 'http://';
 $in{'www'} = 'http://' . $in{'www'} if
     $in{'www'} ne '' && $in{'www'} !~ m,^http://,i;
 
+$in{'married'} = '' if defined $in{'married'} &&
+    ($in{'married'} =~ /\(?\s*same\s+as\s+last\s+name\s*\)?/i ||
+     $in{'married'} =~ /\(?\s*same\s*\)?/i);
+     
 # did they have non-blank entries for all the required fields?
 # did they check the "other" box for school, but not fill in any text?
 @blank_fields = ();
