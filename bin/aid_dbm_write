@@ -1,6 +1,6 @@
 #!/usr/bin/perl -w
 
-# $Id: aid_dbm_write,v 1.7 1999/02/09 00:53:20 mradwin Exp mradwin $
+# $Id: aid_dbm_write,v 1.8 1999/02/10 20:17:31 mradwin Exp mradwin $
 
 require 'aid_util.pl';
 require 'getopts.pl';
@@ -16,6 +16,7 @@ $ARGV[0] || die "$usage\n";
 $ARGV[1] || die "$usage\n";
 $opt_h = $opt_h;		# avoid warning
 
+%awalt = ();
 %class_members = ();
 @alpha_ids = ();
 
@@ -37,14 +38,29 @@ for (@db)
     $DB{"\L$rec{'email'}\E"} = pack("n", $rec{'id'});
 
     # make a list of alpha years
-    $ykey = ($rec{'year'} =~ /^\d+$/) ? $rec{'year'} : 'other';
-    if (defined $class_members{$ykey})
+    if ($rec{'valid'})
     {
-	$class_members{$ykey} .= ' ' . $rec{'id'};
-    }
-    else
-    {
-	$class_members{$ykey}  =       $rec{'id'};
+	$ykey = ($rec{'year'} =~ /^\d+$/) ? $rec{'year'} : 'other';
+	if (defined $class_members{$ykey})
+	{
+	    $class_members{$ykey} .= ' ' . $rec{'id'};
+	}
+	else
+	{
+	    $class_members{$ykey}  =       $rec{'id'};
+	}
+
+	if ($rec{'school'} =~ /awalt/i)
+	{
+	    if (defined $awalt{$ykey})
+	    {
+		$awalt{$ykey} .= ' ' . $rec{'id'};
+	    }
+	    else
+	    {
+		$awalt{$ykey}  =       $rec{'id'};
+	    }
+	}
     }
     
     # also make the alpha list
@@ -71,6 +87,15 @@ foreach $ykey (@years)
 print STDERR ".";
 
 $DB{'__class__'} = pack("n*", @class_ids);
+
+# now do years, but only for awalt
+@years = sort keys %awalt;
+$DB{'__awalt_years__'} = pack("n*",grep(/\d+/,@years));
+foreach $ykey (@years)
+{
+    $DB{"__awalt_${ykey}__"} = pack("n*", split(/ /, $awalt{$ykey}));
+}
+print STDERR ".";
 
 dbmclose(DB);
 
