@@ -1,6 +1,6 @@
 #!/usr/bin/perl -w
 
-# $Id: aid_addname,v 3.18 1999/02/24 20:37:19 mradwin Exp mradwin $
+# $Id: aid_addname,v 3.19 1999/03/05 00:48:17 mradwin Exp mradwin $
 
 require 'getopts.pl';
 require 'aid_util.pl';
@@ -148,7 +148,10 @@ sub addname {
     if (($rec{'id'} == -1) &&
 	(defined $id_by_email{"\L$rec{'email'}$rec{'last'}$rec{'first'}\E"}))
     {
-	$rec{'id'} = $id_by_email{"\L$rec{'email'}\E"};
+	$rec{'id'} =
+	    $id_by_email{"\L$rec{'email'}$rec{'last'}$rec{'first'}\E"};
+	%oldrec = &aid_split($db[$rec{'id'}]);
+	$rec{'created'} = $oldrec{'created'};
 	$rawdata = &aid_join(*rec);
     }
 
