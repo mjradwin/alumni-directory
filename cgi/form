@@ -4,7 +4,7 @@
 #     FILE: mvhsaid.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: MVHS Alumni Internet Directory CGI interface
-#      $Id: mvhsaid,v 3.21 1998/09/18 23:29:59 mradwin Exp mradwin $
+#      $Id: mvhsaid,v 3.22 1998/09/18 23:56:04 mradwin Exp mradwin $
 #
 
 require 'aid_util.pl';
@@ -24,7 +24,7 @@ if (defined($ENV{'PATH_INFO'}) && $ENV{'PATH_INFO'} =~ m,^/vcard/,) {
     $in{'vcard'} =~ s,^/vcard/(\d+).*$,$1,;
 }
 
-$rcsid = '$Id: mvhsaid,v 3.21 1998/09/18 23:29:59 mradwin Exp mradwin $'; #'fnt
+$rcsid = '$Id: mvhsaid,v 3.22 1998/09/18 23:56:04 mradwin Exp mradwin $'; #'fnt
 
 # special flags: version, update, vcard, about
 #
@@ -361,25 +361,9 @@ sub send_vcard {
     local($rawdata) = @_;
     local(%rec) = &aid_split($rawdata);
 
-    $long_last  = $rec{'last'};
-    $long_last .= " $rec{'married'}" if $rec{'married'} ne '';
-
     select(STDOUT);  $| = 1;
     print "Content-type: text/x-vCard\n\n";
-    print "Begin:vCard\r\n";
-    print "N:$rec{'last'};$rec{'first'};$rec{'married'}\r\n";
-    print "FN:$rec{'first'} $long_last\r\n";
-    print "ORG:$rec{'school'};";
-    if ($rec{'year'} =~ /^\d+$/) {
-	print "Class of $rec{'year'}\r\n";
-    } else {
-	print "$rec{'year'}\r\n";
-    }
-    print "EMAIL;PREF;INTERNET:$rec{'email'}\r\n";
-    print "ADR:$rec{'location'}\r\n" if $rec{'location'} ne '';
-    print "URL:$rec{'homepage'}\r\n" if $rec{'homepage'} ne '';
-    print "REV:", &aid_vdate($rec{'time'}), "\r\n";
-    print "End:vCard\r\n";
+    print &aid_vcard_text(*rec);
 }
 
 
