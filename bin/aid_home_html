@@ -41,7 +41,7 @@ if ($opt_t) {
 }
 
 if ($opt_s) {
-    print OUTFILE &submit_body(";-1;2;;;;MVHS;;;",0,0);
+    print OUTFILE &submit_body(";-1;2;;;;MVHS;;;",'',0,0);
 } else {
     print OUTFILE @lines;
 }

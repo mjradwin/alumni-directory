@@ -2,7 +2,7 @@
 #     FILE: mv_util.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: perl library routines for the MVHS Alumni Internet Directory
-#      $Id: mv_util.pl,v 1.61 1997/12/19 20:20:30 mjr Exp mjr $
+#      $Id: mv_util.pl,v 1.62 1997/12/19 20:28:37 mjr Exp mjr $
 #
 
 CONFIG: {
@@ -373,9 +373,10 @@ All other fields are optional.";
 </tr>
 <tr>
   <td colspan=3><font color=\"#000000\">
-  <br><strong>What's New?</strong> Tell us, in 100 words or less, what
-  you've been up to recently.</font><img src=\"" . $config{'master_path'} .
-  "new.gif\" alt=\"[new]\" width=\"28\" height=\"11\"><p>
+  <br><strong>What's New?</strong> (Beta) Tell us, in 100 words or less, what
+  you've been up to recently.</font>
+  <img src=\"" . $config{'master_path'} .
+  "new.gif\" alt=\"[new]\" width=\"28\" height=\"11\"><br>
   <textarea name=\"message\" rows=10 cols=55 wrap>$message</textarea>
   </td>
 </tr>
@@ -544,7 +545,7 @@ sub about_text {
 
     if ($do_vcard_p && $do_html_p) {
 	$rawdata = &'mv_get_usertext($id);  #' fnt
-	$retval .= "<tt>News (experimental):</tt>\n" if $rawdata ne '';
+	$retval .= "<tt>What's New? (beta) :</tt>\n" if $rawdata ne '';
 	$retval .= "<blockquote>\n$rawdata\n</blockquote>\n" if $rawdata ne '';
     }
 
