@@ -1,6 +1,6 @@
 #!/usr/bin/perl -w
 
-# $Id: aid_stats,v 1.12 1999/03/09 20:50:23 mradwin Exp mradwin $
+# $Id: aid_stats,v 1.13 1999/03/26 19:41:22 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -51,6 +51,14 @@ $nlocation = 0;
 $nweb = 0;
 $nnews = 0;
 
+$update_time_sum = 0;
+@update_times = ();
+
+$join_time_sum = 0;
+@join_times = ();
+
+$num_never_updated = 0;
+
 while (($key,$val) = each %DB)
 {
     next unless $key =~ /^\d+$/;
@@ -76,10 +84,29 @@ while (($key,$val) = each %DB)
     $nlocation++ if $rec{'location'} ne '';
     $nweb++ if $rec{'www'} ne '';
     $nnews++ if -f &aid_newsfile($rec{'id'});
+
+    $update_time_sum += $rec{'time'};
+    push(@update_times, $rec{'time'});
+
+    $join_time_sum += $rec{'created'};
+    push(@join_times, $rec{'created'});
+
+    $num_never_updated++ if $rec{'time'} eq $rec{'created'};
 }
 
 $nlegit = $nvalid + $ndubious;
 
+# time-based statistics
+$avg_update_time = $update_time_sum / $nlegit;
+$median_update_time = (sort @update_times)[$nlegit / 2];
+$avg_join_time = $join_time_sum / $nlegit;
+$median_join_time = (sort @join_times)[$nlegit / 2];
+$now = time;
+
+$avg_update_weeks = ($now - $avg_update_time) / (60 * 60 * 24 * 7);
+$median_update_weeks = ($now - $median_update_time) / (60 * 60 * 24 * 7);
+$avg_tenure_weeks = ($now - $avg_join_time) / (60 * 60 * 24 * 7);
+$median_tenure_weeks = ($now - $median_join_time) / (60 * 60 * 24 * 7);
 
 print FMTOUT "Mountain View High School Alumni Internet Directory\n";
 print FMTOUT "Member Statistics\n";
@@ -112,6 +139,17 @@ printf FMTOUT "%4d (%2.0f%%) have personal web page\n",
     $nweb, ((100 * $nweb) / $nlegit);
 printf FMTOUT "%4d (%2.0f%%) wrote What's New? paragraph\n",
     $nnews, ((100 * $nnews) / $nlegit);
+
+print FMTOUT "\n";
+
+printf FMTOUT "average tenure           : %.1f weeks\n", $avg_tenure_weeks;
+printf FMTOUT "median  tenure           : %.1f weeks\n", $median_tenure_weeks;
+
+printf FMTOUT "average time since update: %.1f weeks\n", $avg_update_weeks;
+printf FMTOUT "median  time since update: %.1f weeks\n", $median_update_weeks;
+
+printf FMTOUT "entries never updated    : %.0f%% (%d of %d)\n",
+    ((100.0 * $num_never_updated) / $nlegit), $num_never_updated, $nlegit;
 
 print FMTOUT "\n------------------------------------------------------------------------\n";
 print FMTOUT &ctime(time);
