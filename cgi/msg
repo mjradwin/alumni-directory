@@ -4,7 +4,7 @@
 #     FILE: msg.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: Alumni Internet Directory update redirector
-#      $Id: msg,v 1.2 2003/02/20 01:16:42 mradwin Exp mradwin $
+#      $Id: msg,v 1.3 2003/02/20 19:09:57 mradwin Exp mradwin $
 #
 #   Copyright (c) 2003  Michael John Radwin
 #
@@ -146,7 +146,7 @@ sub email_name
 
 sub check_blank
 {
-    my($name,$val,$id,$hash) = @_;
+    my($title,$val,$id,$hash) = @_;
 
     my $name = email_name();
     my $e = "$name &lt;" . aid_protect_email($rec{'e'}) . "&gt;";
@@ -156,11 +156,11 @@ sub check_blank
 
     unless (defined $val && $val !~ /^\s*$/) {
 	print "Content-Type: text/html\015\012\015\012";
-	print &aid_common_html_hdr(9, "Missing $name", 1);
+	print &aid_common_html_hdr(9, "Missing $title", 1);
 
 	print <<_EOHTML_;
-<p><font color=\"red\">Missing $name (can't be blank).  Please
-include your $name in the text area below.</font>
+<p><font color=\"red\">Missing $title (can't be blank).  Please
+include your $title in the text area below.</font>
 _EOHTML_
 
 	form($e,$id,$hash,$from,$subject,$message);
