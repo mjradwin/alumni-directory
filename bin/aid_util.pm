@@ -2,7 +2,7 @@
 #     FILE: aid_util.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: perl library routines for the Alumni Internet Directory
-#      $Id: aid_util.pl,v 4.75 1999/03/27 04:13:13 mradwin Exp mradwin $
+#      $Id: aid_util.pl,v 4.76 1999/03/27 04:25:47 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -22,7 +22,7 @@
 #
 
 $aid_util'rcsid =
- '$Id: aid_util.pl,v 4.75 1999/03/27 04:13:13 mradwin Exp mradwin $';
+ '$Id: aid_util.pl,v 4.76 1999/03/27 04:25:47 mradwin Exp mradwin $';
 
 # ----------------------------------------------------------------------
 # CONFIGURATION
@@ -554,16 +554,9 @@ sub aid_yahoo_abook_path {
     }
     $url .= '&hco=&mb=&op=&e1=&c1=';
 
-#    $url .= '&.done=';
-#    if (defined $ENV{'HTTP_REFERRER'} && $ENV{'HTTP_REFERRER'} =~ m,^http://,)
-#    {
-#	$url .= &url_escape($ENV{'HTTP_REFERRER'});
-#    }
-#    else
-#    {
-#	$url .= &url_escape('http://' .
-#			    $config{'master_srv'} . $config{'master_path'});
-#    }
+    $url .= '&.done=';
+    $url .= &url_escape('http://' .
+			$config{'master_srv'} . $config{'master_path'});
 
     $url;
 }
