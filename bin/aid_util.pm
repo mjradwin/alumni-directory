@@ -2,7 +2,7 @@
 #     FILE: aid_util.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: perl library routines for the Alumni Internet Directory
-#      $Id: aid_util.pl,v 5.104 2003/02/02 18:36:57 mradwin Exp mradwin $
+#      $Id: aid_util.pl,v 5.105 2003/02/02 18:39:36 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -191,11 +191,11 @@ sub aid_mangle
 
     my($name) = @_;
 
-    $name =~ s/\s//g;
-    $name =~ s/\".*\"//g;
-    $name =~ s/\(.*\)//g;
-    $name =~ s/\'.*\'//g;
-    $name =~ s/[^\d\w_-]//g;
+    $name =~ s/\s+//g;
+#    $name =~ s/\".*\"//g;
+#    $name =~ s/\(.*\)//g;
+#    $name =~ s/\'.*\'//g;
+    $name =~ s/[^\d\w-]//g;
 
     $name;
 }
@@ -225,24 +225,30 @@ sub aid_generate_alias
     package aid_util;
 
     local(*rec) = @_;
-    my($mangledLast,$mangledFirst,$alias);
 
-    $mangledFirst = &main::aid_mangle($rec{'gn'}); 
-    if ($rec{'mn'} ne '') {
-	$mangledLast = &main::aid_mangle($rec{'mn'});   
+    my($a7,$alias);
+    if (defined $rec{'a'} && $rec{'a'} ne '') {
+	$alias = lc($rec{'a'});
+	$a7 = substr($alias, 0, 7);
     } else {
-	$mangledLast = &main::aid_mangle($rec{'sn'});   
+	my($mangledLast,$mangledFirst);
+
+	$mangledFirst = &main::aid_mangle($rec{'gn'}); 
+	if ($rec{'mn'} ne '') {
+	    $mangledLast = &main::aid_mangle($rec{'mn'});   
+	} else {
+	    $mangledLast = &main::aid_mangle($rec{'sn'});   
+	}
+
+	$alias = lc(substr($mangledFirst, 0, 1) . $mangledLast);
+	$a7 = substr($alias, 0, 7);
     }
 
-#    $alias = substr($mangledFirst, 0, 1) . substr($mangledLast, 0, 7);
-    $alias = substr($mangledFirst, 0, 1) . $mangledLast;
-    $alias = "\L$alias\E";
-
-    if (defined($aid_aliases{$alias})) {
-        $aid_aliases{$alias}++;
-        $alias = substr($alias, 0, 7) . $aid_aliases{$alias};
+    if (defined($aid_aliases{$a7})) {
+	$aid_aliases{$a7}++;
+	$alias = $a7 . $aid_aliases{$a7};
     } else {
-        $aid_aliases{$alias} = 1;
+	$aid_aliases{$a7} = 1;
     }
 
     $alias;
@@ -773,6 +779,11 @@ sub aid_common_html_hdr
     $hdr .= "<link rel=\"stylesheet\" type=\"text/css\" href=\"http://";
     $hdr .= $config{'master_srv'} . $config{'master_path'};
     $hdr .= "default.css\">\n";
+
+    # Rich Site Summary
+    $hdr .= "<link rel=\"alternate\" type=\"application/rss+xml\" title=\"RSS\" href=\"http://";
+    $hdr .= $config{'master_srv'} . $config{'master_path'};
+    $hdr .= "summary.rdf\">\n";
 
     $hdr .= $pics_label . "\n" . $author_meta . "\n" . $navigation_meta . "\n";
 

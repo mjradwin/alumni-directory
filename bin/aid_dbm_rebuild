@@ -1,6 +1,6 @@
 #!/usr/local/bin/perl -w
 
-# $Id: aid_dbm_rebuild,v 1.5 2002/03/07 23:29:39 mradwin Exp mradwin $
+# $Id: aid_dbm_rebuild,v 1.6 2003/02/16 18:25:48 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -54,8 +54,9 @@ while (($key,$val) = each(%OLDDB))
     next unless $key =~ /^\d+$/;
 
     %rec = &aid_db_unpack_rec($key,$val);
+    $rec{'a'} = '' if ($opt_a);
 
-    if (!$opt_a && defined $rec{'a'} && $rec{'a'} ne '') {
+    if (defined $rec{'a'} && $rec{'a'} ne '') {
 	$aliases{$key} = $rec{'a'};
     } else {
 	$aliases{$key} = &aid_generate_alias(*rec);
