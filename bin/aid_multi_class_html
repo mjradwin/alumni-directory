@@ -2,7 +2,7 @@
 
 #
 # does the html multi_class pages
-# $Id: aid_multi_class_html,v 3.17 1999/02/01 17:57:10 mradwin Exp mradwin $
+# $Id: aid_multi_class_html,v 3.18 1999/02/16 17:57:52 mradwin Exp mradwin $
 #
 
 require 'aid_util.pl';
@@ -68,9 +68,9 @@ print FMTOUT "</big></p>\n\n";
 print FMTOUT "<p align=center><big>";
 print FMTOUT "Compact&nbsp;Form:<br>\n";
 print FMTOUT "<a href=\"all.html\">";
-print FMTOUT "All&nbsp;Alumni</a> (~ 240 kbytes)<br>\n";
+print FMTOUT "All&nbsp;Alumni</a> (~ 300 kbytes)<br>\n";
 print FMTOUT "<a href=\"awalt.html\">";
-print FMTOUT "Awalt&nbsp;Alumni</a> (~ 50 kbytes)</big></p>\n";
+print FMTOUT "Awalt&nbsp;Alumni</a> (~ 100 kbytes)</big></p>\n";
 
 print FMTOUT &common_html_ftr(2);
 close(FMTOUT);
