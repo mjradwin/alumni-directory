@@ -2,7 +2,7 @@
 #     FILE: Makefile
 #   AUTHOR: Michael J. Radwin
 #    DESCR: Makefile for building the MVHS Alumni Internet Directory
-#      $Id: Makefile,v 1.35 1997/10/29 17:19:54 mjr Exp $
+#      $Id: Makefile,v 1.36 1997/12/19 19:36:54 mjr Exp mjr $
 #
 
 HOMEDIR=/home/divcom/mjr
@@ -39,7 +39,7 @@ $(WWWDIR)/class.html:	data/class.adr bin/mv_class_html
 
 awalt:	$(WWWDIR)/awalt.html
 $(WWWDIR)/awalt.html:	data/awalt.adr bin/mv_class_html
-	bin/mv_class_html data/awalt.adr $(WWWDIR)/awalt.html
+	bin/mv_class_html -a data/awalt.adr $(WWWDIR)/awalt.html
 
 new:	$(WWWDIR)/recent.html
 $(WWWDIR)/recent.html:	data/date.adr bin/mv_new_html
