@@ -2,7 +2,7 @@
 
 #
 # does the html verbose pages
-# $Id: aid_multi_alpha_html,v 3.35 1999/04/30 18:25:07 mradwin Exp mradwin $
+# $Id: aid_multi_alpha_html,v 3.36 1999/05/03 18:06:23 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -68,7 +68,8 @@ foreach $id (@alpha_ids)
 
 	print FMTOUT &aid_common_html_hdr(1,'Listed by Last Name',1,$time),
 	    &aid_common_intro_para(1),
-	    "<p>\n", &alpha_jump_bar($initial), "<hr noshade size=1>\n\n";
+	    "<p>\n", &alpha_jump_bar($initial), "</p>\n",
+	    "<hr noshade=\"noshade\" size=\"1\" />\n\n";
 
 	print FMTOUT "<pre>";
     }
