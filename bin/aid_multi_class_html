@@ -2,7 +2,7 @@
 
 #
 # does the html multi_class pages
-# $Id: aid_multi_class_html,v 6.3 2003/10/30 07:28:18 mradwin Exp mradwin $
+# $Id: aid_multi_class_html,v 6.4 2003/10/30 17:56:04 mradwin Exp mradwin $
 #
 # Copyright (c) 2003  Michael J. Radwin.
 # All rights reserved.
@@ -262,9 +262,10 @@ foreach $year (@years)
 			   aid_util::config('wwwdir'), "detail", $id);
 	open(FMTOUT2,">$out2") || die "Can't open $out2: $!\n";
 
-	print FMTOUT2 aid_util::common_html_hdr(-2,
-					   aid_util::inorder_fullname(\%rec),
-					   1,$rec{'u'},$title);
+	my($affil,$len) = aid_util::affiliate(\%rec,0);
+	my $name = aid_util::inorder_fullname(\%rec);
+
+	print FMTOUT2 aid_util::common_html_hdr(-2, $name . $affil, 1, $rec{'u'});
 	print FMTOUT2 aid_util::verbose_entry(\%rec,1);
 	print FMTOUT2 aid_util::common_html_ftr(-2,$rec{'u'});
 	close(FMTOUT2);
