@@ -2,11 +2,11 @@
 #     FILE: aid_util.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: perl library routines for the Alumni Internet Directory
-#      $Id: aid_util.pl,v 1.80 1998/01/02 20:13:21 mradwin Exp $
+#      $Id: aid_util.pl,v 1.80 1998/01/02 20:15:52 mjr Exp mjr $
 #
 
 $aid_util'rcsid =
- '$Id: aid_util.pl,v 1.80 1998/01/02 20:13:21 mradwin Exp $';
+ '$Id: aid_util.pl,v 1.80 1998/01/02 20:15:52 mjr Exp mjr $';
 
 # ----------------------------------------------------------------------
 # CONFIGURATION
@@ -304,7 +304,7 @@ sub aid_parse {
 
     local($_) = @_;
     local($time,$id,$req,$last,$first,$married,
-	  $school,$year,$email,$homepage,$location) = &aid_split($_);
+	  $school,$year,$email,$homepage,$location) = &main'aid_split($_);
     local($mangledLast,$mangledFirst,$alias);
 
     $mangledLast = &main'mangle($last);   #' font-lock
@@ -344,8 +344,11 @@ sub aid_create_db {
     return @db;
 }
 
-
-sub aid_util'bydatakeys { $datakeys[$a] cmp $datakeys[$b] } #'fnt
+sub aid_util'bydatakeys { 
+    package aid_util;
+    $datakeys[$a] cmp $datakeys[$b];
+}
+ 
 sub aid_alpha_db {
     package aid_util;
 
@@ -356,13 +359,12 @@ sub aid_alpha_db {
     local($[) = 0;
     local($_);
 
-    @alpha = ();
     @datakeys = ();
 
     foreach (@db) {
 	($time,$id,$req,$last,$first,$married,
-	 $school,$year,$email,$homepage,$location) = &aid_split($_);
-	push(@datakeys, "$last;$first");
+	 $school,$year,$email,$homepage,$location) = &main'aid_split($_);
+	push(@datakeys, "$last,$married,$first");
     }
 
     @alpha = @db[sort bydatakeys $[..$#db];
@@ -406,7 +408,7 @@ sub submit_body {
     local($rawdata,$message,$blankp) = @_;
     local($mvhs_checked,$awalt_checked,$other_checked) = ('', '', '');
     local($time,$id,$req,$last,$first,$married,
-	  $school,$year,$email,$homepage,$location) = &aid_split($rawdata);
+	  $school,$year,$email,$homepage,$location) = &main'aid_split($rawdata);
     local(@reqchk,$i);
 
     $homepage = 'http://' if $homepage eq '';
@@ -596,7 +598,7 @@ sub about_text {
     local($retval) = '';
     local($rawdata,$message,$show_req_p,$do_html_p,$do_vcard_p) = @_;
     local($time,$id,$req,$last,$first,$married,
-	  $school,$year,$email,$homepage,$location) = &aid_split($rawdata);
+	  $school,$year,$email,$homepage,$location) = &main'aid_split($rawdata);
 
     $do_vcard_p = 0 unless defined($do_vcard_p);
 
