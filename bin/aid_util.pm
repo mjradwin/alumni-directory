@@ -2,11 +2,11 @@
 #     FILE: aid_util.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: perl library routines for the Alumni Internet Directory
-#      $Id: aid_util.pl,v 4.29 1999/02/27 00:21:12 mradwin Exp mradwin $
+#      $Id: aid_util.pl,v 4.30 1999/02/27 00:32:21 mradwin Exp mradwin $
 #
 
 $aid_util'rcsid =
- '$Id: aid_util.pl,v 4.29 1999/02/27 00:21:12 mradwin Exp mradwin $';
+ '$Id: aid_util.pl,v 4.30 1999/02/27 00:32:21 mradwin Exp mradwin $';
 
 # ----------------------------------------------------------------------
 # CONFIGURATION
@@ -152,16 +152,14 @@ $aid_util'blank_entry{'school'}  = $aid_util'config{'short_school'};
 
 %aid_util'image_tag = #'#
     (
-     'new',
-     "<img src=\"" . $aid_util'config{'master_path'} . #'#
-     "new.gif\" border=0 width=28 height=10 " .
-     "alt=\"[new]\">",
-     
-     'new_anchored',
-     "<a href=\"" . $aid_util'config{'master_path'} . "recent.html\">" .
-     "<img src=\"" . $aid_util'config{'master_path'} .
-     "new.gif\" border=0 width=28 height=10 " .
-     "alt=\"[new]\"></a>",
+    'new',
+    "<small><strong class=\"new\">*NEW*</strong></small>",
+
+    'new_anchored',
+    "<small><strong class=\"new\">*NEW*</strong></small>",
+
+    'updated',
+    "<small><strong class=\"new\">*UPDATED*</strong></small>",
 
      'vcard',
      "<img src=\"" . $aid_util'config{'image_path'} . #'#
@@ -246,6 +244,22 @@ sub is_old {
     (((time - $_[0]) >= 31536000) ? 1 : 0);
 }
 
+sub aid_is_new_html
+{
+    package aid_util;
+
+    local(*rec) = @_;
+
+    if (&main'is_new($rec{'time'})) #')
+    {
+	' ' . (($rec{'time'} != $rec{'created'}) ?
+	       $image_tag{'updated'} : $image_tag{'new'});
+    }
+    else
+    {
+	'';
+    }
+}
 
 sub fullname {
     package aid_util;
@@ -827,9 +841,8 @@ sub aid_verbose_entry {
     $retval .= "<a href=\"" . $config{'about_cgi'} . "?about=$rec{'id'}\">";
     $retval .= "update</a>";
     $retval .= "]</small>\n";
-    
-    $retval .= $image_tag{'new_anchored'}
-	if !$suppress_new && &main'is_new($rec{'time'});  #'#
+
+    $retval .= &main'aid_is_new_html(*rec) unless $suppress_new; #'#
 
     $retval .= "</dt>\n";
     $retval .= "<dt>School: <strong>$rec{'school'}</strong></dt>\n" 
@@ -919,7 +932,8 @@ sub about_text {
 
     $do_vcard_p = 0 unless defined($do_vcard_p);
 
-    $retval .= "<table border=0 cellpadding=6 summary=\"\"><tr><td bgcolor=\"#$cell_bg\"><font color=\"#$cell_fg\">\n<pre>\n\n" if $do_html_p;
+    $retval .= "<div class=\"about\">\n" if $do_html_p;
+    $retval .= "<pre class=\"about\">\n\n" if $do_html_p;
 
     $retval .= "First Name         : ";
     $retval .= "<strong>" if $do_html_p;
@@ -1030,7 +1044,7 @@ sub about_text {
 	$retval .= "\n";
 	$retval .= "What's New?        :\n";
 	$retval .= "</pre>\n" if $do_html_p;
-	$retval .= $do_html_p ? "<blockquote>\n" : "";
+	$retval .= $do_html_p ? "<blockquote class=\"about\">\n" : "";
 	$rec{'message'} =~ s/\n/<br>\n/g if $do_html_p;
 	$retval .= $rec{'message'};
 	$retval .= $do_html_p ? "</blockquote>\n" : "";
@@ -1040,7 +1054,7 @@ sub about_text {
 	$retval .= "</pre>\n" if $do_html_p;
     }
 
-    $retval .= "</font></td></tr></table>\n" if $do_html_p;
+    $retval .= "</div>\n" if $do_html_p;
 
     $retval;
 }
@@ -1052,8 +1066,10 @@ sub common_intro_para {
     local($info) = "The " . $image_tag{'info'} .
 	"\nicon lets you get more detailed information about an alumnus.";
 
-    "<p>Any entries marked with\n" . $image_tag{'new'} .
-    "\nhave been added to the Directory or updated within the last month.\n" .
+    "<p>Any almuni marked with\n" . $image_tag{'new'} . 
+    "\nhave been added to the Directory last month.\n" .
+    "Alumni marked with\n" . $image_tag{'updated'} . 
+	"\nhave updated their information within the past month.\n" .
 	($_[0] ? $info : '') .
     "</p>\n" .
     "<p>Were you previously listed but now your name isn't here?  If\n" .
@@ -1153,7 +1169,13 @@ sub common_html_hdr {
 	"<html> <head>\n" .
 	"  <title>" . $titletag . "</title>\n" . 
 	    $pics_label . "\n" . $site_tags . "\n";
+
+    $hdr .= "  <link rel=\"stylesheet\" type=\"text/css\" href=\"http://";
+    $hdr .= $config{'master_srv'} . $config{'master_path'};;
+    $hdr .= "mvhs-alumni.css\">\n";
+
     $hdr .= "$noindex\n" if $norobots;
+
     $hdr .= "</head>\n\n";
     
     $hdr .= "<!-- hdr begin -->\n";
