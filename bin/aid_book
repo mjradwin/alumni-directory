@@ -63,7 +63,7 @@ while(<MVHS>) {
     $opt_e && print BOOK "$alias = $last; $first, $school $year = $email\n";
     $opt_b && print BOOK "alias $alias\t$email\n";
     $opt_w && print BOOK "<$alias>\n>$first $last <$email>\n<$alias>\n>$school $year\n";
-    $opt_m && print BOOK "alias $alias $email ($first $last)\nnote $alias $school $year\n";
+    $opt_m && print BOOK "alias $alias $email\nnote $alias <name:$first $last>$school $year\n";
 
     # netscape is a bigger sucker
     if ($opt_n) {
