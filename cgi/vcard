@@ -1,0 +1,56 @@
+#!/usr/local/bin/perl
+
+require 'aid_util.pl';
+
+print "HTTP/1.1 200 OK\015\012", "Date: ", &aid_http_date(time), "\015\012";
+print "Server: ", $ENV{'SERVER_SOFTWARE'}, "\015\012"
+    if defined $ENV{'SERVER_SOFTWARE'};
+print "Connection: close\015\012";
+
+$ENV{'PATH_INFO'} =~ s/\+/ /g;
+$ENV{'PATH_INFO'} =~ s/%([A-Fa-f0-9]{2})/pack("c",hex($1))/ge;
+
+if ($ENV{'PATH_INFO'} =~ m,/(\d+)\.vcf,i)
+{
+    dbmopen(DB, &aid_config('wwwdir') . 'master', 0444);
+    $val = $DB{$1};
+    dbmclose(DB);
+
+    %rec = ();
+
+    (
+     $rec{'valid'},
+     $rec{'request'},
+     $rec{'reunion'},
+     $rec{'bounce'},
+     $rec{'created'},
+     $rec{'time'},
+     $rec{'fresh'}
+     ) = unpack("C3N4", substr($val, 0, 19));
+
+    (
+     $rec{'last'},
+     $rec{'married'},
+     $rec{'first'},
+     $rec{'school'},
+     $rec{'year'},
+     $rec{'email'},
+     $rec{'www'},
+     $rec{'location'},
+     $rec{'inethost'}
+     ) = split(/\0/, substr($val, 19));
+
+    print "Last-Modified: ", &aid_http_date($rec{'time'}), "\015\012";
+    print "Content-Type: text/x-vcard\015\012\015\012";
+    print &aid_vcard_text(*rec);
+
+}
+else
+{
+    print "Content-Type: text/html\015\012\015\012";
+    print "<html><head><title>no such user</title></head><body>no such user</body></html>\015\012";
+}
+
+close(STDOUT);
+exit(0);
+
