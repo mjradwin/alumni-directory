@@ -2,7 +2,7 @@
 #     FILE: aid_util.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: perl library routines for the Alumni Internet Directory
-#      $Id: aid_util.pl,v 5.89 2001/05/15 05:35:30 mradwin Exp mradwin $
+#      $Id: aid_util.pl,v 5.90 2001/05/24 18:13:29 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -1289,6 +1289,22 @@ sub aid_rebuild_secondary_keys
 
     @diffs;
 }
+
+sub aid_url_unescape
+{
+    package aid_util;
+
+    local($_) = @_;
+
+    # Convert plus to space
+    s/\+/ /g;
+
+    # Convert %XX from hex numbers to alphanumeric
+    s/%([A-Fa-f0-9]{2})/pack("c",hex($1))/ge;
+
+    $_;
+}
+
 
 sub aid_url_escape
 {
