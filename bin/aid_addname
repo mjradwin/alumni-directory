@@ -1,0 +1,129 @@
+#!/usr/local/bin/perl
+
+require 'getopts.pl';
+require 'mv_util.pl';
+
+$usage = 'usage: mv_addname [-hm] [mailspoolfile]
+    -h        Display usage information.
+    -m        Manual operation (don\'t rebuild).
+';
+
+&Getopts('hm') || die "$usage\n";
+$opt_h && die "$usage\n";
+
+&readspool(($ARGV[0]) ? $ARGV[0] : '/var/spool/mail/mjr');
+&rebuild() unless $opt_m;
+
+print "done!\n";
+exit(0);
+
+sub readspool {
+    local($spoolFile) = @_;
+    local($newsdir) = &mv_config('wwwdir') . "news/raw";
+    local($[) = 0;
+    local($_);
+    local($id,$newsFile,*NEWSOUT,*SPOOL);
+
+    open(SPOOL, $spoolFile) || die "can't open $spoolFile: $!\n";
+    print "reading spool...\n";
+    while(<SPOOL>) {
+	next unless /^This was submitted to the MVHS address database/;
+
+	$_ = <SPOOL>;  # grab blank line
+	$_ = <SPOOL>;  # here it is!
+	chop;
+
+	$id = &addname($_);
+
+	while(<SPOOL>) {
+	    last if /^The kind soul who submitted it/;
+	    if (/^_MVHSAID_BEGIN_MESSAGE_/) {
+		$newsFile = "${newsdir}/${id}.txt";
+		open(NEWSOUT, ">$newsFile") ||
+		    die "Can't open $newsFile: $!\n";
+		while(<SPOOL>) {
+		    print NEWSOUT $_;
+		    last if /^_MVHSAID_END_MESSAGE_/;
+		}
+		close(NEWSOUT);
+	    }
+	}
+    }
+    close(SPOOL);
+}
+
+sub rebuild {
+    chdir &mv_config('mvhsdir') || die "can't chdir: $!\n";
+
+    print "rebuilding...\n";
+    system 'make';
+
+    print "mailing...";
+    if (-e 'data/newmail.adr') {
+	print ' new';
+	system 'bin/mv_welcome data/newmail.adr';
+	unlink('data/newmail.adr');
+    }
+
+    if (-e 'data/update.adr') {
+	print ' update';
+	system 'bin/mv_welcome -u data/update.adr';
+	unlink('data/update.adr');
+    }
+
+    print "\n";
+}
+
+
+sub addname {
+    local($rawdata) = @_;
+    local($[) = 0;
+    local($_);
+    local($dbFile,$newmailFile,$updFile,$logFile,@db);
+    local($time,$id,$req,$last,$first,$married,
+	  $school,$year,$email,$homepage,$location);
+    local($addme,$tmpFile,*LOG,*TMP);
+
+    $dbFile = &mv_config('mvhsdir') . "data/mvhs.adr";
+    $newmailFile = &mv_config('mvhsdir') . "data/newmail.adr";
+    $updFile = &mv_config('mvhsdir') . "data/update.adr";
+    $logFile = &mv_config('mvhsdir') . "logs/additions.log";
+    @db = &mv_create_db($dbFile);
+
+    ($time,$id,$req,$last,$first,$married,
+     $school,$year,$email,$homepage,$location)  = split(/;/, $rawdata);
+
+    open(LOG, ">>$logFile") || die "Can't open $logFile: $!\n";
+    select(LOG); $| = 1; select(STDOUT);
+
+    if ($id == -1) {
+	$id = ($#db + 1);
+	$addme = join(';', ($time,$id,$req,$last,$first,$married,
+			    $school,$year,$email,$homepage,$location));
+	system("echo '$addme' >> $newmailFile");
+    } else {
+	print     "==> UPDATE ", $db[$id], "\n";
+	print LOG "==> UPDATE ", $db[$id], "\n";
+	$addme = $rawdata;
+	system("echo '$addme' >> $updFile");
+    }
+
+    $db[$id] = $addme;
+    print $addme, "\n";
+    print LOG $addme, "\n";
+    close(LOG);
+
+    $tmpFile = "/tmp/mv_add.$$";
+    open(TMP, ">$tmpFile") || die "Can't open $tmpFile: $!\n";
+    for (@db) {
+	next if $_ eq '';
+	print TMP $_, "\n";
+    }
+    close(TMP);
+
+    system("/bin/cp -f $tmpFile $dbFile");
+    unlink($tmpFile) || die "couldn't unlink $tmpFile: $!\n";
+#    unlink($dbFile) || die "couldn't unlink $dbFile: $!\n";
+
+    return $id;
+}
