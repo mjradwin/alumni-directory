@@ -2,7 +2,7 @@
 #     FILE: aid_util.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: perl library routines for the Alumni Internet Directory
-#      $Id: aid_util.pl,v 5.3 1999/06/01 05:42:12 mradwin Exp mradwin $
+#      $Id: aid_util.pl,v 5.4 1999/06/01 17:00:37 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -224,9 +224,11 @@ sub aid_generate_alias
 sub aid_vcard_path {
     package aid_util;
 
-    local($id) = @_;
+    local(*rec) = @_;
 
-    $config{'vcard_cgi'} . "/${id}.vcf";
+    $config{'vcard_cgi'} . '/' . $rec{'id'} . '/' . 
+	&main'aid_mangle($rec{'gn'}) . &main'aid_mangle($rec{'sn'}) . 
+	    &main'aid_mangle($rec{'mn'}) . '.vcf';
 }
 
 sub aid_yahoo_abook_path {
@@ -381,7 +383,7 @@ sub aid_verbose_entry {
     $retval .= "</big>\n";
 
     $retval .= "&nbsp;<small>[";
-    $retval .= "<a href=\"" . &main'aid_vcard_path($rec{'id'}) . "\">"; #'#
+    $retval .= "<a href=\"" . &main'aid_vcard_path(*rec) . "\">"; #'#
     $retval .= "vCard</a>";
     $retval .= "&nbsp;|&nbsp;";
     $retval .= "<a\ntarget=\"_address\" href=\"" .
@@ -580,7 +582,7 @@ sub aid_about_text
 
     if ($do_vcard_p && $do_html_p && $rec{'v'}) {
 	$retval .= "vCard              : ";
-	$retval .= "<a href=\"" . &main'aid_vcard_path($rec{'id'}) . "\">"; #'#
+	$retval .= "<a href=\"" . &main'aid_vcard_path(*rec) . "\">"; #'#
 	$retval .= $image_tag{'vcard'};
 	$retval .= "</a>\n";
 
