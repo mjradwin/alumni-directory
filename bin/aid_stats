@@ -1,8 +1,9 @@
 #!/usr/bin/perl -w
 
-# $Id: aid_stats,v 1.1 1999/01/21 16:45:33 mradwin Exp mradwin $
+# $Id: aid_stats,v 1.2 1999/01/22 21:08:03 mradwin Exp mradwin $
 
 require 'aid_util.pl';
+require 'ctime.pl';
 
 $dbFile = &aid_config('aiddir') . "data/master.adr";
 @db = &aid_create_db($dbFile);
@@ -10,6 +11,10 @@ $dbFile = &aid_config('aiddir') . "data/master.adr";
 $nvalid = 0;
 $ntotal = 0;
 @nreq = (0, 0, 0, 0, 0);
+$nreunion = 0;
+$nlocation = 0;
+$nweb = 0;
+$nnews = 0;
 
 for (@db)
 {
@@ -21,9 +26,32 @@ for (@db)
     next unless $rec{'valid'};
     $nvalid++;
     $nreq[$rec{'request'}]++;
+
+    $nreunion++ if $rec{'reunion'};
+    $nlocation++ if $rec{'location'} ne '';
+    $nweb++ if $rec{'www'} ne '';
+    $nnews++ if -f &aid_newsfile($rec{'id'});
 }
 
-print "$ntotal total users, $nvalid valid\n";
-print "", ($nreq[1] + $nreq[2] + $nreq[3] + $nreq[4]),
-    " requesting updates ";
-print "(", join(', ', @nreq), ")\n";
+print "Mountain View High School Alumni Internet Directory\n";
+print "Member Statistics\n";
+print "------------------------------------------------------------------------\n\n";
+
+printf "%4d members w/valid   email address\n", $nvalid;
+printf "%4d members w/invalid email address\n", ($ntotal - $nvalid);
+
+printf "%4d requesting quarterly digests:\n",
+    ($nreq[1] + $nreq[2] + $nreq[3] + $nreq[4]);
+
+printf "    %4d - %s\n", $nreq[1], $aid_util'req_descr_long[1];
+printf "    %4d - %s\n", $nreq[2], $aid_util'req_descr_long[2];
+printf "    %4d - %s\n", $nreq[3], $aid_util'req_descr_long[3];
+printf "    %4d - %s\n", $nreq[4], $aid_util'req_descr_long[4];
+
+printf "%4d allow class officers to mail reunion info\n", $nreunion;
+printf "%4d wrote some location info\n", $nlocation;
+printf "%4d have personal web page\n", $nweb;
+printf "%4d wrote What's New? paragraph\n", $nnews;
+
+print "\n------------------------------------------------------------------------\n";
+print &ctime(time);
