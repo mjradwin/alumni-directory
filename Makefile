@@ -2,28 +2,28 @@
 #     FILE: Makefile
 #   AUTHOR: Michael J. Radwin
 #    DESCR: Makefile for building the Alumni Internet Directory
-#      $Id: Makefile,v 1.59 1998/05/17 01:40:06 mradwin Exp mradwin $
+#      $Id: Makefile,v 1.60 1998/05/17 04:08:28 mradwin Exp mradwin $
 #
 
 HOMEDIR=/home/users/mradwin
 WWWDIR=/home/web/radwin.org/docs/mvhs-alumni
 RM=/bin/rm -f
 
-ADR_MASTER=data/master.adr
-ADR_ALPHA=data/alpha.adr
-ADR_CLASS=data/class.adr
-ADR_AWALT=data/awalt.adr
-ADR_DATE=data/date.adr
+ADR_MASTER=./data/master.adr
+ADR_ALPHA=./data/alpha.adr
+ADR_CLASS=./data/class.adr
+ADR_AWALT=./data/awalt.adr
+ADR_DATE=./data/date.adr
 
-BIN_ALPHA2=bin/aid_alpha2_html
-BIN_ALPHA=bin/aid_alpha_html
-BIN_BOOK=bin/aid_book
-BIN_CLASS=bin/aid_class_html
-BIN_GONERS=bin/aid_goners_html
-BIN_HOME=bin/aid_home_html
-BIN_RECENT=bin/aid_recent_html
-BIN_VERBOSE=bin/aid_verbose_html
-BIN_WWW=bin/aid_www_html
+BIN_ALPHA2=./bin/aid_alpha2_html
+BIN_ALPHA=./bin/aid_alpha_html
+BIN_BOOK=./bin/aid_book
+BIN_CLASS=./bin/aid_class_html
+BIN_GONERS=./bin/aid_goners_html
+BIN_HOME=./bin/aid_home_html
+BIN_RECENT=./bin/aid_recent_html
+BIN_VERBOSE=./bin/aid_verbose_html
+BIN_WWW=./bin/aid_www_html
 
 TARFILES=README Makefile cgi-bin/*.pl cgi-bin/mvhsaid bin/aid_* data/*.include
 SNAPSHOTFILES=bin/aid_make mvhs web/mvhs-alumni/*.gif \
