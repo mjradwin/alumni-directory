@@ -2,7 +2,7 @@
 #     FILE: aid_util.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: perl library routines for the Alumni Internet Directory
-#      $Id: aid_util.pl,v 5.52 2000/01/18 16:57:17 mradwin Exp mradwin $
+#      $Id: aid_util.pl,v 5.53 2000/01/18 17:12:09 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -821,7 +821,7 @@ sub aid_common_html_hdr
     }
 
     $hdr .= $extra_meta if defined $extra_meta;
-    $hdr .= "\n</head>\n\n";
+    $hdr .= "\n</head>\n";
     
     $hdr .= "<body>\n";
 
@@ -854,26 +854,25 @@ sub aid_common_html_hdr
 "($timestamp)<br${main'ht_empty_close_tag}<br${main'ht_empty_close_tag}
 </small></td><td align=\"right\"><small>
 <a href=\"$config{'search_cgi'}\">Search</a></small></td></tr></table>
-
-<table cellspacing=\"0\" cellpadding=\"6\" border=\"0\" width=\"100%\">
-<tr><td bgcolor=\"#$header_bg\">
-";
+<table cellspacing=\"0\" cellpadding=\"6\" border=\"0\"
+width=\"100%\"><tr><td
+bgcolor=\"#$header_bg\">";
 
     if ($page == 0)
     {
-	$hdr .= "<h1><font color=\"#$header_fg\">";
+	$hdr .= "<h1><font\ncolor=\"#$header_fg\">";
 	$hdr .= "$config{'school'}\n";
-	$hdr .= "Alumni Internet Directory</font></h1>\n";
+	$hdr .= "Alumni Internet\nDirectory</font></h1>";
     }
     else
     {
-	$hdr .= "<strong class=\"overline\"><font color=\"#$header_fg\">";
+	$hdr .= "<strong class=\"overline\"><font\ncolor=\"#$header_fg\">";
 	$hdr .= "$config{'school'}\n";
 	$hdr .= "Alumni Internet Directory:</font></strong>\n";
 	$hdr .= "<h1><font color=\"#$header_fg\">$title";
-	$hdr .= " - <small>$subtitle</small>"
+	$hdr .= "\n- <small>$subtitle</small>"
 	    if defined $subtitle && $subtitle ne '';
-	$hdr .= "</font></h1>\n";
+	$hdr .= "</font></h1>";
     }
 
     $hdr .= "</td></tr></table>\n\n";
