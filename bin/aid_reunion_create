@@ -1,8 +1,8 @@
 #!/usr/local/bin/perl -w
 
-# $Id: aid_reunion_create,v 1.4 2003/04/22 00:47:29 mradwin Exp mradwin $
+# $Id: aid_reunion_create,v 1.5 2003/05/15 00:30:45 mradwin Exp $
 #
-#   Copyright (c) 1995-1999  Michael John Radwin
+#   Copyright (c) 2003  Michael J. Radwin
 #
 #   This program is free software; you can redistribute it and/or modify
 #   it under the terms of the GNU General Public License as published by
@@ -24,7 +24,7 @@ use DB_File::Lock;
 use Getopt::Std;
 
 $0 =~ s,.*/,,;  # basename
-$usage = "usage: $0 [-h] reunions.db reunions.dat
+my $usage = "usage: $0 [-h] reunions.db reunions.dat
     -h        Display usage information.
 ";
 

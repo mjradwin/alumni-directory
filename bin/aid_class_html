@@ -2,9 +2,9 @@
 
 #
 # does the html version of the grad-date address list
-# $Id: aid_class_html,v 5.21 2002/03/07 23:29:39 mradwin Exp mradwin $
+# $Id: aid_class_html,v 5.22 2003/05/15 00:30:45 mradwin Exp $
 #
-#   Copyright (c) 1995-1999  Michael John Radwin
+#   Copyright (c) 2003  Michael J. Radwin
 #
 #   This program is free software; you can redistribute it and/or modify
 #   it under the terms of the GNU General Public License as published by
@@ -28,11 +28,11 @@ unshift(@INC, $dirname);
 use lib "/pub/m/r/mradwin/private/lib/perl5/site_perl";
 use DB_File::Lock;
 
-require 'aid_util.pl';
+use aid_util;
 use Getopt::Std;
 
 $0 =~ s,.*/,,;  # basename
-$usage = "usage: $0 [-hqtwd] [-c class] [-i <keys>] infile.db outfile
+my $usage = "usage: $0 [-hqtwd] [-c class] [-i <keys>] infile.db outfile
     -h        Display usage information.
     -q        Quiet.
     -t        Output text only.
@@ -96,15 +96,15 @@ if (!$opt_t) {
 	unless defined $DB{"_t${affix}"} && $DB{"_t${affix}"} ne '';
     $time = unpack("N",$DB{"_t${affix}"});
 
-    print FMTOUT &aid_common_html_hdr($pageno,$title,1,$time);
-    print FMTOUT &aid_common_intro_para(0);
-    print FMTOUT &aid_class_jump_bar('#grad','',*years,1);
+    print FMTOUT aid_util::common_html_hdr($pageno,$title,1,$time);
+    print FMTOUT aid_util::common_intro_para(0);
+    print FMTOUT aid_util::class_jump_bar('#grad','',*years,1);
 }
 
 if ($opt_d)
 {
     print FMTOUT "The following information is provided solely for the
-information of the " . &aid_config('school') . " community.
+information of the " . aid_util::config('school') . " community.
 Any redistribution outside of this community, or
 solicitation of business or contributions
 from individuals listed below is forbidden.
@@ -127,7 +127,7 @@ if ($opt_c)
 	print FMTOUT "Faculty/Staff";
     }
 
-    print FMTOUT "  (Last updated ", &aid_caldate($time), ")\n\n";
+    print FMTOUT "  (Last updated ", aid_util::caldate($time), ")\n\n";
 }
 
 if ($opt_t)
@@ -152,7 +152,7 @@ foreach $year (@years)
 	if (!$opt_c)
 	{
 	    $opt_t || print FMTOUT "<a name=\"grad${year}\" " .
-		"href=\"" . &aid_config('master_path') . "class/${year}.html\">";
+		"href=\"" . aid_util::config('master_path') . "class/${year}.html\">";
 	    print FMTOUT "Class of $year";
 	    $opt_t || print FMTOUT "</a>";
 	    print FMTOUT "\n";
@@ -165,7 +165,7 @@ foreach $year (@years)
 	if (!$opt_c)
 	{
 	    $opt_t || print FMTOUT "<a name=\"gradother\" " .
-		"href=\"" . &aid_config('master_path') . "class/other.html\">"
+		"href=\"" . aid_util::config('master_path') . "class/other.html\">"
 		    if $prev =~ /^\d+$/;
 	    print FMTOUT "Faculty/Staff";
 	    $opt_t || print FMTOUT "</a>" if $prev =~ /^\d+$/;
@@ -176,19 +176,19 @@ foreach $year (@years)
 	$prev = $year;
     }
 
-    foreach $id (@ids)
+    foreach my $id (@ids)
     {
-	%rec = &aid_db_unpack_rec($id,$DB{$id});
+	my %rec = aid_util::db_unpack_rec($id,$DB{$id});
 	next unless $rec{'v'};
 
-	$fullname = &aid_fullname(*rec);
+	$fullname = aid_util::fullname(\%rec);
 
 	print FMTOUT ' ';
-	$opt_t || print FMTOUT "<li><a href=\"" . &aid_about_path(*rec) . "\">";
+	$opt_t || print FMTOUT "<li><a href=\"" . aid_util::about_path(\%rec) . "\">";
 	print FMTOUT $fullname;
 	$opt_t || print FMTOUT "</a>";
 	$opt_t && print FMTOUT ' ', ' ' x (39 - (length($fullname))), $rec{'e'};
-	$opt_t || print FMTOUT &aid_is_new_html(*rec);
+	$opt_t || print FMTOUT aid_util::is_new_html(\%rec);
 	print FMTOUT "\n";
     }
 
@@ -196,7 +196,7 @@ foreach $year (@years)
 }
 print STDOUT "\n" unless $opt_q;
 
-$opt_t || print FMTOUT &aid_common_html_ftr($pageno,$time);
+$opt_t || print FMTOUT aid_util::common_html_ftr($pageno,$time);
 
 untie(%DB);
 close(FMTOUT);

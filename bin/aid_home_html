@@ -2,9 +2,9 @@
 
 #
 # does the html version of just home pages
-# $Id: aid_home_html,v 5.22 2003/02/16 19:02:39 mradwin Exp mradwin $
+# $Id: aid_home_html,v 5.23 2003/05/15 00:30:45 mradwin Exp $
 #
-#   Copyright (c) 1995-1999  Michael John Radwin
+#   Copyright (c) 2003  Michael J. Radwin
 #
 #   This program is free software; you can redistribute it and/or modify
 #   it under the terms of the GNU General Public License as published by
@@ -28,11 +28,12 @@ unshift(@INC, $dirname);
 use lib "/pub/m/r/mradwin/private/lib/perl5/site_perl";
 use DB_File::Lock;
 
-require 'aid_util.pl';
+use aid_util;
+use aid_submit;
 use Getopt::Std;
 
 $0 =~ s,.*/,,;  # basename
-$usage = "usage: $0 [-hq] {-s,-d,-f <file>} [-i <keys>] -p <pg> -t <txt> out.html
+my $usage = "usage: $0 [-hq] {-s,-d,-f <file>} [-i <keys>] -p <pg> -t <txt> out.html
     -h        Display usage information.
     -q        Quiet.
     -i <keys> Incremental update only for list of keys.
@@ -70,7 +71,7 @@ if (@incremental && $opt_d && (! grep(/_years/, @incremental)))
 $infile = $opt_f;
 $outfile = shift;
 
-$dbmfile = &aid_config('dbmfile');
+$dbmfile = aid_util::config('dbmfile');
 
 if ($opt_f)
 {
@@ -81,7 +82,7 @@ if ($opt_f)
 }
 elsif ($opt_s)
 {
-    $time = (stat(&aid_config('aiddir') . 'bin/aid_submit.pl'))[9];
+    $time = (stat(aid_util::config('aiddir') . 'bin/aid_submit.pl'))[9];
 }
 else
 {
@@ -111,10 +112,10 @@ if ($opt_f && $opt_p == 0)
 }
 
 open(OUTFILE,">$outfile") || die "Can't open $outfile: $!\n";
-print OUTFILE &aid_common_html_hdr($opt_p,$opt_t,0,$time);
+print OUTFILE aid_util::common_html_hdr($opt_p,$opt_t,0,$time);
 
 if ($opt_s) {
-    print OUTFILE &aid_submit_body(*blank_entry,'');
+    print OUTFILE aid_util::submit_body(*blank_entry,'');
 
 } elsif ($opt_d) {
     die "corrupt/missing _years key!"
@@ -124,7 +125,7 @@ if ($opt_s) {
 
     print OUTFILE "<p>Before downloading nickname and address book files
 for your e-mail program, please read the
-<a href=\"", &aid_config('master_path'), "etc/copyright.html\">Acceptable
+<a href=\"", aid_util::config('master_path'), "etc/copyright.html\">Acceptable
 Use Policy</a>.</p>
 
 <p>This feature is recommended for expert users only.
@@ -138,11 +139,11 @@ such as John Smith and Jane Smith, then the first one will be
 <code><strong>jsmith2</strong></code>.</p>
 
 <p>For help on importing into your e-mail application, please see <a
-href=\"", &aid_config('master_path'), 
+href=\"", aid_util::config('master_path'), 
 "etc/faq.html#download\">instructions</a>.</p>\n\n";
 
     print OUTFILE "<form method=\"get\" action=\"";
-    print OUTFILE &aid_config('download_cgi') . "\">\n";
+    print OUTFILE aid_util::config('download_cgi') . "\">\n";
     print OUTFILE "<input type=\"hidden\" name=\"download\" value=\"1\">\n\n";
 
     print OUTFILE "<label for=\"year\">Year to download:&nbsp;</label>\n";
@@ -196,12 +197,12 @@ years after mine.</label>
 
     if ($opt_p == 0) {
 	print OUTFILE "<p>Classes:\n",
-	&aid_class_jump_bar('class/', '.html', *years, 0), "</p>\n";
+	aid_util::class_jump_bar('class/', '.html', *years, 0), "</p>\n";
     }
 
     print OUTFILE @lines;
 }
-print OUTFILE &aid_common_html_ftr($opt_p,$time);
+print OUTFILE aid_util::common_html_ftr($opt_p,$time);
 
 untie(%DB) unless $opt_f || $opt_s;
 close(OUTFILE);

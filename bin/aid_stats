@@ -1,8 +1,8 @@
 #!/usr/local/bin/perl -w
 
-# $Id: aid_stats,v 5.18 2003/02/02 18:23:55 mradwin Exp mradwin $
+# $Id: aid_stats,v 5.19 2003/05/15 00:30:45 mradwin Exp $
 #
-#   Copyright (c) 1995-1999  Michael John Radwin
+#   Copyright (c) 2003  Michael J. Radwin
 #
 #   This program is free software; you can redistribute it and/or modify
 #   it under the terms of the GNU General Public License as published by
@@ -26,12 +26,11 @@ unshift(@INC, $dirname);
 use lib "/pub/m/r/mradwin/private/lib/perl5/site_perl";
 use DB_File::Lock;
 
-require 'aid_util.pl';
-require 'ctime.pl';
+use aid_util;
 use Getopt::Std;
 
 $0 =~ s,.*/,,;  # basename
-$usage = "usage: $0 [-ht] infile.db outfile
+my $usage = "usage: $0 [-ht] infile.db outfile
     -h        Display usage information.
     -t        Text only.
 ";
@@ -69,11 +68,11 @@ $join_time_sum = 0;
 
 $nnever_updated = $nweek = $nmonth = $n3month = $n13month = 0;
 
-while (($key,$val) = each %DB)
+while (my($key,$val) = each %DB)
 {
     next unless $key =~ /^\d+$/;
 
-    %rec = &aid_db_unpack_rec($key,$val);
+    my %rec = aid_util::db_unpack_rec($key,$val);
 
     $ntotal++;
 
@@ -102,10 +101,10 @@ while (($key,$val) = each %DB)
     push(@join_times, $rec{'c'});
 
     $nnever_updated++ if $rec{'u'} == $rec{'c'};
-    $nweek++ if &aid_is_new($rec{'c'}, 0.25);
-    $nmonth++ if &aid_is_new($rec{'c'}, 1);
-    $n3month++ if &aid_is_new($rec{'c'}, 3);
-    $n13month++ if &aid_is_new($rec{'c'}, 13);
+    $nweek++ if aid_util::is_new($rec{'c'}, 0.25);
+    $nmonth++ if aid_util::is_new($rec{'c'}, 1);
+    $n3month++ if aid_util::is_new($rec{'c'}, 3);
+    $n13month++ if aid_util::is_new($rec{'c'}, 13);
 }
 
 $nlegit = $nvalid + $ndubious;
@@ -125,7 +124,7 @@ $median_tenure_weeks = ($now - $median_join_time) / (60 * 60 * 24 * 7);
 $time = time;
 if (!$opt_t)
 {
-    print FMTOUT &aid_common_html_hdr(15,'Member Statistics',0,$time);
+    print FMTOUT aid_util::common_html_hdr(15,'Member Statistics',0,$time);
     print FMTOUT "<pre>";
 }
 else
@@ -199,12 +198,12 @@ printf FMTOUT "median  time since modify  : %3.0f weeks\n",
 if (!$opt_t)
 {
     print FMTOUT "</pre>\n";
-    print FMTOUT &aid_common_html_ftr(15,$time);
+    print FMTOUT aid_util::common_html_ftr(15,$time);
 }
 else
 {
     print FMTOUT "\n------------------------------------------------------------------------\n";
-    print FMTOUT &ctime($time);
+    print FMTOUT scalar(localtime($time));
 }
 
 close(FMTOUT);

@@ -1,8 +1,8 @@
 #!/usr/local/bin/perl -w
 
-# $Id: aid_force_rebuild,v 1.7 2003/03/14 23:30:26 mradwin Exp mradwin $
+# $Id: aid_force_rebuild,v 1.8 2003/05/15 00:30:45 mradwin Exp $
 #
-#   Copyright (c) 1995-1999  Michael John Radwin
+#   Copyright (c) 2003  Michael J. Radwin
 #
 #   This program is free software; you can redistribute it and/or modify
 #   it under the terms of the GNU General Public License as published by
@@ -26,11 +26,11 @@ unshift(@INC, $dirname);
 use lib "/pub/m/r/mradwin/private/lib/perl5/site_perl";
 use DB_File::Lock;
 
-require 'aid_util.pl';
+use aid_util;
 use Getopt::Std;
 
 $0 =~ s,.*/,,;  # basename
-$usage = "usage: $0 [-hd] infile.db
+my $usage = "usage: $0 [-hd] infile.db
     -h        Display usage information.
     -d        Display debug diffs.
 ";
@@ -47,7 +47,7 @@ tie(%DB, 'DB_File::Lock', $dbmfile, O_CREAT|O_RDWR, 0644, $DB_HASH, 'write')
 
 @old_emails = ();
 %new_emails = ();
-while (($key,$val) = each %DB)
+while (my($key,$val) = each %DB)
 {
     if ($key =~ /\@/)
     {
@@ -55,7 +55,7 @@ while (($key,$val) = each %DB)
     }
     elsif ($key =~ /^\d+/)
     {
-	%rec = &aid_db_unpack_rec($key,$val);
+	%rec = aid_util::db_unpack_rec($key,$val);
 	$new_emails{"\L$rec{'e'}\E"} = pack('n',$key);
     }
 }
@@ -64,12 +64,12 @@ foreach (@old_emails)
 {
     delete $DB{$_};
 }
-while (($key,$val) = each %new_emails)
+while (my($key,$val) = each %new_emails)
 {
     $DB{$key} = $val;
 }
 
-my @diffs = &aid_rebuild_secondary_keys(\%DB,0);
+my @diffs = aid_util::rebuild_secondary_keys(\%DB,0);
 
 if ($opt_d)
 {

@@ -2,9 +2,9 @@
 
 #
 # generates address books in several formats
-# $Id: aid_book,v 5.7 2002/03/07 23:29:39 mradwin Exp mradwin $
+# $Id: aid_book,v 5.8 2003/05/15 00:30:45 mradwin Exp $
 #
-#   Copyright (c) 1995-1999  Michael John Radwin
+#   Copyright (c) 2003  Michael J. Radwin
 #
 #   This program is free software; you can redistribute it and/or modify
 #   it under the terms of the GNU General Public License as published by
@@ -28,11 +28,12 @@ unshift(@INC, $dirname);
 use lib "/pub/m/r/mradwin/private/lib/perl5/site_perl";
 use DB_File::Lock;
 
-require 'aid_util.pl';
+use aid_util;
 use Getopt::Std;
+use strict;
 
 $0 =~ s,.*/,,;  # basename
-$usage = "usage: $0 [-h] infile.db -{p,e,b,w,m,n,l,v,o} outfile
+my $usage = "usage: $0 [-h] infile.db -{p,e,b,w,m,n,l,v,o} outfile
     -h        Display usage information.
 
     -p        Pine address book
@@ -48,80 +49,91 @@ $usage = "usage: $0 [-h] infile.db -{p,e,b,w,m,n,l,v,o} outfile
 
 # get the command-line options and die if there is a bad option or
 # there are no filenames
-getopts('hp:e:b:w:m:n:l:v:o:') || die "$usage\n";
-$opt_h && die "$usage\n";
+my(%opts);
+getopts('hp:e:b:w:m:n:l:v:o:', \%opts) || die "$usage\n";
+$opts{'h'} && die "$usage\n";
 $ARGV[0] || die "$usage\n";
-$opt_h = $opt_h;		# avoid warning
 
 # must have at least 1 option
 die "$usage\n" unless
-    $opt_p || $opt_e || $opt_b || $opt_w || 
-    $opt_m || $opt_n || $opt_l || $opt_v || $opt_o;
+    $opts{'p'} || $opts{'e'} || $opts{'b'} || $opts{'w'} || 
+    $opts{'m'} || $opts{'n'} || $opts{'l'} || $opts{'v'} || $opts{'o'};
 
-$dbmfile = shift;
+my $dbmfile = shift;
+my %DB;
 tie(%DB, 'DB_File::Lock', $dbmfile, O_RDONLY, 0444, $DB_HASH, 'read')
     or die "$dbmfile: $!\n";
 
 die "no _alpha key!" unless defined $DB{'_alpha'};
 
-if ($opt_p) { open(BOOKp,">$opt_p") || die "Can't open $opt_p: $!\n"; }
-if ($opt_e) { open(BOOKe,">$opt_e") || die "Can't open $opt_e: $!\n"; }
-if ($opt_b) { open(BOOKb,">$opt_b") || die "Can't open $opt_b: $!\n"; }
-if ($opt_w) { open(BOOKw,">$opt_w") || die "Can't open $opt_w: $!\n"; }
-if ($opt_m) { open(BOOKm,">$opt_m") || die "Can't open $opt_m: $!\n"; }
-if ($opt_n) { open(BOOKn,">$opt_n") || die "Can't open $opt_n: $!\n"; }
-if ($opt_l) { open(BOOKl,">$opt_l") || die "Can't open $opt_l: $!\n"; }
-if ($opt_v) { open(BOOKv,">$opt_v") || die "Can't open $opt_v: $!\n"; }
-if ($opt_o) { open(BOOKo,">$opt_o") || die "Can't open $opt_o: $!\n"; }
+my($BOOKp,$BOOKe,$BOOKb,$BOOKw,$BOOKm,$BOOKn,$BOOKl,$BOOKv,$BOOKo);
 
-$opt_p && &aid_book_write_prefix(*BOOKp,'p');
-$opt_e && &aid_book_write_prefix(*BOOKe,'e');
-$opt_b && &aid_book_write_prefix(*BOOKb,'b');
-$opt_w && &aid_book_write_prefix(*BOOKw,'w');
-$opt_m && &aid_book_write_prefix(*BOOKm,'m');
-$opt_n && &aid_book_write_prefix(*BOOKn,'n');
-$opt_l && &aid_book_write_prefix(*BOOKl,'l');
-$opt_v && &aid_book_write_prefix(*BOOKv,'v');
-$opt_o && &aid_book_write_prefix(*BOOKo,'o');
+if ($opts{'p'}) {
+    open($BOOKp,">$opts{'p'}") || die "Can't open $opts{'p'}: $!\n"; }
+if ($opts{'e'}) {
+    open($BOOKe,">$opts{'e'}") || die "Can't open $opts{'e'}: $!\n"; }
+if ($opts{'b'}) { 
+    open($BOOKb,">$opts{'b'}") || die "Can't open $opts{'b'}: $!\n"; }
+if ($opts{'w'}) {
+    open($BOOKw,">$opts{'w'}") || die "Can't open $opts{'w'}: $!\n"; }
+if ($opts{'m'}) {
+    open($BOOKm,">$opts{'m'}") || die "Can't open $opts{'m'}: $!\n"; }
+if ($opts{'n'}) {
+    open($BOOKn,">$opts{'n'}") || die "Can't open $opts{'n'}: $!\n"; }
+if ($opts{'l'}) {
+    open($BOOKl,">$opts{'l'}") || die "Can't open $opts{'l'}: $!\n"; }
+if ($opts{'v'}) {
+    open($BOOKv,">$opts{'v'}") || die "Can't open $opts{'v'}: $!\n"; }
+if ($opts{'o'}) {
+    open($BOOKo,">$opts{'o'}") || die "Can't open $opts{'o'}: $!\n"; }
 
-@alpha_ids = unpack("n*",$DB{'_alpha'});
-foreach $id (@alpha_ids)
+$opts{'p'} && aid_util::book_write_prefix($BOOKp,'p');
+$opts{'e'} && aid_util::book_write_prefix($BOOKe,'e');
+$opts{'b'} && aid_util::book_write_prefix($BOOKb,'b');
+$opts{'w'} && aid_util::book_write_prefix($BOOKw,'w');
+$opts{'m'} && aid_util::book_write_prefix($BOOKm,'m');
+$opts{'n'} && aid_util::book_write_prefix($BOOKn,'n');
+$opts{'l'} && aid_util::book_write_prefix($BOOKl,'l');
+$opts{'v'} && aid_util::book_write_prefix($BOOKv,'v');
+$opts{'o'} && aid_util::book_write_prefix($BOOKo,'o');
+
+my @alpha_ids = unpack("n*",$DB{'_alpha'});
+foreach my $id (@alpha_ids)
 {
-    %rec = &aid_db_unpack_rec($id,$DB{$id});
+    my %rec = aid_util::db_unpack_rec($id,$DB{$id});
     next unless $rec{'v'};
-    
-    $opt_p && &aid_book_write_entry(*BOOKp,'p',*rec);
-    $opt_e && &aid_book_write_entry(*BOOKe,'e',*rec);
-    $opt_b && &aid_book_write_entry(*BOOKb,'b',*rec);
-    $opt_w && &aid_book_write_entry(*BOOKw,'w',*rec);
-    $opt_m && &aid_book_write_entry(*BOOKm,'m',*rec);
-    $opt_n && &aid_book_write_entry(*BOOKn,'n',*rec);
-    $opt_l && &aid_book_write_entry(*BOOKl,'l',*rec);
-    $opt_v && &aid_book_write_entry(*BOOKv,'v',*rec);
-    $opt_o && &aid_book_write_entry(*BOOKo,'o',*rec);
 
+    $opts{'p'} && aid_util::book_write_entry($BOOKp,'p',\%rec);
+    $opts{'e'} && aid_util::book_write_entry($BOOKe,'e',\%rec);
+    $opts{'b'} && aid_util::book_write_entry($BOOKb,'b',\%rec);
+    $opts{'w'} && aid_util::book_write_entry($BOOKw,'w',\%rec);
+    $opts{'m'} && aid_util::book_write_entry($BOOKm,'m',\%rec);
+    $opts{'n'} && aid_util::book_write_entry($BOOKn,'n',\%rec);
+    $opts{'l'} && aid_util::book_write_entry($BOOKl,'l',\%rec);
+    $opts{'v'} && aid_util::book_write_entry($BOOKv,'v',\%rec);
+    $opts{'o'} && aid_util::book_write_entry($BOOKo,'o',\%rec);
 }
 
 untie(%DB);
 
-$opt_p && &aid_book_write_suffix(*BOOKp,'p');
-$opt_e && &aid_book_write_suffix(*BOOKe,'e');
-$opt_b && &aid_book_write_suffix(*BOOKb,'b');
-$opt_w && &aid_book_write_suffix(*BOOKw,'w');
-$opt_m && &aid_book_write_suffix(*BOOKm,'m');
-$opt_n && &aid_book_write_suffix(*BOOKn,'n');
-$opt_l && &aid_book_write_suffix(*BOOKl,'l');
-$opt_v && &aid_book_write_suffix(*BOOKv,'v');
-$opt_o && &aid_book_write_suffix(*BOOKo,'o');
+$opts{'p'} && aid_util::book_write_suffix($BOOKp,'p');
+$opts{'e'} && aid_util::book_write_suffix($BOOKe,'e');
+$opts{'b'} && aid_util::book_write_suffix($BOOKb,'b');
+$opts{'w'} && aid_util::book_write_suffix($BOOKw,'w');
+$opts{'m'} && aid_util::book_write_suffix($BOOKm,'m');
+$opts{'n'} && aid_util::book_write_suffix($BOOKn,'n');
+$opts{'l'} && aid_util::book_write_suffix($BOOKl,'l');
+$opts{'v'} && aid_util::book_write_suffix($BOOKv,'v');
+$opts{'o'} && aid_util::book_write_suffix($BOOKo,'o');
 
-$opt_p && close(BOOKp);
-$opt_e && close(BOOKe);
-$opt_b && close(BOOKb);
-$opt_w && close(BOOKw);
-$opt_m && close(BOOKm);
-$opt_n && close(BOOKn);
-$opt_l && close(BOOKl);
-$opt_v && close(BOOKv);
-$opt_o && close(BOOKo);
+$opts{'p'} && close($BOOKp);
+$opts{'e'} && close($BOOKe);
+$opts{'b'} && close($BOOKb);
+$opts{'w'} && close($BOOKw);
+$opts{'m'} && close($BOOKm);
+$opts{'n'} && close($BOOKn);
+$opts{'l'} && close($BOOKl);
+$opts{'v'} && close($BOOKv);
+$opts{'o'} && close($BOOKo);
 
 exit(0);

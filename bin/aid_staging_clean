@@ -1,8 +1,8 @@
 #!/usr/local/bin/perl -w
 
-# $Id: aid_staging_clean,v 1.7 2003/03/14 23:30:26 mradwin Exp mradwin $
+# $Id: aid_staging_clean,v 1.8 2003/05/15 00:20:29 mradwin Exp $
 #
-#   Copyright (c) 1995-1999  Michael John Radwin
+#   Copyright (c) 2003  Michael J. Radwin
 #
 #   This program is free software; you can redistribute it and/or modify
 #   it under the terms of the GNU General Public License as published by
@@ -26,12 +26,11 @@ unshift(@INC, $dirname);
 use lib "/pub/m/r/mradwin/private/lib/perl5/site_perl";
 use DB_File::Lock;
 
-require 'aid_util.pl';
+use aid_util;
 use Getopt::Std;
-require 'ctime.pl';
 
 $0 =~ s,.*/,,;  # basename
-$usage = "usage: $0 [-hnq] [-d days]
+my $usage = "usage: $0 [-hnq] [-d days]
     -h        Display usage information.
     -n        Don't actually edit database, just show what would happen.
     -q        Quiet mode.
@@ -44,7 +43,7 @@ die "$opt_d: must be numeric\n$usage\n"
     if defined $opt_d && $opt_d !~ /^\d+$/;
 
 my($days) = $opt_d ? $opt_d : 28;
-my($dbmfile) = &aid_config('staging');
+my($dbmfile) = aid_util::config('staging');
 warn "creating $dbmfile...\n" unless (-e $dbmfile);
 #die "$dbmfile: $!\n" unless -r $dbmfile;
 
@@ -61,15 +60,15 @@ if (defined $DB{'_verified'})
     }
 }
 
-while (($key,$val) = each %DB)
+while (my($key,$val) = each %DB)
 {
     if ($key =~ /^\w{8}$/ && $val =~ /^-?\d+\0/ && !defined $verif{$key})
     {
 	my($id,$packed) = split(/\0/, $val, 2);
-	%rec = &aid_db_unpack_rec($id,$packed);
+	my %rec = aid_util::db_unpack_rec($id,$packed);
 	if (($rec{'u'} + (60 * 60 * 24 * $days)) < time)
 	{
- 	    print &aid_ampersand_join(*rec), "\n"
+ 	    print aid_util::ampersand_join(\%rec), "\n"
 		unless $opt_q;
 	    unless ($opt_n)
 	    {

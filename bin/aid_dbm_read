@@ -1,8 +1,8 @@
 #!/usr/local/bin/perl -w
 
-# $Id: aid_dbm_read,v 5.21 2002/08/01 20:06:03 mradwin Exp mradwin $
+# $Id: aid_dbm_read,v 5.22 2003/05/15 00:20:29 mradwin Exp $
 #
-#   Copyright (c) 1995-1999  Michael John Radwin
+#   Copyright (c) 2003  Michael J. Radwin
 #
 #   This program is free software; you can redistribute it and/or modify
 #   it under the terms of the GNU General Public License as published by
@@ -26,12 +26,11 @@ unshift(@INC, $dirname);
 use lib "/pub/m/r/mradwin/private/lib/perl5/site_perl";
 use DB_File::Lock;
 
-require 'aid_util.pl';
+use aid_util;
 use Getopt::Std;
-require 'ctime.pl';
 
 $0 =~ s,.*/,,;  # basename
-$usage = "usage: $0 [-hofacgi] [-u file | -I file | -d year] infile.db [key]
+my $usage = "usage: $0 [-hofacgi] [-u file | -I file | -d year] infile.db [key]
     -h        Display usage information.
     -i        Just print userids (no extra info).
     -g        Display goners candidates (bounces >= 6 months ago).
@@ -64,19 +63,19 @@ if ($opt_u)
 
     # sort the numeric keys by id
     @ids = ();
-    while (($key,$val) = each %DB)
+    while (my($key,$val) = each %DB)
     {
 	push(@ids,$key) if $key =~ /^\d+$/;
     }
 
     foreach (sort { $a <=> $b } @ids)
     {
-	%rec = &aid_db_unpack_rec($_,$DB{$_});
+	my %rec = aid_util::db_unpack_rec($_,$DB{$_});
 	print DATA
-	    "http://", &aid_config('master_srv'),
-	    &aid_config('confirm_cgi'), '?confirmed=1&', 
- 	    &aid_ampersand_join(*rec),
-	    '&pe=', &aid_url_escape($rec{'eo'}), "\n";
+	    "http://", aid_util::config('master_srv'),
+	    aid_util::config('confirm_cgi'), '?confirmed=1&', 
+ 	    aid_util::ampersand_join(\%rec),
+	    '&pe=', aid_util::url_escape($rec{'eo'}), "\n";
     } 
     close(DATA);
 }
@@ -86,14 +85,14 @@ elsif ($opt_I)
 
     # sort the numeric keys by id
     @ids = ();
-    while (($key,$val) = each %DB)
+    while (my($key,$val) = each %DB)
     {
 	push(@ids,$key) if $key =~ /^\d+$/;
     }
 
     foreach (sort { $a <=> $b } @ids)
     {
-	%rec = &aid_db_unpack_rec($_,$DB{$_});
+	my %rec = aid_util::db_unpack_rec($_,$DB{$_});
 	printf DATA "[id%06d]\n", $rec{'id'};
 
 	foreach (@aid_edit_field_names)
@@ -101,7 +100,7 @@ elsif ($opt_I)
 	    print DATA $_, '=', $rec{$_}, "\n";
 	}
 
-	print DATA 'n=', &aid_url_escape($rec{'n'}), "\n\n";
+	print DATA 'n=', aid_util::url_escape($rec{'n'}), "\n\n";
     } 
     close(DATA);
 }
@@ -112,7 +111,7 @@ elsif ($opt_d)
     @ids = unpack("n*", $DB{"_$opt_d"});
     for (@ids)
     {
-	%rec = &aid_db_unpack_rec($_,$DB{$_});
+	my %rec = aid_util::db_unpack_rec($_,$DB{$_});
 	next unless $rec{'v'} == 1 && $rec{'r'} == 0;
 
 	print $rec{'id'}, ' ';
@@ -133,23 +132,23 @@ elsif ($opt_o)
     @ids = unpack("n*", $DB{'_class'});
     for (@ids)
     {
-	%rec = &aid_db_unpack_rec($_,$DB{$_});
+	my %rec = aid_util::db_unpack_rec($_,$DB{$_});
 	next unless $rec{'v'} == 1 && $rec{'q'} == 0;
-	next unless &aid_is_old($rec{'lm'});
+	next unless aid_util::is_old($rec{'lm'});
 
 	print $rec{'id'}, ' ';
 	next if $opt_i;
-	print "- $rec{'e'} - last_mail ", &aid_caldate($rec{'lm'});
-	print " - bounce ", &aid_caldate($rec{'b'}) if $rec{'b'} ne '0';
+	print "- $rec{'e'} - last_mail ", aid_util::caldate($rec{'lm'});
+	print " - bounce ", aid_util::caldate($rec{'b'}) if $rec{'b'} ne '0';
 	print "\n";
     }
 }
 elsif ($opt_g)
 {
-    while (($key,$val) = each(%DB))
+    while (my($key,$val) = each(%DB))
     {
 	next unless $key =~ /^\d+$/;
-	%rec = &aid_db_unpack_rec($key,$val);
+	my %rec = aid_util::db_unpack_rec($key,$val);
 
 	next unless $rec{'v'};
 	next if $rec{'b'} eq '0';
@@ -158,8 +157,8 @@ elsif ($opt_g)
 
 	print $rec{'id'}, ' ';
 	next if $opt_i;
-	print "- $rec{'e'} - bounce ", &aid_caldate($rec{'b'}),
-   	      " - fresh ", &aid_caldate($rec{'f'}), "\n";
+	print "- $rec{'e'} - bounce ", aid_util::caldate($rec{'b'}),
+   	      " - fresh ", aid_util::caldate($rec{'f'}), "\n";
     }
 }
 elsif ($opt_f)
@@ -169,15 +168,15 @@ elsif ($opt_f)
     @ids = unpack("n*", $DB{'_class'});
     for (@ids)
     {
-	%rec = &aid_db_unpack_rec($_,$DB{$_});
+	my %rec = aid_util::db_unpack_rec($_,$DB{$_});
 	next unless $rec{'v'};
 	next if $rec{'u'} == $rec{'c'};
-	next unless &aid_is_new($rec{'u'}) && &aid_is_new($rec{'c'});
+	next unless aid_util::is_new($rec{'u'}) && aid_util::is_new($rec{'c'});
 
 	print $rec{'id'}, ' ';
 	next if $opt_i;
-	print "- $rec{'e'} - create ", &aid_caldate($rec{'c'}),
-   	      " - update ", &aid_caldate($rec{'u'}), "\n";
+	print "- $rec{'e'} - create ", aid_util::caldate($rec{'c'}),
+   	      " - update ", aid_util::caldate($rec{'u'}), "\n";
     }
 }
 elsif ($opt_a)
@@ -187,10 +186,10 @@ elsif ($opt_a)
     @ids = unpack("n*", $DB{'_alpha'});
     for (@ids)
     {
-	%rec = &aid_db_unpack_rec($_,$DB{$_});
+	my %rec = aid_util::db_unpack_rec($_,$DB{$_});
 	next unless $rec{'v'};
 
-	($affil,$i) = &aid_affiliate(*rec,0);
+	($affil,$i) = aid_util::affiliate(\%rec,0);
 	print $rec{'id'}, ' ';
 	next if $opt_i;
 	print "- $rec{'e'} - ", $rec{'sn'}, ', ', $rec{'gn'}, $affil, "\n";
@@ -203,10 +202,10 @@ elsif ($opt_c)
     @ids = unpack("n*", $DB{'_class'});
     for (@ids)
     {
-	%rec = &aid_db_unpack_rec($_,$DB{$_});
+	my %rec = aid_util::db_unpack_rec($_,$DB{$_});
 	next unless $rec{'v'};
 
-	($affil,$i) = &aid_affiliate(*rec,0);
+	($affil,$i) = aid_util::affiliate(\%rec,0);
 	print $rec{'id'}, ' ';
 	next if $opt_i;
 	print "- $rec{'e'} - ", $rec{'sn'}, ', ', $rec{'gn'}, $affil, "\n";
@@ -214,7 +213,7 @@ elsif ($opt_c)
 }
 else
 {
-    while (($key,$val) = each %DB)
+    while (my($key,$val) = each %DB)
     {
 	&display_key_val($key,$val);
     }
@@ -228,8 +227,8 @@ exit 0;
 
 sub display_key_val
 {
-    local($key,$val) = @_;
-    local(*rec);
+    my($key,$val) = @_;
+    my %rec;
 
     if (! defined $val)
     {
@@ -239,8 +238,8 @@ sub display_key_val
 
     if ($key =~ /^\d+$/)
     {
-	%rec = &aid_db_unpack_rec($key,$val);
-	print "record $key = ", &aid_ampersand_join(*rec), "\n";
+	%rec = aid_util::db_unpack_rec($key,$val);
+	print "record $key = ", aid_util::ampersand_join(\%rec), "\n";
     }
 
     elsif ($key =~ /^_(www_)?(\d\d\d\d)$/)
@@ -278,7 +277,7 @@ sub display_key_val
 
     elsif ($key =~ /^_created$/)
     {
-	print "created = ", &ctime(unpack("N", $val));
+	print "created = ", scalar(localtime(unpack("N", $val)));
     }
 
     elsif ($key =~ /^_nextid$/)
@@ -290,7 +289,7 @@ sub display_key_val
     {
 	$val = unpack("N", $val);
 	print "time", (defined $1 ? $1 : ''), " = ", 
-	  $val ? &ctime($val) : "0\n";
+	  $val ? scalar(localtime($val)) : "0\n";
     }
 
     elsif ($key =~ /\@/)

@@ -4,7 +4,7 @@
 # mails a welcome, update, confirm, or massmail message to members
 # $Id: aid_welcome,v 5.38 2003/08/01 20:16:41 mradwin Exp mradwin $
 #
-#   Copyright (c) 1995-1999  Michael John Radwin
+#   Copyright (c) 2003  Michael J. Radwin
 #
 #   This program is free software; you can redistribute it and/or modify
 #   it under the terms of the GNU General Public License as published by
@@ -26,13 +26,13 @@ $dirname = $0;
 $dirname =~ s,/[^/]+$,,;
 unshift(@INC, $dirname);
 
-require 'aid_util.pl';
+use aid_util;
 use Getopt::Std;
-require 'ctime.pl';
 
 use lib "/pub/m/r/mradwin/private/lib/perl5/site_perl";
 use DB_File::Lock;
 use Net::SMTP; 
+use strict;
 
 my $default_sleep = 0;
 my $default_massmail_sleep = 5;
@@ -69,7 +69,7 @@ die "$0: Option -m requires -r\n$usage\n"
 die "$0: Option -a requires -r\n$usage\n" 
     if defined($opts{'a'}) && !defined($opts{'r'});
 
-my $directory_name = &aid_config('short_school') . ' Alumni Internet Directory';
+my $directory_name = aid_util::config('short_school') . ' Alumni Internet Directory';
 
 my %confirm_parameters = 
     (
@@ -161,7 +161,7 @@ my %params = $opts{'c'} ? %confirm_parameters :
     %welcome_parameters;
 
 my $logfile = $opts{'l'} ? $opts{'l'} :
-    &aid_config('aiddir') . "logs/" . $params{'log'} . '.log';
+    aid_util::config('aiddir') . "logs/" . $params{'log'} . '.log';
 
 if ($opts{'s'} || $opts{'m'}) {
     my $f = $opts{'s'} || $opts{'m'};
@@ -178,7 +178,7 @@ die "$0: $dbmfile: $!\n" unless -r $dbmfile;
 open(LOG,">>$logfile") || die "$0: Can't open $logfile: $!\n";
 select(LOG); $| = 1; select(STDOUT);
 
-my $today = &ctime(time);
+my $today = scalar(localtime(time));
 chop $today;
 
 print LOG "# [$today] - $0 ", join(' ', @args), "\n";
@@ -187,11 +187,14 @@ if ($opts{'a'})
 {
     @ARGV = ();
 
+    my(%DB);
+    tie(%DB, 'DB_File::Lock', $dbmfile, O_RDONLY, 0444, $DB_HASH, 'read')
+	or die "$dbmfile: $!\n";
     while (my($key,$val) = each(%DB))
     {
 	if ($key =~ /^\d+$/)
 	{
-	    %rec = &aid_db_unpack_rec($key,$val);
+	    my %rec = aid_util::db_unpack_rec($key,$val);
 
 	    next unless $rec{'v'};
 	    next if $opts{'m'} && $rec{'q'} != $opts{'r'};
@@ -199,7 +202,7 @@ if ($opts{'a'})
 	    if ($opts{'c'})
 	    {
 		next unless $rec{'q'} == 0;
-		next unless &aid_is_old($rec{'f'});
+		next unless aid_util::is_old($rec{'f'});
 	    }
 
 	    push(@ARGV, $rec{'id'});
@@ -230,11 +233,11 @@ foreach $id (@ARGV)
 	next;
     }
 
-    %rec = &aid_db_unpack_rec($id,$DB{$id});
+    my %rec = aid_util::db_unpack_rec($id,$DB{$id});
 
     untie(%DB);
 
-    if (mail_user(*rec))
+    if (mail_user(\%rec))
     {
 	$lm{$id} = time;
 	sleep($params{'sleep'}) if $params{'sleep'} > 0;
@@ -246,15 +249,16 @@ close(LOG);
 #if (-w $dbmfile)
 if (0)
 {
+    my(%DB);
     tie(%DB, 'DB_File::Lock', $dbmfile, O_CREAT|O_RDWR, 0644, $DB_HASH, 'write')
 	or die "$dbmfile: $!\n";
 
     # sucessful mailing; update timestamp
     while (my($key,$val) = each(%lm))
     {
-	%rec = &aid_db_unpack_rec($key,$DB{$key});
+	my %rec = aid_util::db_unpack_rec($key,$DB{$key});
 	$rec{'lm'} = $val;
-	$DB{$rec{'id'}} = &aid_db_pack_rec(*rec);
+	$DB{$rec{'id'}} = aid_util::db_pack_rec(\%rec);
     }
 
     untie(%DB);
@@ -264,45 +268,45 @@ exit(0);
 
 sub mail_user
 {
-    local(*rec) = @_;
+    my($recp) = @_;
     my($message,$name,@mailto);
 
-    if ($rec{'v'} == 0)
+    if ($recp->{'v'} == 0)
     {
-	warn "$0: skipping target `$rec{'id'}' (valid bit is off)\n";
+	warn "$0: skipping target `$recp->{'id'}' (valid bit is off)\n";
 	return 0;
     }
 
-    unless (defined $rec{'e'} && $rec{'e'} ne '')
+    unless (defined $recp->{'e'} && $recp->{'e'} ne '')
     {
-	warn "$0: skipping target `$rec{'id'}' (has no email address)\n";
+	warn "$0: skipping target `$recp->{'id'}' (has no email address)\n";
 	return 0;
     }
 
     if ($params{'listing'}) {
-	$message = &message_body(*rec);
+	$message = &message_body($recp);
     } else {
 	$message = '';
     }
 
     $message .= $params{'textfile'} .
-	"\n-- \n" . &aid_config('short_school') . 
+	"\n-- \n" . aid_util::config('short_school') . 
 	" Alumni Internet Directory\n" .
-	"http://" . &aid_config('master_srv') . &aid_config('master_path');
+	"http://" . aid_util::config('master_srv') . aid_util::config('master_path');
 
-    $name  = $rec{'gn'};
-    $name .= " $rec{'mi'}."
-	if defined $rec{'mi'} && $rec{'mi'} ne '';
-    $name .= " $rec{'sn'}";
-    $name .= " $rec{'mn'}"
-	if defined $rec{'mn'} && $rec{'mn'} ne '';
+    $name  = $recp->{'gn'};
+    $name .= " $recp->{'mi'}."
+	if defined $recp->{'mi'} && $recp->{'mi'} ne '';
+    $name .= " $recp->{'sn'}";
+    $name .= " $recp->{'mn'}"
+	if defined $recp->{'mn'} && $recp->{'mn'} ne '';
     $name =~ s/\"/\'/g;
 
-    @mailto = ($name,$rec{'e'});
-    if ($opts{'u'} && defined $rec{'eo'} &&
-	$rec{'eo'} ne '' && "\L$rec{'eo'}\E" ne "\L$rec{'e'}\E")
+    @mailto = ($name,$recp->{'e'});
+    if ($opts{'u'} && defined $recp->{'eo'} &&
+	$recp->{'eo'} ne '' && lc($recp->{'eo'}) ne lc($recp->{'e'}))
     {
-	push(@mailto,$name,$rec{'eo'});
+	push(@mailto,$name,$recp->{'eo'});
     }
 
     my($i);
@@ -311,20 +315,20 @@ sub mail_user
     for ($i = 0; $status == 0 && $i < 3; $i++)
     {
 	my $time = time;
-	$status = &aid_sendmail(
-	    &aid_config('admin_email'),
-	    &aid_config('short_school') . ' Alumni Robot',
+	$status = aid_util::sendmail(
+	    aid_util::config('admin_email'),
+	    aid_util::config('short_school') . ' Alumni Robot',
 	    $params{'subject'} .
-		' [' . &aid_config('short_school') . '-' . $rec{'id'} . ']',
+		' [' . aid_util::config('short_school') . '-' . $recp->{'id'} . ']',
 		$message,@mailto);
 
 	sleep(3) if $status == 0;
 
-	print LOG $time, " - $rec{'id'} - $rec{'e'} - $status\n";
+	print LOG $time, " - $recp->{'id'} - $recp->{'e'} - $status\n";
 
-	print LOG $time, " - $rec{'id'} - $rec{'eo'} - $status - OLD\n"
-	    if ($opts{'u'} && defined $rec{'eo'} &&
-		$rec{'eo'} ne '' && "\L$rec{'eo'}\E" ne "\L$rec{'e'}\E");
+	print LOG $time, " - $recp->{'id'} - $recp->{'eo'} - $status - OLD\n"
+	    if ($opts{'u'} && defined $recp->{'eo'} &&
+		$recp->{'eo'} ne '' && lc($recp->{'eo'}) ne lc($recp->{'e'}));
     }
 
     $status;
@@ -332,17 +336,16 @@ sub mail_user
 
 sub message_body
 {
-    local($[) = 0;
-    local(*rec) = @_;
-    my $about = &aid_about_text(*rec,1,0,0);
-    my $denied = $rec{'q'} == 0 ?
+    my($recp) = @_;
+    my $about = aid_util::about_text($recp,1,0,0);
+    my $denied = $recp->{'q'} == 0 ?
 	"
 Since you asked not to receive quarterly Directory
 digests via e-mail, you will only receive bi-yearly
 address verification messages.
 " : '';
 
-    return &aid_inorder_fullname(*rec) . ",
+    return aid_util::inorder_fullname($recp) . ",
 
 $params{'intro'}You are listed in the Directory as follows:
 -------------------------------------------------------
@@ -351,7 +354,7 @@ $denied
 If any of the above information is incorrect or out
 of date, please update your listing online at:
 
-  http://" . &aid_config('master_srv') . &aid_config('go_cgi') . "/$rec{'id'}
+  http://" . aid_util::config('master_srv') . aid_util::config('go_cgi') . "/$recp->{'id'}
 
 If you have received this e-mail in error, or you do
 not want to be listed in the Directory, please let

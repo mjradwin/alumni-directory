@@ -1,8 +1,8 @@
 #!/usr/local/bin/perl -w
 
-# $Id: aid_multi_class_txt,v 5.11 2002/03/07 23:29:39 mradwin Exp mradwin $
+# $Id: aid_multi_class_txt,v 5.12 2003/05/15 00:30:45 mradwin Exp $
 #
-#   Copyright (c) 1995-1999  Michael John Radwin
+#   Copyright (c) 2003  Michael J. Radwin
 #
 #   This program is free software; you can redistribute it and/or modify
 #   it under the terms of the GNU General Public License as published by
@@ -26,11 +26,11 @@ unshift(@INC, $dirname);
 use lib "/pub/m/r/mradwin/private/lib/perl5/site_perl";
 use DB_File::Lock;
 
-require 'aid_util.pl';
+use aid_util;
 use Getopt::Std;
 
 $0 =~ s,.*/,,;  # basename
-$usage = "usage: $0 [-hq] infile.db output-dir
+my $usage = "usage: $0 [-hq] infile.db output-dir
     -h        Display usage information.
     -q        Quiet.
 ";
@@ -56,7 +56,7 @@ untie(%DB);
 $output_dir = shift;
 die "$0: $output_dir: $!\n" unless -d $output_dir;
 
-$class_exe = &aid_config('aiddir') . 'bin/aid_class_html';
+$class_exe = aid_util::config('aiddir') . 'bin/aid_class_html';
 die "$0: $class_exe: $!\n" unless -x $class_exe;
 
 foreach (@years)
@@ -67,7 +67,7 @@ foreach (@years)
     	'-qdtc', $_,
     	$dbmfile,
     	$output_dir . '/' . $_ . '.txt';
-    &aid_die_if_failure();
+    aid_util::die_if_failure();
 }
 
 exit(0);

@@ -2,9 +2,9 @@
 
 #
 # does the html version of the invalid address list
-# $Id: aid_goners_html,v 5.11 2002/03/07 23:29:39 mradwin Exp mradwin $
+# $Id: aid_goners_html,v 5.12 2003/05/15 00:30:45 mradwin Exp $
 #
-#   Copyright (c) 1995-1999  Michael John Radwin
+#   Copyright (c) 2003  Michael J. Radwin
 #
 #   This program is free software; you can redistribute it and/or modify
 #   it under the terms of the GNU General Public License as published by
@@ -28,11 +28,11 @@ unshift(@INC, $dirname);
 use lib "/pub/m/r/mradwin/private/lib/perl5/site_perl";
 use DB_File::Lock;
 
-require 'aid_util.pl';
+use aid_util;
 use Getopt::Std;
 
 $0 =~ s,.*/,,;  # basename
-$usage = "usage: $0 [-hq] [-i <keys>] infile.db outfile.html
+my $usage = "usage: $0 [-hq] [-i <keys>] infile.db outfile.html
     -h        Display usage information.
     -q        Quiet.
     -i <keys> Incremental update only for list of keys.
@@ -67,7 +67,7 @@ $outfile = shift;
 open(FMTOUT,">$outfile") || die "Can't open $outfile: $!\n";
 
 $time = unpack("N",$DB{'_t_goner'});
-print FMTOUT &aid_common_html_hdr(-1,'Alumni with Invalid Addresses',1,$time);
+print FMTOUT aid_util::common_html_hdr(-1,'Alumni with Invalid Addresses',1,$time);
 print FMTOUT "
 <p>The following addresses are invalid because either e-mail to them
 bounces, or the address is being used by a new owner.  If you know a
@@ -80,15 +80,15 @@ print FMTOUT "------------------------------------------------------------------
 @alpha_ids = unpack("n*",$DB{'_alpha'});
 foreach $id (@alpha_ids)
 {
-    %rec = &aid_db_unpack_rec($id,$DB{$id});
+    my %rec = aid_util::db_unpack_rec($id,$DB{$id});
     next unless $rec{'v'} == 0;
 
     $rec{'e'} =~ s/^[^\@]+\@/\@/;
 
-    $fullname = &aid_fullname(*rec);
-    ($affil,$len) = &aid_affiliate(*rec,0);
+    $fullname = aid_util::fullname(\%rec);
+    ($affil,$len) = aid_util::affiliate(\%rec,0);
 
-    print FMTOUT "<a href=\"", &aid_config('goners_cgi'), "?upd=$rec{'id'}\">";
+    print FMTOUT "<a href=\"", aid_util::config('goners_cgi'), "?upd=$rec{'id'}\">";
     print FMTOUT $fullname;
     print FMTOUT "</a>";
     print FMTOUT $affil;
@@ -98,7 +98,7 @@ foreach $id (@alpha_ids)
 }
 
 print FMTOUT "</pre>\n";
-print FMTOUT &aid_common_html_ftr(-1,$time);
+print FMTOUT aid_util::common_html_ftr(-1,$time);
 
 untie(%DB);
 close(FMTOUT);

@@ -1,8 +1,8 @@
 #!/usr/local/bin/perl -w
 
-# $Id: aid_delete_entry,v 1.10 2003/05/01 19:08:06 mradwin Exp mradwin $
+# $Id: aid_delete_entry,v 1.11 2003/05/15 00:20:29 mradwin Exp $
 #
-#   Copyright (c) 1995-1999  Michael John Radwin
+#   Copyright (c) 2003  Michael J. Radwin
 #
 #   This program is free software; you can redistribute it and/or modify
 #   it under the terms of the GNU General Public License as published by
@@ -26,7 +26,7 @@ unshift(@INC, $dirname);
 use lib "/pub/m/r/mradwin/private/lib/perl5/site_perl";
 use DB_File::Lock;
 
-require 'aid_util.pl';
+use aid_util;
 use Getopt::Std;
 
 $0 =~ s,.*/,,;  # basename
@@ -48,16 +48,17 @@ my(%DB);
 tie(%DB, 'DB_File::Lock', $dbmfile, O_CREAT|O_RDWR, 0644, $DB_HASH, 'write')
     or die "$dbmfile: $!\n";
 
-my $logFile = &aid_config('aiddir') . "logs/additions.log";
+my $logFile = aid_util::config('aiddir') . "logs/additions.log";
 open(LOG, ">>$logFile") || die "$0: can't open $logFile: $!\n";
 select(LOG); $| = 1; select(STDOUT);
 
 my $id = shift;
+my %rec;
 if ($id =~ /^\d+$/)
 {
     die "$0: no key $id in $dbmfile\n"
 	unless defined $DB{$id} && $DB{$id} ne '';
-    %rec = &aid_db_unpack_rec($id,$DB{$id});
+    %rec = aid_util::db_unpack_rec($id,$DB{$id});
 }
 elsif ($id =~ /\@/)
 {
@@ -69,7 +70,7 @@ elsif ($id =~ /\@/)
     die "$0: no key $id in $dbmfile\n"
 	unless defined $DB{$id} && $DB{$id} ne '';
 
-    %rec = &aid_db_unpack_rec($id,$DB{$id});
+    %rec = aid_util::db_unpack_rec($id,$DB{$id});
 }
 else
 {
@@ -80,14 +81,14 @@ delete $DB{$id};
 my $email = "\L$rec{'e'}\E";
 delete $DB{$email};
 
-my $joined = &aid_ampersand_join(*rec);
+my $joined = aid_util::ampersand_join(\%rec);
 warn "$0: deleting $joined\n";
 print LOG "del - $joined\n";
 
 # rebuilding the secondary keys will reconstruct _nextid.  Let's keep it
 # so we don't have duplicate people with the same id
 my $prevnextid = $DB{'_nextid'};
-my @diffs = &aid_rebuild_secondary_keys(\%DB,0);
+my @diffs = aid_util::rebuild_secondary_keys(\%DB,0);
 $DB{'_nextid'} = $prevnextid;
 
 if ($opt_d)

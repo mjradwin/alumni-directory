@@ -3,9 +3,9 @@
 #
 # generates reunion info page
 #
-# $Id: aid_reunion_html,v 1.18 2003/04/22 00:47:29 mradwin Exp mradwin $
+# $Id: aid_reunion_html,v 1.19 2003/05/15 00:30:45 mradwin Exp $
 #
-#   Copyright (c) 1995-1999  Michael John Radwin
+#   Copyright (c) 2003  Michael J. Radwin
 #
 #   This program is free software; you can redistribute it and/or modify
 #   it under the terms of the GNU General Public License as published by
@@ -30,11 +30,11 @@ use lib "/pub/m/r/mradwin/private/lib/perl5/site_perl";
 use DB_File::Lock;
 use Time::Local;
 
-require 'aid_util.pl';
+use aid_util;
 use Getopt::Std;
 
 $0 =~ s,.*/,,;  # basename
-$usage = "usage: $0 [-h] reunions.db outfile
+my $usage = "usage: $0 [-h] reunions.db outfile
     -h        Display usage information.
 ";
 
@@ -54,7 +54,7 @@ open(FMTOUT,">$outfile") || die "Can't open $outfile: $!\n";
 die "corrupt/missing _t key!" unless defined $DB{'_t'} && $DB{'_t'} ne '';
 $time = unpack("N",$DB{'_t'});
 
-print FMTOUT &aid_common_html_hdr(11,'Reunion Information',0,$time);
+print FMTOUT aid_util::common_html_hdr(11,'Reunion Information',0,$time);
 
 $admin = aid_config('admin_email');
 $admin =~ s/@/\&#64;/g;
@@ -81,7 +81,7 @@ END_OF_HTML
 
 %upcoming = ();
 %past = ();
-while (($key,$val) = each(%DB))
+while (my($key,$val) = each(%DB))
 {
     next if $key =~ /^_/;
     my($date,$html) = split(/\0/, $val, 2);
@@ -107,12 +107,12 @@ while (($key,$val) = each(%DB))
 untie(%DB);
 
 print FMTOUT "<h2>Upcoming reunions</h2>\n";
-&aid_write_reunion_hash(*FMTOUT, \%upcoming);
+aid_util::write_reunion_hash(*FMTOUT, \%upcoming);
 
 print FMTOUT "<h2>Past reunions</h2>\n";
-&aid_write_reunion_hash(*FMTOUT, \%past);
+aid_util::write_reunion_hash(*FMTOUT, \%past);
 
-print FMTOUT &aid_common_html_ftr(11,$time);
+print FMTOUT aid_util::common_html_ftr(11,$time);
 
 close(FMTOUT);
 utime $time, $time, $outfile;

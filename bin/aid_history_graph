@@ -1,8 +1,8 @@
 #!/usr/local/bin/perl -w
 
-# $Id: aid_history_graph,v 5.11 2002/03/07 23:29:39 mradwin Exp mradwin $
+# $Id: aid_history_graph,v 5.12 2003/05/15 00:30:45 mradwin Exp $
 #
-#   Copyright (c) 1995-1999  Michael John Radwin
+#   Copyright (c) 2003  Michael J. Radwin
 #
 #   This program is free software; you can redistribute it and/or modify
 #   it under the terms of the GNU General Public License as published by
@@ -26,12 +26,11 @@ unshift(@INC, $dirname);
 use lib "/pub/m/r/mradwin/private/lib/perl5/site_perl";
 use DB_File::Lock;
 
-require 'aid_util.pl';
-require 'ctime.pl';
+use aid_util;
 use Getopt::Std;
 
 $0 =~ s,.*/,,;  # basename
-$usage = "usage: $0 [-h] infile.db outfile
+my $usage = "usage: $0 [-h] infile.db outfile
     -h        Display usage information.
 ";
 
@@ -56,11 +55,11 @@ open(FMTOUT,">$outfile") || die "Can't open $outfile: $!\n";
 
 @members = ();
 $tot = 0;
-while (($key,$val) = each %DB)
+while (my($key,$val) = each %DB)
 {
     next unless $key =~ /^\d+$/;
 
-    %rec = &aid_db_unpack_rec($key,$val);
+    my %rec = aid_util::db_unpack_rec($key,$val);
 
     ($i,$i,$i,$i,$i,$year,$i,$yday,$i) = localtime($rec{'c'});
 

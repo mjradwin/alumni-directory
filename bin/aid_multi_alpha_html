@@ -2,9 +2,9 @@
 
 #
 # does the html verbose pages
-# $Id: aid_multi_alpha_html,v 5.22 2002/03/07 23:29:39 mradwin Exp mradwin $
+# $Id: aid_multi_alpha_html,v 5.23 2003/05/15 00:30:45 mradwin Exp $
 #
-#   Copyright (c) 1995-1999  Michael John Radwin
+#   Copyright (c) 2003  Michael J. Radwin
 #
 #   This program is free software; you can redistribute it and/or modify
 #   it under the terms of the GNU General Public License as published by
@@ -28,11 +28,11 @@ unshift(@INC, $dirname);
 use lib "/pub/m/r/mradwin/private/lib/perl5/site_perl";
 use DB_File::Lock;
 
-require 'aid_util.pl';
+use aid_util;
 use Getopt::Std;
 
 $0 =~ s,.*/,,;  # basename
-$usage = "usage: $0 [-hq] [-i <keys>] infile.db
+my $usage = "usage: $0 [-hq] [-i <keys>] infile.db
     -h        Display usage information.
     -q        Quiet.
     -i <keys> Incremental update only for list of keys.
@@ -89,7 +89,7 @@ foreach $initial (@initials)
 	unless defined $DB{$key} && $DB{$key} ne '';
     @alpha_ids = unpack("n*",$DB{$key});
 
-    $outFile = &aid_config('wwwdir') . "alpha/${initial}.html";
+    $outFile = aid_util::config('wwwdir') . "alpha/${initial}.html";
     open(FMTOUT,">$outFile") || die "Can't open $outFile: $!\n";
 
     $extra_meta  = "\n<link rel=\"contents\" href=\"./\" title=\"Alphabetically\">";
@@ -98,22 +98,22 @@ foreach $initial (@initials)
     $extra_meta .= "\n<link rel=\"next\" href=\"$init_next{$initial}.html\" title=\"`\u$init_next{$initial}' Alumni\">"
 	if defined $init_next{$initial};
 
-    print FMTOUT &aid_common_html_hdr(1,"`\u$initial' Alumni",1,$time,
+    print FMTOUT aid_util::common_html_hdr(1,"`\u$initial' Alumni",1,$time,
 				      '',$extra_meta),
-      &aid_common_intro_para(0),
+      aid_util::common_intro_para(0),
       "<p>\n", &alpha_jump_bar($initial), "</p>\n",
       "<hr noshade=\"noshade\" size=\"1\">\n\n<ul>";
 
     foreach $id (@alpha_ids)
     {
-	%rec = &aid_db_unpack_rec($id,$DB{$id});
+	my %rec = aid_util::db_unpack_rec($id,$DB{$id});
 	next unless $rec{'v'};
 
-	print FMTOUT &html_pre_entry(*rec);
+	print FMTOUT &html_pre_entry(\%rec);
     }
 
     print FMTOUT "</ul>\n";
-    print FMTOUT &aid_common_html_ftr(1,$time);
+    print FMTOUT aid_util::common_html_ftr(1,$time);
     close(FMTOUT);
     utime $time, $time, $outFile;
 }
@@ -125,16 +125,16 @@ print STDOUT "\n"
     unless $opt_q;
 
 # index page
-$outFile = &aid_config('wwwdir') . "alpha/index.html";
+$outFile = aid_util::config('wwwdir') . "alpha/index.html";
 open(FMTOUT,">$outFile") || die "Can't open $outFile: $!\n";
 
-print FMTOUT &aid_common_html_hdr(-1,'Alphabetically',0,$time);
+print FMTOUT aid_util::common_html_hdr(-1,'Alphabetically',0,$time);
 
 print FMTOUT "<p align=\"center\"><big>\n";
 print FMTOUT &alpha_jump_bar('');
 print FMTOUT "</big></p>\n\n";
 
-print FMTOUT &aid_common_html_ftr(-1,$time);
+print FMTOUT aid_util::common_html_ftr(-1,$time);
 close(FMTOUT);
 utime $time, $time, $outFile;
 
@@ -149,20 +149,20 @@ exit(0);
 
 
 sub html_pre_entry {
-    local(*rec) = @_;
-    local($fullname,$affil,$len);
+    my($recp) = @_;
+    my($fullname,$affil,$len);
 
-    $fullname = &aid_fullname(*rec);
-    ($affil,$len) = &aid_affiliate(*rec,0);
+    $fullname = aid_util::fullname($recp);
+    ($affil,$len) = aid_util::affiliate($recp,0);
 
-    "<li><a href=\"" . &aid_about_path(*rec) . "\">" .
-	$fullname . "</a>" . $affil . &aid_is_new_html(*rec) . "\n";
+    "<li><a href=\"" . aid_util::about_path($recp) . "\">" .
+	$fullname . "</a>" . $affil . aid_util::is_new_html($recp) . "\n";
 }
 
 # do the funky quick-jump bar
 sub alpha_jump_bar {
-    local($regular) = @_;
-    local($i,$retval);
+    my($regular) = @_;
+    my($i,$retval);
 
     $retval = '';
     foreach $i (@initials)

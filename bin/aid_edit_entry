@@ -1,8 +1,8 @@
 #!/usr/local/bin/perl -w
 
-# $Id: aid_edit_entry,v 5.20 2003/03/14 23:30:26 mradwin Exp mradwin $
+# $Id: aid_edit_entry,v 5.21 2003/05/15 00:30:45 mradwin Exp $
 #
-#   Copyright (c) 1995-1999  Michael John Radwin
+#   Copyright (c) 2003  Michael J. Radwin
 #
 #   This program is free software; you can redistribute it and/or modify
 #   it under the terms of the GNU General Public License as published by
@@ -26,12 +26,11 @@ unshift(@INC, $dirname);
 use lib "/pub/m/r/mradwin/private/lib/perl5/site_perl";
 use DB_File::Lock;
 
-require 'aid_util.pl';
+use aid_util;
 use Getopt::Std;
-require 'ctime.pl';
 
 $0 =~ s,.*/,,;  # basename
-$usage = "usage: $0 [-hduf] infile.db userid
+my $usage = "usage: $0 [-hduf] infile.db userid
     -h        Display usage information.
     -d        Display debug diffs.
     -u        Don't set update time.
@@ -63,7 +62,7 @@ if ($id =~ /^\d+$/)
 {
     if (defined $DB{$id} && $DB{$id} ne '')
     {
-	%rec = &aid_db_unpack_rec($id,$DB{$id});
+	%rec = aid_util::db_unpack_rec($id,$DB{$id});
     }
     elsif ($opt_f)
     {
@@ -86,7 +85,7 @@ elsif ($id =~ /\@/)
     die "$0: no key $id in $dbmfile\n"
 	unless defined $DB{$id} && $DB{$id} ne '';
 
-    %rec = &aid_db_unpack_rec($id,$DB{$id});
+    %rec = aid_util::db_unpack_rec($id,$DB{$id});
 }
 else
 {
@@ -105,9 +104,11 @@ $note_end_str = '_AID_END_NOTE_';
 $tmpfile = '/tmp/aid_edit_entry.' . $$;
 
 open(TMPFILE,">$tmpfile") || die "$tmpfile: $!\n";
-print TMPFILE '# $Id: aid_edit_entry,v 5.20 2003/03/14 23:30:26 mradwin Exp mradwin $', "\n";
+print TMPFILE '# $Id: aid_edit_entry,v 5.21 2003/05/15 00:30:45 mradwin Exp $', "\n";
 print TMPFILE "# record last touched: ",
- (($rec{'f'} > $rec{'b'}) ? &ctime($rec{'f'}) : &ctime($rec{'b'}));
+ (($rec{'f'} > $rec{'b'}) ?
+  scalar(localtime($rec{'f'})) :
+  scalar(localtime($rec{'b'})));
 
 foreach (@aid_edit_field_names)
 {
@@ -121,7 +122,7 @@ close(TMPFILE);
 $editor = (defined $ENV{'VISUAL'} ? $ENV{'VISUAL'} : 
 	   (defined $ENV{'EDITOR'} ? $ENV{'EDITOR'} : 'vi'));
 system "$editor $tmpfile";
-&aid_die_if_failure();
+aid_util::die_if_failure();
 
 %newrec = ();
 open(TMPFILE,$tmpfile) || die "$tmpfile: $!\n";
@@ -148,7 +149,7 @@ while(<TMPFILE>)
 	($key,$val) = split(/=/, $_, 2);
 	if ($key eq 'n')
 	{
-	    $note = &aid_url_unescape($val);
+	    $note = aid_util::url_unescape($val);
 	}
 	else
 	{
@@ -161,7 +162,7 @@ close(TMPFILE);
 # note and id are special cases
 $newrec{'n'} = $note if defined $note;
 $newrec{'id'} = $id unless defined $newrec{'id'};
-$newrec{'a'} = &aid_generate_alias(*newrec)
+$newrec{'a'} = aid_util::generate_alias(*newrec)
     unless (defined $newrec{'a'} && $newrec{'a'} ne '');
 
 if ($id != $newrec{'id'})
@@ -180,7 +181,7 @@ if ($id != $newrec{'id'})
 
 # assign the old value unless it was explicit in the edit
 $changed = 0;
-while(($key,$val) = each(%rec))
+while(my($key,$val) = each(%rec))
 {
     $newrec{$key} = $rec{$key} unless defined $newrec{$key};
     $changed = 1 if $newrec{$key} ne $rec{$key};
@@ -201,7 +202,7 @@ elsif ($changed == 1)
 
     $newrec{'u'} = $newrec{'f'} = time
 	if (!$opt_u && $newrec{'u'} == $rec{'u'} && $newrec{'f'} == $rec{'f'});
-    $DB{$newrec{'id'}} = &aid_db_pack_rec(*newrec);
+    $DB{$newrec{'id'}} = aid_util::db_pack_rec(*newrec);
 
     # if the id or email has changed, we need to redo the mapping
     if ($id != $newrec{'id'} || $rec{'e'} ne $newrec{'e'})
@@ -212,7 +213,7 @@ elsif ($changed == 1)
 	$DB{"\L$email\E"} = pack('n', $newrec{'id'});
     }
 
-    my @diffs = &aid_rebuild_secondary_keys(\%DB,0);
+    my @diffs = aid_util::rebuild_secondary_keys(\%DB,0);
 
     if ($opt_d)
     {

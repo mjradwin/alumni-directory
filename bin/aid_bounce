@@ -1,8 +1,8 @@
 #!/usr/local/bin/perl -w
 
-# $Id: aid_bounce,v 5.14 2003/03/14 23:30:26 mradwin Exp mradwin $
+# $Id: aid_bounce,v 5.15 2003/05/15 00:20:29 mradwin Exp $
 #
-#   Copyright (c) 1995-1999  Michael John Radwin
+#   Copyright (c) 2003  Michael J. Radwin
 #
 #   This program is free software; you can redistribute it and/or modify
 #   it under the terms of the GNU General Public License as published by
@@ -27,10 +27,10 @@ use lib "/pub/m/r/mradwin/private/lib/perl5/site_perl";
 use DB_File::Lock;
 
 use Getopt::Std;
-require 'aid_util.pl';
+use aid_util;
 
 $0 =~ s,.*/,,;  # basename
-$usage = "usage: $0 [-hvud] [-f <log>] inoutfile.db [ids...]
+my $usage = "usage: $0 [-hvud] [-f <log>] inoutfile.db [ids...]
     -h        Display usage information.
     -v        Invalidate ids (clear valid bit).
     -u        Revalidate ids (zero bounce field and set valid bit).
@@ -67,16 +67,16 @@ if ($opt_d)
     tie(%DB, 'DB_File::Lock', $dbmfile, O_RDONLY, 0444, $DB_HASH, 'read')
 	or die "$dbmfile: $!\n";
 
-    while (($key,$val) = each %DB)
+    while (my($key,$val) = each %DB)
     {
 	next unless $key =~ /^\d+$/;
-	%rec = &aid_db_unpack_rec($key,$val);
+	%rec = aid_util::db_unpack_rec($key,$val);
 
 	next unless $rec{'v'};
 	next if $rec{'b'} eq '0';
 
-	print "$rec{'id'} - $rec{'e'} - bounce ", &aid_caldate($rec{'b'});
-	print " - fresh ", &aid_caldate($rec{'f'})
+	print "$rec{'id'} - $rec{'e'} - bounce ", aid_util::caldate($rec{'b'});
+	print " - fresh ", aid_util::caldate($rec{'f'})
 	    if $rec{'f'} > $rec{'b'};
 	print "\n";
     }
@@ -139,16 +139,16 @@ sub freshen
 {
     my($DB, @freshness) = @_;
 
-    while (($key,$val) = each %{$DB})
+    while (my($key,$val) = each %{$DB})
     {
 	next unless $key =~ /^\d+$/;
-	%rec = &aid_db_unpack_rec($key,$val);
+	my %rec = aid_util::db_unpack_rec($key,$val);
 
 	next unless $rec{'v'} == 1 && defined $freshness[$rec{'id'}] &&
 	    $rec{'b'} == 0 && $rec{'f'} < $freshness[$rec{'id'}];
 
 	$rec{'f'} = $freshness[$rec{'id'}];
-	$DB->{$rec{'id'}} = &aid_db_pack_rec(*rec);
+	$DB->{$rec{'id'}} = aid_util::db_pack_rec(\%rec);
     }
 
     1;
@@ -164,7 +164,7 @@ sub bounce_args
     for (@args) {
 	if (/^\d+$/) {
 	    if (defined $DB->{$_}) {
-		%rec = &aid_db_unpack_rec($_,$DB->{$_});
+		%rec = aid_util::db_unpack_rec($_,$DB->{$_});
 	    } else {
 		warn "can't find id $_\n";
 		next;
@@ -173,7 +173,7 @@ sub bounce_args
 	    $_ = "\L$_\E";
 	    if (defined $DB->{$_} && $DB->{$_} ne '') {
 		$_ = unpack("n*", $DB->{$_});
-		%rec = &aid_db_unpack_rec($_,$DB->{$_});
+		%rec = aid_util::db_unpack_rec($_,$DB->{$_});
 	    } else {
 		warn "can't find e-mail addr $_\n";
 		next;
@@ -184,7 +184,7 @@ sub bounce_args
 	if ($rec{'b'} == 0) {
 	    print "(none)";
 	} else {
-	    print &aid_caldate($rec{'b'});
+	    print aid_util::caldate($rec{'b'});
 	}
 
 	if ($opt_u)
@@ -212,7 +212,7 @@ sub bounce_args
 	}
 	print "\n";
 
-	$DB->{$rec{'id'}} = &aid_db_pack_rec(*rec);
+	$DB->{$rec{'id'}} = aid_util::db_pack_rec(\%rec);
     }
 
     1;

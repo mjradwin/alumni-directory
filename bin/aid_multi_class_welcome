@@ -1,8 +1,8 @@
 #!/usr/local/bin/perl -w
 
-# $Id: aid_multi_class_welcome,v 5.14 2001/09/16 16:57:51 mradwin Exp mradwin $
+# $Id: aid_multi_class_welcome,v 5.15 2003/05/15 00:30:45 mradwin Exp $
 #
-#   Copyright (c) 1995-1999  Michael John Radwin
+#   Copyright (c) 2003  Michael J. Radwin
 #
 #   This program is free software; you can redistribute it and/or modify
 #   it under the terms of the GNU General Public License as published by
@@ -27,10 +27,10 @@ use lib "/pub/m/r/mradwin/private/lib/perl5/site_perl";
 use DB_File::Lock;
 use Getopt::Std;
 
-require 'aid_util.pl';
+use aid_util;
 
 $0 =~ s,.*/,,;  # basename
-$usage = "usage: $0 [-hq] infile.db classtxt-dir
+my $usage = "usage: $0 [-hq] infile.db classtxt-dir
     -h        Display usage information.
     -q        Quiet.
 ";
@@ -54,7 +54,7 @@ $dir = shift;
 $dir =~ s,/$,,;
 die "$0: $dir: $!\n" unless -d $dir;
 
-$welcome_exe = &aid_config('aiddir') . 'bin/aid_welcome';
+$welcome_exe = aid_util::config('aiddir') . 'bin/aid_welcome';
 die "$0: $welcome_exe: $!\n" unless -x $welcome_exe;
 
 ($sec,$min,$hour,$mday,$mon,$year,$wday,$yday,$isdst) =
@@ -73,7 +73,7 @@ foreach (@years)
 
     foreach $id (@ids)
     {
-	%rec = &aid_db_unpack_rec($id,$DB{$id});
+	my %rec = aid_util::db_unpack_rec($id,$DB{$id});
 	next unless $rec{'v'};
 	next unless $rec{'q'} == 4;
 
@@ -100,7 +100,7 @@ foreach (@years)
 	    '-m', $dir . '/' . $_ . '.txt',
     	    $dbmfile,
 	    @mail_ids;
-	&aid_die_if_failure();
+	aid_util::die_if_failure();
     }
 }
 

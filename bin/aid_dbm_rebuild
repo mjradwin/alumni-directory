@@ -1,8 +1,8 @@
 #!/usr/local/bin/perl -w
 
-# $Id: aid_dbm_rebuild,v 1.8 2003/03/14 23:30:26 mradwin Exp mradwin $
+# $Id: aid_dbm_rebuild,v 1.9 2003/05/15 00:30:45 mradwin Exp $
 #
-#   Copyright (c) 1995-1999  Michael John Radwin
+#   Copyright (c) 2003  Michael J. Radwin
 #
 #   This program is free software; you can redistribute it and/or modify
 #   it under the terms of the GNU General Public License as published by
@@ -26,11 +26,11 @@ unshift(@INC, $dirname);
 use lib "/pub/m/r/mradwin/private/lib/perl5/site_perl";
 use DB_File::Lock;
 
-require 'aid_util.pl';
+use aid_util;
 use Getopt::Std;
 
 $0 =~ s,.*/,,;  # basename
-$usage = "usage: $0 [-hqa] infile.db outfile.db
+my $usage = "usage: $0 [-hqa] infile.db outfile.db
     -h        Display usage information.
     -a        Rebuild aliases, too.
     -q        Quiet.
@@ -50,25 +50,25 @@ tie(%DB, 'DB_File::Lock', $dbmfile, O_CREAT|O_RDWR, 0644, $DB_HASH, 'write')
     or die "$dbmfile: $!\n";
 
 my(%aliases);
-while (($key,$val) = each(%OLDDB))
+while (my($key,$val) = each(%OLDDB))
 {
     next unless $key =~ /^\d+$/;
 
-    %rec = &aid_db_unpack_rec($key,$val);
+    my %rec = aid_util::db_unpack_rec($key,$val);
     $rec{'a'} = '' if ($opt_a);
 
     if (defined $rec{'a'} && $rec{'a'} ne '') {
 	$aliases{$key} = $rec{'a'};
     } else {
-	$aliases{$key} = &aid_generate_alias(*rec);
+	$aliases{$key} = aid_util::generate_alias(\%rec);
     }
 }
 
-while (($key,$val) = each(%OLDDB))
+while (my($key,$val) = each(%OLDDB))
 {
     next unless $key =~ /^\d+$/;
 
-    %rec = &aid_db_unpack_rec($key,$val);
+    my %rec = aid_util::db_unpack_rec($key,$val);
 
     foreach (@aid_edit_field_names)
     {
@@ -76,14 +76,14 @@ while (($key,$val) = each(%OLDDB))
     }
 
     $rec{'a'} = $aliases{$rec{'id'}};
-    $DB{$rec{'id'}} = &aid_db_pack_rec(*rec);
+    $DB{$rec{'id'}} = aid_util::db_pack_rec(\%rec);
     $email = $rec{'e'};
     $DB{"\L$email\E"} = pack('n', $rec{'id'});
 }
 
 untie(%OLDDB);
 
-&aid_rebuild_secondary_keys(\%DB,$opt_q,0,0);
+aid_util::rebuild_secondary_keys(\%DB,$opt_q,0,0);
 
 untie(%DB);
 

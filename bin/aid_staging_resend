@@ -1,8 +1,8 @@
 #!/usr/local/bin/perl -w
 
-# $Id: aid_staging_resend,v 1.5 2002/03/07 23:29:39 mradwin Exp mradwin $
+# $Id: aid_staging_resend,v 1.6 2003/05/15 00:20:29 mradwin Exp $
 #
-#   Copyright (c) 1995-1999  Michael John Radwin
+#   Copyright (c) 2003  Michael J. Radwin
 #
 #   This program is free software; you can redistribute it and/or modify
 #   it under the terms of the GNU General Public License as published by
@@ -26,12 +26,11 @@ unshift(@INC, $dirname);
 use lib "/pub/m/r/mradwin/private/lib/perl5/site_perl";
 use DB_File::Lock;
 
-require 'aid_util.pl';
+use aid_util;
 use Getopt::Std;
-require 'ctime.pl';
 
 $0 =~ s,.*/,,;  # basename
-$usage = "usage: $0 [-h] randkey [randkey2 .. randkeyN]
+my $usage = "usage: $0 [-h] randkey [randkey2 .. randkeyN]
     -h        Display usage information.
 ";
 
@@ -39,7 +38,7 @@ getopts('h') || die "$usage\n";
 @ARGV || die "$usage\n";
 $opt_h && die "$usage\n";
 
-my($dbmfile) = &aid_config('staging');
+my($dbmfile) = aid_util::config('staging');
 die "$dbmfile: $!\n" unless -r $dbmfile;
 
 my(%DB);
@@ -51,10 +50,10 @@ foreach $key (@ARGV)
     if (defined $DB{$key} && $key =~ /^\w{8}$/ && $DB{$key} =~ /^-?\d+\0/)
     {
 	my($id,$packed) = split(/\0/, $DB{$key}, 2);
-	%rec = &aid_db_unpack_rec($id,$packed);
+	my %rec = aid_util::db_unpack_rec($id,$packed);
 
 	my($return_path,$from,$subject,$body,@recip) =
-	    &aid_verification_message($key, *rec);
+	    aid_util::verification_message($key, \%rec);
 
 	my($i);
 	my($status) = 0;
@@ -62,20 +61,20 @@ foreach $key (@ARGV)
 	for ($i = 0; $status == 0 && $i < 3; $i++)
 	{
 	    $status =
-		&aid_sendmail_v2($return_path,$from,$subject,$body,@recip);
+		aid_util::sendmail_v2($return_path,$from,$subject,$body,@recip);
 	}
 
 	next unless $status;
 
 	# update timestamp
 	$rec{'lm'} = time;
-	$DB{$key} = $rec{'id'} . "\0" . &aid_db_pack_rec(*rec);
+	$DB{$key} = $rec{'id'} . "\0" . aid_util::db_pack_rec(\%rec);
 
 	# display something to stdout
-	($affil,undef) = &aid_affiliate(*rec,0);
-	print &aid_inorder_fullname(*rec), $affil, " <",
+	($affil,undef) = aid_util::affiliate(\%rec,0);
+	print aid_util::inorder_fullname(\%rec), $affil, " <",
 	$rec{'e'}, ">\n",
-	"web submission: ", &ctime($rec{'u'}),
+	"web submission: ", scalar(localtime($rec{'u'})),
 	"key=$key\tid=$id\n";
 
 	print "\n";

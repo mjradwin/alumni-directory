@@ -1,8 +1,8 @@
 #!/usr/local/bin/perl -w
 
-# $Id: aid_staging_look,v 1.7 2002/03/07 23:29:39 mradwin Exp mradwin $
+# $Id: aid_staging_look,v 1.8 2003/05/15 00:30:45 mradwin Exp $
 #
-#   Copyright (c) 1995-1999  Michael John Radwin
+#   Copyright (c) 2003  Michael J. Radwin
 #
 #   This program is free software; you can redistribute it and/or modify
 #   it under the terms of the GNU General Public License as published by
@@ -26,12 +26,11 @@ unshift(@INC, $dirname);
 use lib "/pub/m/r/mradwin/private/lib/perl5/site_perl";
 use DB_File::Lock;
 
-require 'aid_util.pl';
+use aid_util;
 use Getopt::Std;
-require 'ctime.pl';
 
 $0 =~ s,.*/,,;  # basename
-$usage = "usage: $0 [-h] [-I inifile]
+my $usage = "usage: $0 [-h] [-I inifile]
     -h        Display usage information.
     -I file   Dump data to <file>
 ";
@@ -39,7 +38,7 @@ $usage = "usage: $0 [-h] [-I inifile]
 getopts('hI:') || die "$usage\n";
 $opt_h && die "$usage\n";
 
-my($dbmfile) = &aid_config('staging');
+my($dbmfile) = aid_util::config('staging');
 die "$dbmfile: $!\n" unless -r $dbmfile;
 
 tie(%DB, 'DB_File::Lock', $dbmfile, O_RDONLY, 0444, $DB_HASH, 'read')
@@ -60,7 +59,7 @@ if ($opt_I)
 
     # sort the numeric keys by id
     %id2key = ();
-    while (($key,$val) = each %DB)
+    while (my($key,$val) = each %DB)
     {
 	if ($key =~ /^\w{8}$/ && $val =~ /^-?\d+\0/)
 	{
@@ -73,7 +72,7 @@ if ($opt_I)
     {
 	$key = $id2key{$_};
 	my($id,$packed) = split(/\0/, $DB{$key}, 2);
-	%rec = &aid_db_unpack_rec($id,$packed);
+	my %rec = aid_util::db_unpack_rec($id,$packed);
 	print DATA "[$key]\n";
 
 	foreach (@aid_edit_field_names)
@@ -82,25 +81,26 @@ if ($opt_I)
 	}
 
 	print DATA "verif=", (defined $verif{$key} ? 1 : 0), "\n";
-	print DATA 'n=', &aid_url_escape($rec{'n'}), "\n\n";
+	print DATA 'n=', aid_util::url_escape($rec{'n'}), "\n\n";
     } 
     close(DATA);
 }
 else
 {
-while (($key,$val) = each %DB)
+while (my($key,$val) = each %DB)
 {
     if ($key =~ /^\w{8}$/ && $val =~ /^-?\d+\0/)
     {
 	my($id,$packed) = split(/\0/, $val, 2);
-	%rec = &aid_db_unpack_rec($id,$packed);
+	my %rec = aid_util::db_unpack_rec($id,$packed);
 
-	($affil,undef) = &aid_affiliate(*rec,0);
+	($affil,undef) = aid_util::affiliate(\%rec,0);
 
-	print &aid_inorder_fullname(*rec), $affil, " <",
+	print aid_util::inorder_fullname(\%rec), $affil, " <",
 	$rec{'e'}, ">\n",
-	"web submission: ", &ctime($rec{'u'}),
-	"mailed confirm: ", ($rec{'lm'} == 0 ? "(never)\n" : &ctime($rec{'lm'})),
+	"web submission: ", scalar(localtime($rec{'u'})),
+	"mailed confirm: ", ($rec{'lm'} == 0 ? "(never)\n" :
+			     scalar(localtime($rec{'lm'}))),
 	"key=$key\tid=$id\n";
 
 	print "*VERIFIED*\n" if defined $verif{$key};

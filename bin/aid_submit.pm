@@ -1,10 +1,10 @@
 #
-#     FILE: aid_submit.pl
+#     FILE: aid_submit.pm
 #   AUTHOR: Michael J. Radwin
 #    DESCR: submission form for Alumni Internet Directory
-#      $Id: aid_submit.pl,v 5.16 2001/11/01 20:22:10 mradwin Exp mradwin $
+#      $Id: aid_submit.pl,v 5.17 2002/07/08 01:14:59 mradwin Exp $
 #
-#   Copyright (c) 1995-1999  Michael John Radwin
+#   Copyright (c) 2003  Michael J. Radwin
 #
 #   This program is free software; you can redistribute it and/or modify
 #   it under the terms of the GNU General Public License as published by
@@ -21,16 +21,18 @@
 #   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #
 
+use aid_util;
+use strict;
+
+package aid_submit;
+
 sub aid_submit_body
 {
-    package aid_util;
+    my($rec_arg,$empty_fields,$star_fg,$field_descr) = @_;
+    my($body,$instr);
+    my(@reqradio,$i,$reunion_chk,@empty_fields,$prev_email);
 
-    local($_);
-    local($body,$instr);
-    local($star) = "<font color=\"#$star_fg\">*</font>";
-    local(*rec_arg,$empty_fields) = @_;
-    local(%rec) = &main::aid_html_entify_rec(*rec_arg);
-    local(@reqradio,$i,$reunion_chk,@empty_fields,$prev_email);
+    my %rec = aid_util::aid_html_entify_rec($rec_arg);
 
     $prev_email = defined $rec{'pe'} ? 
 	$rec{'pe'} : $rec{'e'};
@@ -39,29 +41,29 @@ sub aid_submit_body
     # give defaults if they're being revalidated
     if ($rec{'v'} == 0)
     {
-	$rec{'q'} = $blank_entry{'q'};
-	$rec{'r'} = $blank_entry{'r'};
+	$rec{'q'} = $aid_util::blank_entry{'q'};
+	$rec{'r'} = $aid_util::blank_entry{'r'};
     }
 
-    for ($i = 0; $i <= $#req_descr_long; $i++) 
+    for ($i = 0; $i <= @aid_util::req_descr_long; $i++) 
     {
 	$reqradio[$i] = "
   &nbsp;&nbsp;&nbsp;&nbsp;<input type=\"radio\" name=\"q\" id=\"q$i\"
   value=\"$i\"" . (($rec{'q'} == $i) ? ' checked' : '') .
-  "><label for=\"q$i\">&nbsp;\n  $req_descr_long[$i]\n  </label><br>\n";
+  "><label for=\"q$i\">&nbsp;\n  $aid_util::req_descr_long[$i]\n  </label><br>\n";
     }
 
     $reunion_chk = ($rec{'r'} == 1) ? ' checked' : '';
 
     $body = '';
 
-    if ($rec{'yr'} =~ /^\d+$/ && $rec{'yr'} > $config{'max_gradyear'})
+    if ($rec{'yr'} =~ /^\d+$/ && $rec{'yr'} > aid_config('max_gradyear'))
     {
 	$body .= "<p><strong><font color=\"red\">Your graduating class\n" .
 		 "(<code>" . $rec{'yr'} . "</code>)\n" .
 		 "appears to be invalid.</font>\n" .
 		 "<br>It must be no later than " .
-		 $config{'max_gradyear'} .
+		 aid_config('max_gradyear') .
 		 ".</strong></p>\n\n";
 
 	$empty_fields =~ s/\byr\b//g;
@@ -103,13 +105,15 @@ sub aid_submit_body
 	    $body .= "the following required fields were blank:";
 	    $body .= "</strong></font></p>\n\n<ul>\n";
 
-	    foreach(@empty_fields)
+	    foreach my $ef (@empty_fields)
 	    {
-		$body .= "<li>" . $field_descr{$_} . "</li>\n";
+		$body .= "<li>" . $field_descr->{$ef} . "</li>\n";
 	    }
 	    $body .= "</ul>\n\n";
 	}
     }
+
+    my $star = "<font color=\"#$star_fg\">*</font>";
 
     $instr = "<p>Please " . (($rec{'id'} != -1) ? "update" : "enter") .
     " the following information about yourself.<br>
@@ -123,13 +127,16 @@ School?</font>
 Please add your listing  to the<br>
 <a href=\"/awalt/\">Awalt High School Alumni Internet Directory</a>
 instead.</p>
-" if $rec{'id'} == -1 && $config{'school'} eq 'Mountain View High School';
+" if $rec{'id'} == -1 && aid_config('school') eq 'Mountain View High School';
 
-    $body .= "\n<form method=\"post\" action=\"" . $config{'submit_cgi'};
+    $body .= "\n<form method=\"post\" action=\"" . aid_config('submit_cgi');
     $body .= "/$rec{'id'}" if $rec{'id'} != -1;
     $body .= "/new" if $rec{'id'} == -1;
     $body .= "\">\n\n" . $instr . "\n\n";
     
+    my $ss = aid_config('short_school');
+    my $mp = aid_config('master_path');
+
     $body .= "<table border=\"0\" cellspacing=\"7\">
 
 <tr><td colspan=\"3\" bgcolor=\"#$header_bg\">
@@ -169,7 +176,7 @@ Full Name</strong></big></font>
 
 <tr><td colspan=\"3\" bgcolor=\"#$header_bg\">
 <font color=\"#$header_fg\"><big><strong class=\"hl\">2.
-Graduating Class while at $config{'short_school'}</strong></big></font>
+Graduating Class while at $ss</strong></big></font>
 </td></tr>
 <tr>
   <td valign=\"top\" align=\"right\"><label
@@ -233,7 +240,7 @@ E-mail Preferences</strong></big></font>
   for=\"r\">&nbsp;My class officers may notify me of
   reunion information via e-mail.</label><br><br>
   Would you like to <a target=\"c34286cd\"
-  href=\"$config{'master_path'}etc/faq.html#mailings\">receive
+  href=\"${mp}etc/faq.html#mailings\">receive
   a digest of the Directory every quarter</a><br>
   (at the beginning of February, May, August and November) via e-mail?<br>
 ";
@@ -276,14 +283,6 @@ value=\"Preview Listing\">
 </form>
 ";
 
-}
-
-# avoid stupid warnings
-if ($^W && 0)
-{
-    &aid_submit_body();
-    $aid_util::star_fg = '';
-    $aid_util::field_descr = '';
 }
 
 1;

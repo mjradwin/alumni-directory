@@ -2,9 +2,9 @@
 
 #
 # does the html multi_class pages
-# $Id: aid_multi_class_html,v 5.34 2003/07/17 19:04:15 mradwin Exp mradwin $
+# $Id: aid_multi_class_html,v 5.35 2003/07/19 00:25:37 mradwin Exp $
 #
-#   Copyright (c) 1995-1999  Michael John Radwin
+#   Copyright (c) 2003  Michael J. Radwin
 #
 #   This program is free software; you can redistribute it and/or modify
 #   it under the terms of the GNU General Public License as published by
@@ -30,11 +30,11 @@ use DB_File::Lock;
 use Time::Local;
 use POSIX qw(strftime);
 
-require 'aid_util.pl';
+use aid_util;
 use Getopt::Std;
 
 $0 =~ s,.*/,,;  # basename
-$usage = "usage: $0 [-hq] [-i <keys>] infile.db [reunions.db]
+my $usage = "usage: $0 [-hq] [-i <keys>] infile.db [reunions.db]
     -h        Display usage information.
     -q        Quiet.
     -d        Generate 'detail' pages for each individual.
@@ -106,7 +106,7 @@ foreach $year (@years)
     @ids = unpack("n*",$DB{$key});
 
     $title = ($year =~ /^\d+$/) ? "Class of $year" : "Faculty and Staff";
-    $outFile = &aid_config('wwwdir') . "class/${year}.html";
+    $outFile = aid_util::config('wwwdir') . "class/${year}.html";
     open(FMTOUT,">$outFile") || die "Can't open $outFile: $!\n";
 
     if ($#ids + 1 == 1)
@@ -131,14 +131,14 @@ foreach $year (@years)
 	$extra_meta .= "\">";
     }
 
-    print FMTOUT &aid_common_html_hdr(2,$title,1,$time,$subtitle,$extra_meta);
-    print FMTOUT &aid_common_intro_para(0);
-    print FMTOUT &aid_class_jump_bar('', '.html', *years, 1, $year);
+    print FMTOUT aid_util::common_html_hdr(2,$title,1,$time,$subtitle,$extra_meta);
+    print FMTOUT aid_util::common_intro_para(0);
+    print FMTOUT aid_util::class_jump_bar('', '.html', *years, 1, $year);
     print FMTOUT "<hr noshade=\"noshade\" size=\"1\">\n\n";
 
     my(%r);
     my($key,$val);
-    while (($key,$val) = each(%RDB))
+    while (my($key,$val) = each(%RDB))
     {
 	next if $key =~ /^_/;
 
@@ -207,10 +207,10 @@ foreach $year (@years)
     my @recent;
     foreach $id (@ids)
     {
-	%rec = &aid_db_unpack_rec($id,$DB{$id});
+	my %rec = aid_util::db_unpack_rec($id,$DB{$id});
 	next unless $rec{'v'};
 
-	if (&aid_is_new($rec{'u'}))
+	if (aid_util::is_new($rec{'u'}))
 	{
 	    push(@recent, $id);
 	}
@@ -220,38 +220,38 @@ foreach $year (@years)
 	print FMTOUT "<h3>New and Updated</h3>\n<ul>\n";
 	foreach $id (@recent)
 	{
-	    %rec = &aid_db_unpack_rec($id,$DB{$id});
+	    my %rec = aid_util::db_unpack_rec($id,$DB{$id});
 	    print FMTOUT "<li><a href=\"#id-$id\">", 
-	    	&aid_inorder_fullname(*rec), "</a> ",
-	    	&aid_is_new_html(*rec), " ",
-	    	&aid_caldate($rec{'u'}), "\n";
+	    	aid_util::inorder_fullname(\%rec), "</a> ",
+	    	aid_util::is_new_html(\%rec), " ",
+	    	aid_util::caldate($rec{'u'}), "\n";
 	}
 	print FMTOUT "</ul>\n<hr noshade=\"noshade\" size=\"1\">\n\n";
     }
 
     foreach $id (@ids)
     {
-	%rec = &aid_db_unpack_rec($id,$DB{$id});
+	my %rec = aid_util::db_unpack_rec($id,$DB{$id});
 	next unless $rec{'v'};
 
-	print FMTOUT &aid_verbose_entry(*rec);
+	print FMTOUT aid_util::verbose_entry(\%rec);
 
 	if ($opt_d) {
 	my $out2 = sprintf("%s%s/%06d.html",
-			   &aid_config('wwwdir'), "detail", $id);
+			   aid_util::config('wwwdir'), "detail", $id);
 	open(FMTOUT2,">$out2") || die "Can't open $out2: $!\n";
 
-	print FMTOUT2 &aid_common_html_hdr(-2,
-					   &aid_inorder_fullname(*rec),
+	print FMTOUT2 aid_util::common_html_hdr(-2,
+					   aid_util::inorder_fullname(\%rec),
 					   1,$rec{'u'},$title);
-	print FMTOUT2 &aid_verbose_entry(*rec,1);
-	print FMTOUT2 &aid_common_html_ftr(-2,$rec{'u'});
+	print FMTOUT2 aid_util::verbose_entry(\%rec,1);
+	print FMTOUT2 aid_util::common_html_ftr(-2,$rec{'u'});
 	close(FMTOUT2);
 	utime $rec{'u'}, $rec{'u'}, $out2;
     	}
     }
 
-    print FMTOUT &aid_common_html_ftr(2,$time);
+    print FMTOUT aid_util::common_html_ftr(2,$time);
     close(FMTOUT);
 #    utime $time, $time, $outFile;
 }
@@ -263,16 +263,16 @@ print STDOUT "\n"
     unless $opt_q;
 
 # index page
-$outFile = &aid_config('wwwdir') . "class/index.html";
+$outFile = aid_util::config('wwwdir') . "class/index.html";
 open(FMTOUT,">$outFile") || die "Can't open $outFile: $!\n";
 
-print FMTOUT &aid_common_html_hdr(-2,'Graduating Classes',0,$time);
+print FMTOUT aid_util::common_html_hdr(-2,'Graduating Classes',0,$time);
 
 print FMTOUT "<p align=\"center\"><big>\n";
-print FMTOUT &aid_class_jump_bar('', '.html', *years, 0);
+print FMTOUT aid_util::class_jump_bar('', '.html', *years, 0);
 print FMTOUT "</big></p>\n\n";
 
-print FMTOUT &aid_common_html_ftr(-2,$time);
+print FMTOUT aid_util::common_html_ftr(-2,$time);
 close(FMTOUT);
 utime $time, $time, $outFile;
 

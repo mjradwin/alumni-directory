@@ -1,8 +1,8 @@
 #!/usr/local/bin/perl -w
 
-# $Id: aid_addname,v 5.33 2003/03/14 23:30:26 mradwin Exp mradwin $
+# $Id: aid_addname,v 5.34 2003/05/15 00:20:29 mradwin Exp mradwin $
 #
-#   Copyright (c) 1995-1999  Michael John Radwin
+#   Copyright (c) 2003  Michael J. Radwin
 #
 #   This program is free software; you can redistribute it and/or modify
 #   it under the terms of the GNU General Public License as published by
@@ -26,38 +26,37 @@ unshift(@INC, $dirname);
 use Getopt::Std;
 use lib "/pub/m/r/mradwin/private/lib/perl5/site_perl";
 use DB_File::Lock;
-require 'aid_util.pl';
+use aid_util;
+use strict;
 
 $0 =~ s,.*/,,;  # basename
-$usage = "usage: $0 [-hwm]
+my $usage = "usage: $0 [-hwm]
     -h        Display usage information.
     -w        Don't mail welcome messages.
     -m        Manual operation (don't rebuild or mail welcome messages).
     -q        Quiet mode (no error messages).
 ";
 
-getopts('hmwq') || die "$usage\n";
-$opt_h && die "$usage\n";
-$opt_h = $opt_h;                # avoid warning
-$opt_w = $opt_w;                # avoid warning
-$opt_m = $opt_m;                # avoid warning
+my(%opts);
+getopts('hmwq', \%opts) || die "$usage\n";
+$opts{'h'} && die "$usage\n";
 
-$dbmfile = &aid_config('aiddir') . "data/working.db";
+my $dbmfile = aid_util::config('aiddir') . "data/working.db";
 
-$make = &aid_config('make');
+my $make = aid_util::config('make');
 -x $make || die "$0: $make is not executable!";
-$make .= " -s QUIET=-q" if $opt_q;
+$make .= " -s QUIET=-q" if $opts{'q'};
 
 my @new_ids = ();
 my @upd_ids = ();
 my @mod_keys = ();
 
 select(STDOUT); $| = 1;
-$status = readspool();
-if (!$opt_m && $status)
+my $status = readspool();
+if (!$opts{'m'} && $status)
 {
     rebuild();
-    mail_welcome() unless $opt_w;
+    mail_welcome() unless $opts{'w'};
 }
 
 exit(0);
@@ -66,7 +65,7 @@ sub readspool
 {
     my($success) = 0;
 
-    my($staging) = &aid_config('staging');
+    my($staging) = aid_util::config('staging');
     die "$staging: $!\n" unless -r $staging;
 
     my(%DBS);
@@ -79,10 +78,10 @@ sub readspool
     {
 	my(@key8s) = split(/\0/, $DBS{'_verified'});
 
-	foreach $key8 (@key8s)
+	foreach my $key8 (@key8s)
 	{
 	    print STDOUT "checking key8 $key8\n"
-		unless $opt_q;
+		unless $opts{'q'};
 
 	    if (defined $DBS{$key8} && $DBS{$key8} =~ /^-?\d+\0/)
 	    {
@@ -91,19 +90,19 @@ sub readspool
 		push(@vals, $DBS{$key8});
 		$DBS{$key8} = "p\0";
 
-		%rec = &aid_db_unpack_rec($id,$packed);
+		my %rec = aid_util::db_unpack_rec($id,$packed);
 
 		print STDOUT "OK key8 $key8 - ",
-		&aid_inorder_fullname(*rec), "\n"
-		    unless $opt_q;
+		aid_util::inorder_fullname(\%rec), "\n"
+		    unless $opts{'q'};
 
 		if ($id != -1 && defined $DBS{$id})
 		{
 		    delete $DBS{$id};
 		}
-		elsif ($id == -1 && defined $DBS{"\L$rec{'e'}\E"})
+		elsif ($id == -1 && defined $DBS{lc($rec{'e'})})
 		{
-		    delete $DBS{"\L$rec{'e'}\E"};
+		    delete $DBS{lc($rec{'e'})};
 		}
 
 		undef(%rec);
@@ -123,13 +122,13 @@ sub readspool
     foreach $val (@vals)
     {
 	my($id,$packed) = split(/\0/, $val, 2);
-	%rec = &aid_db_unpack_rec($id,$packed);
+	my %rec = aid_util::db_unpack_rec($id,$packed);
 	$rec{'f'} = $rec{'u'} = time;
 
-	print STDOUT "addname - ", &aid_inorder_fullname(*rec), "\n"
-	    unless $opt_q;
+	print STDOUT "addname - ", aid_util::inorder_fullname(\%rec), "\n"
+	    unless $opts{'q'};
 
-	addname(*rec) || die "$0: can't add $rec{'id'} $rec{'e'}!\n";
+	addname(\%rec) || die "$0: can't add $rec{'id'} $rec{'e'}!\n";
 	$success = 1;
     }
 
@@ -140,7 +139,7 @@ sub readspool
 	    $DB_HASH, 'write')
 	    or die "$dbmfile: $!\n";
 
-	@mod_keys = aid_rebuild_secondary_keys(\%DB,$opt_q,0,1);
+	@mod_keys = aid_rebuild_secondary_keys(\%DB,$opts{'q'},0,1);
 
 	untie(%DB);
     }
@@ -151,168 +150,168 @@ sub readspool
 
 sub rebuild
 {
-    local($cmd);
+    chdir aid_util::config('aiddir') || die "$0: can't chdir: $!\n";
 
-    chdir &aid_config('aiddir') || die "$0: can't chdir: $!\n";
-
-    $cmd = $make . ' MOD_IDS="' . join(' ', @new_ids, @upd_ids) . '"' .
+    my $cmd = $make . ' MOD_IDS="' . join(' ', @new_ids, @upd_ids) . '"' .
 	' MOD_KEYS="' . join(' ', @mod_keys) . '"';
-    print STDOUT "cd ", &aid_config('aiddir'), "; $cmd\n"
-	unless $opt_q;
+    print STDOUT "cd ", aid_util::config('aiddir'), "; $cmd\n"
+	unless $opts{'q'};
 
     system $cmd;
-    &aid_die_if_failure();
+    aid_util::die_if_failure();
 }
 
 sub mail_welcome
 {
-    local($cmd);
+    my $cmd;
 
-    chdir &aid_config('aiddir') || die "$0: can't chdir: $!\n";
+    chdir aid_util::config('aiddir') || die "$0: can't chdir: $!\n";
 
     if (@new_ids)
     {
 	$cmd = "./bin/aid_welcome $dbmfile " . join(' ', @new_ids);
 	print STDOUT $cmd, "\n"
-	    unless $opt_q;
+	    unless $opts{'q'};
 	system $cmd;
-	&aid_die_if_failure();
+	aid_util::die_if_failure();
     }
 
     if (@upd_ids)
     {
 	$cmd = "./bin/aid_welcome -u $dbmfile " . join(' ', @upd_ids);
 	print STDOUT $cmd, "\n"
-	    unless $opt_q;
+	    unless $opts{'q'};
 	system $cmd;
-	&aid_die_if_failure();
+	aid_util::die_if_failure();
     }
 }
 
 
 sub addname
 {
-    local(*rec) = @_;
+    my($recp) = @_;
 
-    local(*LOG,%oldrec);
+    my(%oldrec);
     my($logFile,$key_name,$key_email,%id_by_email,%id_by_name,$email);
 
-    %aid_util::aid_aliases = ();   # reset global alias hash repository 
+    %aid_util::aliases = ();   # reset global alias hash repository 
 
-    $logFile = &aid_config('aiddir') . "logs/additions.log";
+    $logFile = aid_util::config('aiddir') . "logs/additions.log";
 
     my(%DB);
     tie(%DB, 'DB_File::Lock', $dbmfile, O_CREAT|O_RDWR, 0644, $DB_HASH, 'write')
 	or die "$dbmfile: $!\n";
 
-    while (($key,$val) = each %DB)
+    while (my($key,$val) = each %DB)
     {
 	next unless $key =~ /^\d+$/;
-	%oldrec = &aid_db_unpack_rec($key,$val);
+	%oldrec = aid_util::db_unpack_rec($key,$val);
 
-	$key_email = "\L$oldrec{'e'}\E" .
-	    &aid_mangle("\L$oldrec{'sn'}\E") .
-	    &aid_mangle("\L$oldrec{'gn'}\E");
-	$key_name = &aid_mangle("\L$oldrec{'sn'}\E") .
-	    &aid_mangle("\L$oldrec{'gn'}\E") . $oldrec{'yr'};
+	$key_email = lc($oldrec{'e'}) .
+	    aid_util::mangle(lc($oldrec{'sn'})) .
+	    aid_util::mangle(lc($oldrec{'gn'}));
+	$key_name = aid_util::mangle(lc($oldrec{'sn'})) .
+	    aid_util::mangle(lc($oldrec{'gn'})) . $oldrec{'yr'};
 	$id_by_email{$key_email} = $oldrec{'id'};
 	$id_by_name{$key_name} = $oldrec{'id'};
 
-	&aid_generate_alias(*oldrec);
+	aid_util::generate_alias(\%oldrec);
     }
     undef(%oldrec);
 
-    open(LOG, ">>$logFile") || die "$0: can't open $logFile: $!\n";
-    select(LOG); $| = 1; select(STDOUT);
+    my $LOG;
+    open($LOG, ">>$logFile") || die "$0: can't open $logFile: $!\n";
+    select($LOG); $| = 1; select(STDOUT);
 
     # assign the double-submit newbies the same id if we've seen their
     # email address before
-    if ($rec{'id'} == -1)
+    if ($recp->{'id'} == -1)
     {
-	$key_email = "\L$rec{'e'}\E" .
-	    &aid_mangle("\L$rec{'sn'}\E") . &aid_mangle("\L$rec{'gn'}\E");
-	$key_name = &aid_mangle("\L$rec{'sn'}\E") .
-	    &aid_mangle("\L$rec{'gn'}\E") . $rec{'yr'};
+	$key_email = lc($recp->{'e'}) .
+	    aid_util::mangle(lc($recp->{'sn'})) .
+	    aid_util::mangle(lc($recp->{'gn'}));
+	$key_name = aid_util::mangle(lc($recp->{'sn'})) .
+	    aid_util::mangle(lc($recp->{'gn'})) . $recp->{'yr'};
 
 	if (defined $id_by_email{$key_email})
 	{
-	    $rec{'id'} = $id_by_email{$key_email};
-	    %oldrec = &aid_db_unpack_rec($rec{'id'}, $DB{$rec{'id'}});
+	    $recp->{'id'} = $id_by_email{$key_email};
+	    %oldrec = aid_util::db_unpack_rec($recp->{'id'}, $DB{$recp->{'id'}});
 
-	    $rec{'c'} = $oldrec{'c'};
+	    $recp->{'c'} = $oldrec{'c'};
 	}
 	elsif (defined $id_by_name{$key_name})
 	{
-	    $rec{'id'} = $id_by_name{$key_name};
-	    %oldrec = &aid_db_unpack_rec($rec{'id'}, $DB{$rec{'id'}});
+	    $recp->{'id'} = $id_by_name{$key_name};
+	    %oldrec = aid_util::db_unpack_rec($recp->{'id'}, $DB{$recp->{'id'}});
 
-	    $rec{'c'} = $oldrec{'c'};
-	    $rec{'eu'} = $rec{'u'} if
-		$oldrec{'e'} ne $rec{'e'};
-	    $rec{'eo'} = $oldrec{'e'} if
-		$oldrec{'e'} ne $rec{'e'};
+	    $recp->{'c'} = $oldrec{'c'};
+	    $recp->{'eu'} = $recp->{'u'} if
+		$oldrec{'e'} ne $recp->{'e'};
+	    $recp->{'eo'} = $oldrec{'e'} if
+		$oldrec{'e'} ne $recp->{'e'};
 	}
 	undef(%oldrec);
     }
 
-    if ($rec{'id'} == -1)
+    if ($recp->{'id'} == -1)
     {
-	$rec{'id'} = $DB{'_nextid'};
+	$recp->{'id'} = $DB{'_nextid'};
 	$DB{'_nextid'} = $DB{'_nextid'} + 1;
 
-	push(@new_ids, $rec{'id'});
+	push(@new_ids, $recp->{'id'});
 	print     "new - "
-	    unless $opt_q;
-	print LOG "new - ";
+	    unless $opts{'q'};
+	print $LOG "new - ";
     }
-    elsif (defined $DB{$rec{'id'}})
+    elsif (defined $DB{$recp->{'id'}})
     {
-	%oldrec = &aid_db_unpack_rec($rec{'id'},$DB{$rec{'id'}});
+	%oldrec = aid_util::db_unpack_rec($recp->{'id'},$DB{$recp->{'id'}});
 
-	push(@upd_ids, $rec{'id'})
-	     unless ((grep(/\b$rec{'id'}\b/, @new_ids)) ||
-		     (grep(/\b$rec{'id'}\b/, @upd_ids)));
+	push(@upd_ids, $recp->{'id'})
+	     unless ((grep(/\b$recp->{'id'}\b/, @new_ids)) ||
+		     (grep(/\b$recp->{'id'}\b/, @upd_ids)));
 
-	if ($rec{'e'} ne $oldrec{'e'})
+	if ($recp->{'e'} ne $oldrec{'e'})
 	{
 	    $email = $oldrec{'e'};
-	    delete $DB{"\L$email\E"};
+	    delete $DB{lc($email)};
 	}
 
 	print     "upd ", $oldrec{'e'}, " "
-	    unless $opt_q;
-	print LOG "upd ", $oldrec{'e'}, " ";
+	    unless $opts{'q'};
+	print $LOG "upd ", $oldrec{'e'}, " ";
 	undef(%oldrec);
     }
     else
     {
-	warn "$rec{'id'} doesn't appear to be new, but not in DB.\n";
-	push(@new_ids, $rec{'id'});
+	warn "$recp->{'id'} doesn't appear to be new, but not in DB.\n";
+	push(@new_ids, $recp->{'id'});
 	print     "new - "
-	    unless $opt_q;
-	print LOG "new - ";
+	    unless $opts{'q'};
+	print $LOG "new - ";
     }
 
-    $rec{'a'} = &aid_generate_alias(*rec)
-	unless defined $rec{'a'} && $rec{'a'} ne '';
+    $recp->{'a'} = aid_util::generate_alias($recp)
+	unless defined $recp->{'a'} && $recp->{'a'} ne '';
 
-    $DB{$rec{'id'}} = &aid_db_pack_rec(*rec);
-    $email = $rec{'e'};
-    $DB{"\L$email\E"} = pack('n', $rec{'id'});
+    $DB{$recp->{'id'}} = aid_util::db_pack_rec($recp);
+    $email = $recp->{'e'};
+    $DB{lc($email)} = pack('n', $recp->{'id'});
 
     untie(%DB);
 
-    local($joined) = &aid_ampersand_join(*rec);
+    my $joined = aid_util::ampersand_join($recp);
     print     $joined, "\n"
-	unless $opt_q;
-    print LOG $joined, "\n";
-    close(LOG);
+	unless $opts{'q'};
+    print $LOG $joined, "\n";
+    close($LOG);
 
-    $rec{'id'};
+    $recp->{'id'};
 }
 
 
 if ($^W && 0)
 {
-    %aid_util::aid_aliases = ();   # reset global alias hash repository 
+    %aid_util::aliases = ();   # reset global alias hash repository 
 }
