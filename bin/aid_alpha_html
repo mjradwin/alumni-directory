@@ -29,8 +29,8 @@ if (!$opt_t) {
     print FMTOUT "<br>";
     print FMTOUT &tableheader("Alumni Listed by Last Name", 1, 'ffff99',
 '000000', 1);
-    print FMTOUT "<p>Any entries marked with " . &new_gif(0) .
-"have been added to the Directory within the last month.  The
+    print FMTOUT "<p>Any entries marked with\n" . &new_gif(0) .
+"\nhave been added to the Directory within the last month.  The
 $info_gif
 icon lets you get more detailed information about an alumnus.</p>\n";
     print FMTOUT "<p><a name=\"top\">Index</a>: <tt>";
