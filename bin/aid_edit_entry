@@ -1,0 +1,86 @@
+#!/usr/bin/perl -w
+
+# $Id$
+#
+#   Copyright (c) 1995-1999  Michael John Radwin
+#
+#   This program is free software; you can redistribute it and/or modify
+#   it under the terms of the GNU General Public License as published by
+#   the Free Software Foundation; either version 2 of the License, or
+#   (at your option) any later version.
+#
+#   This program is distributed in the hope that it will be useful,
+#   but WITHOUT ANY WARRANTY; without even the implied warranty of
+#   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#   GNU General Public License for more details.
+#
+#   You should have received a copy of the GNU General Public License
+#   along with this program; if not, write to the Free Software
+#   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+#
+
+require 'aid_util.pl';
+require 'getopts.pl';
+
+$0 =~ s,.*/,,;  # basename
+$usage = "usage: $0 [-h] infile.db userid key1=value1 [key2=value2 ...]
+    -h        Display usage information.
+";
+
+&Getopts('h') || die "$usage\n";
+$opt_h && die "$usage\n";
+$opt_h = $opt_h;		# avoid warning
+$ARGV[0] || die "$usage\n";
+$ARGV[1] || die "$usage\n";
+$ARGV[2] || die "$usage\n";
+
+$dbmfile = shift;
+$dbmfile =~ s/\.db$//;
+die "$0: ${dbmfile}.db: $!\n" unless -r "${dbmfile}.db";
+die "$0: ${dbmfile}.db: $!\n" unless -w "${dbmfile}.db";
+
+dbmopen(%DB,$dbmfile,0644) || die "$0: ${dbmfile}.db: $!\n";
+
+$id = shift;
+if ($id =~ /^\d+$/)
+{
+    die "$0: no key $id in ${dbmfile}.db\n" unless defined $DB{$id};
+    %rec = &aid_db_unpack_rec($id,$DB{$id});
+}
+else
+{
+    # map email addr to numeric id
+    die "$0: no key \L$id\E in ${dbmfile}.db\n" unless defined $DB{"\L$id\E"};
+    $id = $DB{"\L$id\E"};
+    die "$0: no key $id in ${dbmfile}.db\n" unless defined $DB{$id};
+
+    %rec = &aid_db_unpack_rec($id,$DB{$id});
+}
+
+foreach (@ARGV)
+{
+    next unless /^[^=]+=/;
+    ($key,$val) = split(/=/);
+    $rec{"\L$key\E"} = $val;
+}
+
+$DB{$id} = &aid_db_pack_rec(*rec);
+dbmclose(%DB);
+
+&display_entry(*rec);
+
+exit 0;
+
+sub display_entry
+{
+    local(*rec) = @_;
+
+    foreach (@aid_util'field_names) #')
+    {
+	print $_, '=', $rec{$_}, "\n";
+    }
+    print 'alias=', $rec{'alias'}, "\n";
+#   print 'message=', $rec{'message'}, "\n";
+
+    1;
+}
