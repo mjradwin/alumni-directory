@@ -2,7 +2,7 @@
 #     FILE: aid_config.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: configuration for Alumni Internet Directory
-#      $Id: aid_config.pl,v 1.14 1999/03/27 04:12:55 mradwin Exp mradwin $
+#      $Id: aid_config.pl,v 1.15 1999/03/29 21:49:19 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -57,6 +57,8 @@
      'rcsid',        "$aid_util'rcsid",
      'html_ad',
 "
+<h3>Want to network with other alumni?</h3>
+
 <p>Sign up for the <a
 href=\"http://www.planetall.com/main.asp?cid=1520098&gid=6602\">MVHS
 Group on PlanetAll</a> or <a

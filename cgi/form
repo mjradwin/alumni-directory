@@ -4,7 +4,7 @@
 #     FILE: mvhsaid.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: Alumni Internet Directory CGI interface
-#      $Id: mvhsaid,v 3.95 1999/03/29 02:28:56 mradwin Exp mradwin $
+#      $Id: mvhsaid,v 3.96 1999/03/29 17:56:08 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -40,7 +40,7 @@ $mailprog = &aid_config('mailprog');
 $dbmfile = &aid_config('dbmfile');
 $dbmfile =~ s/\.db$//;
 
-$rcsid = '$Id: mvhsaid,v 3.95 1999/03/29 02:28:56 mradwin Exp mradwin $'; #'fnt
+$rcsid = '$Id: mvhsaid,v 3.96 1999/03/29 17:56:08 mradwin Exp mradwin $'; #'fnt
 
 $listing_upd_title = 'Update Your Directory Listing';
 $listing_upl_title = 'Select a Listing to Update';
@@ -428,6 +428,8 @@ EOM
 
     $fullname = &aid_html_entify_str($fullname);
     print "
+
+<h3>Your submission has been received but is not yet published.</h3>
 
 <p>The listing for <strong>$fullname</strong> has been added
 to the submission queue, but it has <em>not</em> yet been published in
