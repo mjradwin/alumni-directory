@@ -2,7 +2,7 @@
 #     FILE: aid_util.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: perl library routines for the Alumni Internet Directory
-#      $Id: aid_util.pl,v 5.84 2001/01/26 18:20:52 mradwin Exp mradwin $
+#      $Id: aid_util.pl,v 5.85 2001/01/28 06:53:15 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -461,8 +461,13 @@ ${xtrahead}MIME-Version: 1.0
 Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: QUOTED-PRINTABLE
 Subject: $subject
+";
 
-" . &main::encode_qp($body);
+#    my($login) = getlogin() || getpwuid($<) || "UNKNOWN";
+#    my($hostname) = $ENV{'HOST'} || `/bin/hostname`;
+#    $message .= "X-Sender: $login\@$hostname\n";
+
+    $message .= "\n" . &main::encode_qp($body);
 
     unless ($smtp->mail($return_path)) {
 	warn "smtp mail() failure for @targets\n";
