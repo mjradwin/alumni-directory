@@ -2,7 +2,7 @@
 #     FILE: Makefile
 #   AUTHOR: Michael J. Radwin
 #    DESCR: Makefile for building the Alumni Internet Directory
-#      $Id: Makefile,v 3.20 1998/08/18 21:32:57 mradwin Exp mradwin $
+#      $Id: Makefile,v 3.21 1998/08/18 21:35:20 mradwin Exp mradwin $
 #
 
 WWWROOT=/home/web/radwin.org
@@ -40,7 +40,7 @@ SNAPSHOTFILES=mvhs \
 	web/mvhs-alumni/*.gif \
 	web/mvhs-alumni/whatsnew
 
-all:	adrfile index submit reunions links tech copyright \
+all:	adrfile index submit addupdate reunions links tech copyright \
 	recent pages multi class awalt goners \
 	verbose books
 
@@ -133,12 +133,19 @@ $(COPYRIGHT):	data/copyright.include $(BIN_HOME)
 		-t 'Acceptable Use and Copyright' \
 		$(COPYRIGHT)
 
-SUBMIT=$(WWWDIR)/add.html
+SUBMIT=$(WWWDIR)/new.html
 submit:	$(SUBMIT)
 $(SUBMIT):	$(BIN_HOME) $(AID_UTIL_PL)
-	$(BIN_HOME) -s -p10 \
+	$(BIN_HOME) -s -p20 \
 		-t 'Add an Entry to the Directory' \
 		$(SUBMIT)
+
+ADDUPDATE=$(WWWDIR)/add.html
+addupdate:	$(ADDUPDATE)
+$(ADDUPDATE):	data/add.include $(BIN_HOME)
+	$(BIN_HOME) -p10 -i data/add.include \
+		-t 'Add an Entry to the Directory' \
+		$(ADDUPDATE)
 
 BOOKS=$(WWWDIR)/books/mvhs.vdir
 books:	$(BOOKS)
