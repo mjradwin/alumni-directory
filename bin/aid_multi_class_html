@@ -2,7 +2,7 @@
 
 #
 # does the html verbose pages
-# $Id: aid_verbose_html,v 1.15 1998/01/03 12:35:47 mjr Exp mjr $
+# $Id: aid_verbose_html,v 1.16 1998/02/18 17:33:59 mjr Exp mjr $
 #
 
 require 'aid_util.pl';
@@ -109,7 +109,7 @@ sub write_entry {
 
     print FMTOUT &aid_image_tag('new_anchored') if &is_new($rec{'time'});
 
-    print FMTOUT "</dt>\n" 
+    print FMTOUT "</dt>\n";
     print FMTOUT "<dt>School: <strong>$rec{'school'}</strong></dt>\n" 
 	if $rec{'school'} ne 'MVHS';
     print FMTOUT "<dt>Affiliation:  <strong>$rec{'year'}</strong></dt>\n" 
