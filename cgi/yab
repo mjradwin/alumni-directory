@@ -4,9 +4,9 @@
 #     FILE: yab.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: Alumni Internet Directory CGI Y! Address Book redirect
-#      $Id: yab,v 5.8 2001/09/16 16:58:27 mradwin Exp mradwin $
+#      $Id: yab,v 5.9 2003/05/15 00:20:18 mradwin Exp mradwin $
 #
-#   Copyright (c) 1995-1999  Michael John Radwin
+#   Copyright (c) 2003  Michael J. Radwin
 #
 #   This program is free software; you can redistribute it and/or modify
 #   it under the terms of the GNU General Public License as published by
@@ -23,17 +23,16 @@
 #   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #
 
-$dirname = $0;
-$dirname =~ s,/[^/]+$,,;
-unshift(@INC, $dirname);
-
-require 'aid_util.pl';
+use FindBin;
+use lib $FindBin::Bin;
 use lib "/pub/m/r/mradwin/private/lib/perl5/site_perl";
+
 use DB_File::Lock;
 use CGI;
 use CGI::Carp qw(fatalsToBrowser);
+use aid_util;
 
-&aid_cgi_die('$PATH_INFO Missing', "This URL is bogus.")
+aid_util::cgi_die('$PATH_INFO Missing', "This URL is bogus.")
     unless defined $ENV{'PATH_INFO'};
 
 $ENV{'PATH_INFO'} =~ s/\+/ /g;
@@ -43,7 +42,7 @@ if ($ENV{'PATH_INFO'} =~ m,/(\d+)$,)
 {
     $id = $1;
 
-    $dbmfile = &aid_config('dbmfile');
+    $dbmfile = aid_util::config('dbmfile');
     die "$dbmfile: $!\n" unless -r $dbmfile;
 
     my(%DB);
@@ -56,9 +55,9 @@ if ($ENV{'PATH_INFO'} =~ m,/(\d+)$,)
 
     if (defined $val)
     {
-	%rec = &aid_db_unpack_rec($id,$val);
+	my %rec = aid_util::db_unpack_rec($id,$val);
 
-	local($url) = &aid_yahoo_abook_path(*rec);
+	my $url = aid_util::yahoo_abook_path(\%rec);
 	$url =~ s/\&amp;/\&/g;
 	print "Location: ", $url, "\015\012\015\012";
 
@@ -72,7 +71,7 @@ $ENV{'PATH_INFO'} =~ s/</&lt;/g;
 $ENV{'PATH_INFO'} =~ s/>/&gt;/g;
 
 print "Status: 404 Not Found\015\012";
-&aid_cgi_die('Not Found',
+aid_util::cgi_die('Not Found',
 	  "The alumnus " . $ENV{'PATH_INFO'} .
 	  " you requested could not be found.\n");
 

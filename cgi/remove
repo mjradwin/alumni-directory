@@ -4,7 +4,7 @@
 #     FILE: remove.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: CGI for removal of e-mail address from staging DB
-#      $Id: remove,v 1.9 2001/09/16 16:58:27 mradwin Exp mradwin $
+#      $Id: remove,v 1.10 2003/05/15 00:20:18 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-2000  Michael John Radwin
 #
@@ -23,15 +23,14 @@
 #   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #
 
-$dirname = $0;
-$dirname =~ s,/[^/]+$,,;
-unshift(@INC, $dirname);
-
-require 'aid_util.pl';
+use FindBin;
+use lib $FindBin::Bin;
 use lib "/pub/m/r/mradwin/private/lib/perl5/site_perl";
+
 use DB_File::Lock;
 use CGI;
 use CGI::Carp qw(fatalsToBrowser);
+use aid_util;
 
 CGI::ReadParse();
 my($key);
@@ -51,7 +50,7 @@ else
 
 if (defined $key)
 {
-    my $dbmfile = &aid_config('staging');
+    my $dbmfile = aid_util::config('staging');
     die "$dbmfile: $!\n" unless -r $dbmfile;
 
     my(%DB);
@@ -62,7 +61,7 @@ if (defined $key)
     {
 	my($val) = $DB{$key};
 	my($id,$packed) = split(/\0/, $val, 2);
-	%rec = &aid_db_unpack_rec($id,$packed);
+	%rec = aid_util::db_unpack_rec($id,$packed);
 
 	if (defined($in{'confirm'}))
 	{
@@ -70,9 +69,9 @@ if (defined $key)
 	    untie(%DB);
 
 	    print "Content-Type: text/html\015\012\015\012";
-	    print &aid_common_html_hdr(20,'E-mail address removed',1);
+	    print aid_util::common_html_hdr(20,'E-mail address removed',1);
 
-	    $admin = &aid_config('admin_email');
+	    $admin = aid_util::config('admin_email');
 	    print "
 <p>The Alumni Internet Directory entry for your e-mail address
 <b>$rec{'e'}</b>
@@ -88,7 +87,7 @@ inconvenience this may have caused you.</p>
 	    untie(%DB);
 
 	    print "Location: http://", 
-	    &aid_config('master_srv'), &aid_config('master_path'),
+	    aid_util::config('master_srv'), aid_util::config('master_path'),
 	    "\015\012\015\012";
 
 	    close(STDOUT);
@@ -99,7 +98,7 @@ inconvenience this may have caused you.</p>
 	    untie(%DB);
 
 	    print "Content-Type: text/html\015\012\015\012";
-	    print &aid_common_html_hdr(20,'Remove user',1);
+	    print aid_util::common_html_hdr(20,'Remove user',1);
 
 	    print "
 <p>You are about to <b>permanently remove</b> the Alumni Internet
@@ -111,7 +110,7 @@ Directory, you should remove this entry.</p>
 <p><big>Are you are sure you want to <b>permanently remove</b> this
 entry from the Directory?</big></p>
 
-<form method=\"post\" action=\"" . &aid_config('remove_cgi') . "\">
+<form method=\"post\" action=\"" . aid_util::config('remove_cgi') . "\">
 <input type=\"hidden\" name=\"k\" value=\"$key\">
 <input type=\"submit\" name=\"confirm\" value=\" YES, Remove `$rec{'e'}' \">
 &nbsp;&nbsp;&nbsp;&nbsp;
@@ -120,7 +119,7 @@ entry from the Directory?</big></p>
 ";
 	}
 
-	print &aid_common_html_ftr(20);
+	print aid_util::common_html_ftr(20);
 
 	close(STDOUT);
 	exit(0);
@@ -128,12 +127,12 @@ entry from the Directory?</big></p>
     elsif (defined $DB{$key} && $DB{$key} =~ /^[^\0]*\0$/)
     {
 	print "Content-Type: text/html\015\012\015\012";
-        print &aid_common_html_hdr(20,'Already removed',1);
+        print aid_util::common_html_hdr(20,'Already removed',1);
 
 	print "<p>The removal code you entered\n",
 	    "(<b>$key</b>) has already been processed.</p>\n";
 
-	print &aid_common_html_ftr(20);
+	print aid_util::common_html_ftr(20);
 
 	close(STDOUT);
 	exit(0);
@@ -143,7 +142,7 @@ entry from the Directory?</big></p>
 	untie(%DB);
 
 	print "Content-Type: text/html\015\012\015\012";
-        print &aid_common_html_hdr(20,'Remove user',1);
+        print aid_util::common_html_hdr(20,'Remove user',1);
 
 	$key =~ s/&/&amp;/g;
 	$key =~ s/</&lt;/g;
@@ -156,15 +155,15 @@ entry from the Directory?</big></p>
 else
 {
     print "Content-Type: text/html\015\012\015\012";
-    print &aid_common_html_hdr(20,'Remove user',1);
+    print aid_util::common_html_hdr(20,'Remove user',1);
 }
 
 print "<p>Please check your e-mail and find the 8-letter
 removal code that was sent to you by the ",
-&aid_config('short_school'), "
+aid_util::config('short_school'), "
 Alumni Robot and enter it below.</p>
 
-<form method=\"get\" action=\"" . &aid_config('remove_cgi') . "\">
+<form method=\"get\" action=\"" . aid_util::config('remove_cgi') . "\">
 <label for=\"k\">Enter 8-letter code:</label>
 &nbsp;
 <input id=\"k\" type=\"text\" size=\"8\" maxlength=\"8\" name=\"k\" value=\"\">
@@ -173,7 +172,7 @@ Alumni Robot and enter it below.</p>
 </form>
 ";
 
-print &aid_common_html_ftr(20);
+print aid_util::common_html_ftr(20);
 
 close(STDOUT);
 exit(0);

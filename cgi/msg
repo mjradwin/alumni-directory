@@ -4,7 +4,7 @@
 #     FILE: msg.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: Alumni Internet Directory update redirector
-#      $Id: msg,v 1.6 2003/02/21 19:36:56 mradwin Exp mradwin $
+#      $Id: msg,v 1.7 2003/05/15 00:20:18 mradwin Exp mradwin $
 #
 #   Copyright (c) 2003  Michael John Radwin
 #
@@ -23,22 +23,20 @@
 #   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #
 
-$dirname = $0;
-$dirname =~ s,/[^/]+$,,;
-unshift(@INC, $dirname);
-
-require 'aid_util.pl';
-use CGI;
-use CGI::Carp qw(fatalsToBrowser);
-
+use FindBin;
+use lib $FindBin::Bin;
 use lib "/pub/m/r/mradwin/private/lib/perl5/site_perl";
+
 use DB_File::Lock;
 use Digest::MD5  qw(md5_hex);
 use Email::Valid;
+use CGI;
+use CGI::Carp qw(fatalsToBrowser);
+use aid_util;
 
 CGI::ReadParse();
 
-my $dbmfile = &aid_config('dbmfile');
+my $dbmfile = aid_util::config('dbmfile');
 die "$dbmfile: $!\n" unless -r $dbmfile;
 
 if (defined($in{'to'}) && $in{'to'} =~ /^\d+$/)
@@ -53,17 +51,17 @@ if (defined($in{'to'}) && $in{'to'} =~ /^\d+$/)
 
     bail() unless $val;
 
-    %rec = &aid_db_unpack_rec($id,$val);
+    %rec = aid_util::db_unpack_rec($id,$val);
     my $hash = md5_hex($rec{'e'});
     my $name = email_name();
     my $e = "$name &lt;" . aid_protect_email($rec{'e'}) . "&gt;";
 
     print "Content-Type: text/html\015\012\015\012";
-    print &aid_common_html_hdr(9, 'Send Message', 1);
+    print aid_util::common_html_hdr(9, 'Send Message', 1);
 
-    form($e,$id,$hash,'',&aid_config('short_school') . ' Alumni','');
+    form($e,$id,$hash,'',aid_util::config('short_school') . ' Alumni','');
 
-    print &aid_common_html_ftr(9);
+    print aid_util::common_html_ftr(9);
     exit(0);
 }
 elsif (defined($in{'id'}) && $in{'id'} =~ /^\d+$/ && $in{'hash'} &&
@@ -80,7 +78,7 @@ elsif (defined($in{'id'}) && $in{'id'} =~ /^\d+$/ && $in{'hash'} &&
 
     bail() unless $val;
 
-    %rec = &aid_db_unpack_rec($id,$val);
+    %rec = aid_util::db_unpack_rec($id,$val);
     my $hash = md5_hex($rec{'e'});
     bail() unless ($hash eq $in{'hash'});
 
@@ -105,7 +103,7 @@ elsif (defined($in{'id'}) && $in{'id'} =~ /^\d+$/ && $in{'hash'} &&
 	$from = Email::Valid->address($from);
     } else {
 	print "Content-Type: text/html\015\012\015\012";
-	print &aid_common_html_hdr(9, 'Invalid Email Address', 1);
+	print aid_util::common_html_hdr(9, 'Invalid Email Address', 1);
 
 	my $h = aid_html_entify_str($from);
 	
@@ -119,17 +117,17 @@ _EOHTML_
 	my $e = "$name &lt;" . aid_protect_email($rec{'e'}) . "&gt;";
 	form($e,$id,$hash,$from,$subject,$message);
 
-	print &aid_common_html_ftr(9);
+	print aid_util::common_html_ftr(9);
 	exit(0);
     }
 
     my $name = email_name();
-    my $school = &aid_config('short_school');
+    my $school = aid_util::config('short_school');
 
     my $status = 0;
     for (my $i = 0; $status == 0 && $i < 3; $i++) {
-	$status = &aid_sendmail_v2(
-	 &aid_config('devnull_email'),
+	$status = aid_util::sendmail_v2(
+	 aid_util::config('devnull_email'),
 	 "\"$from via $school Web Form\"",
 	 $subject,
 	 "Reply-To: $from\nX-Originating-IP: $ENV{'REMOTE_ADDR'}",
@@ -138,23 +136,23 @@ _EOHTML_
 	 $rec{'e'});
     }
 
-    &aid_cgi_die('ERROR: Unable to send e-mail',
+    aid_util::cgi_die('ERROR: Unable to send e-mail',
 		 "We're sorry, we were unable to send e-mail to\n" .
 		 "<b>" . aid_protect_email($rec{'e'}) . "</b>.\n" .
 		 "<p>This may be a problem with our\n" .
 		 "server or perhaps with the target e-mail address.\n" .
 		 "Please try again in a few minutes.<p>If you continue\n" .
 		 "to get this error, please send e-mail to <a\n" .
-		 "href=\"mailto:" . &aid_config('admin_email') .
-		 "\">" . &aid_config('admin_email') . "</a>\n")
+		 "href=\"mailto:" . aid_util::config('admin_email') .
+		 "\">" . aid_util::config('admin_email') . "</a>\n")
 	if $status == 0;
 
     print "Content-Type: text/html\015\012\015\012";
-    print &aid_common_html_hdr(9, 'Message Sent', 1);
+    print aid_util::common_html_hdr(9, 'Message Sent', 1);
     print <<_EOHTML_;
 <p>Your message has been sent.</p>
 _EOHTML_
-    print &aid_common_html_ftr(9);
+    print aid_util::common_html_ftr(9);
     exit(0);
 }
 else
@@ -187,7 +185,7 @@ sub check_blank
 
     unless (defined $val && $val !~ /^\s*$/) {
 	print "Content-Type: text/html\015\012\015\012";
-	print &aid_common_html_hdr(9, "Missing $title", 1);
+	print aid_util::common_html_hdr(9, "Missing $title", 1);
 
 	print <<_EOHTML_;
 <p><font color=\"red\">Missing $title (can't be blank).  Please
@@ -196,7 +194,7 @@ _EOHTML_
 
 	form($e,$id,$hash,$from,$subject,$message);
 
-	print &aid_common_html_ftr(9);
+	print aid_util::common_html_ftr(9);
 	exit(0);
     }
 }
@@ -204,7 +202,7 @@ _EOHTML_
 sub form
 {
     my($e,$id,$hash,$from,$subject,$message) = @_;
-    my $action = &aid_config('message_cgi');
+    my $action = aid_util::config('message_cgi');
     my $t = POSIX::strftime("%a, %d %b %Y %H:%M:%S", localtime(time()));
 
     $from = aid_html_entify_str($from);
@@ -239,7 +237,7 @@ sub bail
     my($err) = @_;
 
     print "Status: 400 Bad Request\015\012";
-    &aid_cgi_die('Bad Request',
+    aid_util::cgi_die('Bad Request',
 		 "Sorry, looks like the form submission was broken.\n" .
 		 ($err ? "<br><b>$err</b>" : ""));
     close(STDOUT);

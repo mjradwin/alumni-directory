@@ -4,9 +4,9 @@
 #     FILE: about.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: Alumni Internet Directory CGI "About" page generation
-#      $Id: about,v 5.18 2001/09/16 16:58:27 mradwin Exp mradwin $
+#      $Id: about,v 5.19 2003/05/15 00:20:18 mradwin Exp mradwin $
 #
-#   Copyright (c) 1995-1999  Michael John Radwin
+#   Copyright (c) 2003  Michael J. Radwin
 #
 #   This program is free software; you can redistribute it and/or modify
 #   it under the terms of the GNU General Public License as published by
@@ -23,15 +23,14 @@
 #   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #
 
-$dirname = $0;
-$dirname =~ s,/[^/]+$,,;
-unshift(@INC, $dirname);
-
-require 'aid_util.pl';
+use FindBin;
+use lib $FindBin::Bin;
 use lib "/pub/m/r/mradwin/private/lib/perl5/site_perl";
-use DB_File::Lock;
 
-&aid_cgi_die('$PATH_INFO Missing', "This URL is bogus.")
+use DB_File::Lock;
+use aid_util;
+
+aid_util::cgi_die('$PATH_INFO Missing', "This URL is bogus.")
     unless defined $ENV{'PATH_INFO'};
 
 $ENV{'PATH_INFO'} =~ s/\+/ /g;
@@ -41,7 +40,7 @@ if ($ENV{'PATH_INFO'} =~ m,/(\d+)$,)
 {
     $id = $1;
 
-    $dbmfile = &aid_config('dbmfile');
+    $dbmfile = aid_util::config('dbmfile');
     die "$dbmfile: $!\n" unless -r $dbmfile;
 
     my(%DB);
@@ -54,9 +53,9 @@ if ($ENV{'PATH_INFO'} =~ m,/(\d+)$,)
 
     if (defined $val)
     {
-	%rec = &aid_db_unpack_rec($id,$val);
+	my %rec = aid_util::db_unpack_rec($id,$val);
 
-	&send_about(*rec);
+	send_about(\%rec);
 	close(STDOUT);
 	exit(0);
     }
@@ -67,7 +66,7 @@ $ENV{'PATH_INFO'} =~ s/</&lt;/g;
 $ENV{'PATH_INFO'} =~ s/>/&gt;/g;
 
 print "Status: 404 Not Found\015\012";
-&aid_cgi_die('Not Found',
+aid_util::cgi_die('Not Found',
 	  "The alumnus " . $ENV{'PATH_INFO'} .
 	  " you requested could not be found.\n");
 
@@ -76,14 +75,14 @@ exit(0);
 
 sub send_about
 {
-    local(*rec) = @_;
-    local($fullname) = &aid_inorder_fullname(*rec);
-    local($html_name) = &aid_html_entify_str($fullname);
+    my($recp) = @_;
+    my($fullname) = aid_util::inorder_fullname($recp);
+    my($html_name) = aid_util::html_entify_str($fullname);
 
-#    print "Last-Modified: ", &aid_http_date($rec{'u'}), "\015\012";
+#    print "Last-Modified: ", aid_util::http_date($recp->{'u'}), "\015\012";
     print "Content-Type: text/html\015\012\015\012";
 
-    print &aid_common_html_hdr(20,$fullname,1,$rec{'u'});
+    print aid_util::common_html_hdr(20,$fullname,1,$recp->{'u'});
     print "<p>Below is the current listing for ${html_name}.\n";
     print "Click the modify button below to edit this listing.</p>\n";
     print "
@@ -95,16 +94,16 @@ if the e-mail changes). The honor system has worked for us so far;
 please don't abuse it and force us to install a password
 door.</small></p>
 
-<form method=\"get\" action=\"" . &aid_config('update_cgi') . "/$rec{'id'}\">
-<input type=\"hidden\" name=\"upd\" value=\"$rec{'id'}\">
+<form method=\"get\" action=\"" . aid_util::config('update_cgi') . "/$recp->{'id'}\">
+<input type=\"hidden\" name=\"upd\" value=\"$recp->{'id'}\">
 <input type=\"submit\" value=\"Modify $html_name\">
 </form>
 
 ";
     print "<table border=\"1\" cellpadding=\"6\"><tr><td>";
-    print &aid_verbose_entry(*rec,1,1,1);
+    print aid_util::verbose_entry($recp,1,1,1);
     print "</td></tr></table>\n&nbsp;";
-    print &aid_common_html_ftr(20,$rec{'u'});
+    print aid_util::common_html_ftr(20,$recp->{'u'});
 
     1;
 }

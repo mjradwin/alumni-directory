@@ -4,9 +4,9 @@
 #     FILE: alumni.txt.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: Address Book/Nicknames Downloading module
-#      $Id: alumni.txt,v 5.12 2003/02/20 01:09:44 mradwin Exp mradwin $
+#      $Id: alumni.txt,v 5.13 2003/05/15 00:20:18 mradwin Exp mradwin $
 #
-#   Copyright (c) 1995-1999  Michael John Radwin
+#   Copyright (c) 2003  Michael J. Radwin
 #
 #   This program is free software; you can redistribute it and/or modify
 #   it under the terms of the GNU General Public License as published by
@@ -23,26 +23,25 @@
 #   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #
 
-$dirname = $0;
-$dirname =~ s,/[^/]+$,,;
-unshift(@INC, $dirname);
-
-require 'aid_util.pl';
+use FindBin;
+use lib $FindBin::Bin;
 use lib "/pub/m/r/mradwin/private/lib/perl5/site_perl";
+
 use DB_File::Lock;
 use CGI;
 use CGI::Carp qw(fatalsToBrowser);
+use aid_util;
 
-my $dbmfile = &aid_config('dbmfile');
+my $dbmfile = aid_util::config('dbmfile');
 die "$dbmfile: $!\n" unless -r $dbmfile;
 
 CGI::ReadParse();
 if (! keys %in)
 {
     print "Status: 400 Bad Request\015\012";
-    &aid_cgi_die("Bad Download Request",
+    aid_util::cgi_die("Bad Download Request",
 	      "The download request could not be processed.\n" .
-	      "Please <a href=\"" . &aid_config('master_path') .
+	      "Please <a href=\"" . aid_util::config('master_path') .
 	      "download/\">try again</a>.");
 }
 
@@ -52,14 +51,14 @@ $plusminus_p = defined $in{'plusminus'} &&
 if (! &is_email_okay($in{'email'}))
 {
     print "Content-Type: text/html\015\012\015\012";
-    print &aid_common_html_hdr(-1, (($in{'email'} =~ /^\s*$/) ? 'Blank' :
+    print aid_util::common_html_hdr(-1, (($in{'email'} =~ /^\s*$/) ? 'Blank' :
 				    'Invalid') . ' E-mail Address',1);
     print "\n";
     print "<p>You must submit a valid, non-blank e-mail address to ";
     print "download address books.\n";
-    print "<p>Please <a href=\"" . &aid_config('master_path') .
+    print "<p>Please <a href=\"" . aid_util::config('master_path') .
 	"download/\">try again</a>.</p>\n";
-    print &aid_common_html_ftr(-1);
+    print aid_util::common_html_ftr(-1);
 }
 elsif (defined $in{'format'} && defined $in{'year'})
 {
@@ -68,9 +67,9 @@ elsif (defined $in{'format'} && defined $in{'year'})
 else
 {
     print "Status: 400 Bad Request\015\012";
-    &aid_cgi_die("Bad Download Request",
+    aid_util::cgi_die("Bad Download Request",
 	      "The download request could not be processed.\n" .
-	      "Please <a href=\"" . &aid_config('master_path') .
+	      "Please <a href=\"" . aid_util::config('master_path') .
 	      "download/\">try again</a>.");
 }
 
@@ -79,11 +78,11 @@ exit(0);
 
 
 sub send_address_book {
-    local($format,$year,$plusminus_p) = @_;
-    local(@class_ids);
-    local($_,%rec,$minyr,$maxyr);
-    local($subtype) = 'plain';
-    local($filename) = &aid_config('short_school');
+    my($format,$year,$plusminus_p) = @_;
+    my(@class_ids);
+    my($minyr,$maxyr);
+    my($subtype) = 'plain';
+    my($filename) = aid_util::config('short_school');
 
     $filename =~ s/[^\w]/_/g;
     $filename = "\L$filename";
@@ -124,10 +123,11 @@ sub send_address_book {
 	"filename=$filename\015\012";
     print "Content-Type: text/$subtype; ",
 	"filename=\"$filename\"\015\012\015\012";
-    &aid_book_write_prefix(*STDOUT,$format);
+    open($STDOUT,">-") || die;
+    aid_util::book_write_prefix($STDOUT,$format);
     foreach (@class_ids)
     {
-	%rec = &aid_db_unpack_rec($_,$DB{$_});
+	my %rec = aid_util::db_unpack_rec($_,$DB{$_});
 
 	next unless $rec{'v'};
 	if ($year =~ /^\d{4}$/)
@@ -140,12 +140,13 @@ sub send_address_book {
 	    next if $rec{'yr'} =~ /^\d{4}$/;
 	}
 
-	&aid_book_write_entry(*STDOUT,$format,*rec);
+	aid_util::book_write_entry($STDOUT,$format,\%rec);
     }
 
     untie(%DB);
 
-    &aid_book_write_suffix(*STDOUT,$format);
+    aid_util::book_write_suffix($STDOUT,$format);
+    close($STDOUT);
 }
 
 sub is_email_okay
