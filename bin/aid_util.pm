@@ -2,7 +2,7 @@
 #     FILE: mv_util.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: perl library routines for the MVHS Alumni Internet Directory
-#      $Id: mv_util.pl,v 1.56 1997/11/03 22:22:08 mjr Exp mjr $
+#      $Id: mv_util.pl,v 1.57 1997/11/12 17:57:24 mjr Exp mjr $
 #
 
 CONFIG: {
@@ -331,9 +331,10 @@ All other fields are optional.";
   value=\"$location\"></td>
 </tr>
 <tr>
-  <td colspan=3><font color=\"#000000\"><br>
-  Please send an updated copy of the Directory to my
-  email address every 3-4 months:<br>
+  <td colspan=3><font color=\"#000000\"><br>Please 
+  <a href=\"" . $config{'master_path'} . "tech.html#mailings\">send 
+  an updated copy</a> of the Directory to my email address every 3-4 
+  months:<br>
   &nbsp;&nbsp;&nbsp;&nbsp;<input type=radio name=\"request\"
   value=\"1\"$reqchk[1]>&nbsp;&nbsp;Sorted by name.<br>
   &nbsp;&nbsp;&nbsp;&nbsp;<input type=radio name=\"request\" 

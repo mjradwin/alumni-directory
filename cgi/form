@@ -4,7 +4,7 @@
 #     FILE: mvhsaid.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: MVHS Alumni Internet Directory CGI interface
-#      $Id: mvhsaid,v 1.40 1997/11/07 21:26:41 mjr Exp mjr $
+#      $Id: mvhsaid,v 1.41 1997/11/12 17:56:28 mjr Exp mjr $
 #
 
 require 'mv_util.pl';
@@ -22,7 +22,7 @@ $dbfile = &mv_config('wwwdir') . "mvhs.adr";
 if (defined($in{'version'})) {
     select(STDOUT);  $| = 1;
     print "Content-type: text/plain\n\n";
-    print '$Id: mvhsaid,v 1.40 1997/11/07 21:26:41 mjr Exp mjr $', "\n";
+    print '$Id: mvhsaid,v 1.41 1997/11/12 17:56:28 mjr Exp mjr $', "\n";
     exit(0);
 }
 
@@ -223,7 +223,7 @@ EOM
     print "receipt of this submission when it it processed.</p>\n";
 
     print "<p>Processing your sumbission might take a day or two.\n";
-    print "See <a href=\"" . &mv_config('master_path') . "tech.html\">";
+    print "See <a href=\"" . &mv_config('master_path') . "tech.html#submit\">";
     print "tech notes</a> for behind-the-scenes details.</p>\n";
 
     print &common_html_ftr(-1);
