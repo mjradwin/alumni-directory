@@ -2,7 +2,7 @@
 #     FILE: Makefile
 #   AUTHOR: Michael J. Radwin
 #    DESCR: Makefile for building the Alumni Internet Directory
-#      $Id: Makefile,v 3.58 1999/02/26 23:27:35 mradwin Exp mradwin $
+#      $Id: Makefile,v 3.59 1999/02/27 02:00:52 mradwin Exp mradwin $
 #
 
 WWWROOT=/home/web/radwin.org
@@ -94,7 +94,7 @@ RECENT=$(WWWDIR)/recent.html
 RECENT_TS=$(WWWDIR)/.recent.html
 recent:	$(RECENT_TS)
 $(RECENT_TS):	$(DBFILE) $(BIN_RECENT)
-	$(BIN_RECENT) -v -m1 $(DBFILE) $(RECENT)
+	$(BIN_RECENT) -v -m0.5 $(DBFILE) $(RECENT)
 
 GONERS=$(WWWDIR)/invalid.html
 GONERS_TS=$(WWWDIR)/.invalid.html
