@@ -2,7 +2,7 @@
 
 #
 # generates address books in several formats
-# $Id: aid_book,v 6.5 2004/02/17 03:48:52 mradwin Exp mradwin $
+# $Id: aid_book,v 6.6 2004/03/22 00:43:26 mradwin Exp mradwin $
 #
 # Copyright (c) 2003  Michael J. Radwin.
 # All rights reserved.
@@ -139,6 +139,7 @@ foreach my $id (@alpha_ids)
 {
     my %rec = aid_util::db_unpack_rec($id,$DB{$id});
     next unless $rec{'v'};
+    next unless $rec{'r'};
 
     $opts{'p'} && aid_util::book_write_entry($BOOKp,'p',\%rec);
     $opts{'e'} && aid_util::book_write_entry($BOOKe,'e',\%rec);
