@@ -1,0 +1,104 @@
+#!/usr/bin/perl -w
+
+# $Id: aid_dbm_write,v 5.2 1999/06/07 18:33:10 mradwin Exp mradwin $
+#
+#   Copyright (c) 1995-1999  Michael John Radwin
+#
+#   This program is free software; you can redistribute it and/or modify
+#   it under the terms of the GNU General Public License as published by
+#   the Free Software Foundation; either version 2 of the License, or
+#   (at your option) any later version.
+#
+#   This program is distributed in the hope that it will be useful,
+#   but WITHOUT ANY WARRANTY; without even the implied warranty of
+#   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#   GNU General Public License for more details.
+#
+#   You should have received a copy of the GNU General Public License
+#   along with this program; if not, write to the Free Software
+#   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+#
+
+$dirname = $0;
+$dirname =~ s,/[^/]+$,,;
+unshift(@INC, $dirname);
+
+require 'aid_util.pl';
+require 'getopts.pl';
+
+$0 =~ s,.*/,,;  # basename
+$usage = "usage: $0 [-hq] outfile.db infile.u
+    -h        Display usage information.
+    -q        Quiet.
+";
+
+&Getopts('hq') || die "$usage\n";
+$opt_h && die "$usage\n";
+defined $ARGV[0] || die "$usage\n";
+defined $ARGV[1] || die "$usage\n";
+
+$ARGV[0] =~ s/\.db$//;
+dbmopen(%DB,$ARGV[0],0666) || die "$0: $ARGV[0].db: $!\n";
+die "$0: $ARGV[0].db: $!\n" unless -e "$ARGV[0].db";
+
+open(URLS,$ARGV[1]) || die "$0: $ARGV[1]: $!\n";
+
+$j = 0;
+if (!$opt_q)
+{
+    select(STDOUT); $| = 1;
+    print STDOUT "$0: writing primary data...";
+}
+
+while(<URLS>)
+{
+    $j++;
+    s/^.+\?//;
+    chop;
+
+    %in = ();
+    @in = split(/[&;]/);
+
+    foreach $i (0 .. $#in)
+    {
+	# Convert plus to space
+	$in[$i] =~ s/\+/ /g;
+
+	# Split into key and value.  
+	($key, $val) = split(/=/,$in[$i],2); # splits on the first =.
+	
+	# Convert %XX from hex numbers to alphanumeric
+	$key =~ s/%([A-Fa-f0-9]{2})/pack("c",hex($1))/ge;
+	$val =~ s/%([A-Fa-f0-9]{2})/pack("c",hex($1))/ge;
+
+	# Associate key and value
+	$in{$key} = $val;
+    }
+
+    if (! defined $in{'id'})
+    {
+	warn "$ARGV[1]:$j: missing id\n";
+	next;
+    }
+
+    $DB{$in{'id'}} = &aid_db_pack_rec(*in);
+    $email = $in{'e'};
+    $DB{"\L$email\E"} = pack('n', $in{'id'});
+
+    print STDOUT "." if !$opt_q && ($j % 100) == 0;
+}
+close(URLS);
+
+print STDOUT "\n" unless $opt_q;
+
+&aid_rebuild_secondary_keys(*DB,$opt_q,0,0);
+dbmclose(%DB);
+
+print STDOUT "$0: build successful\n" unless $opt_q;
+exit(0);
+
+# avoid warnings
+if ($^W && 0)
+{
+    $opt_h = $opt_h;
+}
