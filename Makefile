@@ -2,7 +2,7 @@
 #     FILE: Makefile
 #   AUTHOR: Michael J. Radwin
 #    DESCR: Makefile for building the Alumni Internet Directory
-#      $Id: Makefile,v 3.27 1998/10/15 21:11:18 mradwin Exp mradwin $
+#      $Id: Makefile,v 3.28 1998/10/17 21:00:49 mradwin Exp mradwin $
 #
 
 WWWROOT=/home/web/radwin.org
@@ -25,7 +25,7 @@ BIN_CLASS=./bin/aid_class_html
 BIN_GONERS=./bin/aid_goners_html
 BIN_HOME=./bin/aid_home_html
 BIN_RECENT=./bin/aid_shortlist_html
-BIN_VERBOSE=./bin/aid_verbose_html
+BIN_MULTI_CLASS=./bin/aid_multi_class_html
 BIN_PAGES=./bin/aid_shortlist_html
 
 TARFILES=README \
@@ -42,7 +42,7 @@ SNAPSHOTFILES=mvhs \
 
 all:	adrfile index submit addupdate reunions links faq copyright \
 	recent pages multi class awalt goners \
-	verbose books
+	multi_class books
 
 ADRFILE=$(WWWDIR)/master.adr
 adrfile:	$(ADRFILE)
@@ -84,11 +84,11 @@ pages:	$(PAGES)
 $(PAGES):	$(ADR_CLASS) $(BIN_PAGES)
 	$(BIN_PAGES) -w $(ADR_CLASS) $(PAGES)
 
-VERBOSE=$(WWWDIR)/class/index.html
-verbose:	$(VERBOSE)
-$(VERBOSE):	$(ADR_CLASS) $(BIN_VERBOSE)
+MULTI_CLASS=$(WWWDIR)/class/index.html
+multi_class:	$(MULTI_CLASS)
+$(MULTI_CLASS):	$(ADR_CLASS) $(BIN_MULTI_CLASS)
 	mkdir -p $(WWWDIR)/class
-	$(BIN_VERBOSE) $(ADR_CLASS)
+	$(BIN_MULTI_CLASS) $(ADR_CLASS)
 
 INDEX=$(WWWDIR)/index.html
 index:	$(INDEX)
