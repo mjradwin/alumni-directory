@@ -1,11 +1,11 @@
-H1, H2, H3, H4, H5, H6 { font-family: Tahoma, Verdana, Arial, Helvetica, Geneva, SunSans-Regular, sans-serif ; }
+H1, H2, H3, H4, H5, H6 { font-family: Tahoma, Verdana, Arial, Helvetica, Geneva, SunSans-Regular, sans-serif; margin-bottom: 0ex }
 .overline { font-family: Tahoma, Verdana, Arial, Helvetica, Geneva, SunSans-Regular, sans-serif; margin-bottom: -2ex ; }  
-b.nu, strong.nu { color: black; background: #ffffcc; }
-b.i, strong.i { color: black; background: #ffffcc; text-decoration: none; }
-div.example { border: none; color: black; background: #eeeeee; }
-pre.example { color: black; margin-left: 1em; margin-right: 1em; background: #eeeeee; }
-div.about { border: none; color: black; width: 100%; background: #ffffcc; }
-pre.about { color: black; margin-left: 1em; margin-right: 1em; background: #ffffcc; }
-.alert { color: red; background: white; }
+b.nu, strong.nu { color: black; background: #ffffcc }
+b.i, strong.i { color: black; background: #ffffcc; text-decoration: none }
+div.example { border: none; color: black; background: #eeeeee }
+pre.example { color: black; margin-left: 1em; margin-right: 1em; background: #eeeeee }
+div.about { border: none; color: black; width: 100%; background: #ffffcc }
+pre.about { color: black; margin-left: 1em; margin-right: 1em; background: #ffffcc }
+.alert { color: red; background: white }
 pre { font-family: monospace }        /* navigator 4 requires this */
 
