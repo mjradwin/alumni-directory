@@ -2,7 +2,7 @@
 
 #
 # does the html version of the grad-date address list
-# $Id: aid_class_html,v 5.7 1999/06/25 16:27:39 mradwin Exp mradwin $
+# $Id: aid_class_html,v 5.8 1999/06/25 17:07:00 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -96,6 +96,7 @@ select(STDOUT); $| = 1;
 $prev = '1900';
 foreach $year (@years)
 {
+    die "no ${prefix}${year} key!\n" unless defined $DB{"_${prefix}${year}"};
     print STDOUT "." unless $opt_q;
     @ids = unpack("n*",$DB{"_${prefix}${year}"});
 

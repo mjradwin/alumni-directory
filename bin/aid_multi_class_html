@@ -2,7 +2,7 @@
 
 #
 # does the html multi_class pages
-# $Id: aid_multi_class_html,v 5.7 1999/06/14 22:55:16 mradwin Exp mradwin $
+# $Id: aid_multi_class_html,v 5.8 1999/06/25 16:27:39 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -77,16 +77,16 @@ foreach $year (@years)
 	print STDOUT ".";
     }
 
+    die "no $key key!\n" unless defined $DB{$key};
+    $time = unpack("N",$DB{$key});
+    $title = ($year =~ /^\d+$/) ? "Class of $year" : "Faculty and Staff";
+
     $key = "_${year}";
     die "no $key key!\n" unless defined $DB{$key};
     @ids = unpack("n*",$DB{$key});
 
     $outFile = &aid_config('wwwdir') . "class/${year}.html";
     open(FMTOUT,">$outFile") || die "Can't open $outFile: $!\n";
-
-    $title = ($year =~ /^\d+$/) ? "Class of $year" : "Faculty and Staff";
-    $time = unpack("N",
-	(($year =~ /^\d+$/) ? $DB{"_t_${year}"} : $DB{'_t_other'}));
 
     if ($#ids + 1 == 1)
     {

@@ -2,7 +2,7 @@
 
 #
 # does the html verbose pages
-# $Id: aid_multi_alpha_html,v 5.9 1999/06/12 19:16:14 mradwin Exp mradwin $
+# $Id: aid_multi_alpha_html,v 5.10 1999/06/14 22:55:16 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -73,14 +73,14 @@ foreach $initial (@initials)
 	next unless grep(/$key/, @incremental);
     }
 
+    die "no $key key!\n" unless defined $DB{$key};
+    $time = unpack("N",$DB{$key});
+
     print STDOUT "$initial ";
 
     $key = "_a_${initial}";
     die "no $key key!\n" unless defined $DB{$key};
     @alpha_ids = unpack("n*",$DB{$key});
-
-    die "no alpha time key!\n" unless defined $DB{"_t_${initial}"};
-    $time = unpack("N",$DB{"_t_${initial}"});
 
     $outFile = &aid_config('wwwdir') . "alpha/${initial}-index.html";
     open(FMTOUT,">$outFile") || die "Can't open $outFile: $!\n";
