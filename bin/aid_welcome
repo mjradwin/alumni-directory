@@ -2,7 +2,7 @@
 
 #
 # mails a welcome, update, confirm, or massmail message to members
-# $Id: aid_welcome,v 5.22 2000/04/26 00:56:51 mradwin Exp mradwin $
+# $Id: aid_welcome,v 5.23 2000/05/31 01:15:16 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -59,14 +59,11 @@ $directory_name = &aid_config('short_school') . ' Alumni Internet Directory';
      'subject',  $directory_name,
      'log',      'confirm',
      'intro', 
-
-"
-You were sent this address verification message because
+     "You were sent this address verification message because
 it has been 6 months since we last confirmed your
 Directory listing.  Please make sure your infromation
 below is still current.  If everything you see below is
-correct, NO ACTION IS REQUIRED ON YOUR PART.
-",
+correct, NO ACTION IS REQUIRED ON YOUR PART.\n\n",
 
      'textfile', '',
      'closing',  '',
@@ -78,10 +75,8 @@ correct, NO ACTION IS REQUIRED ON YOUR PART.
      'subject',  $directory_name,
      'log',      'welcome',
      'intro',    
-"
-Welcome!  Your submission has been processed and you
-are now listed on-line in the Directory.
-",
+     "Welcome!  Your submission has been processed and you
+are now listed on-line in the Directory.\n\n",
      'textfile', '',
      'closing',
 "
@@ -98,10 +93,8 @@ Once again, welcome to the Alumni Internet Directory!
      'subject',  $directory_name,
      'log',      'update',
      'intro',
-"
-Your contact information has been updated and the
-changes are now visible on-line.
-",
+     "Your contact information has been updated and the
+changes are now visible on-line.\n\n",
 
      'textfile', '',
      'closing',
@@ -117,10 +110,8 @@ you're all set.
      'subject',  $directory_name,
      'log',      'massmail',
      'intro',
-"
-Per your request, your quarterly digest of the
-Directory appears at the end of this message.
-",
+     "Per your request, your quarterly digest of the
+Directory appears at the end of this message.\n\n",
      'textfile', '',
      'closing',
 "
@@ -313,8 +304,7 @@ address verification messages.
 
     return &aid_inorder_fullname(*rec) . ",
 
-$params{'intro'}
-You are listed in the Directory as follows:
+$params{'intro'}You are listed in the Directory as follows:
 -------------------------------------------------------
 ${about}-------------------------------------------------------
 $denied
