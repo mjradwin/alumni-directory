@@ -2,7 +2,7 @@
 
 #
 # does the html verbose pages
-# $Id: aid_verbose_html,v 2.3 1998/04/07 18:45:17 mjr Exp mradwin $
+# $Id: aid_verbose_html,v 2.4 1998/05/15 20:06:57 mradwin Exp mradwin $
 #
 
 require 'aid_util.pl';
@@ -43,6 +43,7 @@ for(;;) {
     while(<DATA>) {
 	chop;
 	%rec = &aid_parse($_);
+	next unless $rec{'valid'};
 	
 	last if (($rec{'year'} ne $currentYear) && ($currentYear =~ /^\d+$/));
 	&aid_write_verbose_entry(*FMTOUT,*rec);

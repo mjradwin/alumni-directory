@@ -2,7 +2,7 @@
 
 #
 # generates address books in several formats
-# $Id: aid_book,v 2.1 1998/03/31 19:55:13 mjr Exp mradwin $
+# $Id: aid_book,v 2.2 1998/05/15 20:06:57 mradwin Exp mradwin $
 #
 
 require 'aid_util.pl';
@@ -56,6 +56,7 @@ $opt_v && &write_prefix(*BOOKv,'v');
 while(<DATA>) {
     chop;
     %rec = &aid_parse($_);
+    next unless $rec{'valid'};
     
     $opt_p && &write_entry(*BOOKp,'p',%rec);
     $opt_e && &write_entry(*BOOKe,'e',%rec);

@@ -2,7 +2,7 @@
 
 #
 # does the html version of the grad-date address list
-# $Id: aid_class_html,v 2.3 1998/05/15 20:06:57 mradwin Exp mradwin $
+# $Id: aid_class_html,v 2.4 1998/05/16 02:05:48 mradwin Exp mradwin $
 #
 
 require 'aid_util.pl';
@@ -38,6 +38,7 @@ if (!$opt_t) {
     while(<DATAPRE>) {
 	chop;
 	%rec = &aid_parse($_);
+	next unless $rec{'valid'};
 
 	if ($prevYear ne $rec{'year'}) {
 	    $prevYear = $rec{'year'};
@@ -64,6 +65,7 @@ $first_fac_staff = 0;
 while(<DATA>) {
     chop;
     %rec = &aid_parse($_);
+    next unless $rec{'valid'};
 
     if ($prevYear ne $rec{'year'}) {
 	$prevYear = $rec{'year'};

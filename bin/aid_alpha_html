@@ -2,7 +2,7 @@
 
 #
 # does the html version of the alphabetical address list
-# $Id: aid_alpha_html,v 2.3 1998/05/15 20:06:57 mradwin Exp mradwin $
+# $Id: aid_alpha_html,v 2.4 1998/05/16 02:05:48 mradwin Exp mradwin $
 #
 
 require 'aid_util.pl';
@@ -47,6 +47,7 @@ $initial = "Z";
 while(<DATA>) {
     chop;
     %rec = &aid_parse($_);
+    next unless $rec{'valid'};
 
     if ($initial ne substr($rec{'last'}, 0, 1)) {
 	$initial = substr($rec{'last'}, 0, 1);
