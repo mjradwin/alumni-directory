@@ -75,7 +75,7 @@ foreach (@alpha_ids)
 {
     %rec = &aid_db_unpack_rec($_,$DB{$_});
     $fullname = &aid_inorder_fullname(*rec) . $rec{'e'};
-    $key = "\L$rec{'sn'}\0$rec{'gn'}\0$rec{'mi'}\0$rec{'mn'}\E\0$rec{'id'}";
+    $key = "\L$rec{'sn'}\0$rec{'gn'}\0$rec{'mi'}\0$rec{'mn'}\0$rec{'yr'}\E\0$rec{'id'}";
 
     if (defined $in{'y'} && $in{'y'} ne '')
     {
@@ -146,7 +146,7 @@ else
     print "\n<ul>\n";
     foreach (@results)
     {
-	($ign,$ign,$ign,$ign,$id) = split(/\0/);
+	($ign,$ign,$ign,$ign,$ign,$id) = split(/\0/);
 	%rec = &aid_db_unpack_rec($id,$DB{$id});
 	$fullname = &aid_inorder_fullname(*rec);
 	($affil,$ign) = &aid_affiliate(*rec,0);

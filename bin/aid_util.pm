@@ -2,7 +2,7 @@
 #     FILE: aid_util.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: perl library routines for the Alumni Internet Directory
-#      $Id: aid_util.pl,v 4.85 1999/04/07 15:48:24 mradwin Exp mradwin $
+#      $Id: aid_util.pl,v 4.86 1999/04/09 00:58:41 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -293,7 +293,7 @@ sub aid_alpha_db {
 
     foreach (@db) {
 	%rec = &main'aid_split($_);  #'#
-	push(@datakeys, "\L$rec{'sn'}\0$rec{'gn'}\0$rec{'mi'}\0$rec{'mn'}\E");
+	push(@datakeys, "\L$rec{'sn'}\0$rec{'gn'}\0$rec{'mi'}\0$rec{'mn'}\0$rec{'yr'}\E");
     }
 
     @db[sort bydatakeys $[..$#db];
