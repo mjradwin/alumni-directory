@@ -2,11 +2,11 @@
 #     FILE: aid_util.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: perl library routines for the Alumni Internet Directory
-#      $Id: aid_util.pl,v 3.33 1998/07/06 16:36:16 mradwin Exp mradwin $
+#      $Id: aid_util.pl,v 3.34 1998/08/18 16:24:17 mradwin Exp mradwin $
 #
 
 $aid_util'rcsid =
- '$Id: aid_util.pl,v 3.33 1998/07/06 16:36:16 mradwin Exp mradwin $';
+ '$Id: aid_util.pl,v 3.34 1998/08/18 16:24:17 mradwin Exp mradwin $';
 
 # ----------------------------------------------------------------------
 # CONFIGURATION
@@ -559,86 +559,101 @@ are required.  All other fields are optional.</p>\n\n";
 <table border=0 width=\"100%\">
 <tr><td bgcolor=\"#$cell_bg\"><table border=0 cellspacing=7>
 <tr>
-  <td valign=top><font color=\"#$cell_fg\">First Name</font></td>
+  <td valign=top><font color=\"#$cell_fg\"><label for=\"first\">First
+  Name</label></font></td>
   <td>$star</td>
   <td valign=top><input type=text name=\"first\" size=35 
-  value=\"$rec{'first'}\"></td>
+  value=\"$rec{'first'}\" id=\"first\"></td>
 </tr>
 <tr>
-  <td valign=top><font color=\"#$cell_fg\">Last/Maiden Name</font></td>
+  <td valign=top><font color=\"#$cell_fg\"><label for=\"last\">Last/Maiden
+  Name</label></font></td>
   <td>$star</td>
   <td valign=top><input type=text name=\"last\" size=35
-  value=\"$rec{'last'}\"></td>
+  value=\"$rec{'last'}\" id=\"last\"></td>
 </tr>
 <tr>
-  <td colspan=2 valign=top><font color=\"#$cell_fg\">Married Name</font><br>
+  <td colspan=2 valign=top><font color=\"#$cell_fg\"><label
+  for=\"married\">Married Name</label></font><br>
   <font color=\"#$cell_fg\" size=\"-1\">(if different from Maiden Name)</font></td>
   <td valign=top><input type=text name=\"married\" size=35
-  value=\"$rec{'married'}\"></td>
+  value=\"$rec{'married'}\" id=\"married\"></td>
 </tr>
 <tr>
   <td valign=top><font color=\"#$cell_fg\">High School</font></td>
   <td>$star</td>
-  <td valign=top><input type=radio name=\"school\"
-  value=\"$config{'short_school'}\"$mvhs_checked><font color=\"#$cell_fg\">&nbsp;$config{'short_school'}&nbsp;&nbsp;&nbsp;&nbsp;<input
-  type=radio name=\"school\" value=\"Awalt\"$awalt_checked>&nbsp;Awalt</font></td>
+  <td valign=top><input type=radio name=\"school\" id=\"school_$config{'short_school'}\"
+  value=\"$config{'short_school'}\"$mvhs_checked><font color=\"#$cell_fg\"><label
+  for=\"school_$config{'short_school'}\">&nbsp;$config{'short_school'}</label>&nbsp;&nbsp;&nbsp;&nbsp;<input id=\"school_Awalt\"
+  type=radio name=\"school\" value=\"Awalt\"$awalt_checked><label
+  for=\"school_Awalt\">&nbsp;Awalt</label></font></td>
 </tr>
 <tr>
   <td valign=top>&nbsp;</td>
   <td valign=top>&nbsp;</td>
-  <td valign=top><input type=radio name=\"school\" 
-  value=\"Other\"$other_checked><font color=\"#$cell_fg\">&nbsp;Other:&nbsp;</font><input type=text
+  <td valign=top><input type=radio name=\"school\" id=\"school_Other\"
+  value=\"Other\"$other_checked><font color=\"#$cell_fg\"><label
+  for=\"school_Other\">&nbsp;Other:&nbsp;</label></font><input type=text
   name=\"sch_other\" size=27 value=\"$rec{'school'}\"></td>
 </tr>
 <tr>
-  <td valign=top><font color=\"#$cell_fg\">Graduation year or affiliation</font><br>
+  <td valign=top><font color=\"#$cell_fg\"><label
+  for=\"year\">Graduation year or affiliation</label></font><br>
   <font color=\"#$cell_fg\" size=\"-1\">(such as 1993, 2001, or Teacher)</font></td>
   <td>$star</td>
   <td valign=top><input type=text name=\"year\" size=35
-  value=\"$rec{'year'}\"></td>
+  value=\"$rec{'year'}\" id=\"year\"></td>
 </tr>
 <tr>
-  <td valign=top><font color=\"#$cell_fg\">E-mail address</font><br>
+  <td valign=top><font color=\"#$cell_fg\"><label
+  for=\"email\">E-mail address</label></font><br>
   <font color=\"#$cell_fg\" size=\"-1\">(such as albert\@aol.com)</font></td>
   <td>$star</td>
   <td valign=top><input type=text name=\"email\" size=35
-  value=\"$rec{'email'}\"></td>
+  value=\"$rec{'email'}\" id=\"email\"></td>
 </tr>
 <tr>
-  <td colspan=2 valign=top><font color=\"#$cell_fg\">Personal Web Page</font></td>
+  <td colspan=2 valign=top><font color=\"#$cell_fg\"><label
+  for=\"homepage\">Personal Web Page</label></font></td>
   <td valign=top><input type=text name=\"homepage\" size=35
-  value=\"$rec{'homepage'}\"></td>
+  value=\"$rec{'homepage'}\" id=\"homepage\"></td>
 </tr>
 <tr>
-  <td colspan=2 valign=top><font color=\"#$cell_fg\">Location</font><br>
+  <td colspan=2 valign=top><font color=\"#$cell_fg\"><label
+  for=\"location\">Location</label></font><br>
   <font color=\"#$cell_fg\" size=\"-1\">(your city, school, or company)</font></td>
-
   <td valign=top><input type=text name=\"location\" size=35
-  value=\"$rec{'location'}\"></td>
+  value=\"$rec{'location'}\" id=\"location\"></td>
 </tr>
 <tr>
   <td colspan=3><font color=\"#$cell_fg\">
-  <br><strong>What's New?</strong> Write a paragraph about what
-  you've been up to recently.</font><br>
-  <textarea name=\"message\" rows=10 cols=55 wrap=soft>$rec{'message'}</textarea>
+  <br><strong><label for=\"message\">What's New?</label></strong>
+  Write a paragraph about what you've been up to recently.</font><br>
+  <textarea name=\"message\" rows=10 cols=55 wrap=soft
+  id=\"message\">$rec{'message'}</textarea>
   </td>
 </tr>
 <tr>
   <td colspan=3><font color=\"#$cell_fg\"><input type=checkbox
-  name=\"reunion\"$reunion_chk>&nbsp;&nbsp;My class officers may notify me of
-  reunion information via email.<br><br>Please 
+  name=\"reunion\" id=\"reunion\" $reunion_chk><label
+  for=\"reunion\">&nbsp;My class officers may notify me of
+  reunion information via email.</label><br><br>Please 
   <a href=\"" . $config{'master_path'} . "tech.html#mailings\">send 
   an updated copy</a> of the Directory to my email address every 3 
   months:<br>
-  &nbsp;&nbsp;&nbsp;&nbsp;<input type=radio name=\"request\"
-  value=\"3\"$reqchk[3]>&nbsp;&nbsp;Only new and changed alumni entries.<br>
-  &nbsp;&nbsp;&nbsp;&nbsp;<input type=radio name=\"request\"
-  value=\"2\"$reqchk[2]>&nbsp;&nbsp;All alumni, sorted by graduating class.<br>
-  &nbsp;&nbsp;&nbsp;&nbsp;<input type=radio name=\"request\"
-  value=\"1\"$reqchk[1]>&nbsp;&nbsp;All alumni, sorted by name.<br>
-  &nbsp;&nbsp;&nbsp;&nbsp;<input type=radio name=\"request\" 
-  value=\"0\"$reqchk[0]>&nbsp;&nbsp;No e-mail except for address
-  verification (once per year).</font>
+  &nbsp;&nbsp;&nbsp;&nbsp;<input type=radio name=\"request\" id=\"request3\"
+  value=\"3\"$reqchk[3]><label
+  for=\"request3\">&nbsp;Only new and changed alumni entries.</label><br>
+  &nbsp;&nbsp;&nbsp;&nbsp;<input type=radio name=\"request\" id=\"request2\"
+  value=\"2\"$reqchk[2]><label
+  for=\"request2\">&nbsp;All alumni, sorted by graduating class.</label><br>
+  &nbsp;&nbsp;&nbsp;&nbsp;<input type=radio name=\"request\" id=\"request1\"
+  value=\"1\"$reqchk[1]><label
+  for=\"request1\">&nbsp;All alumni, sorted by name.</label><br>
+  &nbsp;&nbsp;&nbsp;&nbsp;<input type=radio name=\"request\" id=\"request0\"
+  value=\"0\"$reqchk[0]><label
+  for=\"request0\">&nbsp;No e-mail except for address
+  verification (once per year).</label></font>
   <input type=\"hidden\" name=\"id\" value=\"$rec{'id'}\">
   <input type=\"hidden\" name=\"created\" value=\"$rec{'created'}\">
   <input type=\"hidden\" name=\"valid\" value=\"1\">
