@@ -6,12 +6,23 @@
 push(@INC, '/home/mjr/lib');
 #push(@INC, '/home/divcom/mjr/lib');  # divcom
 require 'mv_util.pl';
+require 'getopts.pl';
+
+$usage = 'usage: mv_welcome [-hu] targets.adr
+    -h        Display usage information.
+    -u        Send "update" email, not "welcome" email.
+';
+
+&Getopts('hu') || die "$usage\n";
+$opt_h && die "$usage\n";
+$ARGV[0] || die "$usage\n";
 
 $today = localtime;
+$logfile = 'welcome.log';
+$subject = ($opt_u) ? 'Your MVHS Alumni Internet Directory entry is updated' : 
+    'Welcome to the MVHS Alumni Internet Directory';
 
-die "Usage: mv_welcome targets.adr\n" if !$ARGV[0];
-open(LOG,">>welcome.log") || die "Can't open welcome.log: $!\n";
-
+open(LOG,">>$logfile") || die "Can't open $logfile: $!\n";
 open(TARGET,$ARGV[0]) || die "Can't open $ARGV[0]: $!\n";
 while(<TARGET>) {
     chop;
@@ -25,8 +36,8 @@ while(<TARGET>) {
 	
     $message = &message_body($id,$last,$first,$school,$year,$email,$homepage);
 
-    &sendmail($email, 'mjr@cs.brown.edu', 'Michael John Radwin',
-	      'Welcome to the MVHS Alumni Internet Directory', $message);
+    &sendmail($email, &mv_config('admin_email'), 'Michael John Radwin',
+	      $subject, $message);
     print LOG "$today $email\n";
 }
 
@@ -60,9 +71,9 @@ sub message_body {
     return "Dear $first,
 
 Your email address is listed in the Mountain View High School/Awalt High
-School Alumni Internet Directory:
+School Alumni Internet Directory:\n\n" .
 
-http://www.cs.brown.edu/people/mjr/mvhs/
+&mv_config('master_url') . "
 
 The database (which produced this form letter) shows the following
 information about you:
@@ -76,9 +87,9 @@ $denied
 If you feel as if you have received this email in error or do not want
 to be listed in the database, please let me know and I will remove your
 name from the database.  Or, if any of the above information is
-incorrect or out of date you can update your entry at
+incorrect or out of date you can update your entry at:\n\n" .
 
-http://www.cs.brown.edu/cgi-bin/mjr-mvhs.cgi?update=$id
+&mv_config('cgi_url') . "?update=$id
 
 or email me corrections, and I'll be happy to fix your entry.  If
 everything you see above is correct, you're all set.
@@ -87,8 +98,8 @@ everything you see above is correct, you're all set.
 Michael J. Radwin
 Mountain View High School, Class of '93
 
-Email     : mjr\@cs.brown.edu
-WWW       : http://www.cs.brown.edu/people/mjr/
+Email     : " . &mv_config('admin_email') . "
+WWW       : " . &mv_config('admin_url') . "
 U.S. Mail : Brown University, P.O. Box 4505, Providence, RI, 02912-4505
 Phone     : 401-863-6418
 ";
