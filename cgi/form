@@ -4,7 +4,7 @@
 #     FILE: form.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: Alumni Internet Directory CGI form-submission interface
-#      $Id: form,v 5.19 2000/04/25 01:14:03 mradwin Exp mradwin $
+#      $Id: form,v 5.20 2000/04/25 01:30:38 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -35,7 +35,7 @@ use CGI::Carp qw(fatalsToBrowser);
 # configuration
 $dbmfile = &aid_config('dbmfile');
 
-$rcsid = '$Id: form,v 5.19 2000/04/25 01:14:03 mradwin Exp mradwin $'; #'fnt
+$rcsid = '$Id: form,v 5.20 2000/04/25 01:30:38 mradwin Exp mradwin $'; #'fnt
 
 $listing_upd_title = 'Modify Your Directory Listing';
 $listing_upl_title = 'Select a Listing to Modify';
@@ -47,7 +47,8 @@ die "$dbmfile: $!\n" unless -r $dbmfile;
 @form_required = ('id', 'gn', 'sn', 'yr', 'e');
 
 CGI::ReadParse();
-if (! keys %in)
+%cgi = %in;
+if (! keys %cgi)
 {
     &send_upd_real(*aid_util::blank_entry,'');
     close(STDOUT);
@@ -58,16 +59,16 @@ if (! keys %in)
 #
 # if any of these flags is set, we're sending back a dynamic page
 # instead of processing a form request.
-if (defined($in{'version'})) {
+if (defined($cgi{'version'})) {
     print "Content-Type: text/plain\015\012\015\012$rcsid\015\012";
     print &aid_config('rcsid'), "\015\012";
     close(STDOUT);
     exit(0);
 
 }
-elsif (defined($in{'update'}) || defined($in{'upd'}))
+elsif (defined($cgi{'update'}) || defined($cgi{'upd'}))
 {
-    $key = defined($in{'update'}) ? $in{'update'} : $in{'upd'};
+    $key = defined($cgi{'update'}) ? $cgi{'update'} : $cgi{'upd'};
 
     if ($key =~ /^\d+$/)
     {
@@ -130,87 +131,87 @@ foreach (@form_required) {
 		 "The required form data was not present or something\n" .
 		 "is awry. Please <a href=\"" . 
 		 &aid_config('master_path') . "add/\">try again</a>.")
-	unless defined($in{$_});
+	unless defined($cgi{$_});
 }
 
 
 # okay, we've got the right form.  clean up the input.
-foreach $key (keys(%in)) {
-    $in{$key} =~ s/^\s*//;  # get rid of leading and trailing whitespace
-    $in{$key} =~ s/\s*$//;
+foreach $key (keys(%cgi)) {
+    $cgi{$key} =~ s/^\s*//;  # get rid of leading and trailing whitespace
+    $cgi{$key} =~ s/\s*$//;
 
-    $in{$key} = '' if $in{$key} =~ m|^n/a$|i;
-    $in{$key} = '' if $in{$key} =~ m|^none$|i;
-    $in{$key} = '' if $in{$key} =~ m|^\(none\)$|i;
-    $in{$key} = '' if $in{$key} =~ m|^\(blank\)$|i;
+    $cgi{$key} = '' if $cgi{$key} =~ m|^n/a$|i;
+    $cgi{$key} = '' if $cgi{$key} =~ m|^none$|i;
+    $cgi{$key} = '' if $cgi{$key} =~ m|^\(none\)$|i;
+    $cgi{$key} = '' if $cgi{$key} =~ m|^\(blank\)$|i;
 }
 
-foreach $key (keys(%in)) {
+foreach $key (keys(%cgi)) {
     next if $key eq 'n';
-    $in{$key} =~ s/;/,/g;   # can't handle ; because it's field delim
+    $cgi{$key} =~ s/;/,/g;   # can't handle ; because it's field delim
 }
 
 # remove apostropies and add a leading year to gradyear field
-$in{'yr'} =~ s/^class\s+of\s*//i;
-$in{'yr'} =~ s/^\'(\d\d)$/$1/;
-$in{'yr'} = '0' . $in{'yr'} if $in{'yr'} =~ /^\d$/;
+$cgi{'yr'} =~ s/^class\s+of\s*//i;
+$cgi{'yr'} =~ s/^\'(\d\d)$/$1/;
+$cgi{'yr'} = '0' . $cgi{'yr'} if $cgi{'yr'} =~ /^\d$/;
 
 # Year 2000 stuff: make 2-digit year fields be 4 digits.
 # either 20 years in the future, or 80 years in the past.
-if ($in{'yr'} =~ /^\d\d$/) {
+if ($cgi{'yr'} =~ /^\d\d$/) {
     $year = (localtime(time))[5];
     $year += 1900;  # localtime() returns number of years since 1900
-    if ((($year % 100) - $in{'yr'}) <= 80) {
+    if ((($year % 100) - $cgi{'yr'}) <= 80) {
 	$year = int($year / 100);
-	$in{'yr'} = $year . $in{'yr'};
+	$cgi{'yr'} = $year . $cgi{'yr'};
     } else {
 	$year = int($year / 100);
-	$in{'yr'} = ++$year . $in{'yr'};
+	$cgi{'yr'} = ++$year . $cgi{'yr'};
     }
 }
 
-$in{'r'} = (defined $in{'r'} && 
-	    ($in{'r'} eq 'on' || $in{'r'} == 1)) ? 1 : 0;
+$cgi{'r'} = (defined $cgi{'r'} && 
+	    ($cgi{'r'} eq 'on' || $cgi{'r'} == 1)) ? 1 : 0;
 
 # uncapitalize those overzealous capslock names
-$in{'gn'} = "\L$in{'gn'}\E"
-    if ($in{'gn'} eq "\U$in{'gn'}\E") && $in{'gn'} !~ /\./;
-$in{'sn'} = "\L$in{'sn'}\E"
-    if ($in{'sn'} eq "\U$in{'sn'}\E");
-$in{'mn'} = "\L$in{'mn'}\E"
-    if ($in{'mn'} eq "\U$in{'mn'}\E");
+$cgi{'gn'} = "\L$cgi{'gn'}\E"
+    if ($cgi{'gn'} eq "\U$cgi{'gn'}\E") && $cgi{'gn'} !~ /\./;
+$cgi{'sn'} = "\L$cgi{'sn'}\E"
+    if ($cgi{'sn'} eq "\U$cgi{'sn'}\E");
+$cgi{'mn'} = "\L$cgi{'mn'}\E"
+    if ($cgi{'mn'} eq "\U$cgi{'mn'}\E");
 
 # initial capitalize those lazy names
-$in{'gn'} = "\u$in{'gn'}";
-$in{'sn'} = "\u$in{'sn'}"
-    unless $in{'sn'} =~ /^(van|d[ie]) /;
-$in{'mn'} = "\u$in{'mn'}"
-    unless $in{'mn'} =~ /^(van|d[ie]) /;
+$cgi{'gn'} = "\u$cgi{'gn'}";
+$cgi{'sn'} = "\u$cgi{'sn'}"
+    unless $cgi{'sn'} =~ /^(van|d[ie]) /;
+$cgi{'mn'} = "\u$cgi{'mn'}"
+    unless $cgi{'mn'} =~ /^(van|d[ie]) /;
 
-$in{'mi'} = "\u$in{'mi'}";
+$cgi{'mi'} = "\u$cgi{'mi'}";
 
-$in{'w'} = '' if $in{'w'} eq 'http://';
-$in{'w'} = 'http://' . $in{'w'} if
-    $in{'w'} ne '' && $in{'w'} !~ m,^http://,i;
+$cgi{'w'} = '' if $cgi{'w'} eq 'http://';
+$cgi{'w'} = 'http://' . $cgi{'w'}
+    if ($cgi{'w'} ne '' && $cgi{'w'} !~ m,^http://,i);
 
-$in{'sn'} =~ s/^$in{'gn'}\s+//i;
-$in{'mn'} =~ s/^$in{'gn'}\s+//i;
+$cgi{'sn'} =~ s/^$cgi{'gn'}\s+//i;
+$cgi{'mn'} =~ s/^$cgi{'gn'}\s+//i;
      
-$in{'mn'} = '' if defined $in{'mn'} &&
-    ($in{'mn'} =~ /\(?\s*same\s+as\s+last\s+name\s*\)?/i ||
-     $in{'mn'} =~ /\(?\s*same\s*\)?/i ||
-     $in{'mn'} eq $in{'sn'});
+$cgi{'mn'} = '' if defined $cgi{'mn'} &&
+    ($cgi{'mn'} =~ /\(?\s*same\s+as\s+last\s+name\s*\)?/i ||
+     $cgi{'mn'} =~ /\(?\s*same\s*\)?/i ||
+     $cgi{'mn'} eq $cgi{'sn'});
 
 # did they have non-empty entries for all the required fields?
 $empty_fields = '';
 foreach (@form_required) 
 {
     $empty_fields .= $_ . "\t"
-	if ($in{$_} =~ /^\s*$/);
+	if ($cgi{$_} =~ /^\s*$/);
 }
 
 # lowercase the hostname portion of the email address
-$mangled_e = $in{'e'};
+$mangled_e = $cgi{'e'};
 $mangled_e =~ s/\s//g;
 if (&is_email_okay($mangled_e))
 {
@@ -223,23 +224,23 @@ if (&is_email_okay($mangled_e))
     # test for all-caps user
     $mail_user = $lower_user if $mail_user eq "\U$mail_user\E";
 
-    $in{'e'} = $mail_user . '@' . "\L$mail_addr\E";
+    $cgi{'e'} = $mail_user . '@' . "\L$mail_addr\E";
 }
 elsif ($empty_fields !~ /\be\b/)
 {
     $empty_fields .= "e\t";
 }
 
-if ($in{'yr'} =~ /^\d+$/ &&
-    $in{'yr'} > &aid_config('max_gradyear'))
+if ($cgi{'yr'} =~ /^\d+$/ &&
+    $cgi{'yr'} > &aid_config('max_gradyear'))
 {
     $empty_fields .= "yr\t";
 }
 
 if ($empty_fields ne '')
 {
-    delete $in{'u'};
-    &send_upd_real(*in,$empty_fields);
+    delete $cgi{'u'};
+    &send_upd_real(*cgi,$empty_fields);
     close(STDOUT);
     exit(0);
 }
@@ -247,10 +248,10 @@ if ($empty_fields ne '')
 # now that the input is cleaned up, decide whether we're going to enter
 # the confirmation phase or the queueing phase.
 
-if (defined($in{'revise'})) {
-    delete $in{'u'};
-    &send_upd_real(*in,'');
-} elsif (defined($in{'confirmed'})) {
+if (defined($cgi{'revise'})) {
+    delete $cgi{'u'};
+    &send_upd_real(*cgi,'');
+} elsif (defined($cgi{'confirmed'})) {
     &queue_submission();
 } else {
     &confirm_submission();
@@ -266,10 +267,10 @@ sub confirm_submission
     print &aid_common_html_hdr(20,$listing_sub_title,1);
 
     print "<form method=\"post\" action=\"", &aid_config('confirm_cgi');
-    print "/$in{'id'}" if $in{'id'} != -1;
-    print "/new" if $in{'id'} == -1;
+    print "/$cgi{'id'}" if $cgi{'id'} != -1;
+    print "/new" if $cgi{'id'} == -1;
     print "\">\n";
-    %newrec = &aid_html_entify_rec(*in);
+    %newrec = &aid_html_entify_rec(*cgi);
     foreach (keys %newrec) {
 	print "<input type=\"hidden\" name=\"$_\"";
 	print "\n" if $_ eq 'n';
@@ -286,8 +287,8 @@ Here is what your listing will look like:
 
 <table border=\"1\" cellpadding=\"6\"><tr><td>";
 
-    $in{'u'} = time unless defined $in{'u'};
-    print &aid_verbose_entry(*in,1,1,1);
+    $cgi{'u'} = time unless defined $cgi{'u'};
+    print &aid_verbose_entry(*cgi,1,1,1);
 
     print "</td></tr></table>
 <p>Want to change something?
@@ -305,48 +306,48 @@ sub queue_submission {
     require 'ctime.pl';
 
     # set the times and then update the db.
-    $in{'u'} = time unless defined $in{'u'};
-    $in{'f'} = $in{'u'} unless defined $in{'f'};
-    $in{'c'} = $in{'c'} ne '' ? $in{'c'} : $in{'u'};
-    $in{'h'} = &remote_host() unless defined $in{'h'};
-    $in{'b'} = 0 unless defined $in{'b'};
-    $in{'n'} =~ s/\015\012/\n/g;
-    $in{'n'} =~ s/\015/\n/g;
+    $cgi{'u'} = time unless defined $cgi{'u'};
+    $cgi{'f'} = $cgi{'u'} unless defined $cgi{'f'};
+    $cgi{'c'} = $cgi{'c'} ne '' ? $cgi{'c'} : $cgi{'u'};
+    $cgi{'h'} = &remote_host() unless defined $cgi{'h'};
+    $cgi{'b'} = 0 unless defined $cgi{'b'};
+    $cgi{'n'} =~ s/\015\012/\n/g;
+    $cgi{'n'} =~ s/\015/\n/g;
 
-    if (($in{'id'} != -1) && ("\L$in{'pe'}\E" ne "\L$in{'e'}\E"))
+    if (($cgi{'id'} != -1) && ("\L$cgi{'pe'}\E" ne "\L$cgi{'e'}\E"))
     {
-	$in{'eu'} = $in{'u'};
-	$in{'eo'} = $in{'pe'};
+	$cgi{'eu'} = $cgi{'u'};
+	$cgi{'eo'} = $cgi{'pe'};
     }
     else
     {
-	$in{'eo'} = '';
+	$cgi{'eo'} = '';
     }
 
-    $in{'browser'} = $ENV{'HTTP_USER_AGENT'};
-    $date = &ctime($in{'u'});
+    $cgi{'browser'} = $ENV{'HTTP_USER_AGENT'};
+    $date = &ctime($cgi{'u'});
     $mailto = &aid_config('mailto');
     $mailsubj = &aid_config('short_school') . "AID";
     $mailname = &aid_config('admin_name');
 
     $mailbody  = "Dear $mailname,\n\n";
 
-    ($affil,$len) = &aid_affiliate(*in,0);
-    $mailbody .= "Submission from userid $in{'id'}:\n  " .
-	&aid_inorder_fullname(*in) . $affil . ' <' . $in{'e'} . ">\n";
+    ($affil,$len) = &aid_affiliate(*cgi,0);
+    $mailbody .= "Submission from userid $cgi{'id'}:\n  " .
+	&aid_inorder_fullname(*cgi) . $affil . ' <' . $cgi{'e'} . ">\n";
 
     $mailbody .= "\n" . &aid_config('sub_beg_str') . "\n";
 
-    while (($key,$val) = each(%in))
+    while (($key,$val) = each(%cgi))
     {
 	next if $key eq 'n' || $key eq 'confirmed';
 	$mailbody .= $key . '=' . $val . "\n";
     }
 
-    if ($in{'n'} ne '')
+    if ($cgi{'n'} ne '')
     {
 	$mailbody .= &aid_config('note_beg_str') . "\n";
-	$mailbody .= $in{'n'} . "\n";
+	$mailbody .= $cgi{'n'} . "\n";
 	$mailbody .= &aid_config('note_end_str') . "\n";
     }
     
@@ -357,7 +358,7 @@ the Alumni Internet Directory form-submission script
 $date";
 
     &aid_sendmail($mailto, &aid_config('short_school') . ' Alumni Robot',
-		  "$mailsubj [$in{'id'} $in{'e'}]",
+		  "$mailsubj [$cgi{'id'} $cgi{'e'}]",
 		  $mailbody,$mailname,$mailto)
 	|| &aid_cgi_die('aid_sendmail failed',
 			"Unable to process form submission.\n" .
@@ -365,11 +366,11 @@ $date";
 			&aid_config('admin_email') .
 			"\">e-mail " . &aid_config('admin_name') . "</a>.");
 
-    $fullname = &aid_inorder_fullname(*in);
+    $fullname = &aid_inorder_fullname(*cgi);
 
     print "Content-Type: text/html\015\012\015\012";
     print &aid_common_html_hdr(20,
-			   (($in{'id'} == -1 ? 'Welcome, ' : 'Thank You, ') .
+			   (($cgi{'id'} == -1 ? 'Welcome, ' : 'Thank You, ') .
 			    $fullname . '!'),
 			   1);
 
@@ -384,7 +385,7 @@ the Directory.  Processing your submission can take up to 48 hours.
 If your submission was made Monday-Friday between 9am and 5pm Pacific
 Time, your submission will probably be processed within an hour.</p>
 
-<p>E-mail will be sent to <code><strong>$in{'e'}</strong></code>
+<p>E-mail will be sent to <code><strong>$cgi{'e'}</strong></code>
 confirming receipt of this submission when it it processed.
 See \"<a href=\"" . &aid_config('master_path') . 
 "etc/faq.html#submit\">What happens when I submit my listing?</a>\"
