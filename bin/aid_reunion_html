@@ -3,7 +3,7 @@
 #
 # generates reunion info page
 #
-# $Id$
+# $Id: aid_reunion_html,v 1.1 2000/05/24 23:12:43 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -157,6 +157,6 @@ sub writehash
 	print FMTOUT $html, "\n";
     }
 
-    print FMTOUT "</dl>\n" unless $first;
+    print FMTOUT "</dl>\n\n" unless $first;
     1;
 }
