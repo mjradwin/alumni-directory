@@ -4,7 +4,7 @@
 #     FILE: verify.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: CGI for verifcation of e-mail address
-#      $Id$
+#      $Id: verify,v 1.1 2000/05/30 23:09:04 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-2000  Michael John Radwin
 #
@@ -52,7 +52,7 @@ if ($ENV{'QUERY_STRING'} =~ /^(k=)?(\w+)$/)
 	unless (flock (DB_FH, LOCK_EX)) { die "flock: $!" }
     }
 
-    if (defined $DB{$key})
+    if (defined $DB{$key} && $DB{$key} ne "\0")
     {
 	my($val) = $DB{$key};
 
