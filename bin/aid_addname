@@ -1,6 +1,6 @@
 #!/usr/bin/perl -w
 
-# $Id: aid_addname,v 3.22 1999/03/09 17:14:29 mradwin Exp mradwin $
+# $Id: aid_addname,v 3.23 1999/03/09 20:29:12 mradwin Exp mradwin $
 
 require 'getopts.pl';
 require 'aid_util.pl';
@@ -30,7 +30,7 @@ $adr_update  = &aid_config('aiddir') . 'data/update.adr';
 &rebuild() unless $opt_m;
 &mail_welcome() unless $opt_m || $opt_w;
 
-print "done!\n";
+print STDERR "done!\n";
 exit(0);
 
 sub readspool {
@@ -41,7 +41,7 @@ sub readspool {
 
     $browserLog = &aid_config('aiddir') . "logs/browsers.log";
     open(SPOOL, $spoolFile) || die "can't open $spoolFile: $!\n";
-    print "reading spool...\n";
+    print STDERR "reading spool...\n";
     while(<SPOOL>) {
 	next unless /^_AID_BEGIN_SUBMISSION_/;
 
@@ -93,16 +93,16 @@ sub readspool {
 sub rebuild {
     chdir &aid_config('aiddir') || die "can't chdir: $!\n";
 
-    print "rebuilding...\n";
+    print STDERR "rebuilding...\n";
     system "$make" || die "failed to $make: $!\n";
 }
 
 sub mail_welcome {
     chdir &aid_config('aiddir') || die "can't chdir: $!\n";
 
-    print "mailing...";
+    print STDERR "mailing...";
     if (-e $adr_newmail) {
-	print ' new';
+	print STDERR ' new';
 	system "./bin/aid_welcome $adr_newmail"
 	    || die "failed to ./bin/aid_welcome $adr_newmail: $!\n";
 	unlink($adr_newmail)
@@ -110,14 +110,14 @@ sub mail_welcome {
     }
 
     if (-e $adr_update) {
-	print ' update';
+	print STDERR ' update';
 	system "./bin/aid_welcome -u $adr_update"
 	    || die "failed to ./bin/aid_welcome -u $adr_update: $!\n";
 	unlink($adr_update)
 	    || die "couldn't unlink $adr_update: $!\n";
     }
 
-    print "\n";
+    print STDERR "\n";
 }
 
 
