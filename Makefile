@@ -2,7 +2,7 @@
 #     FILE: Makefile
 #   AUTHOR: Michael J. Radwin
 #    DESCR: Makefile for building the Alumni Internet Directory
-#      $Id: Makefile,v 3.57 1999/02/26 20:43:28 mradwin Exp mradwin $
+#      $Id: Makefile,v 3.58 1999/02/26 23:27:35 mradwin Exp mradwin $
 #
 
 WWWROOT=/home/web/radwin.org
@@ -71,74 +71,85 @@ $(DBFILE):	$(ADR_MASTER) $(BIN_DBM_WRITE) $(AID_UTIL_PL)
 	chmod 0444 $(DBFILE)
 
 MULTI_ALPHA=$(WWWDIR)/alpha/a-index.html
-multi_alpha:	$(MULTI_ALPHA)
-$(MULTI_ALPHA):	$(DBFILE) $(BIN_MULTI_ALPHA)
+MULTI_ALPHA_TS=$(WWWDIR)/alpha/.z-index.html
+multi_alpha:	$(MULTI_ALPHA_TS)
+$(MULTI_ALPHA_TS):	$(DBFILE) $(BIN_MULTI_ALPHA)
 	$(BIN_MULTI_ALPHA) $(DBFILE)
 
 CLASS=$(WWWDIR)/class/all.html
-class:	$(CLASS)
-$(CLASS):	$(DBFILE) $(BIN_CLASS)
+CLASS_TS=$(WWWDIR)/class/.all.html
+class:	$(CLASS_TS)
+$(CLASS_TS):	$(DBFILE) $(BIN_CLASS)
 	mkdir -p $(WWWDIR)/class
 	$(BIN_CLASS) $(DBFILE) $(CLASS)
 
 AWALT=$(WWWDIR)/class/awalt.html
-awalt:	$(AWALT)
-$(AWALT):	$(DBFILE) $(BIN_CLASS)
+AWALT_TS=$(WWWDIR)/class/.awalt.html
+awalt:	$(AWALT_TS)
+$(AWALT_TS):	$(DBFILE) $(BIN_CLASS)
 	mkdir -p $(WWWDIR)/class
 	$(BIN_CLASS) -a $(DBFILE) $(AWALT)
 
 RECENT=$(WWWDIR)/recent.html
-recent:	$(RECENT)
-$(RECENT):	$(DBFILE) $(BIN_RECENT)
+RECENT_TS=$(WWWDIR)/.recent.html
+recent:	$(RECENT_TS)
+$(RECENT_TS):	$(DBFILE) $(BIN_RECENT)
 	$(BIN_RECENT) -v -m1 $(DBFILE) $(RECENT)
 
 GONERS=$(WWWDIR)/invalid.html
-goners:	$(GONERS)
-$(GONERS):	$(DBFILE) $(BIN_GONERS)
+GONERS_TS=$(WWWDIR)/.invalid.html
+goners:	$(GONERS_TS)
+$(GONERS_TS):	$(DBFILE) $(BIN_GONERS)
 	$(BIN_GONERS) $(DBFILE) $(GONERS)
 
 PAGES=$(WWWDIR)/pages.html
-pages:	$(PAGES)
-$(PAGES):	$(DBFILE) $(BIN_PAGES)
+PAGES_TS=$(WWWDIR)/.pages.html
+pages:	$(PAGES_TS)
+$(PAGES_TS):	$(DBFILE) $(BIN_PAGES)
 	$(BIN_PAGES) -w $(DBFILE) $(PAGES)
 
-MULTI_CLASS=$(WWWDIR)/class/index.html
+MULTI_CLASS=$(WWWDIR)/class/.index.html
 multi_class:	$(MULTI_CLASS)
 $(MULTI_CLASS):	$(DBFILE) $(BIN_MULTI_CLASS)
 	mkdir -p $(WWWDIR)/class
 	$(BIN_MULTI_CLASS) $(DBFILE)
 
 INDEX=$(WWWDIR)/index.html
-index:	$(INDEX)
-$(INDEX):	$(MVHSDIR)/data/index.include $(BIN_HOME) $(DBFILE)
+INDEX_TS=$(WWWDIR)/.index.html
+index:	$(INDEX_TS)
+$(INDEX_TS):	$(MVHSDIR)/data/index.include $(BIN_HOME) $(DBFILE)
 	$(BIN_HOME) -p0 -i $(MVHSDIR)/data/index.include \
 		-t '' \
 		$(INDEX)
 
 REUNIONS=$(WWWDIR)/etc/reunions.html
-reunions:	$(REUNIONS)
-$(REUNIONS):	$(MVHSDIR)/data/reunions.include $(BIN_HOME)
+REUNIONS_TS=$(WWWDIR)/etc/.reunions.html
+reunions:	$(REUNIONS_TS)
+$(REUNIONS_TS):	$(MVHSDIR)/data/reunions.include $(BIN_HOME)
 	$(BIN_HOME) -p11 -i $(MVHSDIR)/data/reunions.include \
 		-t 'Reunions' \
 		$(REUNIONS)
 
 LINKS=$(WWWDIR)/etc/links.html
-links:	$(LINKS)
-$(LINKS):	$(MVHSDIR)/data/links.include $(BIN_HOME)
+LINKS_TS=$(WWWDIR)/etc/.links.html
+links:	$(LINKS_TS)
+$(LINKS_TS):	$(MVHSDIR)/data/links.include $(BIN_HOME)
 	$(BIN_HOME) -p12 -i $(MVHSDIR)/data/links.include \
 		-t 'Other MVHS and Awalt Web Resources' \
 		$(LINKS)
 
 FAQ=$(WWWDIR)/etc/faq.html
-faq:	$(FAQ)
-$(FAQ):	$(MVHSDIR)/data/faq.include $(BIN_HOME)
+FAQ_TS=$(WWWDIR)/etc/.faq.html
+faq:	$(FAQ_TS)
+$(FAQ_TS):	$(MVHSDIR)/data/faq.include $(BIN_HOME)
 	$(BIN_HOME) -p14 -i $(MVHSDIR)/data/faq.include \
 		-t 'Frequently Asked Questions' \
 		$(FAQ)
 
 COPYRIGHT=$(WWWDIR)/etc/copyright.html
-copyright:	$(COPYRIGHT)
-$(COPYRIGHT):	$(MVHSDIR)/data/copyright.include $(BIN_HOME)
+COPYRIGHT_TS=$(WWWDIR)/etc/.copyright.html
+copyright:	$(COPYRIGHT_TS)
+$(COPYRIGHT_TS):	$(MVHSDIR)/data/copyright.include $(BIN_HOME)
 	$(BIN_HOME) -p16 -i $(MVHSDIR)/data/copyright.include \
 		-t 'Acceptable Use - Privacy Statement - Copyright' \
 		$(COPYRIGHT)
@@ -149,22 +160,25 @@ $(STATS):	$(BIN_STATS) $(DBFILE)
 	$(BIN_STATS) $(DBFILE) $(STATS)
 
 SUBMIT=$(WWWDIR)/add/new.html
-submit:	$(SUBMIT)
-$(SUBMIT):	$(BIN_HOME) $(AID_UTIL_PL)
+SUBMIT_TS=$(WWWDIR)/add/.new.html
+submit:	$(SUBMIT_TS)
+$(SUBMIT_TS):	$(BIN_HOME) $(AID_UTIL_PL)
 	$(BIN_HOME) -s -p20 \
 		-t 'Step 1: Add Your Listing to the Directory' \
 		$(SUBMIT)
 
 ADDUPDATE=$(WWWDIR)/add/index.html
-addupdate:	$(ADDUPDATE)
-$(ADDUPDATE):	$(MVHSDIR)/data/add.include $(BIN_HOME)
+ADDUPDATE_TS=$(WWWDIR)/add/.index.html
+addupdate:	$(ADDUPDATE_TS)
+$(ADDUPDATE_TS):	$(MVHSDIR)/data/add.include $(BIN_HOME)
 	$(BIN_HOME) -p10 -i $(MVHSDIR)/data/add.include \
 		-t 'Add or Update Your Listing' \
 		$(ADDUPDATE)
 
 DOWNLOAD=$(WWWDIR)/download/index.html
-download:	$(DOWNLOAD)
-$(DOWNLOAD):	$(BIN_HOME) $(AID_UTIL_PL)
+DOWNLOAD_TS=$(WWWDIR)/download/.index.html
+download:	$(DOWNLOAD_TS)
+$(DOWNLOAD_TS):	$(BIN_HOME) $(AID_UTIL_PL)
 	mkdir -p $(WWWDIR)/download
 	$(BIN_HOME) -d -p13 \
 		-t 'Download Nickname and Address Book Files' \
