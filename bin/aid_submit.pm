@@ -2,7 +2,7 @@
 #     FILE: aid_submit.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: submission form for Alumni Internet Directory
-#      $Id: aid_submit.pl,v 1.4 1999/04/07 16:46:21 mradwin Exp mradwin $
+#      $Id: aid_submit.pl,v 1.5 1999/05/04 17:11:41 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -217,8 +217,10 @@ are required.  All other fields are optional.</p>
   name=\"r\" id=\"r\" $reunion_chk /><label
   for=\"r\">&nbsp;My class officers may notify me of
   reunion information via e-mail.</label><br /><br />
-  Would you like to receive a digest of the Directory every quarter<br />
-  (beginning of February, May, August and November) via e-mail?<br />
+  Would you like to <a target=\"c34286cd\"
+  href=\"$config{'master_path'}etc/faq.html#mailings\">receive
+  a digest of the Directory every quarter</a><br />
+  (at the beginning of February, May, August and November) via e-mail?<br />
 ";
 
     $body .= $reqradio[4];
