@@ -2,11 +2,11 @@
 #     FILE: aid_util.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: perl library routines for the Alumni Internet Directory
-#      $Id: aid_util.pl,v 4.61 1999/03/16 02:01:32 mradwin Exp mradwin $
+#      $Id: aid_util.pl,v 4.62 1999/03/16 02:04:39 mradwin Exp mradwin $
 #
 
 $aid_util'rcsid =
- '$Id: aid_util.pl,v 4.61 1999/03/16 02:01:32 mradwin Exp mradwin $';
+ '$Id: aid_util.pl,v 4.62 1999/03/16 02:04:39 mradwin Exp mradwin $';
 
 # ----------------------------------------------------------------------
 # CONFIGURATION
@@ -956,12 +956,12 @@ sub aid_verbose_entry {
     $retval .= "<a href=\"" . &main'aid_vcard_path($rec{'id'}) . "\">"; #'#
     $retval .= "vCard</a>";
     $retval .= "&nbsp;|&nbsp;";
-    $retval .= "<a href=\"" . $config{'about_cgi'} . "?about=$rec{'id'}\">";
-    $retval .= "update</a>";
-    $retval .= "&nbsp;|&nbsp;";
     $retval .= "<a href=\"" . &main'aid_yahoo_abook_path(*rec) . "\">"; #'#
     $retval .= 'add to Y! address book';
     $retval .= "</a>\n";
+    $retval .= "&nbsp;|&nbsp;";
+    $retval .= "<a href=\"" . $config{'about_cgi'} . "?about=$rec{'id'}\">";
+    $retval .= "update</a>";
     $retval .= "]</small>\n";
 
     $retval .= &main'aid_is_new_html(*rec) unless $suppress_new; #'#
