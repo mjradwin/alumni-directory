@@ -2,11 +2,11 @@
 #     FILE: aid_util.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: perl library routines for the Alumni Internet Directory
-#      $Id: aid_util.pl,v 3.76 1998/11/09 02:44:18 mradwin Exp mradwin $
+#      $Id: aid_util.pl,v 3.77 1998/11/09 18:11:40 mradwin Exp mradwin $
 #
 
 $aid_util'rcsid =
- '$Id: aid_util.pl,v 3.76 1998/11/09 02:44:18 mradwin Exp mradwin $';
+ '$Id: aid_util.pl,v 3.77 1998/11/09 18:11:40 mradwin Exp mradwin $';
 
 # ----------------------------------------------------------------------
 # CONFIGURATION
@@ -346,7 +346,6 @@ sub mangle {
 
     $name =~ s/\.//g;
     $name =~ s/\s//g;
-    $name =~ s/-//g;
     $name =~ s/\".*\"//g;
     $name =~ s/\(.*\)//g;
     $name =~ s/\'.*\'//g;
@@ -407,7 +406,8 @@ sub aid_parse {
 	$mangledLast = &main'mangle($rec{'last'});   #'#
     }
 
-    $alias = substr($mangledFirst, 0, 1) . substr($mangledLast, 0, 7);
+#    $alias = substr($mangledFirst, 0, 1) . substr($mangledLast, 0, 7);
+    $alias = substr($mangledFirst, 0, 1) . $mangledLast;
     $alias = "\L$alias\E";
 
     if (defined($aid_aliases{$alias})) {
