@@ -2,7 +2,7 @@
 #     FILE: aid_submit.pm
 #   AUTHOR: Michael J. Radwin
 #    DESCR: submission form for Alumni Internet Directory
-#      $Id: aid_submit.pm,v 6.1 2003/08/25 04:10:32 mradwin Exp mradwin $
+#      $Id: aid_submit.pm,v 6.2 2003/08/25 05:32:04 mradwin Exp mradwin $
 #
 #   Copyright (c) 2003  Michael J. Radwin
 #
@@ -87,7 +87,7 @@ sub submit_body
 	    $body .= "(<code>" . $rec{'e'} . "</code>)\n";
 	    $body .= "appears to be invalid.</font>\n";
 	    $body .= "<br>It must be in the form of ";
-	    $body .= "<code>user\@isp.net</code>.\n";
+	    $body .= "<code>user\@example.com</code>.\n";
 	    if ($rec{'e'} !~ /\@/)
 	    {
 		$body .= "Perhaps you meant to type ";
