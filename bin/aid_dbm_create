@@ -1,6 +1,6 @@
 #!/usr/local/bin/perl -w
 
-# $Id: aid_dbm_create,v 1.4 2001/09/16 16:50:36 mradwin Exp mradwin $
+# $Id: aid_dbm_create,v 1.5 2001/09/16 16:57:51 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -45,16 +45,19 @@ $dbmfile = shift;
 tie(%DB, 'DB_File', $dbmfile, O_RDWR|O_CREAT, 0644, $DB_File::DB_HASH)
     or die "$dbmfile: $!\n";
 
-$infile = shift;
-my($data) = new Config::IniFiles(-file => $infile);
-
-$j = 0;
-if (!$opt_q)
+unless ($opt_q)
 {
     select(STDOUT); $| = 1;
-    print STDOUT "$0: writing primary data...";
 }
 
+$infile = shift;
+
+print STDOUT "$0: loading $infile..." unless $opt_q;
+my($data) = new Config::IniFiles(-file => $infile);
+print STDOUT "done.\n" unless $opt_q;
+
+print STDOUT "$0: writing primary data..." unless $opt_q;
+$j = 0;
 foreach my $section ($data->Sections())
 {
     %rec = ();
