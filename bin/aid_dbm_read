@@ -1,6 +1,6 @@
 #!/usr/bin/perl -w
 
-# $Id: aid_dbm_read,v 1.19 1999/04/06 18:04:44 mradwin Exp mradwin $
+# $Id: aid_dbm_read,v 1.20 1999/04/09 02:11:02 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -24,7 +24,7 @@ require 'getopts.pl';
 require 'ctime.pl';
 
 $0 =~ s,.*/,,;  # basename
-$usage = "usage: $0 [-hofac] [-t adr | -u file] infile.db [key]
+$usage = "usage: $0 [-hofac] [-t adr | -u file | -d year] infile.db [key]
     -h        Display usage information.
     -o        Display old users (fresh < 6 months ago).
     -f        Display users whose upd time is within 2 weeks of creation time.
@@ -32,9 +32,10 @@ $usage = "usage: $0 [-hofac] [-t adr | -u file] infile.db [key]
     -c        Display all valid, sorted by class.
     -t adr    Write text address file to <adr>.
     -u file   Write url file to <file>.
+    -d year   Display alumni from <year> that don't want reunion email.
 ";
 
-&Getopts('hofact:u:') || die "$usage\n";
+&Getopts('hofact:u:d:') || die "$usage\n";
 $opt_h && die "$usage\n";
 $ARGV[0] || die "$usage\n";
 $opt_h = $opt_h;		# avoid warning
@@ -92,6 +93,18 @@ elsif ($opt_u)
 	print DATA '&pe=', &aid_url_escape($rec{'e'}), "\n";
     } 
     close(DATA);
+}
+elsif ($opt_d)
+{
+    die "no _$opt_d key in $ARGV[0].db\n" unless defined $DB{"_$opt_d"};
+    @ids = unpack("n*", $DB{"_$opt_d"});
+    for (@ids)
+    {
+	%rec = &aid_db_unpack_rec($_,$DB{$_});
+	next unless $rec{'v'} == 1 && $rec{'r'} == 0;
+	($affil,$i) = &aid_affiliate(*rec,0);
+	print $rec{'id'}, ' - ', $rec{'sn'}, ', ', $rec{'gn'}, $affil, "\n";
+    }
 }
 elsif (defined $ARGV[1])
 {
