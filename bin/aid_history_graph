@@ -1,6 +1,6 @@
 #!/usr/bin/perl -w
 
-# $Id: aid_history_graph,v 1.5 1999/05/19 01:36:09 mradwin Exp mradwin $
+# $Id: aid_history_graph,v 5.1 1999/05/31 21:20:48 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -46,6 +46,9 @@ die "no _class key!\n" unless defined $DB{'_class'};
 
 open(FMTOUT,">$ARGV[1]") || die "Can't open $ARGV[1]: $!\n";
 
+($i,$i,$i,$i,$i,$epoch_year,$i,$epoch_yday,$i) =
+    localtime($aid_util'EPOCH); #'#);#
+
 @members = ();
 $tot = 0;
 while (($key,$val) = each %DB)
@@ -56,8 +59,9 @@ while (($key,$val) = each %DB)
 
     ($i,$i,$i,$i,$i,$year,$i,$yday,$i) = localtime($rec{'c'});
 
-    # time began on October 31, 1995 (day 303, year 95)
-    $yday += (($year - 95) * 365) - 303;
+    # time began on the EPOCH.  Compute the number of days since the
+    # epoch that this record was created
+    $yday += (($year - $epoch_year) * 365) - $epoch_yday;
 
     $members[$yday]++;
 }
@@ -72,3 +76,9 @@ for ($i = 0; $i <= $#members; $i++)
 
 close(FMTOUT);
 dbmclose(%DB);
+
+# avoid warnings
+if ($^W && 0)
+{
+    $aid_util'EPOCH = '';
+}
