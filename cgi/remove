@@ -4,7 +4,7 @@
 #     FILE: remove.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: CGI for removal of e-mail address from staging DB
-#      $Id: remove,v 1.3 2000/05/30 23:53:36 mradwin Exp mradwin $
+#      $Id: remove,v 1.4 2000/05/30 23:57:58 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-2000  Michael John Radwin
 #
@@ -177,7 +177,7 @@ Alumni Robot and enter it below.</p>
 &nbsp;
 <input id=\"k\" type=\"text\" size=\"8\" maxlength=\"8\" name=\"k\" value=\"\">
 &nbsp;
-<input type=\"submit\" value=\"Remove user with this e-mail address\">
+<input type=\"submit\" value=\"Submit removal code\">
 </form>
 ";
 
