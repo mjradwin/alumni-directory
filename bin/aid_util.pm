@@ -2,11 +2,11 @@
 #     FILE: aid_util.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: perl library routines for the Alumni Internet Directory
-#      $Id: aid_util.pl,v 4.30 1999/02/27 00:32:21 mradwin Exp mradwin $
+#      $Id: aid_util.pl,v 4.31 1999/03/02 03:27:55 mradwin Exp mradwin $
 #
 
 $aid_util'rcsid =
- '$Id: aid_util.pl,v 4.30 1999/02/27 00:32:21 mradwin Exp mradwin $';
+ '$Id: aid_util.pl,v 4.31 1999/03/02 03:27:55 mradwin Exp mradwin $';
 
 # ----------------------------------------------------------------------
 # CONFIGURATION
@@ -153,13 +153,13 @@ $aid_util'blank_entry{'school'}  = $aid_util'config{'short_school'};
 %aid_util'image_tag = #'#
     (
     'new',
-    "<small><strong class=\"new\">*NEW*</strong></small>",
+    "<small><strong class=\"newupd\">*NEW*</strong></small>",
 
     'new_anchored',
-    "<small><strong class=\"new\">*NEW*</strong></small>",
+    "<small><strong class=\"newupd\">*NEW*</strong></small>",
 
     'updated',
-    "<small><strong class=\"new\">*UPDATED*</strong></small>",
+    "<small><strong class=\"newupd\">*UPDATED*</strong></small>",
 
      'vcard',
      "<img src=\"" . $aid_util'config{'image_path'} . #'#
@@ -1066,7 +1066,7 @@ sub common_intro_para {
     local($info) = "The " . $image_tag{'info'} .
 	"\nicon lets you get more detailed information about an alumnus.";
 
-    "<p>Any almuni marked with\n" . $image_tag{'new'} . 
+    "<p>Any alumni marked with\n" . $image_tag{'new'} . 
     "\nhave been added to the Directory last month.\n" .
     "Alumni marked with\n" . $image_tag{'updated'} . 
 	"\nhave updated their information within the past month.\n" .
@@ -1172,7 +1172,7 @@ sub common_html_hdr {
 
     $hdr .= "  <link rel=\"stylesheet\" type=\"text/css\" href=\"http://";
     $hdr .= $config{'master_srv'} . $config{'master_path'};;
-    $hdr .= "mvhs-alumni.css\">\n";
+    $hdr .= "default.css\">\n";
 
     $hdr .= "$noindex\n" if $norobots;
 
