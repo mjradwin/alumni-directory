@@ -2,34 +2,56 @@
 
 #
 # mails a welcome or update note to everyone in targets.adr
-# $Id: aid_welcome,v 1.29 1998/01/12 17:32:35 mjr Exp mjr $
+# $Id: aid_welcome,v 1.30 1998/01/27 20:07:00 mjr Exp mradwin $
 #
 
 require 'aid_util.pl';
 require 'getopts.pl';
 require 'ctime.pl';
 
-$usage = 'usage: aid_welcome [-h] [-u | -c] targets.adr
-    -h        Display usage information.
-    -u        Send "update" email, not "welcome" email.
-    -c        Send "confirmation" email, not "welcome" email.
-';
+$pname = 'aid_welcome';
+$usage = "usage: $pname [options] targets.adr
+    -h            Display usage information.
+    -d <secs>     Sleep for <secs> seconds between sending email
+                  (default 15 for -m, 0 for all others).
+    -r <reqtype>  Request type (1 or 2) (only valid with -m).
 
-&Getopts('huc') || die "$usage\n";
+Mutually exclusive optional message types (instead of 'welcome' email):
+    -u            Send 'update' email.
+    -c            Send 'confirmation' email.
+    -m <textfile> Massmail the contents of <textfile>.
+";
+
+&Getopts('hd:r:ucm:') || die "$usage\n";
 $opt_h && die "$usage\n";
-($opt_c && $opt_u) && die "$usage\n";
-$ARGV[0] || die "$usage\n";
 $opt_h = $opt_h;                # avoid warning
+die "$pname: Too many mutually-exclusive options\n$usage\n"
+    if (($opt_c ? 1 : 0) + ($opt_u ? 1 : 0) + ($opt_m ? 1 : 0)) > 1;
+die "$pname: No target file specified\n$usage\n" unless $ARGV[0];
+die "$pname: Option -m requires -r\n$usage\n" 
+    if defined($opt_m) && !defined($opt_r);
 
-$logfile = &aid_config('aiddir') . "logs/welcome.log";
-$subject = ($opt_c) ? 'Confirming your MVHS Alumni Internet Directory entry' :
-    ($opt_u) ? 'Your MVHS Alumni Internet Directory entry is updated' : 
+$opt_d = defined($opt_d) ? $opt_d : defined($opt_m) ? 15 : 0;
+
+$subject = $opt_c ? 'Confirming your MVHS Alumni Internet Directory entry' :
+    $opt_u ? 'Your MVHS Alumni Internet Directory entry is updated' : 
+    $opt_m ? 'MVHS Alumni Internet Directory' :
     'Welcome to the MVHS Alumni Internet Directory';
 
 $today = &ctime(time);
 chop $today;
-open(LOG,">>$logfile") || die "Can't open $logfile: $!\n";
-open(TARGET,$ARGV[0]) || die "Can't open $ARGV[0]: $!\n";
+$logfile = &aid_config('aiddir') . 
+    ($opt_m ? "logs/inform.log" : "logs/welcome.log");
+
+$textfile = '';
+if ($opt_m) {
+open(TEXTFILE,$opt_m) || die "$pname: Can't open $opt_m: $!\n";
+while(<TEXTFILE>) { $textfile .= $_; }
+close(TEXTFILE);
+}
+
+open(LOG,">>$logfile") || die "$pname: Can't open $logfile: $!\n";
+open(TARGET,$ARGV[0]) || die "$pname: Can't open $ARGV[0]: $!\n";
 
 select(LOG); $| = 1; select(STDOUT);
 
@@ -37,13 +59,17 @@ while(<TARGET>) {
     chop;
     %rec = &aid_split($_);
     next unless $rec{'email'};
+    next if $opt_m && $rec{'request'} != $opt_r;
     next if $opt_c && !$rec{'request'};
 
-    $message = &message_body($_) . &message_footer;
+    $message = &message_body($_) . $textfile . &message_footer;
 
-    &sendmail($rec{'email'}, &aid_config('admin_email'), &aid_config('admin_name'),
+    &sendmail($rec{'email'},
+	      &aid_config('admin_email'), &aid_config('admin_name'),
 	      $subject, $message);
     print LOG "$today $rec{'email'}\n";
+ 
+    sleep $opt_d if $opt_d > 0;
 }
 
 exit(0);
@@ -51,24 +77,44 @@ exit(0);
 sub message_body {
     local($[) = 0;
     local(%rec) = &aid_split($_[0]);
-    local($denied) = ($rec{'request'}) ? '' :
-	"\nSince you asked not to receive the Alumni Internet Directory via email,\nthis is the only notice you will receive.\n";
+    local($denied) = $rec{'request'} == 0 ?
+	"\nSince you asked not to receive the Alumni Internet Directory via email,
+this is the only notice you will receive.\n" : '';
+    local($confirming) = $opt_c ? 
+	"\nAs a service to alumni who do not have Web access, I will email a copy
+of the most current Directory to everyone listed in it (including
+yourself) in a couple of weeks.  Please make sure your entry below is
+still current.  If everything you see below is correct, NO ACTION IS
+REQUIRED ON YOUR PART.\n" : '';
+    local($closing) = $opt_m ?
+	"\nIf you don't want to receive periodic mail like this, change the
+periodic mailings option on your update page to \"No, please do not send
+me copies of the Directory.\"
 
+========================================================================
+
+As a service to those alumni who don't have Web access, I've attached
+the most recent version of the Alumni Internet Directory below.  Please
+read the acceptable use policy before using any email addresses listed
+below:
+
+   This directory is provided solely for the information of alumni
+   of Mountain View High School and Awalt High School. Any solicitation
+   of business, information, contributions or other response from
+   individuals listed in this publication is forbidden.\n\n" :
+       $opt_c ? '' :
+       "\nIf everything you see above is correct, you're all set.\n";
+    local($srv_prefix) = "http://" . &aid_config('master_srv');
     local($about) = &about_text(*rec,1,0,0);
-    local($confirming) = ($opt_c) ? 
-"\nAs a service to alumni who do not have Web access, I will email a copy
-of the most current Internet Directory to everyone listed in it
-(including yourself) in a couple of weeks.  Please make sure your entry
-below is still current.\n" : '';
 
     return "Dear $rec{'first'},
 
 Your email address is listed in the Mountain View High School/Awalt High
 School Alumni Internet Directory, located on the World Wide Web at:\n\n" .
 
-"http://" . &aid_config('master_srv') . &aid_config('master_path') . "
+$srv_prefix . &aid_config('master_path') . "
 $confirming
-The directory (which produced this form letter) shows the following
+The Directory (which produced this form letter) shows the following
 information about you:
 
 $about$denied
@@ -77,10 +123,10 @@ the Directory, please let me know and I will remove your entry.  If any
 of the above information is incorrect or out of date, you can update
 your entry online at:\n\n" .
 
-"http://" . &aid_config('master_srv') . &aid_config('cgi_path') . "?update=$rec{'id'}
+$srv_prefix . &aid_config('cgi_path') . "?update=$rec{'id'}
 
 If you don't have web access, just email me corrections and I'll be
-happy to fix your entry.  If everything you see above is correct, you're
-all set.\n";
+happy to fix your entry.
+$closing";
 
 }
