@@ -4,7 +4,7 @@
 #     FILE: form.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: Alumni Internet Directory CGI form-submission interface
-#      $Id: form,v 5.3 1999/06/07 18:25:50 mradwin Exp mradwin $
+#      $Id: form,v 5.4 1999/06/08 18:49:07 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -44,11 +44,11 @@ $mailprog = &aid_config('mailprog');
 $dbmfile = &aid_config('dbmfile');
 $dbmfile =~ s/\.db$//;
 
-$rcsid = '$Id: form,v 5.3 1999/06/07 18:25:50 mradwin Exp mradwin $'; #'fnt
+$rcsid = '$Id: form,v 5.4 1999/06/08 18:49:07 mradwin Exp mradwin $'; #'fnt
 
-$listing_upd_title = 'Update Your Directory Listing';
-$listing_upl_title = 'Select a Listing to Update';
-$listing_add_title = 'Add Your Listing to the Directory';
+$listing_upd_title = 'Modify Your Directory Listing';
+$listing_upl_title = 'Select a Listing to Modify';
+$listing_add_title = 'Join the Directory';
 $listing_sub_title = 'Review and Confirm Your Listing';
 
 &CgiDie(&aid_config('short_school') . " Alumni: Script Error",
@@ -471,7 +471,7 @@ sub send_upd_list {
     print &aid_common_html_hdr(-1,$listing_upl_title,1);
     print "\n";
     
-    print "<p>Please select an alumnus to update from the list below.\nThe list is quite long, so it may take a while to display all alumni.</p>\n";
+    print "<p>Please select an alumnus to modify from the list below.\nThe list is quite long, so it may take a while to display all alumni.</p>\n";
     print "<p>\nLast Initial:\n", &jump_bar(), "</p>\n\n";
     print "<pre>";
 
