@@ -4,7 +4,7 @@
 #     FILE: msg.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: Alumni Internet Directory update redirector
-#      $Id: msg,v 6.11 2003/09/14 20:09:58 mradwin Exp mradwin $
+#      $Id: msg,v 6.12 2003/09/16 06:23:18 mradwin Exp mradwin $
 #
 #   Copyright (c) 2003  Michael John Radwin
 #
@@ -33,8 +33,12 @@ use Email::Valid;
 use CGI qw(-no_xhtml);
 use CGI::Carp qw(fatalsToBrowser);
 use Mail::SpamAssassin;
+use BSD::Resource;
 use aid_util;
 use strict;
+
+# needed for netspace.org -- raise 16mb soft limit to 32mb hard limit
+setrlimit(RLIMIT_VMEM, 33554432, 33554432);
 
 my %in;
 my($q) = new CGI;
@@ -60,7 +64,6 @@ if (defined($in{'to'}) && $in{'to'} =~ /^\d+$/)
 	or die "$dbmfile: $!\n";
     my $val = $DB{$id};
     untie(%DB);
-    undef(%DB);
 
     bail() unless $val;
 
@@ -88,7 +91,6 @@ elsif (defined($in{'id'}) && $in{'id'} =~ /^\d+$/ && $in{'hash'} &&
 	or die "$dbmfile: $!\n";
     my $val = $DB{$id};
     untie(%DB);
-    undef(%DB);
 
     bail() unless $val;
 
@@ -181,7 +183,6 @@ _EOHTML_
     my $key = POSIX::strftime("%Y%m%d.", gmtime(time())) . $ENV{'REMOTE_ADDR'};
     my $count = $LIMIT{$key};
     untie(%LIMIT);
-    undef(%LIMIT);
 
     if (defined $count && $count >= 4) {
 	print "Content-Type: text/html\015\012\015\012";
