@@ -1,0 +1,151 @@
+#!/usr/local/bin/perl
+
+require 'aid_util.pl';
+require 'cgi-lib.pl';
+
+print "HTTP/1.1 200 OK\015\012", "Date: ", &aid_http_date(time), "\015\012";
+print "Server: ", $ENV{'SERVER_SOFTWARE'}, "\015\012"
+    if defined $ENV{'SERVER_SOFTWARE'};
+print "Connection: close\015\012";
+
+$dbmfile = &aid_config('wwwdir') . 'master';
+
+&CgiDie(&aid_config('short_school') . " Alumni: Script Error",
+	"The database is unreadable.\n" .
+	"Please <a href=\"mailto:" . &aid_config('admin_email') .
+	"\">email " . &aid_config('admin_name') . "</a>.")
+    unless -r "${dbmfile}.db";
+
+dbmopen(DB,$dbmfile,0444);
+
+if (!&ReadParse() || !defined($in{'q'}) || $in{'q'} =~ /^\s*$/)
+{
+    print "Content-Type: text/html\015\012\015\012";
+
+    print &common_html_hdr(6, 'Search', 1);
+    &print_search_form('',defined $in{'y'} ? $in{'y'} : '');
+    print &common_html_ftr(6);
+
+    close(STDOUT);
+    exit(0);
+}
+
+if (defined $DB{'__alpha__'})
+{
+    @alpha_ids = unpack("n*",$DB{'__alpha__'});
+}
+else
+{
+    dbmclose(DB);
+    &CgiDie(&aid_config('short_school') . " Alumni: Script Error",
+	    "The alphabetic database is unavailable.\n" .
+	    "Please <a href=\"mailto:" . &aid_config('admin_email') .
+	    "\">email " . &aid_config('admin_name') . "</a>.");
+}
+
+$in{'q'} =~ s/^\s*//;
+$in{'q'} =~ s/\s*$//;
+
+@results = ();
+foreach (@alpha_ids)
+{
+    %rec = &aid_db_unpack_rec($_,$DB{$_});
+    $fullname = &inorder_fullname(*rec);
+
+    if (defined $in{'y'} && $in{'y'} ne '')
+    {
+	next if $in{'y'} eq 'other' && $rec{'year'} =~ /^\d+$/;
+	next unless ($in{'y'} eq $rec{'year'}) || $in{'y'} eq 'other';
+    }
+
+    if ($fullname =~ /$in{'q'}/i)
+    {
+	push(@results,$_);
+    }
+}
+undef @alpha_ids;
+
+print "Content-Type: text/html\015\012\015\012";
+
+if ($#results == -1)
+{
+    print &common_html_hdr(6, 'No matches', 1);
+    print "<p>Sorry, no matches were found containing\n";
+    print "<strong>$in{'q'}</strong>";
+    print "\nin <strong>Class of $in{'y'}</strong>"
+	if defined $in{'y'} && $in{'y'} =~ /^\d+$/;
+    print "\nin <strong>Faculty/Staff</strong>"
+	if defined $in{'y'} && $in{'y'} eq 'other';
+    print ".</p>\n";
+    &print_search_form($in{'q'},$in{'y'});
+    print &common_html_ftr(6);
+
+    dbmclose(DB);
+    close(STDOUT);
+    exit(0);
+}
+else
+{
+    if ($#results == 0)
+    {
+	print &common_html_hdr(6, 'Found 1 match', 1);
+    }
+    else
+    {
+	print &common_html_hdr(6, 'Found ' . ($#results+1) . ' matches', 1);
+    }
+
+    print "\n<ul>\n";
+    foreach (@results)
+    {
+	%rec = &aid_db_unpack_rec($_,$DB{$_});
+	$fullname = &inorder_fullname(*rec);
+	($affil,$len) = &affiliate(*rec,0);
+	
+	print "<li><a href=\"", &aid_config('about_cgi'), 
+	 "?about=", $rec{'id'}, "\">$fullname $affil</a>\n";
+    }
+    print "</ul>\n";
+    &print_search_form($in{'q'},$in{'y'});
+    print &common_html_ftr(6);
+}
+
+
+dbmclose(DB);
+close(STDOUT);
+exit(0);
+
+sub print_search_form
+{
+    local($q,$y) = @_;
+    local(@years);
+
+    &CgiDie(&aid_config('short_school') . " Alumni: Script Error",
+	    "The database is missing the years list!\n" .
+	    "Please <a href=\"mailto:" . &aid_config('admin_email') .
+	    "\">email " . &aid_config('admin_name') . "</a>.")
+	unless defined $DB{'__class__'};
+
+    @years = unpack("n*",$DB{'__years__'});
+    push(@years, 'other');
+
+    print "<center><p>\n";
+    print "<form method=get action=\"" . &aid_config('search_cgi') . "\">\n";
+    print " <input type=\"text\" name=\"q\" size=\"25\" value=\"$q\">\n";
+    print " <select name=\"y\">\n";
+    print "  <option";
+    print " selected" if '' eq $y;
+    print " value=\"\">all years\n";
+    foreach (@years)
+    {
+	print "  <option";
+	print " selected" if $_ eq $y;
+	print ">$_\n" unless $_ eq 'other';
+	print " value=\"other\">Faculty/Staff\n" if $_ eq 'other';
+    }
+    print " </select>\n";
+    print " <input type=\"submit\" value=\"Search\">\n</form>\n";
+    print "</p></center>\n";
+
+    1;
+}
