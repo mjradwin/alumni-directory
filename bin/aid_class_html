@@ -37,7 +37,7 @@ alumnus.</p>
 ';
     print FMTOUT "<p><a name=\"top\">Index</a>: <tt>";
 
-    $lastYear = '00';
+    $lastYear = '1900';
     $first_fac_staff = 0;
     while(<DATAPRE>) {
 	chop;
@@ -70,7 +70,7 @@ print FMTOUT "Name$blank_gif                                     Email\n";
 print FMTOUT "---------------------------------------------------------------------------";
 
 open(DATA,$ARGV[0]) || die "Can't open $ARGV[0]: $!\n";
-$lastYear = '00';
+$lastYear = '1900';
 $first_fac_staff = 0;
 while(<DATA>) {
     chop;
@@ -85,7 +85,7 @@ while(<DATA>) {
 		unless $first_fac_staff;
             print FMTOUT $lastYear;
             $opt_t || print FMTOUT "</a>" unless $first_fac_staff;
-            print FMTOUT ' ' x (12 - length($lastYear));
+            print FMTOUT ' ' x (13 - length($lastYear));
             $opt_t || print FMTOUT "  (<a href=\"#top\">top</a>)";
 	    print FMTOUT "\n";
             $first_fac_staff = 1;
@@ -93,7 +93,7 @@ while(<DATA>) {
 	    $hashYear = 'grad' . $year;
 	    print FMTOUT "\n";
 	    $opt_t || print FMTOUT "<a name=\"$hashYear\">";
-	    print FMTOUT "Class of '$lastYear";
+	    print FMTOUT "Class of $lastYear";
 	    $opt_t || print FMTOUT "</a>  (<a href=\"#top\">top</a>)";
 	    print FMTOUT "\n";
 	}

@@ -37,7 +37,7 @@ alumnus.</p>
     # do the funky quick-jump bar
     $lastInitial = 'A';
     while ($lastInitial ne 'AA') {
-	print FMTOUT "<a href=\"#$lastInitial\">$lastInitial</a>\n";
+	print FMTOUT "<a href=\"#last$lastInitial\">$lastInitial</a>\n";
 	$lastInitial++;
     }
     print FMTOUT "</tt>";
@@ -61,7 +61,7 @@ while(<DATA>) {
     if ($lastInitial ne substr($last, 0, 1)) {
 	$lastInitial = substr($last, 0, 1);
 	print FMTOUT "\n";
-	$opt_t || print FMTOUT "<a name=\"$lastInitial\">";
+	$opt_t || print FMTOUT "<a name=\"last$lastInitial\">";
 	print FMTOUT $lastInitial;
 	$opt_t || print FMTOUT "</a> (<a href=\"#top\">top</a>)";
 	print FMTOUT "\n";
