@@ -2,7 +2,7 @@
 #     FILE: aid_util.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: perl library routines for the Alumni Internet Directory
-#      $Id: aid_util.pl,v 5.81 2001/01/12 01:22:24 mradwin Exp mradwin $
+#      $Id: aid_util.pl,v 5.82 2001/01/12 01:23:21 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -348,6 +348,73 @@ sub aid_html_entify_rec
 
     %rec;
 }
+
+sub aid_verification_message {
+    package aid_util;
+
+    local($randkey,*rec) = @_;
+
+    my($name) = $rec{'gn'};
+    $name .= " $rec{'mi'}."
+	if defined $rec{'mi'} && $rec{'mi'} ne '';
+    $name .= " $rec{'sn'}";
+    $name .= " $rec{'mn'}"
+	if defined $rec{'mn'} && $rec{'mn'} ne '';
+    $name =~ s/\"/\'/g;
+
+    my($return_path,$from,$subject,$xtrahead,$body,$recip);
+
+    $body = &main::aid_inorder_fullname(*rec) . ",
+
+You recently were asked to verify your e-mail address
+with the " . $config{'short_school'} . " Alumni Internet Directory.
+
+Please follow the instructions below to complete the
+verification process.
+
+TO VERIFY YOUR ADDRESS:
+
+1. If your email reader will allow you to click on
+links, click the following link.  If not, enter the URL
+into your browser:
+
+http://" . $config{'master_srv'} . $config{'verify_cgi'} . "?$randkey
+
+2. If the page asks you to enter your 8-letter
+verification code, please enter this code:
+
+$randkey
+
+3. Then click on the \"Submit verification code\" button.
+
+
+WAS THIS EMAIL SENT TO THE WRONG ADDRESS?
+
+If you did not request this confirmation, you can
+remove your e-mail address from our database by
+clicking on the following link:
+
+http://" . $config{'master_srv'} . $config{'remove_cgi'} . "?$randkey
+
+If this link does not work for you, please reply to
+this message with the word REMOVE in the subject line
+(and be sure to include the full text of this email in
+your reply).
+
+Regards,
+
+" . $config{'short_school'} . " Alumni Internet Directory
+http://" . $config{'master_srv'} . $config{'master_path'} . "\n";
+
+    $return_path = $config{'admin_email'};
+    $from = $config{'short_school'} . ' Alumni Robot';
+    $subject = $config{'short_school'} .
+	" Alumni Internet Directory Verification [$randkey]";
+    $xtrahead = "Reply-To: " . $config{'admin_email'};
+
+    ($return_path,$from,$subject,$xtrahead,$body,$name,$rec{'e'});
+}
+
 
 sub aid_sendmail
 {
