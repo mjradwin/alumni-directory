@@ -4,7 +4,7 @@
 #     FILE: mvhsaid.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: Alumni Internet Directory CGI interface
-#      $Id: mvhsaid,v 3.90 1999/03/26 19:42:57 mradwin Exp mradwin $
+#      $Id: mvhsaid,v 3.91 1999/03/26 20:21:26 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -40,7 +40,7 @@ $mailprog = &aid_config('mailprog');
 $dbmfile = &aid_config('dbmfile');
 $dbmfile =~ s/\.db$//;
 
-$rcsid = '$Id: mvhsaid,v 3.90 1999/03/26 19:42:57 mradwin Exp mradwin $'; #'fnt
+$rcsid = '$Id: mvhsaid,v 3.91 1999/03/26 20:21:26 mradwin Exp mradwin $'; #'fnt
 
 $listing_upd_title = 'Update Your Directory Listing';
 $listing_upl_title = 'Select a Listing to Update';
@@ -377,31 +377,39 @@ sub queue_submission {
 	$in{'email_upd'} = $in{'time'};
 	$in{'email_old'} = $in{'prev_email'};
     }
+    else
+    {
+	$in{'email_old'} = '';
+    }
+
+    $in{'browser'} = $ENV{'HTTP_USER_AGENT'};
     $date = &ctime($in{'time'});
     $mailto = &aid_config('mailto');
     $mailsubj = &aid_config('mailsubj');
     $mailname = &aid_config('admin_name');
-    $record = &aid_join(*in);
 
-    $message_top = "Dear $mailname,\n\n" .
-	"_AID_BEGIN_SUBMISSION_\n\n$record\n";
+    $mailbody = "Dear $mailname,\n\n_AID_BEGIN_SUBMISSION_\n";
 
-    $message_mid =
-	(($in{'message'} eq '') ? '' :
-	 "_AID_BEGIN_MESSAGE_\n$in{'message'}\n_AID_END_MESSAGE_\n");
+    while (($key,$val) = each(%in))
+    {
+	next if $key eq 'message' || $key eq 'confirmed';
+	$mailbody .= $key . '=' . $val . "\n";
+    }
+
+    if ($in{'message'} ne '')
+    {
+	$mailbody .= "_AID_BEGIN_MESSAGE_\n" . $in{'message'} .
+	    "\n_AID_END_MESSAGE_\n";
+    }
     
-    $message_bot =
-"Browser: $ENV{'HTTP_USER_AGENT'}
-_AID_END_SUBMISSION_
+    $mailbody .= "_AID_END_SUBMISSION_
 
 Love,
 the \L$mailsubj\E cgi-bin script
 $date";
 
     system("$mailprog -s '$mailsubj [$in{'id'} $in{'email'}]' $mailto <<'EOM'
-$message_top
-$message_mid
-$message_bot
+$mailbody
 EOM
 ");
 
