@@ -21,7 +21,7 @@ CONFIG: {
 	       'Nov', 10,
 	       'Dec', 11);
 
-    @page_idx = ('MVHS&nbsp;Alumni,./',
+    @page_idx = ('Home,./',
 		 'Alphabetically,all.html',
 		 'Grad.&nbsp;Class,class.html',
 		 'Recent&nbsp;Additions,recent.html',
@@ -124,7 +124,7 @@ sub mv_create_db {
     open(INFILE,$filename) || die "Can't open $filename: $!\n";
     while(<INFILE>) {
 	chop;
-	@result = &'mv_parse($_);
+	@result = &'mv_parse($_); #'  (let the font-lock be unconfused)
 	$db[$result[1]] = $_;
     }
     close(INFILE);
@@ -132,7 +132,6 @@ sub mv_create_db {
     return @db;
 }
 
-#'  (let the font-lock be unconfused)
 
 # Wed Mar 13 17:28:32 EST 1996 broccoli@uclink4.berkeley.edu
 # Thu Mar 28  1:07:43 US/Eastern 1996 mjr@cs.brown.edu
@@ -218,11 +217,24 @@ Your submission will be processed in a day or so.</p>
 ";
 }
 
-
 sub common_html_ftr {
     package mv_util;
 
-    return "<hr noshade size=1>\n<blockquote><a name=\"disclaimer\">This</a> address list is provided solely for the information of alumni of Mountain View High School and Awalt High School.  Any solicitation of business, information, contributions or other response from individuals listed in this publication is forbidden.</blockquote><hr noshade size=1>\n\n<P>\n<em><A HREF=\"/people/mjr/\">Michael J. Radwin</A>,</em>\n<tt><A HREF=\"mailto:mjr\@cs.brown.edu\">mjr\@cs.brown.edu</A></tt>\n</P>\n\n</BODY>\n</HTML>\n";
+    return "
+<hr noshade size=1>
+<blockquote><a name=\"disclaimer\">This</a> address list is provided
+solely for the information of alumni of Mountain View High School and
+Awalt High School.  Any solicitation of business, information,
+contributions or other response from individuals listed in this
+publication is forbidden.</blockquote>
+<hr noshade size=1>
+
+<p><a href=\"/people/mjr/\"><em>Michael J. Radwin</em></a><em>,</em> <a 
+href=\"mailto:mjr\@cs.brown.edu\"><tt>mjr\@cs.brown.edu</tt></a></p>
+</body>
+</html>
+";
+
 }
 
 sub common_html_hdr {
@@ -238,24 +250,53 @@ sub common_html_hdr {
     $page_name =~ s/&nbsp;/ /g;
     chop $today;
 
-    $h1 = "<html>\n<head>\n<title>Mountain View High School Alumni: $page_name</title>\n" . 
-"<meta name=\"keywords\" content=\"Mountain View High School, Alumni, MVHS, Awalt High School, Mountain View, Los Altos, California, reunion, Radwin\">\n<meta name=\"description\" content=\"Mountain View High School Internet Directory: email address and web page listing of alumni, students, faculty and staff.  Also Awalt High School\">\n<meta http-equiv=\"PICS-Label\" content='(PICS-1.0 \"http://www.rsac.org/ratingsv01.html\" l gen true comment \"RSACi North America Server\" by \"mjr\@cs.brown.edu\" for \"http://www.cs.brown.edu/people/mjr/mvhs/\" on \"1996.04.16T08:15-0500\" exp \"1997.01.01T08:15-0500\" r (n 0 s 0 v 0 l 0))'>\n" .
-"</head>\n\n" .
-"<body bgcolor=\"#ffffff\" LINK=\"#0000ff\" TEXT=\"#000000\" VLINK=\"#541c8c\" ALINK=\"#ff0000\">\n<a name=\"index\"></a>\n<table border=0 cellpadding=8 cellspacing=0 width=\"100%\">\n<tr><td bgcolor=\"#aaaaaa\" align=left rowspan=2><font size=\"-1\" color=\"#000000\">";
+    $h1 = "<html>
+<head>
+<title>Mountain View High School Alumni Internet Directory</title>
+<meta name=\"keywords\" content=\"Mountain View High School, Alumni, MVHS, Awalt High School, Mountain View, Los Altos, California, reunion, Radwin\">
+<meta name=\"description\" content=\"Mountain View High School Internet Directory: email address and web page listing of alumni, students, faculty and staff.  Also Awalt High School\">
+<meta http-equiv=\"PICS-Label\" content='(PICS-1.0 \"http://www.rsac.org/ratingsv01.html\" l gen true comment \"RSACi North America Server\" by \"mjr\@cs.brown.edu\" for \"http://www.cs.brown.edu/people/mjr/mvhs/\" on \"1996.04.16T08:15-0500\" exp \"1997.01.01T08:15-0500\" r (n 0 s 0 v 0 l 0))'>
+</head>
+
+<body bgcolor=\"#f0f0f0\" LINK=\"#0000ff\" TEXT=\"#000000\" VLINK=\"#541c8c\" ALINK=\"#ff0000\">
+<hr noshade size=1>
+<table border=0 cellpadding=8 cellspacing=0 width=\"100%\">
+<tr>
+  <td bgcolor=\"#eeeecc\" align=left rowspan=2><font size=\"-1\"
+  color=\"#000000\">";
+
+#' (unconfuse da font-lock)
 
     $h2 = "";
     foreach $idx (0 .. $#page_idx) {
 	($name, $url) = split(/,/, $page_idx[$idx]);
-	$h2 .= $name if $idx == $page;
-	$h2 .= "<a href=\"$url\">$name</a>" unless $idx == $page;
+        if ($idx == $page) {
+	    $h2 .= "\n  <strong>$name</strong>";
+        } else {
+            $h2 .= "<a\n  href=\"$url\">$name</a>";
+        }
 	$h2 .= "<br>" unless $idx == $#page_idx;
     }
-    $h2 .= "</font></td>\n";
+    $h2 .= "</font>\n  </td>\n";
 
-    $h3 = "<td align=center valign=top bgcolor=\"#aaaaaa\"><img src=\"mvhs.gif\" alt=\"Mountain View High School\" align=bottom width=430 height=26><br><img src=\"alumni.gif\" alt=\"Alumni Internet Directory\" align=bottom width=292 height=33></td></tr>\n<tr><td align=right valign=bottom bgcolor=\"#aaaaaa\"><font size=\"-1\" color=\"#000000\"><i>This page generated: $today</i></font></td></tr>\n</table>\n\n";
+    $h3 = "  <td align=right valign=top bgcolor=\"#eeeecc\"><a href=\"./\"><img
+  src=\"title.gif\" alt=\"Mountain View High School Alumni Internet
+  Directory\" align=bottom width=398 height=48 border=0></a>
+  </td>
+</tr>
+<tr>
+  <td align=right valign=bottom bgcolor=\"#eeeecc\"><font size=\"-1\"
+  color=\"#000000\"><i>This page generated: $today</i></font>
+  </td>
+</tr>
+</table>
+<hr noshade size=1>
+
+";
 
     return $h1 . $h2 . $h3;
 }
 
 
 1;
+

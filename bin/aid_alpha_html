@@ -8,6 +8,7 @@ require 'mv_util.pl';
 require 'ctime.pl';
 require 'getopts.pl';
 
+$htmlname = "all.html";
 $today = &ctime(time);
 chop $today;
 
@@ -52,7 +53,7 @@ while(<MVHS>) {
 	print FMTOUT "\n";
 	$opt_t || print FMTOUT "<a name=\"$lastInitial\">";
 	print FMTOUT $lastInitial;
-	$opt_t || print FMTOUT "</a>  (<a href=\"#index\">top</a>)";
+	$opt_t || print FMTOUT "</a>  (<a href=\"$htmlname\">top</a>)";
 	print FMTOUT "\n";
     }
     if ($first) {

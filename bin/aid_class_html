@@ -7,6 +7,7 @@
 require 'mv_util.pl';
 require 'ctime.pl';
 
+$htmlname = "class.html";
 $today = &ctime(time);
 chop $today;
 
@@ -57,11 +58,11 @@ while(<MVHS>) {
             print FMTOUT $lastYear;
             print FMTOUT "</a>" unless $first_fac_staff;
             print FMTOUT ' ' x (12 - length($lastYear));
-            print FMTOUT "  (<a href=\"#index\">top</a>)\n";
+            print FMTOUT "  (<a href=\"$htmlname\">top</a>)\n";
             $first_fac_staff = 1;
 	} else {
 	    $hashYear = 'grad' . $year;
-	    print FMTOUT "\n<a name=\"$hashYear\">Class of '$lastYear</a>  (<a href=\"#index\">top</a>)\n";
+	    print FMTOUT "\n<a name=\"$hashYear\">Class of '$lastYear</a>  (<a href=\"$htmlname\">top</a>)\n";
 	}
     }
     if ($first) {

@@ -49,7 +49,7 @@ alpha.adr:	mvhs.adr
 	sort -t: +3 -5 mvhs.adr > alpha.adr
 
 class.adr:	mvhs.adr
-	sort -t: +6 -7 mvhs.adr > class.adr
+	sort -t: +6 -7 +3 -5 mvhs.adr > class.adr
 
 mvhs_db.tar:	
 	cp /pro/web/cgi-bin/mjr-mvhs.cgi .
