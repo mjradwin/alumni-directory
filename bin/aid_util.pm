@@ -2,11 +2,11 @@
 #     FILE: aid_util.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: perl library routines for the Alumni Internet Directory
-#      $Id: aid_util.pl,v 4.57 1999/03/12 21:36:38 mradwin Exp mradwin $
+#      $Id: aid_util.pl,v 4.58 1999/03/12 21:49:04 mradwin Exp mradwin $
 #
 
 $aid_util'rcsid =
- '$Id: aid_util.pl,v 4.57 1999/03/12 21:36:38 mradwin Exp mradwin $';
+ '$Id: aid_util.pl,v 4.58 1999/03/12 21:49:04 mradwin Exp mradwin $';
 
 # ----------------------------------------------------------------------
 # CONFIGURATION
@@ -355,7 +355,9 @@ sub affiliate {
     {
 	$affil .= "<a href=\"" . &main'aid_about_path(*rec,1) . "\">" #'#
 	    if $do_html_p;
-	$tmp    = "[" . $school_affil[$rec{'sch_id'}] . " $rec{'year'}]";
+	$tmp    = $school_affil[$rec{'sch_id'}] eq '' ?
+	    $school_name[$rec{'sch_id'}] : $school_affil[$rec{'sch_id'}];
+	$tmp    = "[$tmp $rec{'year'}]";
 	$affil .= $tmp;
 	$len   += length($tmp);
 	$affil .= "</a>" if $do_html_p;
@@ -773,7 +775,7 @@ $instr
 </tr>
 
 <tr><td colspan=3 bgcolor=\"#$header_bg\">
-<font size=\"+1\"><strong>5. E-mail Updates</strong></font>
+<font size=\"+1\"><strong>5. E-mail Preferences</strong></font>
 </td></tr>
 <tr>
   <td colspan=3><input type=checkbox
@@ -1055,7 +1057,7 @@ sub about_text {
     $retval .= "\n";
     
     if ($rec{'year'} =~ /^\d+$/) {
-	$retval .= "Grad. Year         : ";
+	$retval .= "Graduation Year    : ";
     } else {
 	$retval .= "Affiliation        : ";
     }
@@ -1110,7 +1112,7 @@ sub about_text {
 	$retval .= "Reunion Info Okay  : ";
 	$retval .= ($rec{'reunion'} == 1) ?
 	    "yes\n" : "no\n";
-	$retval .= "Send E-mail Updates: ";
+	$retval .= "Send E-mail Digests: ";
 	$retval .= defined $req_descr[$rec{'request'}] ?
 	    "$req_descr[$rec{'request'}]\n" : "(unknown)\n";
     } 
