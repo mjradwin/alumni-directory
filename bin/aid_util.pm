@@ -2,7 +2,7 @@
 #     FILE: aid_util.pm
 #   AUTHOR: Michael J. Radwin
 #    DESCR: perl library routines for the Alumni Internet Directory
-#      $Id: aid_util.pm,v 6.12 2004/02/08 20:23:56 mradwin Exp mradwin $
+#      $Id: aid_util.pm,v 6.13 2004/05/12 22:33:12 mradwin Exp mradwin $
 #
 # Copyright (c) 2003  Michael J. Radwin.
 # All rights reserved.
@@ -60,7 +60,7 @@ use strict;
 
 package aid_util;
 
-my($VERSION) = '$Revision: 6.12 $$';
+my($VERSION) = '$Revision: 6.13 $$';
 if ($VERSION =~ /(\d+)\.(\d+)/) {
     $VERSION = "$1.$2";
 }
@@ -281,7 +281,7 @@ sub protect_email
     my($e) = @_;
 
     my($u,$d) = split(/\@/, $e, 2);
-    "$u@" . substr($d, 0, 1) . "...";
+    substr($u, 0, 5) . "...@" . substr($d, 0, 1) . "...";
 }
 
 sub inorder_fullname
