@@ -2,7 +2,7 @@
 #     FILE: aid_util.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: perl library routines for the Alumni Internet Directory
-#      $Id: aid_util.pl,v 4.104 1999/05/04 23:50:41 mradwin Exp mradwin $
+#      $Id: aid_util.pl,v 4.105 1999/05/07 16:46:39 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -416,16 +416,13 @@ sub aid_sendmail
 {
     package aid_util;
 
-    local($to,$name,$return_path,$from,$subject,$body) = @_;
+    local($to,$return_path,$from,$subject,$body) = @_;
     local(*F);
-    local($toline,$header);
+    local($header);
 
-    $name =~ s/"/'/g;
-    $to =~ s/\s*\([^\)]*\)\s*//g;
-    $toline = join(', ', split(/[ \t]+/, $to));
     $header =
 "From: $from <$return_path>\
-To: \"$name\" <$toline>\
+To: $to\
 X-Sender: $ENV{'USER'}\@$ENV{'HOST'}\
 Disposition-Notification-To: $from <$return_path>\ 
 Organization: $config{'school'} Alumni Internet Directory\
@@ -434,7 +431,7 @@ Content-Transfer-Encoding: 8bit\
 Subject: $subject\
 ";
 
-    if (open(F, "| $config{'sendmail'} -R hdrs $to")) {
+    if (open(F, "| $config{'sendmail'} -t -R hdrs")) {
 	print F $header;
 	print F $body;
 	close(F);
