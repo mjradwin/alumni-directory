@@ -4,7 +4,7 @@
 #     FILE: form.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: Alumni Internet Directory CGI form-submission interface
-#      $Id: form,v 5.10 1999/06/22 18:59:59 mradwin Exp mradwin $
+#      $Id: form,v 5.11 1999/07/24 21:17:48 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -44,7 +44,7 @@ $mailprog = &aid_config('mailprog');
 $dbmfile = &aid_config('dbmfile');
 $dbmfile =~ s/\.db$//;
 
-$rcsid = '$Id: form,v 5.10 1999/06/22 18:59:59 mradwin Exp mradwin $'; #'fnt
+$rcsid = '$Id: form,v 5.11 1999/07/24 21:17:48 mradwin Exp mradwin $'; #'fnt
 
 $listing_upd_title = 'Modify Your Directory Listing';
 $listing_upl_title = 'Select a Listing to Modify';
@@ -292,6 +292,7 @@ Here is what your listing will look like:
 
 <table border=\"1\" cellpadding=\"6\"><tr><td>";
 
+    $in{'u'} = time unless defined $in{'u'};
     print &aid_verbose_entry(*in,1,1,1);
 
     print "</td></tr></table>
