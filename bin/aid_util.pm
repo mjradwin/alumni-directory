@@ -2,11 +2,11 @@
 #     FILE: aid_util.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: perl library routines for the Alumni Internet Directory
-#      $Id: aid_util.pl,v 4.11 1999/02/05 00:54:42 mradwin Exp mradwin $
+#      $Id: aid_util.pl,v 4.12 1999/02/05 18:45:30 mradwin Exp mradwin $
 #
 
 $aid_util'rcsid =
- '$Id: aid_util.pl,v 4.11 1999/02/05 00:54:42 mradwin Exp mradwin $';
+ '$Id: aid_util.pl,v 4.12 1999/02/05 18:45:30 mradwin Exp mradwin $';
 $aid_util'caldate = &aid_caldate(time); #'#
 
 # ----------------------------------------------------------------------
@@ -790,7 +790,7 @@ Subject: $subject\
 sub message_footer {
     package aid_util;
 
-    "\n--\n" .	$config{'admin_name'} . "\n" . $config{'admin_school'};
+    "\n-- \n" . $config{'admin_name'} . "\n" . $config{'admin_school'};
 }
 
 sub aid_verbose_entry {
