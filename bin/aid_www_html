@@ -22,9 +22,7 @@ $cgi = &aid_config('cgi_path');
 open(DATA,$ARGV[0]) || die "Can't open $ARGV[0]: $!\n";
 open(FMTOUT,">$ARGV[1]") || die "Can't open $ARGV[1]: $!\n";
 
-print FMTOUT &common_html_hdr(5,1);
-print FMTOUT "<br>";
-print FMTOUT &aid_tableheader('Alumni with Web Pages');
+print FMTOUT &common_html_hdr(5,'Alumni with Web Pages',1);
 print FMTOUT &common_intro_para(1);
 print FMTOUT "<pre>";
 print FMTOUT "Name and Graduation Year$blank_gif                  Email\n";

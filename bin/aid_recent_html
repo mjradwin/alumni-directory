@@ -2,7 +2,7 @@
 
 #
 # does the html version of the recent address list
-# $Id: aid_recent_html,v 1.29 1998/03/30 20:28:30 mjr Exp mjr $
+# $Id: aid_recent_html,v 2.1 1998/03/31 19:55:13 mjr Exp mradwin $
 #
 
 require 'aid_util.pl';
@@ -12,9 +12,7 @@ die "Usage: aid_recent_html infile.adr outfile.html\n" if !$ARGV[0] || !$ARGV[1]
 open(DATA,$ARGV[0]) || die "Can't open $ARGV[0]: $!\n";
 open(FMTOUT,">$ARGV[1]") || die "Can't open $ARGV[1]: $!\n";
 
-print FMTOUT &common_html_hdr(4,1);
-print FMTOUT "<br>";
-print FMTOUT &aid_tableheader('Recent Additions to the Directory');
+print FMTOUT &common_html_hdr(4,'Recent Additions to the Directory',1);
 print FMTOUT
 "<p>All entries on this page have been added to the Directory within the
 last month.  The most recent additions or updates are at the top of the

@@ -4,7 +4,7 @@
 #     FILE: mvhsaid.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: MVHS Alumni Internet Directory CGI interface
-#      $Id: mvhsaid,v 1.65 1998/03/25 23:15:19 mjr Exp mjr $
+#      $Id: mvhsaid,v 2.1 1998/03/31 19:55:13 mjr Exp mradwin $
 #
 
 require 'aid_util.pl';
@@ -24,7 +24,7 @@ if (defined($ENV{'PATH_INFO'}) && $ENV{'PATH_INFO'} =~ m,^/vcard/,) {
     $in{'vcard'} =~ s,^/vcard/(\d+).*$,$1,;
 }
 
-$rcsid = '$Id: mvhsaid,v 1.65 1998/03/25 23:15:19 mjr Exp mjr $'; #'fnt
+$rcsid = '$Id: mvhsaid,v 2.1 1998/03/31 19:55:13 mjr Exp mradwin $'; #'fnt
 
 # special flags: version, update, vcard, about
 #
@@ -192,10 +192,7 @@ sub confirm_submission {
 
     select(STDOUT);  $| = 1;
     print "Content-type: text/html\n\n";
-    print &common_html_hdr(-1,1);
-
-    print "<br>\n";
-    print &aid_tableheader('Please confirm your submission');
+    print &common_html_hdr(-1,'Please confirm your submission',1);
     print "
 <p>Please confirm that all of the below information is correct.  If you
 have made any mistakes, select the <strong>&lt;&nbsp;Back</strong> button
@@ -258,10 +255,9 @@ EOM
 
     select(STDOUT);  $| = 1;
     print "Content-type: text/html\n\n";
-    print &common_html_hdr(-1,1);
+    print &common_html_hdr(-1,'Your submission is confirmed and queued',1);
 
     print "<br>\n";
-    print &aid_tableheader('Your submission is confirmed and queued');
     $fullname = &inorder_fullname(*in);
     print "<p>The entry for <strong>$fullname</strong> has been\n";
     print "added to the submission queue.\n";
@@ -282,7 +278,12 @@ sub send_upd_real {
     select(STDOUT);  $| = 1;
     print "Content-type: text/html\n\n";
 
-    print &common_html_hdr(-1,1);
+    print &common_html_hdr(-1,
+			   (($newrec{'id'} == -1) ? 
+			    'Add a Listing to the Directory' :
+			    'Update Your Directory Listing'),
+			   1);
+
     print &submit_body(*rec,$blankp);
     print &common_html_ftr(-1);
 }
@@ -296,9 +297,7 @@ sub send_about {
 
     select(STDOUT);  $| = 1;
     print "Content-type: text/html\n\n";
-    print &common_html_hdr(-1,1);
-    print "<br>\n";
-    print &aid_tableheader($fullname);
+    print &common_html_hdr(-1,$fullname,1);
     print "<p>Here is more detailed information about $fullname.\n";
     print "If you're not running Netscape Communicator 4.x, see the\n";
     print "<a href=\"" . &aid_config('master_path') . "tech.html#vcard\">";
@@ -364,9 +363,7 @@ sub send_upd_list {
 
     select(STDOUT);  $| = 1;
     print "Content-type: text/html\n\n";
-    print &common_html_hdr(-1,1);
-    print "<br>\n";
-    print &aid_tableheader('Update Your Directory Listing');
+    print &common_html_hdr(-1,'Update Your Directory Listing',1);
     print "\n";
     print "<p>Please select an entry to update from the list below.<p>\n";
     print "<pre>";

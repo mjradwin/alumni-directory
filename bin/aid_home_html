@@ -2,20 +2,22 @@
 
 #
 # does the html version of just home pages
-# $Id: aid_home_html,v 1.18 1998/01/07 18:59:23 mjr Exp mjr $
+# $Id: aid_home_html,v 2.1 1998/03/31 19:55:13 mjr Exp mradwin $
 #
 
 require 'aid_util.pl';
 require 'getopts.pl';
 
-$usage = 'usage: aid_home_html [-hs] [-p <pg>] [-t <text>] [-i <infile>] <outfile>
+$usage = 'usage: aid_home_html [-hs] [-i <infile>] -p <pg> -t <text> <outfile>
  -h            Display usage information.
- -p <pg>       Use page number <pg> for generating content.  REQUIRED.
  -s            Create the submit page.
- -t <text>     Put a tableheader with "text".
  -i <infile>   Create an "other" page from html code in <infile>.
+ -p <pg>       Use page number <pg> for generating content.  REQUIRED.
+ -t <text>     Put a tableheader with "text".  REQUIRED.
 
  <outfile>     Write results to <outfile>.
+
+Either -s or -i must be supplied.  They are mutuallly exclusive.
 ';
 
 &Getopts('hst:i:p:') || die "$usage\n";
@@ -25,11 +27,12 @@ $opt_h = $opt_h;		# avoid warning
 
 die "$usage\n" unless $ARGV[0];
 die "$usage\n" unless ($opt_s || $opt_i);
+die "$usage\n" if     ($opt_s && $opt_i);
 die "$usage\n" unless defined($opt_p);
+die "$usage\n" unless defined($opt_t);
 
 $infile = $opt_i;
 $outfile = $ARGV[0];
-
 
 if ($opt_i) {
     open(INFILE,$infile) || die "Can't open $infile: $!\n";
@@ -39,15 +42,11 @@ if ($opt_i) {
 
 open(OUTFILE,">$outfile") || die "Can't open $outfile: $!\n";
 
-print OUTFILE &common_html_hdr($opt_p);
-if ($opt_t) {
-    print OUTFILE "<br>\n";
-    print OUTFILE &aid_tableheader($opt_t);
-}
+print OUTFILE &common_html_hdr($opt_p,$opt_t,0);
 
 if ($opt_s) {
     print OUTFILE &submit_body(*blank_entry,0);
-} else {
+} else { # implicit opt_i
     print OUTFILE @lines;
 }
 print OUTFILE &common_html_ftr($opt_p);

@@ -2,7 +2,7 @@
 
 #
 # does the html verbose pages
-# $Id: aid_verbose_html,v 1.19 1998/03/30 20:28:30 mjr Exp mjr $
+# $Id: aid_verbose_html,v 2.1 1998/03/31 19:55:13 mjr Exp mradwin $
 #
 
 require 'aid_util.pl';
@@ -34,11 +34,9 @@ for(;;) {
 	(($rec{'year'} =~ /^\d+$/) ? $rec{'year'} : "other") . ".html";
     open(FMTOUT,">$outFile") || die "Can't open $outFile: $!\n";
 
-    print FMTOUT &common_html_hdr(-1,1);
-    print FMTOUT "<br>";
     $title  = ($rec{'year'} =~ /^\d+$/) ? "Class of $rec{'year'}" :
 	"Faculty and Staff";
-    print FMTOUT &aid_tableheader($title);
+    print FMTOUT &common_html_hdr(-1,$title,1);
     print FMTOUT &common_intro_para(0);
 
     &aid_write_verbose_entry(*FMTOUT,*rec);
@@ -58,9 +56,7 @@ for(;;) {
 $outFile = &aid_config('wwwdir') . "class/index.html";
 open(FMTOUT,">$outFile") || die "Can't open $outFile: $!\n";
 
-print FMTOUT &common_html_hdr(2,0);
-print FMTOUT "<br>";
-print FMTOUT &aid_tableheader('Alumni Listed by Graduating Class');
+print FMTOUT &common_html_hdr(2,'Alumni Listed by Graduating Class',0);
 print FMTOUT "<p><center><font size=\"+1\">";
 print FMTOUT "Compact&nbsp;Form:<br>\n";
 print FMTOUT "<a href=\"" . &aid_config('master_path') . "class.html\">";
