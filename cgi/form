@@ -4,7 +4,7 @@
 #     FILE: mvhsaid.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: MVHS Alumni Internet Directory CGI interface
-#      $Id: mvhsaid,v 3.19 1998/09/04 22:31:57 mradwin Exp mradwin $
+#      $Id: mvhsaid,v 3.20 1998/09/04 23:17:30 mradwin Exp mradwin $
 #
 
 require 'aid_util.pl';
@@ -24,7 +24,7 @@ if (defined($ENV{'PATH_INFO'}) && $ENV{'PATH_INFO'} =~ m,^/vcard/,) {
     $in{'vcard'} =~ s,^/vcard/(\d+).*$,$1,;
 }
 
-$rcsid = '$Id: mvhsaid,v 3.19 1998/09/04 22:31:57 mradwin Exp mradwin $'; #'fnt
+$rcsid = '$Id: mvhsaid,v 3.20 1998/09/04 23:17:30 mradwin Exp mradwin $'; #'fnt
 
 # special flags: version, update, vcard, about
 #
@@ -32,8 +32,8 @@ $rcsid = '$Id: mvhsaid,v 3.19 1998/09/04 22:31:57 mradwin Exp mradwin $'; #'fnt
 # instead of processing a form request.
 if (defined($in{'version'})) {
     select(STDOUT);  $| = 1;
-    print "Content-type: text/plain\n\n$rcsid\n";
-    print &aid_config('rcsid'), "\n";
+    print "Content-type: text/plain\n\n$rcsid\r\n";
+    print &aid_config('rcsid'), "\r\n";
     exit(0);
 
 } elsif (defined($in{'update'})) {
@@ -45,10 +45,26 @@ if (defined($in{'version'})) {
 	    &send_upd_real(*updateme,0);
 
 	} else {
-	    &send_upd_real(*aid_util'blank_entry,0);
+	    &send_upd_real(*aid_util'blank_entry,0);  #'#
 	}
+
+    } elsif ($in{'update'} =~ /^[^@]+@[^\.]+\./) {
+	@db = &aid_create_db($dbfile);
+	$in{'update'} = "\L$in{'update'}\E";
+	for (@db) {
+	    next unless defined($_) && $_ ne '';
+	    %updateme = &aid_split($_);
+	    if ("\L$updateme{'email'}\E" eq $in{'update'}) {
+		$updateme{'message'} = &aid_get_usertext($updateme{'id'});
+		&send_upd_real(*updateme,0);
+		exit(0);
+	    }
+	}
+	&send_upd_list($in{'update'});
+
     } else {
-	&send_upd_list();
+	&send_upd_list($in{'update'});
+
     }
     exit(0);
 
@@ -73,6 +89,7 @@ if (defined($in{'version'})) {
 	&send_upd_real(*aid_util'blank_entry,0);
     }
     exit(0);
+
 }
 
 
@@ -365,6 +382,7 @@ sub send_vcard {
 
 
 sub send_upd_list {
+    local($nofind) = @_;
     local($_);
     local(@db) = &aid_alpha_db($dbfile);
     local($fullname,$affil,$len);
@@ -375,7 +393,14 @@ sub send_upd_list {
     print "Content-type: text/html\n\n";
     print &common_html_hdr(-1,'Update Your Directory Entry',1);
     print "\n";
-    print "<p>Please select an entry to update from the list below.</p>\n";
+    
+    if (defined $nofind && $nofind ne '') {
+	$nofind = "Unable to find existing entry with email address <code><strong>$nofind</strong></code>.\n";
+    } else {
+	$nofind = '';
+    }
+
+    print "<p>${nofind}Please select an entry to update from the list below.</p>\n";
     print "<p>\n", &jump_bar(), "</p>\n\n";
     print "<pre>";
     print "Name and Graduation Year                  Email\n";
@@ -429,7 +454,7 @@ sub panic {
 
     select(STDOUT);  $| = 1;
     print "Content-type: text/plain\n\n";
-    print $_[0], "\n";
+    print $_[0], "\r\n";
 
     exit;
 }

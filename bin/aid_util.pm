@@ -2,11 +2,11 @@
 #     FILE: aid_util.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: perl library routines for the Alumni Internet Directory
-#      $Id: aid_util.pl,v 3.44 1998/09/04 21:50:38 mradwin Exp mradwin $
+#      $Id: aid_util.pl,v 3.45 1998/09/11 00:39:30 mradwin Exp mradwin $
 #
 
 $aid_util'rcsid =
- '$Id: aid_util.pl,v 3.44 1998/09/04 21:50:38 mradwin Exp mradwin $';
+ '$Id: aid_util.pl,v 3.45 1998/09/11 00:39:30 mradwin Exp mradwin $';
 
 # ----------------------------------------------------------------------
 # CONFIGURATION
@@ -546,13 +546,7 @@ are required.  All other fields are optional.</p>\n\n";
 
     } else {
 	$body = "
-<p>If you'd like to update your existing entry, please see the 
-<a href=\"" . $config{'cgi_path'} . "/upl?update\">update page</a>.  
-To update the entry for an alumnus with an invalid address, please see
-the <a href=\"" . $config{'master_path'} . "invalid.html\">invalid
-addresses page</a>.</p>
-
-<p>To add a new alumnus, please enter the following information and hit
+<p>Please enter the following information and hit
 the <strong>Next&nbsp;&gt;</strong> button. Fields marked with a $star
 are required.  All other fields are optional.</p>\n\n";
     }
