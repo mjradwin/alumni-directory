@@ -2,7 +2,7 @@
 #     FILE: mv_util.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: perl library routines for the MVHS Alumni Internet Directory
-#      $Id: mv_util.pl,v 1.22 1997/04/24 13:26:43 mjr Exp mjr $
+#      $Id: mv_util.pl,v 1.23 1997/07/02 17:12:21 mjr Exp mjr $
 #
 
 CONFIG: {
@@ -43,8 +43,6 @@ CONFIG: {
 		 'Acceptable&nbsp;Use,#disclaimer');
 
     $pics_label = "<meta http-equiv=\"PICS-Label\" content='(PICS-1.1 \"http://www.rsac.org/ratingsv01.html\" l gen true comment \"RSACi North America Server\" by \"" . $config{'admin_email'} . "\" for \"" . $config{'master_url'} . "\" on \"1996.04.04T08:15-0500\" r (n 0 s 0 v 0 l 0))'>";
-
-    $pics_label = "<meta http-equiv=\"PICS-Label\" content='(PICS-1.0 \"http://www.rsac.org/ratingsv01.html\" l gen true comment \"RSACi North America Server\" by \"" . $config{'admin_email'} . "\" for \"" . $config{'master_url'} . "\" on \"1996.04.04T08:15-0500\" exp \"1997.07.01T08:15-0500\" r (n 0 s 0 v 0 l 0))'>";
 
     $site_tags = "<meta name=\"keywords\" content=\"Mountain View High School, Alumni, MVHS, Awalt High School, Mountain View, Los Altos, California, reunion, Radwin\">\n<meta name=\"description\" content=\"Mountain View High School Internet Directory: email address and web page listing of alumni, students, faculty and staff.  Also Awalt High School\">";
 
