@@ -4,8 +4,8 @@
 # pine-style address book
 #
 
-push(@INC, '/home/mjr/lib');
-#push(@INC, '/home/divcom/mjr/lib');  # divcom
+#push(@INC, '/home/mjr/lib');
+push(@INC, '/home/divcom/mjr/lib');  # divcom
 require 'mv_util.pl';
 require 'getopts.pl';
 
@@ -49,7 +49,8 @@ Do Not Edit! -->
 
 while(<MVHS>) {
     chop;
-    ($time,$id,$req,$last,$first,$school,$year,$email,$alias,$homepage) = &mv_parse($_);
+    ($time,$id,$req,$last,$first,$married,
+     $school,$year,$email,$alias,$homepage) = &mv_parse($_);
     
     if ($aliases{$alias} > 0) {
 	$aliases{$alias} = $aliases{$alias} + 1;

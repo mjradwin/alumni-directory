@@ -3,8 +3,8 @@
 # does the html version of the grad-date address list
 #
 
-push(@INC, '/home/mjr/lib');
-#push(@INC, '/home/divcom/mjr/lib');  # divcom
+#push(@INC, '/home/mjr/lib');
+push(@INC, '/home/divcom/mjr/lib');  # divcom
 require 'mv_util.pl';
 require 'tableheader.pl';
 
@@ -24,7 +24,8 @@ $first_fac_staff = 0;
 while(<MVHSPRE>) {
     chop;
 
-    ($time,$id,$req,$last,$first,$school,$year,$email,$alias,$homepage) = &mv_parse($_);
+    ($time,$id,$req,$last,$first,$married,
+     $school,$year,$email,$alias,$homepage) = &mv_parse($_);
 
     if ($lastYear ne $year) {
 	$lastYear = $year;
@@ -47,7 +48,7 @@ $lastYear = '00';
 $first_fac_staff = 0;
 while(<MVHS>) {
     chop;
-    ($time,$id,$req,$last,$first,
+    ($time,$id,$req,$last,$first,$married,
      $school,$year,$email,$alias,$homepage) = &mv_parse($_);
 
     if ($lastYear ne $year) {
@@ -66,7 +67,7 @@ while(<MVHS>) {
 	}
     }
 
-    $fullname = &fullname($first, $last);
+    $fullname = &fullname($first,$last,$married);
 
     if ($school ne 'MVHS' && $school ne '') {
 	$affil     = "  [$school]";

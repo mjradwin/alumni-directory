@@ -2,29 +2,42 @@
 #     FILE: mv_util.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: perl library routines for the MVHS Alumni Internet Directory
-#      $Id: mv_util.pl,v 1.11 1997/01/20 18:19:24 mjr Exp mjr $
+#      $Id: mv_util.pl,v 1.15 1997/03/23 19:27:29 mjr Exp mjr $
 #
 
 CONFIG: {
     package mv_util;
 
     # BrownCS configuration
-    %config = ('admin_email', "mjr\@cs.brown.edu",
-	       'admin_url',   "http://www.cs.brown.edu/people/mjr/",
-	       'master_url',  "http://www.cs.brown.edu/people/mjr/mvhs/",
-	       'cgi_url',     "http://www.cs.brown.edu/cgi-bin/mjr-mvhs.cgi",
-	       'wwwdir',      "/pro/web/web/people/mjr/mvhs/",
-	       'mvhsdir',     "/home/mjr/doc/mvhs/",
-	       'cgi_path',     "/cgi-bin/mjr-mvhs.cgi");
+#    %config = ('admin_email',  "mjr\@acm.org",
+#	       'admin_name',   "Michael John Radwin",
+#	       'admin_school', "Mountain View High School, Class of '93",
+#	       'admin_phone',  "401-863-6418",
+#	       'admin_usmail', "Brown University, Box 4505, Providence, RI, 02912-4505",
+#	       'admin_url',    "http://www.cs.brown.edu/people/mjr/",
+#	       'master_url',   "http://www.cs.brown.edu/people/mjr/mvhs/",
+#	       'cgi_url',      "http://www.cs.brown.edu/cgi-bin/mjr-mvhs.cgi",
+#	       'wwwdir',       "/pro/web/web/people/mjr/mvhs/",
+#	       'mvhsdir',      "/home/mjr/doc/mvhs/",
+#	       'sendmail',     "/usr/lib/sendmail",
+#	       'mailprog',     "/usr/ucb/mail",
+#	       'cgi_path',     "/cgi-bin/mjr-mvhs.cgi");
 
     # divcom configuration
-#     %config = ('admin_email', "mjr\@acm.org",
+     %config = ('admin_email', "mjr\@acm.org",
+	       'admin_school', "Mountain View High School, Class of '93",
+	       'admin_phone',  "401-863-6418",
+	       'admin_usmail', "Brown University, Box 4505, Providence, RI, 02912-4505",
+	       'admin_name',  "Michael John Radwin",
+	       'admin_url',   "http://www.cs.brown.edu/people/mjr/",
 # 	       'admin_url',   "http://umop-ap.com/~mjr/",
-# 	       'master_url',  "http://umop-ap.com/~mjr/mvhs/",
-# 	       'cgi_url',     "http://umop-ap.com/cgi-bin/cgiwrap/mjr/mvhsaid",
-# 	       'wwwdir',      "/home/divcom/mjr/public_html/mvhs/",
-# 	       'mvhsdir',     "/home/divcom/mjr/mvhs/",
-#	       'cgi_path',    "/cgi-bin/cgiwrap/mjr/mvhsaid");
+ 	       'master_url',  "http://umop-ap.com/~mjr/mvhs/",
+ 	       'cgi_url',     "http://umop-ap.com/cgi-bin/cgiwrap/mjr/mvhsaid",
+ 	       'wwwdir',      "/home/divcom/mjr/public_html/mvhs/",
+ 	       'mvhsdir',     "/home/divcom/mjr/mvhs/",
+	       'sendmail',     "/usr/lib/sendmail",
+	       'mailprog',     "/usr/ucb/mail",
+	       'cgi_path',    "/cgi-bin/cgiwrap/mjr/mvhsaid");
 
     @page_idx = ('Home,./',
 		 'Alphabetically,all.html',
@@ -39,8 +52,10 @@ CONFIG: {
     $site_tags = "<meta name=\"keywords\" content=\"Mountain View High School, Alumni, MVHS, Awalt High School, Mountain View, Los Altos, California, reunion, Radwin\">\n<meta name=\"description\" content=\"Mountain View High School Internet Directory: email address and web page listing of alumni, students, faculty and staff.  Also Awalt High School\">";
 
     $html_head = "<html>\n<head>\n" .
-	"<title>Mountain View High School Alumni Internet Directory</title>\n" .
-	$site_tags . "\n" . $pics_label . "\n</head>\n\n";
+	"<title>Mountain View High School Alumni Internet Directory" .
+	"</title>\n" . $site_tags . "\n" . $pics_label . "\n</head>\n\n";
+
+    %mv_aliases = ();   # global alias hash repository
 
     1;
 }
@@ -66,6 +81,67 @@ sub cannonize_email {
     return $usr . '@' . "\L$dom\E";
 }
 
+sub fullname {
+    package mv_util;
+
+    local($first,$last,$married) = @_;
+
+    if ($first eq '') {
+	return $last;
+    } else {
+	if ($married ne '') {
+	    return "$last (now $married), $first";
+	} else {
+	    return "$last, $first";
+	}
+    }
+}
+
+
+sub inorder_fullname {
+    package mv_util;
+
+    local($first,$last,$married) = @_;
+
+    if ($first eq '') {
+	return $last;
+    } else {
+	if ($married ne '') {
+	    return "$first $last (now $married)";
+	} else {
+	    return "$first $last";
+	}
+    }
+}
+
+
+sub old_fullname {
+    package mv_util;
+    local($first, $last) = @_;
+
+    if ($first) {
+	return "$last, $first";
+    } else {
+	return $last;
+    }
+}
+
+sub affiliate {
+    package mv_util;
+    local($year, $school) = @_;
+    local($affil);
+
+    if ($year =~ /^\d+$/) {
+	$affil  = "  '$year";
+	$affil .= " $school"
+	    if $school ne 'MVHS' && $school ne '';
+    } else {
+	$affil  = "  [$school $year]";
+    }
+
+    return $affil;
+}
+
 
 sub mangle {
     package mv_util;
@@ -83,6 +159,29 @@ sub mangle {
 
 
 sub mv_parse {
+    local($[) = 0;
+    local($_) = @_;
+    local($time,$id,$req,$last,$first,$married,$school,$year,$email,$homepage)
+	= split(/;/);
+    local($mangledLast,$mangledFirst,$alias);
+
+    $mangledLast = &'mangle($last);   #' font-lock
+    $mangledFirst = &'mangle($first); #' font-lock
+
+    $alias = substr($mangledFirst, 0, 1) . substr($mangledLast, 0, 7);
+    $alias = "\L$alias\E";
+
+    if ($mv_aliases{$alias} > 0) {
+        $mv_aliases{$alias}++;
+        $alias = substr($alias, 0, 7) . $mv_aliases{$alias};
+    } else {
+        $mv_aliases{$alias} = 1;
+    }
+
+    return ($time,$id,$req,$last,$first,$married,$school,$year,$email,$alias,$homepage);
+}
+
+sub colon_mv_parse {
     package mv_util;
 
     local($[) = 0;
@@ -96,6 +195,13 @@ sub mv_parse {
 
     $alias = substr($mangledFirst, 0, 1) . substr($mangledLast, 0, 7);
     $alias = "\L$alias\E";
+
+    if ($mv_aliases{$alias} > 0) {
+        $mv_aliases{$alias}++;
+        $alias = substr($alias, 0, 7) . $mv_aliases{$alias};
+    } else {
+        $mv_aliases{$alias} = 1;
+    }
 
     return ($time,$id,$req,$last,$first,$school,$year,$email,$alias,$homepage);
 }
@@ -118,25 +224,9 @@ sub mv_old_parse {
     return ($last, $first, $school, $year, $email, $alias, $homepage);
 }
 
-sub bydatakeys { $datakeys[$a] cmp $datakeys[$b] }
-sub mv_alpha_db {
-    package mv_util;
-
-    local(@db) = &'mv_create_db($_[0]);
-    local(@alpha, @fields);
-    @datakeys = ();
-
-    foreach (@db) {
-	@fields = &'mv_parse($_);
-	push(@datakeys, "$fields[3]:$fields[4]");
-    }
-    @alpha = @db[sort bydatakeys $[..$#db];
-    return @alpha;
-}
-
 
 # index on uid
-sub mv_create_db {
+sub old_mv_create_db {
     package mv_util;
 
     local($filename) = @_;
@@ -155,20 +245,160 @@ sub mv_create_db {
     return @db;
 }
 
+sub mv_create_db {
+    package mv_util;
+
+    local($filename) = @_;
+    local($[) = 0;
+    local($_);
+    local(@db, @result, *INFILE);
+
+    open(INFILE,$filename) || die "Can't open $filename: $!\n";
+    while(<INFILE>) {
+	chop;
+	$db[(split(/;/))[1]] = $_;
+    }
+    close(INFILE);
+    
+    return @db;
+}
+
 sub submit_body {
     package mv_util;
     require 'tableheader.pl';
 
     local($[) = 0;
     local($_);
+    local($tableh);
+    local($rawdata,$interactivep,$blank) = @_;
+    local($mvhs_checked,$awalt_checked,$other_checked) = ('', '', '');
+    local($time,$id,$req,$last,$first,$married,$school,$year,$email,$homepage)
+	= split(/;/, $rawdata);
+
+    $homepage = 'http://' if $homepage eq '';
+    $req = ($req) ? ' checked' : '';
+
+    if ($school eq 'MVHS' || $school eq '') {
+	$mvhs_checked = ' checked';
+	$school = '';
+    } elsif ($school eq 'Awalt') {
+	$awalt_checked = ' checked';
+	$school = '';
+    } else {
+	$other_checked = ' checked';
+	$school = '' if $school eq 'Other';
+    }
+
+    if ($id != -1) {
+	$tableh = 
+	    &tableheader("Update Your Directory Listing", 1, "ffff99", 1);
+	$tableh .= "\n<p>Please update the following information";
+	$tableh .= " and hit the submit button.\nYour submission will be";
+	$tableh .= " processed in a day or so.</p>\n\n";
+	$tableh .= "<p>Fields marked with a <font color=\"#ff0000\">*</font>";
+	$tableh .= " are required.  All other fields are optional.";
+
+    } else {
+	$tableh =
+	    &tableheader("Add a Listing to the Directory", 1, "ffff99", 1);
+
+	$tableh .= "\n<p>Thanks for adding a name to the MVHS Alumni Internet
+Directory!  To update your entry, please see the <a
+href=\"" . $config{'cgi_path'} . "?update\">update page</a>.  To add a new
+entry, please enter the following information and hit the submit button.
+Your submission will be processed in a day or so.</p>
+
+<p>Fields marked with a <font color=\"#ff0000\">*</font> are required.
+All other fields are optional.";
+    }
+
+    if ($interactivep && $blank) {
+	$tableh .= "\n<font color=\"#ff0000\"><strong>You left one or more";
+	$tableh .= " required fields blank.  Please fill them in below";
+	$tableh .= " and resubmit.</strong></font>";
+    }
+	
+    $tableh .= "</p>\n\n";
+
+    
+    return "<br\n" . $tableh . "
+<form method=post action=\"" . $config{'cgi_path'} . "\"> 
+<table border=0 cellspacing=10>
+<tr>
+  <td valign=top rowspan=3><strong>Your Name</strong></td>
+  <td valign=top>First Name</td>
+  <td valign=top><input type=text name=\"first\" size=35 
+  value=\"$first\"><font color=\"#ff0000\">*</font></td>
+</tr>
+<tr>
+  <td valign=top>Last/Maiden Name</td>
+  <td valign=top><input type=text name=\"last\" size=35
+  value=\"$last\"><font color=\"#ff0000\">*</font></td>
+</tr>
+<tr>
+  <td valign=top>Married Name<br><em>(if different from Maiden
+  Name)</em></td>
+  <td valign=top><input type=text name=\"married\" size=35
+      value=\"$married\"></td>
+</tr>
+<tr>
+  <td valign=top rowspan=2><strong>High School</strong></td>
+  <td valign=top><input type=radio name=\"school\"
+  value=\"MVHS\"$mvhs_checked>MVHS&nbsp;&nbsp;<input type=radio
+  name=\"school\" value=\"Awalt\"$awalt_checked>Awalt&nbsp;&nbsp;<input 
+  type=radio name=\"school\" value=\"Other\"$other_checked>Other:</td>
+  <td valign=top><input type=text name=\"sch_other\" size=35
+      value=\"$school\"><font color=\"#ff0000\">*</font></td>
+</tr>
+<tr>
+  <td valign=top>Graduation year or affiliation<br><em>(such as 93,
+      87, or Teacher)</em></td>
+  <td valign=top><input type=text name=\"grad\" size=35
+      value=\"$year\"><font color=\"#ff0000\">*</font></td>
+</tr>
+<tr>
+  <td valign=top rowspan=2><strong>Internet</strong></td>
+  <td valign=top>E-mail address</td>
+  <td valign=top><input type=text name=\"mail\" size=35
+  value=\"$email\"><font color=\"#ff0000\">*</font></td>
+</tr>
+  <td valign=top>Web Page</td>
+  <td valign=top><input type=text name=\"homepage\" size=35
+      value=\"$homepage\"></td>
+</tr>
+<tr>
+  <td colspan=3><input type=checkbox name=\"request\"$req> Please send
+  me updated alumni addresses through email (about 3-4 times a year).</td>
+</tr>
+<input type=\"hidden\" name=\"id\" value=\"$id\">
+</table>
+
+<P>
+<input type=\"submit\" value=\"Submit entry\">
+<input type=\"reset\" value=\"Reset form\">
+</form>
+
+";
+
+}
+
+
+sub old_submit_body {
+    package mv_util;
+    require 'tableheader.pl';
+
+    local($[) = 0;
+    local($_);
+    local($tableh);
+    local($mvhs_checked,$awalt_checked,$other_checked) = ('', '', '');
     local($time,$id,$req,$last,$first,$school,$year,$email,$alias,$homepage) 
 	= &'mv_parse($_[0]); #' font-lock
 
     $homepage = 'http://' if $homepage eq '';
     $req = ($req) ? ' checked' : '';
 
-    return "<br>\n" . 
-	&tableheader("Add a Listing to the Directory", 1, 'ffff99', 1) . 
+    return "<br>\n" .
+	&tableheader("Add a Listing to the Directory", 1, 'ffff99', 1) .
 "<p>Thanks for adding a name to the MVHS Alumni Internet
 Directory!  To update your entry, please see the <a
 href=\"" . $config{'cgi_path'} . "?update\">update page</a>.  To add a new
@@ -222,6 +452,41 @@ Your submission will be processed in a day or so.</p>
 ";
 }
 
+sub sendmail {
+    package mv_util;
+
+    local($to,$return_path,$from,$subject,$body) = @_;
+    local(*F);
+    local($toline) = join(', ', split(/[ \t]+/, $to));
+    local($header) =
+"From: $return_path ($from)\
+Return-Path: $return_path\
+Subject: $subject\
+To: $toline\
+";
+
+    if (open(F, "| $config{'sendmail'} $to")) {
+	print F $header;
+	print F $body;
+	close(F);
+
+    } else {
+	warn "cannot send mail\n";
+    }
+}
+
+sub message_footer {
+    package mv_util;
+
+    return "\n--\n" . 
+	$config{'admin_name'} . "\n" .
+	$config{'admin_school'} . "\n\n" .
+	"Email     : " . $config{'admin_email'} . "\n" .
+	"WWW       : " . $config{'admin_url'} . "\n" .
+	"U.S. Mail : " . $config{'admin_usmail'} . "\n" .
+	"Phone     : " . $config{'admin_phone'};
+}
+
 sub common_html_ftr {
     package mv_util;
 
@@ -231,7 +496,7 @@ sub common_html_ftr {
     $ftr = "
 <hr noshade size=1>
 <p align=center>[ <font size=\"-1\" 
-  face=\"Arial, Helvetica, MS Sans Serif\">";
+  face=\"MS Sans Serif, Arial, Helvetica\">";
 
     foreach $idx (0 .. $#page_idx) {
 	($name, $url) = split(/,/, $page_idx[$idx]);
@@ -253,7 +518,7 @@ publication is forbidden.</blockquote>
 <hr noshade size=1>
 
 <p><a href=\"" . $config{'admin_url'} .
-"\"><em>Michael J. Radwin</em></a><em>,</em> <a 
+"\"><em>" . $config{'admin_name'} . "</em></a><em>,</em> <a 
 href=\"mailto:" . $config{'admin_email'} . 
 "\"><tt>" . $config{'admin_email'} . "</tt></a></p>
 </body>
@@ -264,22 +529,21 @@ href=\"mailto:" . $config{'admin_email'} .
 
 sub common_html_hdr {
     package mv_util;
+    require 'ctime.pl';
 
     local($page, $page_name) = @_;
     local($h1, $h2, $h3, $h4);
     local($name, $url);
-    local($today);
 
 #    ($page_name) = split(/,/, $page_idx[$page]) unless $page_name;
 #    $page_name =~ s/&nbsp;/ /g;
-    $today = localtime;
 
-    $h1 = "<body bgcolor=\"#ffffff\" LINK=\"#000099\" TEXT=\"#000000\" VLINK=\"#990099\">
+    $h1 = "<body bgcolor=\"#ffffff\" LINK=\"#0000cc\" TEXT=\"#000000\" VLINK=\"#990099\">
 <hr noshade size=1>
 <table border=0 cellpadding=8 cellspacing=0 width=\"100%\">
 <tr>
   <td bgcolor=\"#ffffcc\" align=left rowspan=2><font size=\"-1\"
-  face=\"Arial, Helvetica, MS Sans Serif\">";
+  face=\"MS Sans Serif, Arial, Helvetica\">";
 
     $h2 = "";
     foreach $idx (0 .. $#page_idx) {
@@ -301,7 +565,7 @@ sub common_html_hdr {
 </tr>
 <tr>
   <td align=right valign=bottom bgcolor=\"#ffffcc\"><font size=\"-1\"
-  color=\"#000000\"><i>This page generated: $today</i></font>
+  color=\"#000000\"><i>This page generated: " . &ctime(time) . "</i></font>
   </td>
 </tr>
 </table>

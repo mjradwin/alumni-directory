@@ -3,8 +3,8 @@
 # does the html version of the recent address list
 #
 
-push(@INC, '/home/mjr/lib');
-#push(@INC, '/home/divcom/mjr/lib');  # divcom
+#push(@INC, '/home/mjr/lib');
+push(@INC, '/home/divcom/mjr/lib');  # divcom
 require 'mv_util.pl';
 require 'tableheader.pl';
 
@@ -23,12 +23,12 @@ print FMTOUT "------------------------------------------------------------------
 
 while(<MVHS>) {
     chop;
-    ($time,$id,$req,$last,$first,
+    ($time,$id,$req,$last,$first,$married,
      $school,$year,$email,$alias,$homepage) = &mv_parse($_);
     next unless &is_new($time);
 
-    $fullname = &fullname($first, $last);
-    $affil = &affiliate($year, $school);
+    $fullname = &fullname($first,$last,$married);
+    $affil = &affiliate($year,$school);
 
     print FMTOUT "<a name=\"$alias\"";
     print FMTOUT " href=\"$homepage\"" if $homepage ne '';

@@ -3,8 +3,8 @@
 # does the html version of the alphabetical address list
 #
 
-push(@INC, '/home/mjr/lib');
-#push(@INC, '/home/divcom/mjr/lib');  # divcom
+#push(@INC, '/home/mjr/lib');
+push(@INC, '/home/divcom/mjr/lib');  # divcom
 require 'mv_util.pl';
 require 'tableheader.pl';
 require 'getopts.pl';
@@ -47,7 +47,7 @@ print FMTOUT "------------------------------------------------------------------
 $lastInitial = "Z";
 while(<MVHS>) {
     chop;
-    ($time,$id,$req,$last,$first,
+    ($time,$id,$req,$last,$first,$married,
      $school,$year,$email,$alias,$homepage) = &mv_parse($_);
 
     if ($lastInitial ne substr($last, 0, 1)) {
@@ -59,8 +59,8 @@ while(<MVHS>) {
 	print FMTOUT "\n";
     }
 
-    $fullname = &fullname($first, $last);
-    $affil = &affiliate($year, $school);
+    $fullname = &fullname($first,$last,$married);
+    $affil = &affiliate($year,$school);
 
     print FMTOUT '  ';
     $opt_t || print FMTOUT "<a name=\"$alias\"";

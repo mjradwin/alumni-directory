@@ -3,8 +3,8 @@
 # does the html version of just home pages
 #
 
-push(@INC, '/home/mjr/lib');
-#push(@INC, '/home/divcom/mjr/lib');  # divcom
+#push(@INC, '/home/mjr/lib');
+push(@INC, '/home/divcom/mjr/lib');  # divcom
 require 'getopts.pl';
 require 'mv_util.pl';
 require 'tableheader.pl';
@@ -30,12 +30,12 @@ print FMTOUT "------------------------------------------------------------------
 
 while(<MVHS>) {
     chop;
-    ($time,$id,$req,$last,$first,
+    ($time,$id,$req,$last,$first,$married,
      $school,$year,$email,$alias,$homepage) = &mv_parse($_);
     next if $homepage eq '';
 
-    $fullname = &fullname($first, $last);
-    $affil = &affiliate($year, $school);
+    $fullname = &fullname($first,$last,$married);
+    $affil = &affiliate($year,$school);
 
     print FMTOUT "<a name=\"$alias\"";
     print FMTOUT ' ' x (8 - (length($alias)));

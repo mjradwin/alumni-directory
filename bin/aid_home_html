@@ -3,8 +3,8 @@
 # does the html version of just home pages
 #
 
-push(@INC, '/home/mjr/lib');
-#push(@INC, '/home/divcom/mjr/lib');  # divcom
+#push(@INC, '/home/mjr/lib');
+push(@INC, '/home/divcom/mjr/lib');  # divcom
 require 'mv_util.pl';
 require 'getopts.pl';
 
@@ -22,7 +22,7 @@ $pageno = 0;
 $pageno = 5 if $opt_s;
 
 $home = &mv_config('wwwdir') . ".home.include";
-$fmtout = ($opt_i) ? &mv_config('wwwdir') . "home.html"
+$fmtout = ($opt_i) ? &mv_config('wwwdir') . "index.html"
     : &mv_config('wwwdir') . "add.html";
 
 open(FMTOUT,">$fmtout") || die "Can't open $fmtout: $!\n";
@@ -34,7 +34,7 @@ if ($opt_i) {
     print FMTOUT @lines;
     close(HOME);
 } else {
-    print FMTOUT &old_submit_body(":-1:1:::MVHS:::");
+    print FMTOUT &submit_body(";-1;1;;;;MVHS;;;",0,0);
 }
 
 print FMTOUT &common_html_ftr($pageno);
