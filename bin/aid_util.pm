@@ -2,11 +2,11 @@
 #     FILE: aid_util.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: perl library routines for the Alumni Internet Directory
-#      $Id: aid_util.pl,v 3.43 1998/09/04 21:45:35 mradwin Exp mradwin $
+#      $Id: aid_util.pl,v 3.44 1998/09/04 21:50:38 mradwin Exp mradwin $
 #
 
 $aid_util'rcsid =
- '$Id: aid_util.pl,v 3.43 1998/09/04 21:45:35 mradwin Exp mradwin $';
+ '$Id: aid_util.pl,v 3.44 1998/09/04 21:50:38 mradwin Exp mradwin $';
 
 # ----------------------------------------------------------------------
 # CONFIGURATION
@@ -89,7 +89,7 @@ $aid_util'noindex = "<meta name=\"robots\"  content=\"noindex\">"; #'#
 %aid_util'aid_aliases = ();   #'# global alias hash repository 
 
 $aid_util'disclaimer = #'#
-"<a name=\"disclaimer\">Acceptable use:</a> this directory
+"<a name=\"disclaimer\">Acceptable use:</a> the Alumni Internet Directory
 is provided solely for the information of alumni of Mountain View High
 School and Awalt High School.  Any unauthorized solicitation of business,
 information, contributions or other response from individuals listed in
@@ -974,12 +974,12 @@ sub common_html_ftr {
     $copyright =~ s/^[^,]+,//;
 
     $ftr  = "\n<!-- begin common_html_ftr -->\n";
-    $ftr .= "<table cellspacing=0 cellpadding=6 border=1 width=\"100%\">\n" .
-	"  <tr>\n    <td bgcolor=\"#$cell_bg\" valign=middle>\n";
-#   $ftr .= "<hr noshade size=1>\n";
-    $ftr .= &main'common_link_table($page); #'#
-    $ftr .= "\n" . $disclaimer . "\n\n";
-    $ftr .= "    </td>\n  </tr>\n</table>\n";
+#    $ftr .= "<table cellspacing=0 cellpadding=6 border=1 width=\"100%\">\n" .
+#	"  <tr>\n    <td bgcolor=\"#$cell_bg\" valign=middle>\n";
+    $ftr .= "<hr noshade size=\"1\">\n";
+#    $ftr .= &main'common_link_table($page); #'#
+    $ftr .= "\n<font size=\"-1\">" . $disclaimer . "</font><br>\n\n";
+#    $ftr .= "    </td>\n  </tr>\n</table>\n";
 
     $ftr .= "\n<br><font size=\"-1\"><a href=\"" . $copyright . "\">" .
 	"Copyright\n&copy; 1998 " . $config{'admin_name'} . "</a></font>\n\n" .
