@@ -1,6 +1,6 @@
 #!/usr/local/bin/perl5 -w
 
-# $Id: aid_dbm_read,v 5.12 1999/12/22 23:36:47 mradwin Exp mradwin $
+# $Id: aid_dbm_read,v 5.13 2000/02/29 21:55:00 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -30,7 +30,7 @@ require 'getopts.pl';
 require 'ctime.pl';
 
 $0 =~ s,.*/,,;  # basename
-$usage = "usage: $0 [-hofacgi] [-u file | -d year] infile.db [key]
+$usage = "usage: $0 [-hofacgi] [-u file | -I file | -d year] infile.db [key]
     -h        Display usage information.
     -i        Just print userids (no extra info).
     -g        Display goners candidates (bounces >= 6 months ago).
@@ -39,16 +39,17 @@ $usage = "usage: $0 [-hofacgi] [-u file | -d year] infile.db [key]
     -a        Display all valid, sorted by alpha.
     -c        Display all valid, sorted by class.
     -u file   Write url file to <file>.
+    -I file   Write .ini file to <file>.
     -d year   Display alumni from <year> that don't want reunion email.
 ";
 
-&Getopts('hofacu:d:gi') || die "$usage\n";
+&Getopts('hofacu:d:giI:') || die "$usage\n";
 $opt_h && die "$usage\n";
 $ARGV[0] || die "$usage\n";
 
 die "$0: Too many mutually-exclusive options\n$usage\n"
     if (($opt_c ? 1 : 0) + ($opt_a ? 1 : 0) + ($opt_u ? 1 : 0) +
-	($opt_d ? 1 : 0) + ($opt_g ? 1 : 0) +
+	($opt_d ? 1 : 0) + ($opt_g ? 1 : 0) + ($opt_I ? 1 : 0) +
 	($opt_f ? 1 : 0) + ($opt_o ? 1 : 0)) > 1;
 
 $dbmfile = shift;
@@ -74,6 +75,31 @@ if ($opt_u)
 	    &aid_config('confirm_cgi'), '?confirmed=1&', 
  	    &aid_ampersand_join(*rec),
 	    '&pe=', &aid_url_escape($rec{'eo'}), "\n";
+    } 
+    close(DATA);
+}
+elsif ($opt_I)
+{
+    open(DATA,">$opt_I") || die "can't open $opt_I: $!\n";
+
+    # sort the numeric keys by id
+    @ids = ();
+    while (($key,$val) = each %DB)
+    {
+	push(@ids,$key) if $key =~ /^\d+$/;
+    }
+
+    foreach (sort { $a <=> $b } @ids)
+    {
+	%rec = &aid_db_unpack_rec($_,$DB{$_});
+	print DATA "[$rec{'id'}]\n";
+
+	foreach (@aid_edit_field_names)
+	{
+	    print DATA $_, '=', $rec{$_}, "\n";
+	}
+
+	print DATA 'n=', &aid_url_escape($rec{'n'}), "\n\n";
     } 
     close(DATA);
 }
@@ -281,4 +307,5 @@ if ($^W && 0)
 {
     $a = $b;
     $opt_h = $opt_h;		# avoid warning
+    $aid_edit_field_names[0] = '';
 }
