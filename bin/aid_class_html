@@ -2,7 +2,7 @@
 
 #
 # does the html version of the grad-date address list
-# $Id: aid_class_html,v 3.15 1998/08/08 01:36:58 mradwin Exp mradwin $
+# $Id: aid_class_html,v 3.16 1998/10/09 20:51:02 mradwin Exp mradwin $
 #
 
 require 'aid_util.pl';
@@ -14,7 +14,7 @@ $usage = 'usage: aid_class_html [-hta] infile.adr outfile
     -a        Awalt mode.
 ';
 
-&Getopts('hta') || die "$usage\n";
+&Getopts('htaw') || die "$usage\n";
 $opt_h && die "$usage\n";
 $ARGV[0] || die "$usage\n";
 $ARGV[1] || die "$usage\n";
@@ -23,73 +23,57 @@ $opt_h = $opt_h;		# avoid warning
 $info_gif = &aid_image_tag('info');
 $blank_gif = ($opt_t) ? "" : &aid_image_tag('blank');
 
-open(DATAPRE,$ARGV[0]) || die "Can't open $ARGV[0]: $!\n";
+open(DATA,$ARGV[0]) || die "Can't open $ARGV[0]: $!\n";
 open(FMTOUT,">$ARGV[1]") || die "Can't open $ARGV[1]: $!\n";
+
+@years = ();
+@db = ();
+
+while(<DATA>) {
+    chop;
+    %rec = &aid_split($_);
+    next unless $rec{'valid'};
+
+    push(@db,$_);
+    &aid_build_yearlist(*years, $rec{'year'});
+}
 
 if (!$opt_t) {
     $title  = $opt_a ? 'Awalt ' : '';
     $title .= "Alumni Listed by Graduating Class";
     print FMTOUT &common_html_hdr(($opt_a ? 3 : -1),$title,1);
     print FMTOUT &common_intro_para(1);
-    print FMTOUT "<p>";
-
-    $prevYear = '1900';
-    $a_name = "name=\"top\" ";
-    while(<DATAPRE>) {
-	chop;
-	%rec = &aid_parse($_);
-	next unless $rec{'valid'};
-
-	if ($prevYear ne $rec{'year'}) {
-	    $prevYear = $rec{'year'};
-	    if (substr($rec{'year'}, 0, 1) =~ /[A-Za-z]/) {
-		print FMTOUT "<a href=\"#fac_staff\">Faculty/Staff</a>\n";
-		last;
-	    } else {
-		$hashYear = 'grad' . $rec{'year'};
-		print FMTOUT "<a ${a_name}href=\"#$hashYear\">" . 
-		    $rec{'year'} % 100 . "</a> |\n";
-		$a_name = '';
-	    }
-	}
-    }
-    close(DATAPRE);
-    print FMTOUT "</p>\n\n<pre>";
+    print FMTOUT &aid_class_jump_bar('#grad','',*years,0);
+    print FMTOUT "<pre>";
 }
 
 print FMTOUT "Name$blank_gif                                     Email\n";
 print FMTOUT "---------------------------------------------------------------------------";
 
-open(DATA,$ARGV[0]) || die "Can't open $ARGV[0]: $!\n";
-$prevYear = '1900';
-$first_fac_staff = 0;
-while(<DATA>) {
-    chop;
+$prev = '1900';
+while (defined($_ = shift(@db))) {
     %rec = &aid_parse($_);
-    next unless $rec{'valid'};
 
-    if ($prevYear ne $rec{'year'}) {
-	$prevYear = $rec{'year'};
-	if (substr($rec{'year'}, 0, 1) =~ /[A-Za-z]/) {
-            print FMTOUT "\n";
-	    $opt_t || print FMTOUT "<a name=\"fac_staff\">" 
-		unless $first_fac_staff;
-            print FMTOUT $rec{'year'};
-            $opt_t || print FMTOUT "</a>" unless $first_fac_staff;
-            print FMTOUT ' ' x (13 - length($rec{'year'}));
-            $opt_t || print FMTOUT "  (<a href=\"#top\">top</a>)";
-	    print FMTOUT "\n";
-            $first_fac_staff = 1;
-	} else {
-	    $hashYear = 'grad' . $rec{'year'};
-	    print FMTOUT "\n";
-	    $opt_t || print FMTOUT "<a name=\"$hashYear\" " .
-		"href=\"" . &aid_config('master_path') .
+    if ($prev ne $rec{'year'}) {
+	print FMTOUT "\n";
+	if ($rec{'year'} =~ /^\d+$/) {
+            $opt_t || print FMTOUT "<a name=\"grad$rec{'year'}\" " .
+                "href=\"" . &aid_config('master_path') .
 		"class/$rec{'year'}.html\">";
 	    print FMTOUT "Class of $rec{'year'}";
 	    $opt_t || print FMTOUT "</a>  (<a href=\"#top\">top</a>)";
 	    print FMTOUT "\n";
+
+	} else {
+	    $opt_t || print FMTOUT "<a name=\"gradother\">" if $prev =~ /^\d+$/;
+	    print FMTOUT $rec{'year'};
+	    $opt_t || print FMTOUT "</a>" if $prev =~ /^\d+$/;
+	    print FMTOUT ' ' x (13 - length($rec{'year'}));
+	    $opt_t || print FMTOUT "  (<a href=\"#top\">top</a>)";
+	    print FMTOUT "\n";
 	}
+
+	$prev = $rec{'year'};
     }
 
     $fullname = &fullname(*rec);
@@ -104,7 +88,7 @@ while(<DATA>) {
     print FMTOUT ' ';
     $opt_t || print FMTOUT "<a href=\"" . &aid_about_path(*rec) . "\">$info_gif</a>"; #'#
     $opt_t || print FMTOUT "<a name=\"$rec{'alias'}\"";
-    $opt_t || print FMTOUT " href=\"$rec{'homepage'}\"" if $rec{'homepage'} ne '';
+    $opt_t || print FMTOUT " href=\"$rec{'www'}\"" if $rec{'www'} ne '';
     $opt_t || print FMTOUT ">";
     print FMTOUT $fullname;
     $opt_t || print FMTOUT "</a>";

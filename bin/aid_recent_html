@@ -2,7 +2,7 @@
 
 #
 # does the html version of the recent address list
-# $Id: aid_recent_html,v 3.14 1998/10/15 21:11:04 mradwin Exp mradwin $
+# $Id: aid_recent_html,v 3.15 1998/10/15 22:51:57 mradwin Exp mradwin $
 #
 
 require 'aid_util.pl';
@@ -32,26 +32,17 @@ last month.</p>\n\n";
 
 $opt_m = 1 unless $opt_m;
 
-$prev = '1900';
 @years = ();
-
 @newbies = ();
+
 while(<DATA>) {
     chop;
     %rec = &aid_split($_);
     next unless $rec{'valid'};
     next unless &is_new($rec{'time'}, $opt_m);
-    push(@newbies,$_);
 
-    if ($prev ne $rec{'year'} && $prev ne 'other') {
-	$prev = $rec{'year'};
-	if (substr($rec{'year'}, 0, 1) =~ /[A-Za-z]/) {
-	    push(@years, 'other');
-	    $prev = 'other';
-	} else {
-	    push(@years, $rec{'year'});
-	}
-    }
+    push(@newbies,$_);
+    &aid_build_yearlist(*years, $rec{'year'});
 }
 
 if ($opt_t) {
@@ -70,26 +61,14 @@ if ($opt_t) {
     }
 
 } else {
-    $first = 0;
-
-    print FMTOUT "<p>";
-    foreach $year (@years) {
-	print FMTOUT " |\n" if $first++;
-	print FMTOUT "<a href=\"#grad${year}\">";
-	print FMTOUT ($year eq 'other') ? "Faculty/Staff" : $year % 100;
-	print FMTOUT "</a>";
-    }
-    print FMTOUT "</p>\n\n";
+    print FMTOUT &aid_class_jump_bar('#grad','',*years,1);
 
     $prev = '1900';
     while (defined($_ = shift(@newbies))) {
 	%rec = &aid_parse($_);
 
 	if ($prev ne $rec{'year'} && $prev ne 'other') {
-	    $prev = $rec{'year'};
-	    if (substr($rec{'year'}, 0, 1) =~ /[A-Za-z]/) {
-		$prev = 'other';
-	    }
+	    $prev = ($rec{'year'} =~ /^\d+$/) ? $rec{'year'} : 'other';
 	    print FMTOUT "<a name=\"grad${prev}\"> </a>\n";
 	}
 

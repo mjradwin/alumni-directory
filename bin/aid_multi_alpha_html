@@ -2,7 +2,7 @@
 
 #
 # does the html verbose pages
-# $Id: aid_multi_alpha_html,v 3.17 1998/08/22 01:59:56 mradwin Exp mradwin $
+# $Id: aid_multi_alpha_html,v 3.18 1998/09/23 21:45:52 mradwin Exp mradwin $
 #
 
 require 'aid_util.pl';
@@ -44,18 +44,10 @@ while(<DATA>) {
 	print FMTOUT $alpha_header,
 	    "<p>\n", &jump_bar($initial), "<hr noshade size=1>\n\n";
 
-#	&aid_write_verbose_entry(*FMTOUT,*rec,1);
-
 	print FMTOUT "<pre>";
-#	print FMTOUT "Name and Graduation Year" . &aid_image_tag('blank') .
-	    "                  Email\n";
-#	print FMTOUT "---------------------------------------------------------------------------\n";
-
-	print FMTOUT &html_pre_entry(*rec,'',1);
-    } else {
-#	&aid_write_verbose_entry(*FMTOUT,*rec,1);
-	print FMTOUT &html_pre_entry(*rec,'',1);
     }
+
+    print FMTOUT &html_pre_entry(*rec,'',1);
 }
 
 print FMTOUT "</pre>\n";
@@ -74,14 +66,13 @@ sub html_pre_entry {
     $fullname = &fullname(*rec);
     ($affil,$len) = &affiliate(*rec,1);
     $needsanchor = ($do_html_p && (($a_name ne '') ||
-				   ($rec{'homepage'} ne ''))) ? 1 : 0;
+				   ($rec{'www'} ne ''))) ? 1 : 0;
     $retval = '';
     $retval .= "<a href=\"" . &aid_about_path(*rec) . "\">$info_gif</a>" #'#
 	if $do_html_p;
     $retval .= "<a" if $needsanchor;
     $retval .= " name=\"$a_name\"" if ($do_html_p && $a_name ne '');
-    $retval .= " href=\"$rec{'homepage'}\""
-	if ($do_html_p && $rec{'homepage'} ne '');
+    $retval .= " href=\"$rec{'www'}\"" if ($do_html_p && $rec{'www'} ne '');
     $retval .= ">" if $needsanchor;
     $retval .= $fullname;
     $retval .= "</a>" if $needsanchor;

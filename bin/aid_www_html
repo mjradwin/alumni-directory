@@ -31,7 +31,7 @@ while(<DATA>) {
     chop;
     %rec = &aid_parse($_);
     next unless $rec{'valid'};
-    next if $rec{'homepage'} eq '';
+    next if $rec{'www'} eq '';
 
     $fullname = &fullname(*rec);
     ($affil,$len) = &affiliate(*rec,1);
@@ -39,7 +39,7 @@ while(<DATA>) {
     print FMTOUT "<a href=\"" . &aid_about_path(*rec) . "\">$info_gif</a>"; #'#
     print FMTOUT "<a name=\"$rec{'alias'}\"";
     print FMTOUT ' ' x (8 - (length($rec{'alias'})));
-    print FMTOUT " href=\"$rec{'homepage'}\"";
+    print FMTOUT " href=\"$rec{'www'}\"";
     print FMTOUT ">";
     print FMTOUT $fullname;
     print FMTOUT "</a>";

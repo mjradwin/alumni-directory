@@ -2,7 +2,7 @@
 
 #
 # does the html verbose pages
-# $Id: aid_verbose_html,v 3.11 1998/05/20 23:16:44 mradwin Exp mradwin $
+# $Id: aid_verbose_html,v 3.12 1998/08/22 01:59:56 mradwin Exp mradwin $
 #
 
 require 'aid_util.pl';
@@ -28,9 +28,10 @@ while(<DATA>) {
     last if $rec{'valid'};
 }
 
-
 $verbose_header = &common_intro_para(0) .
-    "<p>\n" . &class_jump_bar(*years) . "<hr noshade size=1>\n\n";
+    &aid_class_jump_bar(&aid_config('master_path') . 'class/',
+			'.html', *years, 1) .
+    "<hr noshade size=1>\n\n";
 
 # main loop
 for(;;) {
@@ -44,14 +45,14 @@ for(;;) {
     print FMTOUT &common_html_hdr(-1,$title,1);
     print FMTOUT $verbose_header;
 
-    &aid_write_verbose_entry(*FMTOUT,*rec);
+    print FMTOUT &aid_verbose_entry(*rec);
     while(<DATA>) {
 	chop;
 	%rec = &aid_parse($_);
 	next unless $rec{'valid'};
 	
 	last if (($rec{'year'} ne $currentYear) && ($currentYear =~ /^\d+$/));
-	&aid_write_verbose_entry(*FMTOUT,*rec);
+	print FMTOUT &aid_verbose_entry(*rec);
     }
     print FMTOUT &common_html_ftr(-1);
     close(FMTOUT);
@@ -65,7 +66,8 @@ open(FMTOUT,">$outFile") || die "Can't open $outFile: $!\n";
 print FMTOUT &common_html_hdr(2,'Alumni Listed by Graduating Class',0);
 
 print FMTOUT "<p align=center><font size=\"+1\">By&nbsp;Class:<br>\n";
-print FMTOUT &class_jump_bar(*years);
+print FMTOUT &aid_class_jump_bar(&aid_config('master_path') . 'class/',
+				 '.html', *years, 0);
 print FMTOUT "</font></p>\n";
 
 print FMTOUT "<p align=center><font size=\"+1\">";
@@ -80,31 +82,13 @@ close(FMTOUT);
 
 exit(0);
 
-sub class_jump_bar {
-    local(*years) = @_;
-    local($year,$retval);
-
-    $retval = '';
-    foreach $year (@years) {
-	$retval .= "<a href=\"" . &aid_config('master_path');
-	$retval .= "class/${year}.html\">";
-	$retval .= ($year eq 'other') ? "Faculty/Staff" : $year % 100;
-	$retval .= "</a>";
-	$retval .= " |" unless $year eq 'other';
-	$retval .= "\n";
-    }
-
-    $retval;
-}
-
 sub get_class_array {
     local($inFile) = @_;
-    local(@years,$prev);
+    local(@years);
     local(*BYCLASS,*rec);
     local($_);
 
     @years = ();
-    $prev = '1900';
 
     open(BYCLASS,$inFile) || die "Can't open $inFile: $!\n";
     while(<BYCLASS>) {
@@ -112,15 +96,8 @@ sub get_class_array {
         %rec = &aid_split($_);
         next unless $rec{'valid'};
  
-        if ($prev ne $rec{'year'}) {
-            $prev = $rec{'year'};
-            if (substr($rec{'year'}, 0, 1) =~ /[A-Za-z]/) {
-		push(@years, 'other');
-                last;
-            } else {
-		push(@years, $rec{'year'});
-            }
-        }
+	&aid_build_yearlist(*years, $rec{'year'});
+	last if $rec{'year'} !~ /^\d+$/;
     }
     close(BYCLASS);
     
