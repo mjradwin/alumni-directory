@@ -2,12 +2,11 @@
 #     FILE: aid_util.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: perl library routines for the Alumni Internet Directory
-#      $Id: aid_util.pl,v 4.22 1999/02/11 17:21:55 mradwin Exp mradwin $
+#      $Id: aid_util.pl,v 4.23 1999/02/16 23:44:50 mradwin Exp mradwin $
 #
 
 $aid_util'rcsid =
- '$Id: aid_util.pl,v 4.22 1999/02/11 17:21:55 mradwin Exp mradwin $';
-$aid_util'caldate = &aid_caldate(time); #'#
+ '$Id: aid_util.pl,v 4.23 1999/02/16 23:44:50 mradwin Exp mradwin $';
 
 # ----------------------------------------------------------------------
 # CONFIGURATION
@@ -62,6 +61,8 @@ require 'aid_config.pl';
 @aid_util'MoY = #'#
     ('Jan','Feb','Mar','Apr','May','Jun',
      'Jul','Aug','Sep','Oct','Nov','Dec');
+
+$aid_util'caldate = &aid_caldate(time); #'#
 
 $aid_util'pics_label = #'#
 "  <meta http-equiv=\"PICS-Label\" content='(PICS-1.1 " . 
@@ -1129,11 +1130,11 @@ sub common_html_hdr {
 
     local($page,$title,$norobots) = @_;
     local($hdr,$tablehdr,$timestamp,$titletag);
-    local($date) = &main'ctime(time);  #'#
+    local($sec,$min,$hour,@rest) = localtime(time);
+    local($ampm) = $hour >= 12 ? 'pm' : 'am';
 
-    chop $date;
-    $timestamp = (($page == 0) ? 'Last update to Directory: ' :
-		  'Last update to this page: ') . $date;
+    $hour -= 12 if $hour >= 12;
+    $timestamp = sprintf("%s %2d:%02d%s", $caldate, $hour, $min, $ampm);
 
     $tablehdr = $title eq '' ? '' :
 	"    <!-- \"$title\" --><strong>" .
@@ -1165,9 +1166,9 @@ sub common_html_hdr {
     href=\"$config{'master_path'}\"><font color=\"#$header_fg\"
     size=\"+2\"><strong><tt>$config{'school'}
     Alumni Internet Directory</tt></strong></font></a></p>
-    <p align=right><font color=\"#$header_fg\"><small><em>
+    <p align=right><font color=\"#$header_fg\"><small>
     $timestamp
-    </em></small></font></p>
+    </small></font></p>
     </td>
   </tr>
   <tr>
