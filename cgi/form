@@ -4,7 +4,7 @@
 #     FILE: mvhsaid.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: MVHS Alumni Internet Directory CGI interface
-#      $Id: mvhsaid,v 1.17 1997/07/30 19:38:07 mjr Exp mjr $
+#      $Id: mvhsaid,v 1.18 1997/07/31 23:05:50 mjr Exp mjr $
 #
 
 require 'mv_util.pl';
@@ -30,8 +30,9 @@ close(SUBMIT_FTR);
 
 # debugging: what version is installed?
 if (defined($in{'version'})) {
+    select(STDOUT);  $| = 1;
     print "Content-type: text/plain\n\n";
-    print '$Id: mvhsaid,v 1.17 1997/07/30 19:38:07 mjr Exp mjr $', "\n";
+    print '$Id: mvhsaid,v 1.18 1997/07/31 23:05:50 mjr Exp mjr $', "\n";
     exit(0);
 }
 
@@ -150,6 +151,7 @@ $date
 EOM
 ");
 
+    select(STDOUT);  $| = 1;
     print "Content-type: text/html\n\n";
     print @submit_hdr, "\n";
 
@@ -185,6 +187,7 @@ sub send_upd_real {
     local($[) = 0;
     local($rawdata,$interactivep,$blank) = @_;
 
+    select(STDOUT);  $| = 1;
     print "Content-type: text/html\n\n";
     print @submit_hdr, "\n";
     print &submit_body($rawdata,$interactivep,$blank);
@@ -199,6 +202,7 @@ sub send_about {
     local($time,$id,$req,$last,$first,$married,
 	  $school,$year,$email,$homepage,$location) = split(/;/, $_[0]);
 
+    select(STDOUT);  $| = 1;
     print "Content-type: text/html\n\n";
     print @submit_hdr, "\n<br>\n";
     print &tableheader(&inorder_fullname($first,$last,$married),
@@ -216,6 +220,7 @@ sub send_vcard {
     $long_last  = $last;
     $long_last .= " $married" if $married ne '';
 
+    select(STDOUT);  $| = 1;
     print "Content-type: text/x-vCard\n\n";
     print "Begin:vCard\n";
     print "ORG:$school $year\n";
@@ -244,6 +249,7 @@ sub send_upd_list {
 	"<img src=\"/~mjr/mvhs/blank.gif\" height=12 width=12 hspace=4 border=0 alt=\"\">";
     local($cgi) = &mv_config('cgi_path');
 
+    select(STDOUT);  $| = 1;
     print "Content-type: text/html\n\n";
     print @submit_hdr, "\n";
     print "<br>\n";
@@ -286,6 +292,7 @@ sub send_upd_list {
 }
 
 sub panic {
+    select(STDOUT);  $| = 1;
     print "Content-type: text/plain\n\n";
     print $_[0], "\n";
 
