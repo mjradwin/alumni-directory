@@ -2,7 +2,7 @@
 
 #
 # mails a welcome or update note to everyone in targets.adr
-# $Id: aid_welcome,v 3.15 1998/10/28 21:05:52 mradwin Exp mradwin $
+# $Id: aid_welcome,v 3.16 1998/11/03 17:13:10 mradwin Exp mradwin $
 #
 
 require 'aid_util.pl';
@@ -63,7 +63,7 @@ numbers, etc.) with other alumni.  People will only be
 allowed to access your information with your permission, and
 you can share as much or as little as you want:
 
-  http://www.planetall.com/registration/basic/recruit.asp?pcustomerid=1520098&Groupid=6602&Source=40
+  http://www.planetall.com/main.asp?cid=1520098&gid=6602&s=40
 ",
      'sleep',    '0',
      );
