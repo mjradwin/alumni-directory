@@ -2,7 +2,7 @@
 #     FILE: Makefile
 #   AUTHOR: Michael J. Radwin
 #    DESCR: Makefile for building the Alumni Internet Directory
-#      $Id: Makefile,v 3.90 1999/05/27 21:15:25 mradwin Exp mradwin $
+#      $Id: Makefile,v 3.91 1999/05/27 21:16:03 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -50,11 +50,7 @@ TARFILES= \
 	$(TAR_AIDDIR)/bin/generic_config.pl \
 	$(TAR_AIDDIR)/bin/$(SCHOOL)_config.pl \
 	$(TAR_AIDDIR)/bin/tableheader.pl \
-	$(TAR_AIDDIR)/cgi/$(SCHOOL)aid \
-	$(TAR_AIDDIR)/cgi/nph-aid-search \
-	$(TAR_AIDDIR)/cgi/vcard \
-	$(TAR_AIDDIR)/cgi/*.pl \
-	$(TAR_AIDDIR)/cgi/default.css \
+	$(TAR_AIDDIR)/cgi/[a-z]* \
 	$(TAR_AIDDIR)/data/test.adr \
 	$(TAR_AIDDIR)/data/*.include
 
@@ -74,7 +70,7 @@ SYMLINKS=$(AID_SUBMIT_PL) $(AID_UTIL_PL) $(BINDIR)/aid_config.pl \
 symlinks:
 	(cd $(CGIDIR) ; /bin/ln -sf $(SYMLINKS) .; \
 	 $(CP) $(CGISRC)/$(SCHOOL)aid $(CGISRC)/nph-aid-search \
-	       $(CGISRC)/vcard . )
+	       $(CGISRC)/vcard $(CGISRC)/about $(CGISRC)/yab . )
 	(cd $(WWWDIR) ; /bin/ln -sf $(CGISRC)/default.css . )
 
 DBFILE=$(WWWDIR)/master.db
