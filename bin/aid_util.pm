@@ -2,11 +2,11 @@
 #     FILE: aid_util.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: perl library routines for the Alumni Internet Directory
-#      $Id: aid_util.pl,v 3.18 1998/05/21 16:27:59 mradwin Exp mradwin $
+#      $Id: aid_util.pl,v 3.19 1998/05/22 22:15:10 mradwin Exp mradwin $
 #
 
 $aid_util'rcsid =
- '$Id: aid_util.pl,v 3.18 1998/05/21 16:27:59 mradwin Exp mradwin $';
+ '$Id: aid_util.pl,v 3.19 1998/05/22 22:15:10 mradwin Exp mradwin $';
 
 # ----------------------------------------------------------------------
 # CONFIGURATION
@@ -556,7 +556,7 @@ are required.  All other fields are optional.</p>\n\n";
     }
 	
     $body . "
-<form method=post action=\"" . $config{'cgi_path'} . "\"> 
+<form method=post action=\"" . $config{'cgi_path'} . "/form\"> 
 <table border=0>
 <tr><td align=right><input type=\"submit\" value=\"Next &gt;\">
 &nbsp;
@@ -730,10 +730,10 @@ sub aid_write_verbose_entry {
     print FMTOUT "<a href=\"" . $config{'cgi_path'} . "/vcard/$rec{'id'}.vcf\">";
     print FMTOUT "vCard</a>";
     print FMTOUT "&nbsp;|&nbsp;";
-    print FMTOUT "<a href=\"" . $config{'cgi_path'} . "?about=$rec{'id'}\">";
+    print FMTOUT "<a href=\"" . $config{'cgi_path'} . "/dyn?about=$rec{'id'}\">";
     print FMTOUT "details</a>";
     print FMTOUT "&nbsp;|&nbsp;";
-    print FMTOUT "<a href=\"" . $config{'cgi_path'} . "?about=$rec{'id'}\">";
+    print FMTOUT "<a href=\"" . $config{'cgi_path'} . "/dyn?about=$rec{'id'}\">";
     print FMTOUT "update</a>";
     print FMTOUT "]</font>\n";
     
