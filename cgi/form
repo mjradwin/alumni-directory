@@ -4,7 +4,7 @@
 #     FILE: mvhsaid.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: MVHS Alumni Internet Directory CGI interface
-#      $Id: mvhsaid,v 1.47 1997/12/19 23:26:01 mjr Exp mjr $
+#      $Id: mvhsaid,v 1.48 1997/12/20 02:43:57 mjr Exp mjr $
 #
 
 require 'mv_util.pl';
@@ -22,7 +22,7 @@ $dbfile = &mv_config('wwwdir') . "mvhs.adr";
 if (defined($in{'version'})) {
     select(STDOUT);  $| = 1;
     print "Content-type: text/plain\n\n";
-    print '$Id: mvhsaid,v 1.47 1997/12/19 23:26:01 mjr Exp mjr $', "\n"; #'fnt
+    print '$Id: mvhsaid,v 1.48 1997/12/20 02:43:57 mjr Exp mjr $', "\n"; #'fnt
     exit(0);
 }
 
@@ -95,8 +95,20 @@ foreach $key (keys(%in)) {
 # e.g. '93 -> 93, 1993 -> 93
 $in{'grad'} =~ s/^class\s+of\s*//i;
 $in{'grad'} =~ s/^\'(\d\d)$/$1/;
-$in{'grad'} =~ s/^19(\d+)$/$1/;
-$in{'grad'} =~ s/^20(\d+)$/$1/;
+
+# the MS approach to 2-digit year fields: either 35 years in the future,
+# or 65 years in the past.
+if ($in{'grad'} =~ /^\d\d$/) {
+    ($sec,$min,$hour,$mday,$mon,$year,$wday,$yday,$isdst) = localtime(time);
+    $year += 1900;  # localtime() returns number of years since 1900
+    if ((($year % 100) - $in{'grad'}) <= 65) {
+	$year = int($year / 100);
+	$in{'grad'} = $year . $in{'grad'};
+    } else {
+	$year = int($year / 100);
+	$in{'grad'} = ++$year . $in{'grad'};
+    }
+}
 
 #$in{'request'} = (defined($in{'request'})) ? 1 : 0;
 $in{'school'} = ($in{'school'} eq 'Other' && $in{'sch_other'} ne '') ? 
