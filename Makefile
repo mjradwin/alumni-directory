@@ -2,7 +2,7 @@
 #     FILE: Makefile
 #   AUTHOR: Michael J. Radwin
 #    DESCR: Makefile for building the Alumni Internet Directory
-#      $Id: Makefile,v 3.11 1998/05/17 05:21:18 mradwin Exp mradwin $
+#      $Id: Makefile,v 3.12 1998/05/18 19:40:04 mradwin Exp mradwin $
 #
 
 WWWDIR=/home/web/radwin.org/docs/mvhs-alumni
@@ -28,7 +28,7 @@ TARFILES=README Makefile cgi-bin/*.pl cgi-bin/mvhsaid bin/aid_* data/*.include
 SNAPSHOTFILES=bin/aid_make mvhs web/mvhs-alumni/*.gif \
 	web/mvhs-alumni/whatsnew
 
-all:	adrfile index submit reunions links nicknames tech \
+all:	adrfile index submit reunions links nicknames tech copyright \
 	recent pages alpha2 class awalt goners \
 	verbose books
 
@@ -113,6 +113,13 @@ $(TECH):	data/tech.include $(BIN_HOME)
 	$(BIN_HOME) -p14 -i data/tech.include \
 		-t 'Tech Notes: info about the Directory' \
 		$(TECH)
+
+COPYRIGHT=$(WWWDIR)/copyright.html
+copyright:	$(COPYRIGHT)
+$(COPYRIGHT):	data/copyright.include $(BIN_HOME)
+	$(BIN_HOME) -p15 -i data/copyright.include \
+		-t 'Acceptable Use and Copyright' \
+		$(COPYRIGHT)
 
 SUBMIT=$(WWWDIR)/add.html
 submit:	$(SUBMIT)
