@@ -2,7 +2,7 @@
 
 #
 # massmails quarterly messages
-# $Id: aid_quarterly,v 1.2 1999/11/30 21:27:07 mradwin Exp mradwin $
+# $Id: aid_quarterly,v 1.3 1999/11/30 21:49:13 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -25,9 +25,12 @@ set -x
 date=`/bin/date '+%Y%m%d'`
 
 make recent.txt alpha.txt class.txt
-./bin/aid_welcome -a -r1 -m alpha.txt  -l logs/massmail-${date}-1.log data/working.db
-./bin/aid_welcome -a -r2 -m class.txt  -l logs/massmail-${date}-2.log data/working.db
-./bin/aid_welcome -a -r3 -m recent.txt -l logs/massmail-${date}-3.log data/working.db
+./bin/aid_welcome -a -r1 -m alpha.txt  -l logs/massmail-${date}-1.log \
+    data/working.db
+./bin/aid_welcome -a -r2 -m class.txt  -l logs/massmail-${date}-2.log \
+    data/working.db
+./bin/aid_welcome -a -r3 -m recent.txt -l logs/massmail-${date}-3.log \
+    data/working.db
 rm -f recent.txt alpha.txt class.txt .recent.txt .alpha.txt .class.txt
 
 mkdir classonly
@@ -36,7 +39,9 @@ mkdir classonly
 rm -rf classonly
 
 ids=`./bin/aid_dbm_read -oi data/working.db`
-./bin/aid_welcome -c -l logs/massmail-${date}-c.log data/working.db $ids
+if [ "$ids" ]; then
+    ./bin/aid_welcome -c -l logs/massmail-${date}-c.log data/working.db $ids
+fi
 
 cat logs/massmail-${date}-?.log > logs/massmail-${date}.log
 rm -f logs/massmail-${date}-?.log
