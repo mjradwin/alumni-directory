@@ -2,7 +2,7 @@
 #     FILE: aid_util.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: perl library routines for the Alumni Internet Directory
-#      $Id: aid_util.pl,v 5.50 1999/12/23 00:26:15 mradwin Exp mradwin $
+#      $Id: aid_util.pl,v 5.51 1999/12/23 00:39:08 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -795,11 +795,11 @@ sub aid_common_html_hdr
 	($config{'short_school'} . " Alumni: " . $title);
 
     $hdr  = 
-	"<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0 Transitional//EN\"\n" .
-	    "\t\"http://www.w3.org/TR/REC-html40/loose.dtd\">\n" .
+	"<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\"\n" .
+	"\t\"http://www.w3.org/TR/1999/REC-html401-19991224/loose.dtd\">\n" .
 #		"<html xmlns=\"http://www.w3.org/TR/xhtml1\">\n" .
-		"<html>\n" .
-		    "<head>\n<title>" . $titletag . "</title>\n";
+	"<html lang=\"en\">\n" .
+	"<head>\n<title>" . $titletag . "</title>\n";
 
     # do stylesheet before the rest of the meta tags on the theory that
     # early evaluation is good
