@@ -2,7 +2,7 @@
 #     FILE: aid_util.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: perl library routines for the Alumni Internet Directory
-#      $Id: aid_util.pl,v 5.58 2000/04/25 00:42:41 mradwin Exp mradwin $
+#      $Id: aid_util.pl,v 5.59 2000/04/25 00:49:21 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -477,7 +477,7 @@ sub aid_verbose_entry {
 
     if ($rec{'n'} ne '') {
 	$retval .= "<dt>What's New?</dt>\n";
-	$rec{'n'} =~ s/\n/<br${main::ht_empty_close_tag}\n/g;
+	$rec{'n'} =~ s/\n/<br>\n/g;
 	$retval .= "<dd>$rec{'n'}</dd>\n";
     }
     $retval .= "</dl>\n\n";
@@ -667,7 +667,7 @@ sub aid_about_text
 	$retval .= "What's New?        :\n";
 	$retval .= "</pre>\n" if $do_html_p;
 	$retval .= $do_html_p ? "<blockquote class=\"about\">\n" : "";
-	$rec{'n'} =~ s/\n/<br${main::ht_empty_close_tag}\n/g if $do_html_p;
+	$rec{'n'} =~ s/\n/<br>\n/g if $do_html_p;
 	$retval .= $rec{'n'};
 	$retval .= $do_html_p ? "</blockquote>\n" : "";
     } else {
@@ -723,7 +723,7 @@ sub aid_common_link_table
         }
 	$html .= ' - ' unless $idx == $#page_idx;
     }
-    $html .= "\n<br${main::ht_empty_close_tag}";
+    $html .= "\n<br>";
     foreach $idx (0 .. $#second_idx) {
 	($name, $url) = split(/,/, $second_idx[$idx]);
         if ($idx == ($page - 10)) {
@@ -754,15 +754,15 @@ sub aid_common_html_ftr
 
     $time = time unless (defined $time && $time =~ /\d+/ && $time ne '0');
 
-    $ftr  = "\n<hr noshade=\"noshade\" size=\"1\"${main::ht_empty_close_tag}\n";
+    $ftr  = "\n<hr noshade=\"noshade\" size=\"1\">\n";
 
     $ftr .= "<small>\n<!-- hhmts start -->\nLast modified: ";
     $ftr .= &main::ctime($time); 
-    $ftr .= "<!-- hhmts end -->\n<br${main::ht_empty_close_tag}\n";
+    $ftr .= "<!-- hhmts end -->\n<br>\n";
     $ftr .= "<a target=\"_top\" href=\"" . $copyright_path . "\">" .
 	"Copyright</a>\n&copy; $year " . $config{'admin_name'} . 
 	".  All rights reserved.\n" .
-	"<br${main::ht_empty_close_tag}<br${main::ht_empty_close_tag}\n";
+	"<br><br>\n";
     $ftr .= $disclaimer . "\n" .
 	"<a target=\"_top\"\nhref=\"" . $config{'master_path'} .
 	"etc/privacy.html\">More info on privacy</a>." .
@@ -800,7 +800,7 @@ sub aid_common_html_hdr
     # early evaluation is good
     $hdr .= "<link rel=\"stylesheet\" type=\"text/css\" href=\"http://";
     $hdr .= $config{'master_srv'} . $config{'master_path'};
-    $hdr .= "default.css\"${main::ht_empty_close_tag}\n";
+    $hdr .= "default.css\">\n";
 
     $hdr .= $pics_label . "\n" . $author_meta . "\n" . $navigation_meta . "\n";
 
@@ -846,7 +846,7 @@ sub aid_common_html_hdr
     }
 
     $hdr .=
-"($timestamp)<br${main::ht_empty_close_tag}<br${main::ht_empty_close_tag}
+"($timestamp)<br><br>
 </small></td><td align=\"right\"><small>
 <a target=\"_top\"
 href=\"$config{'search_cgi'}\">Search</a></small></td></tr></table>

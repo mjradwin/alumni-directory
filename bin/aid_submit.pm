@@ -2,7 +2,7 @@
 #     FILE: aid_submit.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: submission form for Alumni Internet Directory
-#      $Id: aid_submit.pl,v 5.9 1999/07/24 21:22:31 mradwin Exp mradwin $
+#      $Id: aid_submit.pl,v 5.10 1999/08/11 18:04:06 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -49,21 +49,33 @@ sub aid_submit_body
 	$reqradio[$i] = "
   &nbsp;&nbsp;&nbsp;&nbsp;<input type=\"radio\" name=\"q\" id=\"q$i\"
   value=\"$i\"" . (($rec{'q'} == $i) ? ' checked' : '') .
-  "${main'ht_empty_close_tag}<label for=\"q$i\">&nbsp;\n  $req_descr_long[$i]\n  </label><br${main'ht_empty_close_tag}\n";
+  "><label for=\"q$i\">&nbsp;\n  $req_descr_long[$i]\n  </label><br>\n";
     }
 
     $reunion_chk = ($rec{'r'} == 1) ? ' checked' : '';
 
     $body = '';
 
+    if ($rec{'yr'} =~ /^\d+$/ && $rec{'yr'} > $config{'max_gradyear'})
+    {
+	$body .= "<p><strong><font color=\"red\">Your graduating class\n" .
+		 "(<code>" . $rec{'yr'} . "</code>)\n" .
+		 "appears to be invalid.</font>\n" .
+		 "<br>It must be no later than " .
+		 $config{'max_gradyear'} .
+		 ".</strong></p>\n\n";
+
+	$empty_fields =~ s/\byr\b//g;
+    }
+
     if ($empty_fields ne '')
     {
-	if ($empty_fields =~ /e/ && $rec{'e'} !~ /^\s*$/)
+	if ($empty_fields =~ /\be\b/ && $rec{'e'} !~ /^\s*$/)
 	{
-	    $body .= "<p><strong><span class=\"alert\">Your e-mail address\n";
+	    $body .= "<p><strong><font color=\"red\">Your e-mail address\n";
 	    $body .= "(<code>" . $rec{'e'} . "</code>)\n";
-	    $body .= "appears to be invalid.</span>\n";
-	    $body .= "<br${main'ht_empty_close_tag}It must be in the form of ";
+	    $body .= "appears to be invalid.</font>\n";
+	    $body .= "<br>It must be in the form of ";
 	    $body .= "<code>user\@isp.net</code>.\n";
 	    if ($rec{'e'} !~ /\@/)
 	    {
@@ -72,15 +84,15 @@ sub aid_submit_body
 	    }
 	    $body .= "</strong></p>\n\n";
 
-	    $empty_fields =~ s/e//g;
+	    $empty_fields =~ s/\be\b//g;
 	}
 
 	@empty_fields = split(/\s+/, $empty_fields);
 	if (@empty_fields)
 	{
-	    $body .= "<p class=\"alert\"><strong>It appears that\n";
+	    $body .= "<p><font color=\"red\"><strong>It appears that\n";
 	    $body .= "the following required fields were blank:";
-	    $body .= "</strong></p>\n\n<ul>\n";
+	    $body .= "</strong></font></p>\n\n<ul>\n";
 
 	    foreach(@empty_fields)
 	    {
@@ -91,14 +103,14 @@ sub aid_submit_body
     }
 
     $instr = "<p>Please " . (($rec{'id'} != -1) ? "update" : "enter") .
-    " the following information about yourself.<br${main'ht_empty_close_tag}
+    " the following information about yourself.<br>
 Fields marked with a $star
 are required.  All other fields are optional.</p>
 ";
 
     $instr .= "<p><font color=\"red\">Are you an alumnus of Awalt High
 School?</font>
-Please add your listing  to the<br${main'ht_empty_close_tag}
+Please add your listing  to the<br>
 <a href=\"/awalt/\">Awalt High School Alumni Internet Directory</a>
 instead.</p>
 " if $rec{'id'} == -1;
@@ -119,30 +131,30 @@ Full Name</strong></big></font>
   for=\"gn\"><strong>First Name:</strong></label></td>
   <td valign=\"top\">$star</td>
   <td valign=\"top\"><input type=\"text\" name=\"gn\" size=\"35\" 
-  value=\"$rec{'gn'}\" id=\"gn\"${main'ht_empty_close_tag}</td>
+  value=\"$rec{'gn'}\" id=\"gn\"></td>
 </tr>
 <tr>
   <td valign=\"top\" align=\"right\"><label
   for=\"mi\"><strong>Middle Initial:</strong></label></td>
   <td>&nbsp;</td>
   <td valign=\"top\"><input type=\"text\" name=\"mi\" size=\"1\" maxlength=\"1\"
-  value=\"$rec{'mi'}\" id=\"mi\"${main'ht_empty_close_tag}</td>
+  value=\"$rec{'mi'}\" id=\"mi\"></td>
 </tr>
 <tr>
   <td valign=\"top\" align=\"right\"><label 
-  for=\"sn\"><strong>Last Name/Maiden Name:</strong></label><br${main'ht_empty_close_tag}
+  for=\"sn\"><strong>Last Name/Maiden Name:</strong></label><br>
   <small>(your last name in high school)</small></td>
   <td valign=\"top\">$star</td>
   <td valign=\"top\"><input type=\"text\" name=\"sn\" size=\"35\"
-  value=\"$rec{'sn'}\" id=\"sn\"${main'ht_empty_close_tag}</td>
+  value=\"$rec{'sn'}\" id=\"sn\"></td>
 </tr>
 <tr>
   <td valign=\"top\" align=\"right\"><label
-  for=\"mn\"><strong>Married Last Name:</strong></label><br${main'ht_empty_close_tag}
+  for=\"mn\"><strong>Married Last Name:</strong></label><br>
   <small>(if different from maiden name)</small></td>
   <td>&nbsp;</td>
   <td valign=\"top\"><input type=\"text\" name=\"mn\" size=\"35\"
-  value=\"$rec{'mn'}\" id=\"mn\"${main'ht_empty_close_tag}<br${main'ht_empty_close_tag}<br${main'ht_empty_close_tag}</td>
+  value=\"$rec{'mn'}\" id=\"mn\"><br><br></td>
 </tr>
 
 <tr><td colspan=\"3\" bgcolor=\"#$header_bg\">
@@ -151,11 +163,11 @@ Graduating Class while at $config{'short_school'}</strong></big></font>
 </td></tr>
 <tr>
   <td valign=\"top\" align=\"right\"><label
-  for=\"yr\"><strong>Graduation Year or Affiliation:</strong></label><br${main'ht_empty_close_tag}
+  for=\"yr\"><strong>Graduation Year or Affiliation:</strong></label><br>
   <small>(such as 1993, 2001, or Teacher)</small></td>
   <td valign=\"top\">$star</td>
   <td valign=\"top\"><input type=\"text\" name=\"yr\" size=\"35\"
-  value=\"$rec{'yr'}\" id=\"yr\"${main'ht_empty_close_tag}<br${main'ht_empty_close_tag}<br${main'ht_empty_close_tag}</td>
+  value=\"$rec{'yr'}\" id=\"yr\"><br><br></td>
 </tr>
 
 <tr><td colspan=\"3\" bgcolor=\"#$header_bg\">
@@ -164,26 +176,26 @@ Contact Info</strong></big></font>
 </td></tr>
 <tr>
   <td valign=\"top\" align=\"right\"><label
-  for=\"e\"><strong>E-mail Address:</strong></label><br${main'ht_empty_close_tag}
+  for=\"e\"><strong>E-mail Address:</strong></label><br>
   <small>(such as chester\@aol.com)</small></td>
   <td valign=\"top\">$star</td>
   <td valign=\"top\"><input type=\"text\" name=\"e\" size=\"35\"
-  value=\"$rec{'e'}\" id=\"e\"${main'ht_empty_close_tag}</td>
+  value=\"$rec{'e'}\" id=\"e\"></td>
 </tr>
 <tr>
   <td valign=\"top\" align=\"right\"><label
   for=\"w\"><strong>Personal Web Page:</strong></label></td>
   <td>&nbsp;</td>
   <td valign=\"top\"><input type=\"text\" name=\"w\" size=\"35\"
-  value=\"$rec{'w'}\" id=\"w\"${main'ht_empty_close_tag}</td>
+  value=\"$rec{'w'}\" id=\"w\"></td>
 </tr>
 <tr>
   <td valign=\"top\" align=\"right\"><label
-  for=\"l\"><strong>Location:</strong></label><br${main'ht_empty_close_tag}
+  for=\"l\"><strong>Location:</strong></label><br>
   <small>(your city, college, or company)</small></td>
   <td>&nbsp;</td>
   <td valign=\"top\"><input type=\"text\" name=\"l\" size=\"35\"
-  value=\"$rec{'l'}\" id=\"l\"${main'ht_empty_close_tag}<br${main'ht_empty_close_tag}<br${main'ht_empty_close_tag}</td>
+  value=\"$rec{'l'}\" id=\"l\"><br><br></td>
 </tr>
 
 <tr><td colspan=\"3\" bgcolor=\"#$header_bg\">
@@ -193,11 +205,11 @@ What's New?</strong></big></font>
 <tr>
   <td colspan=\"3\">
   <label for=\"n\">
-  Let your classmates know what you've been doing since<br${main'ht_empty_close_tag}
+  Let your classmates know what you've been doing since<br>
   graduation, or any important bits of news you'd like to share.
-  </label><br${main'ht_empty_close_tag}
+  </label><br>
   <textarea name=\"n\" rows=\"10\" cols=\"55\" wrap=\"hard\"
-  id=\"n\">$rec{'n'}</textarea><br${main'ht_empty_close_tag}<br${main'ht_empty_close_tag}
+  id=\"n\">$rec{'n'}</textarea><br><br>
   </td>
 </tr>
 
@@ -207,13 +219,13 @@ E-mail Preferences</strong></big></font>
 </td></tr>
 <tr>
   <td colspan=\"3\"><input type=\"checkbox\"
-  name=\"r\" id=\"r\" $reunion_chk${main'ht_empty_close_tag}<label
+  name=\"r\" id=\"r\" $reunion_chk><label
   for=\"r\">&nbsp;My class officers may notify me of
-  reunion information via e-mail.</label><br${main'ht_empty_close_tag}<br${main'ht_empty_close_tag}
+  reunion information via e-mail.</label><br><br>
   Would you like to <a target=\"c34286cd\"
   href=\"$config{'master_path'}etc/faq.html#mailings\">receive
-  a digest of the Directory every quarter</a><br${main'ht_empty_close_tag}
-  (at the beginning of February, May, August and November) via e-mail?<br${main'ht_empty_close_tag}
+  a digest of the Directory every quarter</a><br>
+  (at the beginning of February, May, August and November) via e-mail?<br>
 ";
 
     $body .= $reqradio[4];
@@ -223,14 +235,14 @@ E-mail Preferences</strong></big></font>
     $body .= $reqradio[0];
 
     $body . "
-  <input type=\"hidden\" name=\"id\" value=\"$rec{'id'}\"${main'ht_empty_close_tag}
-  <input type=\"hidden\" name=\"c\" value=\"$rec{'c'}\"${main'ht_empty_close_tag}
-  <input type=\"hidden\" name=\"eu\" value=\"$rec{'eu'}\"${main'ht_empty_close_tag}
-  <input type=\"hidden\" name=\"lm\" value=\"$rec{'lm'}\"${main'ht_empty_close_tag}
-  <input type=\"hidden\" name=\"a\" value=\"$rec{'a'}\"${main'ht_empty_close_tag}
-  <input type=\"hidden\" name=\"pe\" value=\"$prev_email\"${main'ht_empty_close_tag}
-  <input type=\"hidden\" name=\"v\" value=\"1\"${main'ht_empty_close_tag}
-  <br${main'ht_empty_close_tag}<br${main'ht_empty_close_tag}
+  <input type=\"hidden\" name=\"id\" value=\"$rec{'id'}\">
+  <input type=\"hidden\" name=\"c\" value=\"$rec{'c'}\">
+  <input type=\"hidden\" name=\"eu\" value=\"$rec{'eu'}\">
+  <input type=\"hidden\" name=\"lm\" value=\"$rec{'lm'}\">
+  <input type=\"hidden\" name=\"a\" value=\"$rec{'a'}\">
+  <input type=\"hidden\" name=\"pe\" value=\"$prev_email\">
+  <input type=\"hidden\" name=\"v\" value=\"1\">
+  <br><br>
   </td>
 </tr>
 
@@ -243,8 +255,8 @@ Preview Listing</strong></big></font>
 <td colspan=\"3\">
 Please review the above information and click the
 <strong>Preview&nbsp;Listing</strong> button to continue.
-<br${main'ht_empty_close_tag}<input type=\"submit\"
-value=\"Preview Listing\"${main'ht_empty_close_tag}
+<br><input type=\"submit\"
+value=\"Preview Listing\">
 </td>
 </tr>
 
@@ -259,8 +271,8 @@ value=\"Preview Listing\"${main'ht_empty_close_tag}
 if ($^W && 0)
 {
     &aid_submit_body();
-    $aid_util'star_fg = '';
-    $aid_util'field_descr = '';
+    $aid_util::star_fg = '';
+    $aid_util::field_descr = '';
 }
 
 1;

@@ -2,7 +2,7 @@
 
 #
 # does the html verbose pages
-# $Id: aid_multi_alpha_html,v 5.15 1999/12/22 23:36:47 mradwin Exp mradwin $
+# $Id: aid_multi_alpha_html,v 5.16 2000/02/29 21:55:00 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -99,7 +99,7 @@ foreach $initial (@initials)
 				      '',$extra_meta),
       &aid_common_intro_para(1),
       "<p>\n", &alpha_jump_bar($initial), "</p>\n",
-      "<hr noshade=\"noshade\" size=\"1\"${ht_empty_close_tag}\n\n<pre>";
+      "<hr noshade=\"noshade\" size=\"1\">\n\n<pre>";
 
     foreach $id (@alpha_ids)
     {
@@ -188,10 +188,4 @@ sub alpha_jump_bar {
     }
 
     $retval;
-}
-
-
-if ($^W && 0)
-{
-    $ht_empty_close_tag = '';
 }

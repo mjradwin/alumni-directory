@@ -1,6 +1,6 @@
 #!/usr/local/bin/perl5 -w
 
-# $Id: aid_stats,v 5.12 2000/04/18 19:28:57 mradwin Exp mradwin $
+# $Id: aid_stats,v 5.13 2000/04/24 23:53:19 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -153,11 +153,11 @@ printf FMTOUT "%3.0f%% (%4d) requesting quarterly digests:\n",
 printf FMTOUT "%3.0f%% (%4d) - %s\n",
     ((100 * $nreq[3]) / $nlegit),
     $nreq[3],
-    $aid_util'req_descr_long[3]; #'#
+    $aid_util::req_descr_long[3]; #'#
 printf FMTOUT "%3.0f%% (%4d) - %s\n",
     ((100 * $nreq[4]) / $nlegit),
     $nreq[4],
-    $aid_util'req_descr_long[4]; #'#
+    $aid_util::req_descr_long[4]; #'#
 
 print FMTOUT "\n";
 

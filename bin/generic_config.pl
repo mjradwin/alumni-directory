@@ -2,7 +2,7 @@
 #     FILE: generic_config.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: configuration variables for Alumni Internet Directory
-#      $Id: generic_config.pl,v 5.11 1999/12/23 00:26:15 mradwin Exp mradwin $
+#      $Id: generic_config.pl,v 5.12 1999/12/23 00:39:08 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -21,14 +21,11 @@
 #   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #
 
-# $ht_empty_close_tag = ' />';
-$ht_empty_close_tag = '>';
-
-$aid_util'rcsid =
- '$Id: generic_config.pl,v 5.11 1999/12/23 00:26:15 mradwin Exp mradwin $';
+$aid_util::rcsid =
+ '$Id: generic_config.pl,v 5.12 1999/12/23 00:39:08 mradwin Exp mradwin $';
 
 # Generic HS on bogus-domain.org (FreeBSD 2.2.2) configuration
-%aid_util'config =   #'#
+%aid_util::config =   #'#
     (
      'school',       'Generic High School',
      'short_school', 'Generic',
@@ -56,7 +53,7 @@ $aid_util'rcsid =
      'make',         '/usr/bin/make',
      'mailto',       "generic-submissions\@bogus-domain.org",
      'spoolfile',    '/var/mail/jsmith',
-     'rcsid',        "$aid_util'rcsid",
+     'rcsid',        "$aid_util::rcsid",
      'sub_beg_str',  '_AID_BEGIN_SUBMISSION_',
      'sub_end_str',  '_AID_END_SUBMISSION_',
      'note_beg_str', '_AID_BEGIN_NOTE_',
@@ -68,52 +65,52 @@ $aid_util'rcsid =
      'descr_long',  'The Generic School Alumni Internet Directory is an e-mail/web page listing of alumni, faculty and staff from Generic High School in Anytown, California.',
      );
 
-$aid_util'author_meta = #'#
-"<meta name=\"author\" content=\"$aid_util'config{'admin_name'}\"${ht_empty_close_tag}\n<link rev=\"made\" href=\"mailto:" . $aid_util'config{'admin_email'} . "\"${ht_empty_close_tag}";
+$aid_util::author_meta = #'#
+"<meta name=\"author\" content=\"$aid_util::config{'admin_name'}\">\n<link rev=\"made\" href=\"mailto:" . $aid_util::config{'admin_email'} . "\">";
 
-$aid_util'navigation_meta = #'#
+$aid_util::navigation_meta = #'#
     "<link rel=\"start\" href=\"http://" .
-    $aid_util'config{'master_srv'} . #'#
-    $aid_util'config{'master_path'} . #'#
-    "\" title=\"" . $aid_util'config{'short_school'} . #'#
-    " Alumni Internet Directory\"${ht_empty_close_tag}";
+    $aid_util::config{'master_srv'} . #'#
+    $aid_util::config{'master_path'} . #'#
+    "\" title=\"" . $aid_util::config{'short_school'} . #'#
+    " Alumni Internet Directory\">";
 
-$aid_util'descr_meta = #'#
-"<meta name=\"keywords\" content=\"" . $aid_util'config{'school'} . ", " .
-$aid_util'config{'short_school'} . ", Anytown, California, reunion, alumni, directory\"${ht_empty_close_tag}\n<meta name=\"description\" content=\"Alumni e-mail and web page directory for " . $aid_util'config{'school'} . " in Anytown, CA. Updated __DATE__.\"${ht_empty_close_tag}"; #'#
+$aid_util::descr_meta = #'#
+"<meta name=\"keywords\" content=\"" . $aid_util::config{'school'} . ", " .
+$aid_util::config{'short_school'} . ", Anytown, California, reunion, alumni, directory\">\n<meta name=\"description\" content=\"Alumni e-mail and web page directory for " . $aid_util::config{'school'} . " in Anytown, CA. Updated __DATE__.\">"; #'#
 
-$aid_util'disclaimer = #'#
+$aid_util::disclaimer = #'#
 "<a name=\"disclaimer\">Acceptable use:</a> the Alumni Internet
 Directory is provided solely for the information of the
-" . $aid_util'config{'school'} . " community.
+" . $aid_util::config{'school'} . " community.
 Any redistribution outside of this community, or solicitation of
 business or contributions from individuals listed in this publication is
 forbidden.";
 
 # colors
-$aid_util'header_bg  = '99ccff'; #'#
-$aid_util'header_fg  = '000000'; #'#
+$aid_util::header_bg  = '99ccff'; #'#
+$aid_util::header_fg  = '000000'; #'#
 
-$aid_util'cell_bg    = 'eeeeee'; #'#
-$aid_util'cell_fg    = '000000'; #'#
+$aid_util::cell_bg    = 'eeeeee'; #'#
+$aid_util::cell_fg    = '000000'; #'#
 
-$aid_util'star_fg    = 'ff0000'; #'#
+$aid_util::star_fg    = 'ff0000'; #'#
 
-$aid_util'body_bg    = 'ffffff'; #'#
-$aid_util'body_fg    = '000000'; #'#
-$aid_util'body_link  = '0000cc'; #'#
-$aid_util'body_vlink = '990099'; #'#
+$aid_util::body_bg    = 'ffffff'; #'#
+$aid_util::body_fg    = '000000'; #'#
+$aid_util::body_link  = '0000cc'; #'#
+$aid_util::body_vlink = '990099'; #'#
 
 if ($^W && 0)
 {
-    $aid_util'disclaimer = '';
-    $aid_util'author_meta = $aid_util'navigation_meta = $aid_util'descr_meta;
+    $aid_util::disclaimer = '';
+    $aid_util::author_meta = $aid_util::navigation_meta = $aid_util::descr_meta;
 
-    $aid_util'header_bg  = $aid_util'header_fg  = '';
-    $aid_util'cell_bg    = $aid_util'cell_fg  = '';
-    $aid_util'star_fg    = ''; #'#
-    $aid_util'body_bg    = $aid_util'body_fg =
-	$aid_util'body_link  = $aid_util'body_vlink = ''; #'#
+    $aid_util::header_bg  = $aid_util::header_fg  = '';
+    $aid_util::cell_bg    = $aid_util::cell_fg  = '';
+    $aid_util::star_fg    = ''; #'#
+    $aid_util::body_bg    = $aid_util::body_fg =
+	$aid_util::body_link  = $aid_util::body_vlink = ''; #'#
 }
 
 1;
