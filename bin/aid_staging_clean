@@ -1,0 +1,97 @@
+#!/usr/local/bin/perl5 -w
+
+# $Id: aid_staging_look,v 1.2 2000/06/12 16:59:12 mradwin Exp $
+#
+#   Copyright (c) 1995-1999  Michael John Radwin
+#
+#   This program is free software; you can redistribute it and/or modify
+#   it under the terms of the GNU General Public License as published by
+#   the Free Software Foundation; either version 2 of the License, or
+#   (at your option) any later version.
+#
+#   This program is distributed in the hope that it will be useful,
+#   but WITHOUT ANY WARRANTY; without even the implied warranty of
+#   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#   GNU General Public License for more details.
+#
+#   You should have received a copy of the GNU General Public License
+#   along with this program; if not, write to the Free Software
+#   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+#
+
+$dirname = $0;
+$dirname =~ s,/[^/]+$,,;
+unshift(@INC, $dirname);
+
+use DB_File;
+use Fcntl qw(:DEFAULT :flock);
+
+require 'aid_util.pl';
+require 'getopts.pl';
+require 'ctime.pl';
+
+$0 =~ s,.*/,,;  # basename
+$usage = "usage: $0 [-hn] [-d days]
+    -h        Display usage information.
+    -n        Don't actually edit database, just show what would happen.
+    -d days   Delete entries older than <days> days old (default 28).
+";
+
+&Getopts('hnd:') || die "$usage\n";
+$opt_h && die "$usage\n";
+die "$opt_d: must be numeric\n$usage\n"
+    if defined $opt_d && $opt_d !~ /^\d+$/;
+
+my($days) = $opt_d ? $opt_d : 28;
+my($dbmfile) = &aid_config('staging');
+die "$dbmfile: $!\n" unless -r $dbmfile;
+
+my($db) = tie(%DB, 'DB_File', $dbmfile, O_RDWR, 0644, $DB_File::DB_HASH)
+    or die "$dbmfile: $!\n";
+my($fd) = $db->fd;
+
+open(DB_FH, "+<&=$fd") || die "dup $!";
+unless (flock (DB_FH, LOCK_EX | LOCK_NB)) {
+    unless (flock (DB_FH, LOCK_EX)) { die "flock: $!" }
+}
+
+my(%verif) = ();
+if (defined $DBS{'_verified'})
+{
+    foreach (split(/\0/, $DBS{'_verified'}))
+    {
+	$verif{$_} = 1;
+    }
+}
+
+while (($key,$val) = each %DB)
+{
+    if ($key =~ /^\w{8}$/ && $val =~ /^-?\d+\0/ && !defined $verif{$key})
+    {
+	my($id,$packed) = split(/\0/, $val, 2);
+	%rec = &aid_db_unpack_rec($id,$packed);
+	if (($rec{'u'} + (60 * 60 * 24 * $days)) < time)
+	{
+ 	    print &aid_ampersand_join(*rec), "\n";
+	    unless ($opt_n)
+	    {
+		$DB{$key} = "e\0";
+		$db->sync;
+	    }
+	}
+    }
+}
+
+flock(DB_FH, LOCK_UN);
+undef $db;
+untie(%DB);
+close(DB_FH);
+
+exit 0;
+
+# avoid warnings
+if ($^W && 0)
+{
+    $opt_h = $opt_h;		# avoid warning
+    $opt_n = $opt_n;		# avoid warning
+}
