@@ -116,9 +116,9 @@ else
 	($affil,$len) = &affiliate(*rec,0);
 	
 	print "<li><a href=\"", &aid_config('about_cgi'), 
-	"?about=", $rec{'id'}, "\">$fullname $affil</a>";
+	"?about=", $rec{'id'}, "\">$fullname</a> $affil";
 	
-	print " (invalid e-mail address)" unless $rec{'valid'};
+	print " <em>(invalid e-mail address)</em>" unless $rec{'valid'};
 	print "\n";
     }
     print "</ul>\n";
