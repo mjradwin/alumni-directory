@@ -2,7 +2,7 @@
 #     FILE: Makefile
 #   AUTHOR: Michael J. Radwin
 #    DESCR: Makefile for building the Alumni Internet Directory
-#      $Id: Makefile,v 3.93 1999/05/31 18:37:00 mradwin Exp mradwin $
+#      $Id: Makefile,v 5.1 1999/05/31 21:19:10 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -73,7 +73,8 @@ symlinks:
 	$(MKDIR) $(CGIDIR)
 	(cd $(CGIDIR) ; /bin/ln -sf $(SYMLINKS) .; \
 	 $(CP) $(CGISRC)/form $(CGISRC)/search $(CGISRC)/alumni.txt \
-	       $(CGISRC)/vcard $(CGISRC)/about $(CGISRC)/yab . )
+	       $(CGISRC)/vcard $(CGISRC)/about $(CGISRC)/yab \
+	       $(CGISRC)/go . )
 	(cd $(WWWDIR) ; /bin/ln -sf $(CGISRC)/default.css . )
 	echo 'SetHandler cgi-script' > $(CGIDIR)/.htaccess
 
