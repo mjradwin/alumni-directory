@@ -46,7 +46,7 @@ while(<MVHS>) {
     print FMTOUT $fullname;
     print FMTOUT "</a>";
     print FMTOUT $affil;
-    print FMTOUT ' ' x (42 - (length($fullname) + length($affil)));
+    print FMTOUT ' ', ' ' x (41 - (length($fullname) + length($affil)));
     print FMTOUT "<a href=\"mailto:", $email, "\">", $email, "</a>";
     print FMTOUT " <img alt=\"[new]\" WIDTH=28 HEIGHT=11 SRC=\"new.gif\">" if &is_new($time);
     print FMTOUT "\n";

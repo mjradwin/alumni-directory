@@ -105,7 +105,7 @@ while(<MVHS>) {
     print FMTOUT $fullname;
     $opt_t || print FMTOUT "</a>";
     print FMTOUT $affil;
-    print FMTOUT ' ' x (40 - (length($fullname) + length($affil)));
+    print FMTOUT ' ', ' ' x (39 - (length($fullname) + length($affil)));
     $opt_t || print FMTOUT "<a href=\"mailto:", $email, "\">";
     print FMTOUT $email;
     $opt_t || print FMTOUT "</a>";

@@ -31,7 +31,7 @@ while(<MVHS>) {
 
     print FMTOUT $fullname;
     print FMTOUT $affil;
-    print FMTOUT ' ' x (42 - (length($fullname) + length($affil)));
+    print FMTOUT ' ', ' ' x (41 - (length($fullname) + length($affil)));
     print FMTOUT $email;
     print FMTOUT "\n";
 }
