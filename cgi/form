@@ -4,7 +4,7 @@
 #     FILE: mvhsaid.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: MVHS Alumni Internet Directory CGI interface
-#      $Id: mvhsaid,v 1.13 1997/07/02 17:57:15 mjr Exp mjr $
+#      $Id: mvhsaid,v 1.14 1997/07/29 00:04:52 mjr Exp mjr $
 #
 
 require 'mv_util.pl';
@@ -33,7 +33,7 @@ close(SUBMIT_FTR);
 # debugging: what version is installed?
 if (defined($in{'version'})) {
     print @submit_hdr, "\n";
-    print '<pre>Version: $Id: mvhsaid,v 1.13 1997/07/02 17:57:15 mjr Exp mjr $</pre>', "\n";
+    print '<pre>Version: $Id: mvhsaid,v 1.14 1997/07/29 00:04:52 mjr Exp mjr $</pre>', "\n";
     print @submit_ftr, "\n";
     
     exit(0);
@@ -108,7 +108,9 @@ foreach (@required_headers) {
 # lowercase the hostname portion of the email address
 ($mail_user, $mail_addr) = split(/\@/, $in{'mail'});
 $mail_addr = 'aol.com' if $mail_addr eq '';
+$mail_user = "\L$mail_user\E" if $mail_user eq "\U$mail_user\E";
 $in{'mail'} = $mail_user . '@' . "\L$mail_addr\E";
+
 
 &queue_submission;
 exit(0);
