@@ -2,7 +2,7 @@
 
 #
 # generates address books in several formats
-# $Id: aid_book,v 3.11 1998/06/10 16:14:57 mradwin Exp mradwin $
+# $Id: aid_book,v 3.12 1998/09/23 22:16:06 mradwin Exp mradwin $
 #
 
 require 'aid_util.pl';
@@ -136,6 +136,7 @@ sub write_entry {
         print BOOK "locality: $rec{'location'}\r\n" if $rec{'location'} ne '';
         print BOOK "o: $rec{'school'}\r\n";
 	print BOOK "ou: $rec{'year'}\r\n";
+        print BOOK "homeurl: $rec{'homepage'}\r\n" if $rec{'homepage'} ne '';
         print BOOK "xmozillanickname: $rec{'alias'}\r\n";
         print BOOK "\r\n";
     }
