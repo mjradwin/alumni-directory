@@ -2,13 +2,13 @@
 #     FILE: aid_config.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: configuration for Alumni Internet Directory
-#      $Id: aid_config.pl,v 1.9 1999/03/16 01:11:03 mradwin Exp mradwin $
+#      $Id: aid_config.pl,v 1.10 1999/03/16 20:10:16 mradwin Exp mradwin $
 #
 
 # radwin.org (FreeBSD 2.2.2) configuration
 %aid_util'config =   #'#
     ('admin_name',   'Michael John Radwin',
-     'admin_email',  "mvhs-alumni\@radwin.org",
+     'admin_email',  "mvhs-alumni-admin\@radwin.org",
      'school',       'Mountain View High School',
      'short_school', 'MVHS',
      'admin_school', "Mountain View High School, Class of '93",
