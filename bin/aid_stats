@@ -1,6 +1,6 @@
 #!/usr/bin/perl -w
 
-# $Id: aid_stats,v 1.4 1999/02/03 19:06:02 mradwin Exp mradwin $
+# $Id: aid_stats,v 1.5 1999/02/03 22:14:51 mradwin Exp mradwin $
 
 require 'aid_util.pl';
 require 'ctime.pl';
@@ -53,8 +53,8 @@ printf "%4d members w/valid   e-mail address but bounced recently\n",
 printf "%4d members w/invalid e-mail address\n",
     ($ntotal - $nvalid - $ndubious);
 
-printf "%4d requesting quarterly digests:\n",
-    ($nreq[1] + $nreq[2] + $nreq[3] + $nreq[4]);
+printf "%4d of %d requesting quarterly digests:\n",
+    ($nreq[1] + $nreq[2] + $nreq[3] + $nreq[4]), ($nvalid + $ndubious);
 
 printf "    %4d - %s\n", $nreq[1], $aid_util'req_descr_long[1];
 printf "    %4d - %s\n", $nreq[2], $aid_util'req_descr_long[2];
