@@ -4,7 +4,7 @@
 #     FILE: about.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: Alumni Internet Directory CGI "About" page generation
-#      $Id: about,v 5.5 1999/06/21 20:12:22 mradwin Exp mradwin $
+#      $Id: about,v 5.6 1999/06/22 18:59:59 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -86,23 +86,27 @@ sub send_about
     print "Content-Type: text/html\015\012\015\012";
 
     print &aid_common_html_hdr(20,$fullname,1,$rec{'u'});
-    print "<p>Here is more detailed information about $html_name.\n<br />";
-    print "To modify this listing, please click the button below.</p>\n\n";
-    print &aid_about_text(*rec,0,1,1), "\n";
-
+    print "<p>Below is the current listing for ${html_name}.\n";
+    print "Click the modify button below to edit this listing.</p>\n";
     print "
 <!-- borrowed from gamelan -->
 
+<center>
 <form method=\"get\" action=\"" . &aid_config('update_cgi') . "/$rec{'id'}\">
-<input type=\"hidden\" name=\"upd\" value=\"$rec{'id'}\" />
-<input type=\"submit\" value=\"Modify $html_name\" />
+<input type=\"hidden\" name=\"upd\" value=\"$rec{'id'}\"${ht_empty_close_tag}
+<input type=\"submit\" value=\"Modify $html_name\"${ht_empty_close_tag}
 </form>
+</center>
 
-<p>To avoid malicious modification by other people passing through, we
-mail the original user about the change (plus the new user if the e-mail
-changes). The honor system has worked for us so far; please don't abuse
-it and force us to install a password door.</p>
+<p><small>To avoid malicious modification by other people passing
+through, we mail the original user about the change (plus the new user
+if the e-mail changes). The honor system has worked for us so far;
+please don't abuse it and force us to install a password
+door.</small></p>
+
 ";
+    print "<p>Current listing:</p>\n\n";
+    print &aid_about_text(*rec,0,1,1);
     print &aid_common_html_ftr(20,$rec{'u'});
 
     1;
