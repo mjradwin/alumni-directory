@@ -4,7 +4,7 @@
 #     FILE: verify.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: CGI for verifcation of e-mail address
-#      $Id: verify,v 1.7 2000/08/02 18:28:00 mradwin Exp mradwin $
+#      $Id: verify,v 1.8 2001/01/08 17:53:26 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-2000  Michael John Radwin
 #
@@ -34,8 +34,9 @@ use CGI;
 use CGI::Carp qw(fatalsToBrowser);
 
 CGI::ReadParse();
-$in{'e'} = '' unless defined $in{'e'};
-$in{'id'} = '' unless defined $in{'id'};
+my(%cgi) = %in;
+$cgi{'e'} = '' unless defined $cgi{'e'};
+$cgi{'id'} = '' unless defined $cgi{'id'};
 
 $ENV{'QUERY_STRING'} =~ s/%([A-Fa-f0-9]{2})/pack("c",hex($1))/ge;
 if ($ENV{'QUERY_STRING'} =~ /^(k=)?(\w+)$/)
@@ -43,9 +44,9 @@ if ($ENV{'QUERY_STRING'} =~ /^(k=)?(\w+)$/)
     my($key8) = uc($2);
     &check_key8($key8);
 }
-elsif (defined $in{'k'} && $in{'k'} =~ /^\w+$/)
+elsif (defined $cgi{'k'} && $cgi{'k'} =~ /^\w+$/)
 {
-    &check_key8(uc($in{'k'}));
+    &check_key8(uc($cgi{'k'}));
 }
 else
 {
@@ -63,8 +64,8 @@ Alumni Robot and enter it below.</p>
 &nbsp;
 <input id=\"k\" type=\"text\" size=\"8\" maxlength=\"8\" name=\"k\">
 &nbsp;
-<input id=\"e\" type=\"hidden\" name=\"e\" value=\"$in{'e'}\">
-<input id=\"id\" type=\"hidden\" name=\"id\" value=\"$in{'id'}\">
+<input id=\"e\" type=\"hidden\" name=\"e\" value=\"$cgi{'e'}\">
+<input id=\"id\" type=\"hidden\" name=\"id\" value=\"$cgi{'id'}\">
 <input type=\"submit\" value=\"Submit verification code\">
 </form>
 ";
@@ -181,4 +182,10 @@ confirming receipt of this submission when it it processed.</p>
 	print "<p>Sorry, the verification code you entered\n",
 	    "(<b>$key</b>) is invalid.</p>\n";
     }
+}
+
+# avoid warning
+if ($^W && 0)
+{
+    %in = ();
 }
