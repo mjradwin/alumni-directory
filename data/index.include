@@ -1,0 +1,56 @@
+<!-- -*- Mode: html-helper -*-  -->
+<!-- $Id: index.include,v 1.48 2003/02/16 18:24:24 mradwin Exp $ -->
+
+<p>The GENERIC High School Alumni Internet Directory is an e-mail/web
+page listing of alumni, students, faculty and staff from GENERIC High
+School in Anytown, California, USA.</p>
+
+<h2>Alumni Listings</h2>
+
+<p>Please read the <a href="etc/privacy.html#policy">Acceptable Use
+Policy</a> before using any contact information listed on this site.</p>
+
+<ul>
+
+<li><strong><a href="add/">Join or Modify Your
+Listing</a></strong></li>
+
+<li><a href="recent.html">Recent Additions and Updates</a> - alumni who
+have submitted new listings within the last two weeks <a
+href="summary.rdf"><img src="etc/xml.gif" border="0" alt="View the raw
+XML source" width="36" height="14"></a> </li>
+
+<li><strong><a href="class/">Graduating Classes</a></strong> - alumni
+listed by year</li>
+
+<li><a
+href="alpha/">Alphabetical</a> - alumni listed by last name</li>
+
+<li><a href="bin/search">Search</a> for alumni</li>
+
+<li>Alumni with <a href="pages.html">Web Pages</a></li>
+
+<li>Alumni with <a href="invalid.html">Invalid E-mail Addresses</a> -
+e-mail has failed to reach these alumni for at least 6 months</li>
+
+<li><a href="download/">Download Nickname and Address Book Files</a> -
+for your Windows/Mac/Unix e-mail program</li>
+</ul>
+
+<h2>Other GHS information</h2>
+
+<ul>
+<li><strong><a href="etc/reunions.html">Reunion
+Information</a></strong> - submitted by alumni</li>
+
+<li><a href="etc/faq.html">Frequently Asked Questions</a> - about the
+Directory</li>
+
+<li><a href="etc/links.html">Links and Other Alumni Directories</a> -
+other GHS-related sites</li>
+
+<li><a href="etc/stats.html">Member Statistics</a></li>
+
+<li><a href="etc/privacy.html">Acceptable Use, Privacy Statement, &amp;
+Copyright</a></li>
+</ul>

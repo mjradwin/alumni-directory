@@ -1,0 +1,28 @@
+<!-- -*- Mode: html-helper -*-  -->
+<!-- $Id: reunions.dat,v 1.50 2003/09/19 01:06:45 mradwin Exp $ -->
+
+BEGIN:1991
+DATE:TBA
+HTML:
+<dd>Place: TBA
+<dd>Price: TBA (RSVP will be required)
+<dd>Contact: We haven't started planning yet.
+END
+    
+BEGIN:1976
+DATE:2006/06/24
+HTML:<dd>Details: unknown</dd>
+END
+
+BEGIN:1993
+DATE:2003/08/23
+HTML:<dd>Time: 7:30pm - midnight</dd>
+<dd>Place: <a href="http://www.michaelsatshoreline.com">Michael's
+at Shoreline</a></dd>
+<dd>Price: $30.00/person</dd>
+<dd>Details: Hors d' Oeuvres and desserts, Music &amp; Dancing,
+CD-picture/profile souvenir, Slide Show and more!</dd>
+<dd>Info: <a href="http://www.mvhs93.com/">http://www.mvhs93.com</a>
+<dd>Contact: <a
+href="mailto:ghs-93-reunion@yahoogroups.com">ghs-93-reunion@yahoogroups.com</a></dd>
+END

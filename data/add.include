@@ -1,0 +1,27 @@
+<!-- -*- Mode: html-helper -*-  -->
+<!-- $Id: add.include,v 1.28 2000/11/16 18:27:36 mradwin Exp $ -->
+
+<blockquote>
+<dl>
+  <dt><h3>I am currently listed in the Directory and want to
+      modify my listing.</h3>
+  <dd><br>
+      <form method="get" action="../bin/form/existing">
+      <label for="upd">My e-mail address is </label>
+      <input type="text" name="upd" size="20" id="upd">
+      <input type="submit" value="Sign In">
+      </form>
+
+  <dt><br><h3>I want to join the Directory.</h3>
+  <dd><br><a href="new.html">Fill out this form
+      with your contact information</a>.
+      
+</dl>
+</blockquote>
+
+<!-- borrowed from gamelan -->
+<p><small>To avoid malicious modification by other people
+passing through, we mail the original user about the change (plus the
+new user if the e-mail address changes). The honor system has worked for us so
+far; please don't abuse it and force us to install a password
+door.</small></p>
