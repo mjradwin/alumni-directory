@@ -1,4 +1,5 @@
 WWWDIR=/pro/web/web/people/mjr/mvhs
+#WWWDIR=/home/divcom/mjr/public_html/mvhs
 
 all:	alpha grad new goners pages books dbtar adrfile home submit
 	( cd ${WWWDIR} ; chmod 0644 * ; /usr/local/bin/webupdate )

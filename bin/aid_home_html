@@ -4,6 +4,7 @@
 #
 
 push(@INC, '/home/mjr/lib');
+#push(@INC, '/home/divcom/mjr/lib');  # divcom
 require 'mv_util.pl';
 require 'getopts.pl';
 
@@ -20,9 +21,9 @@ $opt_i && $opt_s && die "$usage\n";
 $pageno = 0;
 $pageno = 5 if $opt_s;
 
-$home = "/pro/web/web/people/mjr/mvhs/.home.include";
-$fmtout = ($opt_i) ? "/pro/web/web/people/mjr/mvhs/home.html"
-    : "/pro/web/web/people/mjr/mvhs/add.html";
+$home = &mv_config('wwwdir') . ".home.include";
+$fmtout = ($opt_i) ? &mv_config('wwwdir') . "home.html"
+    : &mv_config('wwwdir') . "add.html";
 
 open(FMTOUT,">$fmtout") || die "Can't open $fmtout: $!\n";
 
