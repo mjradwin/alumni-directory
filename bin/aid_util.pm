@@ -2,7 +2,7 @@
 #     FILE: mv_util.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: perl library routines for the MVHS Alumni Internet Directory
-#      $Id: mv_util.pl,v 1.52 1997/10/27 22:20:22 mjr Exp mjr $
+#      $Id: mv_util.pl,v 1.53 1997/10/29 00:51:17 mjr Exp mjr $
 #
 
 CONFIG: {
@@ -272,64 +272,64 @@ All other fields are optional.";
 <table border=0>
 <tr><td bgcolor=\"#ffffcc\"><table border=0 cellspacing=7>
 <tr>
-  <td valign=top>First Name</td>
+  <td valign=top><font color=\"#000000\">First Name</font></td>
   <td>$star</td>
   <td valign=top><input type=text name=\"first\" size=35 
   value=\"$first\"></td>
 </tr>
 <tr>
-  <td valign=top>Last/Maiden Name</td>
+  <td valign=top><font color=\"#000000\">Last/Maiden Name</font></td>
   <td>$star</td>
   <td valign=top><input type=text name=\"last\" size=35
   value=\"$last\"></td>
 </tr>
 <tr>
-  <td colspan=2 valign=top>Married Name<br>
-  <font size=\"-1\">(if different from Maiden Name)</font></td>
+  <td colspan=2 valign=top><font color=\"#000000\">Married Name</font><br>
+  <font color=\"#000000\" size=\"-1\">(if different from Maiden Name)</font></td>
   <td valign=top><input type=text name=\"married\" size=35
   value=\"$married\"></td>
 </tr>
 <tr>
-  <td valign=top>High School</td>
+  <td valign=top><font color=\"#000000\">High School</font></td>
   <td>$star</td>
   <td valign=top><input type=radio name=\"school\"
-  value=\"MVHS\"$mvhs_checked>&nbsp;MVHS&nbsp;&nbsp;&nbsp;&nbsp;<input
-  type=radio name=\"school\" value=\"Awalt\"$awalt_checked>&nbsp;Awalt</td>
+  value=\"MVHS\"$mvhs_checked><font color=\"#000000\">&nbsp;MVHS&nbsp;&nbsp;&nbsp;&nbsp;<input
+  type=radio name=\"school\" value=\"Awalt\"$awalt_checked>&nbsp;Awalt</font></td>
 </tr>
 <tr>
   <td valign=top>&nbsp;</td>
   <td valign=top>&nbsp;</td>
   <td valign=top><input type=radio name=\"school\" 
-  value=\"Other\"$other_checked>&nbsp;Other:&nbsp;<input type=text
+  value=\"Other\"$other_checked><font color=\"#000000\">&nbsp;Other:&nbsp;</font><input type=text
   name=\"sch_other\" size=27 value=\"$school\"></td>
 </tr>
 <tr>
-  <td valign=top>Graduation year or affiliation<br>
-  <font size=\"-1\">(such as 93, 87, or Teacher)</font></td>
+  <td valign=top><font color=\"#000000\">Graduation year or affiliation</font><br>
+  <font color=\"#000000\" size=\"-1\">(such as 93, 87, or Teacher)</font></td>
   <td>$star</td>
   <td valign=top><input type=text name=\"grad\" size=35
   value=\"$year\"></td>
 </tr>
 <tr>
-  <td valign=top>E-mail address<br>
-  <font size=\"-1\">(such as albert@aol.com)</font></td>
+  <td valign=top><font color=\"#000000\">E-mail address</font><br>
+  <font color=\"#000000\" size=\"-1\">(such as albert@aol.com)</font></td>
   <td>$star</td>
   <td valign=top><input type=text name=\"mail\" size=35
   value=\"$email\"></td>
 </tr>
 <tr>
-  <td colspan=2 valign=top>Web Page</td>
+  <td colspan=2 valign=top><font color=\"#000000\">Web Page</font></td>
   <td valign=top><input type=text name=\"homepage\" size=35
   value=\"$homepage\"></td>
 </tr>
 <tr>
-  <td colspan=2 valign=top>Location<br>
-  <font size=\"-1\">(city, school, or company)</font></td>
+  <td colspan=2 valign=top><font color=\"#000000\">Location</font><br>
+  <font color=\"#000000\" size=\"-1\">(city, school, or company)</font></td>
   <td valign=top><input type=text name=\"location\" size=35
   value=\"$location\"></td>
 </tr>
 <tr>
-  <td colspan=3><br>
+  <td colspan=3><font color=\"#000000\"><br>
   Please send an updated copy of the Directory to my
   email address every 3-4 months:<br>
   &nbsp;&nbsp;&nbsp;&nbsp;<input type=radio name=\"request\"
@@ -338,7 +338,7 @@ All other fields are optional.";
   value=\"2\"$reqchk[2]>&nbsp;&nbsp;Sorted by graduating class.<br>
   &nbsp;&nbsp;&nbsp;&nbsp;<input type=radio name=\"request\"
   value=\"0\"$reqchk[0]>&nbsp;&nbsp;No, please do not send me copies
-  of the Directory.
+  of the Directory.</font>
   </td>
 </tr>
 </table>
@@ -409,7 +409,7 @@ sub about_text {
 
     $do_vcard_p = 0 unless defined($do_vcard_p);
 
-    $retval .= "<center><table border=0 cellpadding=6><tr><td bgcolor=\"#ffffcc\"><pre>\n\n" if $do_html_p;
+    $retval .= "<center><table border=0 cellpadding=6><tr><td bgcolor=\"#ffffcc\"><font color=\"#000000\"><pre>\n\n" if $do_html_p;
     $retval .= "First Name         : ";
     $retval .= ($first eq '') ? "\n" : 
 	((($do_html_p) ? "<strong>" : "") .
@@ -486,7 +486,7 @@ sub about_text {
     }
 
 
-    $retval .= "</pre></td></tr></table></center>\n" if $do_html_p;
+    $retval .= "</pre></font></td></tr></table></center>\n" if $do_html_p;
 
     if ($do_html_p && $time ne '') {
 	$retval .= &'modify_html($id,&'inorder_fullname($first,$last,$married));
@@ -593,7 +593,7 @@ sub common_html_hdr {
     foreach $idx (0 .. $#page_idx) {
 	($name, $url) = split(/,/, $page_idx[$idx]);
         if ($idx == $page) {
-	    $h2 .= "\n  <strong>$name</strong>";
+	    $h2 .= "\n  <font color=\"#000000\"><strong>$name</strong></font>";
         } else {
             $h2 .= "<a\n  href=\"$url\">$name</a>";
         }
@@ -605,7 +605,7 @@ sub common_html_hdr {
     foreach $idx (0 .. $#second_idx) {
 	($name, $url) = split(/,/, $second_idx[$idx]);
         if ($idx == ($page - 10)) {
-	    $h2 .= "\n  <strong>$name</strong>";
+	    $h2 .= "\n  <font color=\"#000000\"><strong>$name</strong></font>";
         } else {
             $h2 .= "<a\n  href=\"$url\">$name</a>";
         }
