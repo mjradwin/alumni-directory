@@ -4,7 +4,7 @@
 #     FILE: mvhsaid.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: MVHS Alumni Internet Directory CGI interface
-#      $Id: mvhsaid,v 3.41 1998/12/26 18:11:09 mradwin Exp mradwin $
+#      $Id: mvhsaid,v 3.42 1998/12/28 17:16:49 mradwin Exp mradwin $
 #
 
 require 'aid_util.pl';
@@ -24,7 +24,7 @@ if (defined($ENV{'PATH_INFO'}) && $ENV{'PATH_INFO'} =~ m,^/vcard/,) {
     $in{'vcard'} =~ s,^/vcard/(\d+).*$,$1,;
 }
 
-$rcsid = '$Id: mvhsaid,v 3.41 1998/12/26 18:11:09 mradwin Exp mradwin $'; #'fnt
+$rcsid = '$Id: mvhsaid,v 3.42 1998/12/28 17:16:49 mradwin Exp mradwin $'; #'fnt
 
 # special flags: version, update, vcard, about
 #
@@ -209,7 +209,8 @@ $in{'www'} = 'http://' . $in{'www'} if
 
 $in{'married'} = '' if defined $in{'married'} &&
     ($in{'married'} =~ /\(?\s*same\s+as\s+last\s+name\s*\)?/i ||
-     $in{'married'} =~ /\(?\s*same\s*\)?/i);
+     $in{'married'} =~ /\(?\s*same\s*\)?/i ||
+     $in{'married'} eq $in{'last'});
      
 # did they have non-blank entries for all the required fields?
 # did they check the "other" box for school, but not fill in any text?
