@@ -4,7 +4,7 @@
 #     FILE: mvhsaid.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: MVHS Alumni Internet Directory CGI interface
-#      $Id: mvhsaid,v 3.23 1998/09/23 22:11:10 mradwin Exp mradwin $
+#      $Id: mvhsaid,v 3.24 1998/10/13 21:06:26 mradwin Exp mradwin $
 #
 
 require 'aid_util.pl';
@@ -24,7 +24,7 @@ if (defined($ENV{'PATH_INFO'}) && $ENV{'PATH_INFO'} =~ m,^/vcard/,) {
     $in{'vcard'} =~ s,^/vcard/(\d+).*$,$1,;
 }
 
-$rcsid = '$Id: mvhsaid,v 3.23 1998/09/23 22:11:10 mradwin Exp mradwin $'; #'fnt
+$rcsid = '$Id: mvhsaid,v 3.24 1998/10/13 21:06:26 mradwin Exp mradwin $'; #'fnt
 
 # special flags: version, update, vcard, about
 #
@@ -296,14 +296,17 @@ See the <a href=\"" . &aid_config('master_path') .
 "tech.html#submit\">submission tech note</a>
 for behind-the-scenes details.</p>
 
-<p>In the meantime, if you'd like to use chat and message boards with
-other MVHS and Awalt alumni, join the
-<a href=\"http://clubs.yahoo.com/clubs/mountainviewhighschool\">MVHS Yahoo!
-Club</a>.  Sign up for the
+<p>You might also be interested in joining the 
+<a href=\"http://clubs.yahoo.com/clubs/mountainviewhighschool\">MVHS
+Club on Yahoo!</a> The MVHS Club adds a Chat Room and Message Boards to
+the services currently provided by this Directory.</p>
+
+<p>Sign up for the 
 <a href=\"http://www.planetall.com/registration/basic/recruit.asp?pcustomerid=1520098&Groupid=6602&Source=40\">MVHS
-Group on PlanetAll</a> if you want to share your detailed address book
-information (birthdays, phone numbers, etc.) with only the contacts you
-select.</p>
+Group on PlanetAll</a> if you want to share more detailed address book
+information (birthdays, phone numbers, etc.) with other alumni.  People
+will only be allowed to access your information with your permission,
+and you can share as much or as little as you want.</p>
 ";
 
     print &common_html_ftr(-1);
