@@ -2,7 +2,7 @@
 #     FILE: Makefile
 #   AUTHOR: Michael J. Radwin
 #    DESCR: Makefile for building the Alumni Internet Directory
-#      $Id: Makefile,v 3.69 1999/03/26 19:41:16 mradwin Exp mradwin $
+#      $Id: Makefile,v 3.70 1999/03/27 04:39:39 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -79,7 +79,7 @@ SNAPSHOTFILES= \
 all:	index submit \
 	addupdate reunions links faq copyright \
 	recent multi_class multi_alpha \
-	pages class awalt goners download \
+	pages awalt goners download \
 	stats $(CGIDIR)/nph-mvhsaid \
 	vcard pine_book
 
@@ -106,13 +106,6 @@ multi_alpha:	$(MULTI_ALPHA_TS)
 $(MULTI_ALPHA_TS):	$(DBFILE) $(BIN_MULTI_ALPHA)
 	mkdir -p $(WWWDIR)/alpha
 	$(BIN_MULTI_ALPHA) $(DBFILE)
-
-CLASS=$(WWWDIR)/class/all.html
-CLASS_TS=$(WWWDIR)/class/.all.html
-class:	$(CLASS_TS)
-$(CLASS_TS):	$(DBFILE) $(BIN_CLASS)
-	mkdir -p $(WWWDIR)/class
-	$(BIN_CLASS) $(DBFILE) $(CLASS)
 
 AWALT=$(WWWDIR)/class/awalt.html
 AWALT_TS=$(WWWDIR)/class/.awalt.html
