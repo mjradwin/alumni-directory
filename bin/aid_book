@@ -4,8 +4,6 @@
 # pine-style address book
 #
 
-
-
 require 'mv_util.pl';
 require 'getopts.pl';
 
@@ -50,7 +48,7 @@ Do Not Edit! -->
 while(<MVHS>) {
     chop;
     ($time,$id,$req,$last,$first,$married,
-     $school,$year,$email,$alias,$homepage) = &mv_parse($_);
+     $school,$year,$email,$alias,$homepage,$location) = &mv_parse($_);
     
     if ($aliases{$alias} > 0) {
 	$aliases{$alias} = $aliases{$alias} + 1;

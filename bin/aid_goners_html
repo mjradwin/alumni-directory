@@ -24,7 +24,7 @@ print FMTOUT "------------------------------------------------------------------
 while(<MVHS>) {
     chop;
     ($time,$id,$req,$last,$first,$married,
-     $school,$year,$email,$alias,$homepage) = &mv_parse($_);
+     $school,$year,$email,$alias,$homepage,$location) = &mv_parse($_);
 
     $fullname = &fullname($first,$last,$married);
     $affil = &affiliate($year,$school);
