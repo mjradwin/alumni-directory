@@ -4,7 +4,7 @@
 #     FILE: form.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: Alumni Internet Directory CGI form-submission interface
-#      $Id: form,v 5.7 1999/06/10 21:22:40 mradwin Exp mradwin $
+#      $Id: form,v 5.8 1999/06/21 18:50:11 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -44,7 +44,7 @@ $mailprog = &aid_config('mailprog');
 $dbmfile = &aid_config('dbmfile');
 $dbmfile =~ s/\.db$//;
 
-$rcsid = '$Id: form,v 5.7 1999/06/10 21:22:40 mradwin Exp mradwin $'; #'fnt
+$rcsid = '$Id: form,v 5.8 1999/06/21 18:50:11 mradwin Exp mradwin $'; #'fnt
 
 $listing_upd_title = 'Modify Your Directory Listing';
 $listing_upl_title = 'Select a Listing to Modify';
@@ -347,8 +347,9 @@ sub queue_submission {
 
     $mailbody  = "Dear $mailname,\n\n";
 
-    $mailbody .= 'Submission from ' . &aid_inorder_fullname(*in);
-    $mailbody .= ' <' . $in{'e'} . "> follows:\n";
+    ($affil,$len) = &aid_affiliate(*in,0);
+    $mailbody .= "Submission from userid $in{'id'}:\n  " .
+	&aid_inorder_fullname(*in) . $affil . ' <' . $in{'e'} . ">\n";
 
     $mailbody .= "\n" . &aid_config('sub_beg_str') . "\n";
 
