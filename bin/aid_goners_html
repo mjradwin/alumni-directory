@@ -15,7 +15,7 @@ open(FMTOUT,">$ARGV[1]") || die "Can't open $ARGV[1]: $!\n";
 
 print FMTOUT &common_html_hdr(-1, "Invalid&nbsp;Addresses");
 print FMTOUT "<br>";
-print FMTOUT &tableheader("Alumni with Invalid Addresses", 1, 'eeee99', 1);
+print FMTOUT &tableheader("Alumni with Invalid Addresses", 1, 'ffff99', 1);
 print FMTOUT "<p>The following addresses are invalid.  If you know a new email\n";
 print FMTOUT "address for anyone on this list, please <a href=\"add.html\">submit it</a>!</p>\n\n";
 print FMTOUT "<pre>";

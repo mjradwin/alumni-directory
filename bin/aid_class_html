@@ -16,7 +16,7 @@ open(FMTOUT,">$ARGV[1]") || die "Can't open $ARGV[1]: $!\n";
 print FMTOUT &common_html_hdr(2);
 open(MVHSPRE,$ARGV[0]) || die "Can't open $ARGV[0]: $!\n";
 print FMTOUT "<br>";
-print FMTOUT &tableheader("Alumni Listed by Graduating Class", 1, 'eeee99', 1);
+print FMTOUT &tableheader("Alumni Listed by Graduating Class", 1, 'ffff99', 1);
 print FMTOUT "<p>Index: <tt>";
 $lastYear = '00';
 $first_fac_staff = 0;

@@ -22,7 +22,7 @@ open(FMTOUT,">$ARGV[1]") || die "Can't open $ARGV[1]: $!\n";
 
 print FMTOUT &common_html_hdr(4);
 print FMTOUT "<br>";
-print FMTOUT &tableheader("Alumni with Web Pages", 1, 'eeee99', 1);
+print FMTOUT &tableheader("Alumni with Web Pages", 1, 'ffff99', 1);
 print FMTOUT "<pre>";
 print FMTOUT "Name and Graduation Year                  Email\n";
 print FMTOUT "---------------------------------------------------------------------------\n";
