@@ -2,7 +2,7 @@
 #     FILE: mv_util.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: perl library routines for the MVHS Alumni Internet Directory
-#      $Id: mv_util.pl,v 1.15 1997/03/23 19:27:29 mjr Exp mjr $
+#      $Id: mv_util.pl,v 1.13 1997/03/23 20:56:31 mjr Exp mjr $
 #
 
 CONFIG: {
@@ -321,7 +321,7 @@ All other fields are optional.";
     $tableh .= "</p>\n\n";
 
     
-    return "<br\n" . $tableh . "
+    return "<br>\n" . $tableh . "
 <form method=post action=\"" . $config{'cgi_path'} . "\"> 
 <table border=0 cellspacing=10>
 <tr>
@@ -538,6 +538,7 @@ sub common_html_hdr {
 #    ($page_name) = split(/,/, $page_idx[$page]) unless $page_name;
 #    $page_name =~ s/&nbsp;/ /g;
 
+    $ENV{'TZ'} = 'EST';
     $h1 = "<body bgcolor=\"#ffffff\" LINK=\"#0000cc\" TEXT=\"#000000\" VLINK=\"#990099\">
 <hr noshade size=1>
 <table border=0 cellpadding=8 cellspacing=0 width=\"100%\">

@@ -4,7 +4,7 @@
 #     FILE: mvhsaid.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: MVHS Alumni Internet Directory CGI interface
-#      $Id: mjr-mvhs.cgi,v 1.4 1997/03/23 19:40:06 mjr Exp mjr $
+#      $Id: mvhsaid,v 1.1 1997/03/23 22:09:55 mjr Exp mjr $
 #
 
 require 'mv_util.pl';
@@ -33,7 +33,7 @@ close(SUBMIT_FTR);
 # debugging: what version is installed?
 if (defined($in{'version'})) {
     print @submit_hdr, "\n";
-    print '<pre>Version: $Id: mjr-mvhs.cgi,v 1.4 1997/03/23 19:40:06 mjr Exp mjr $</pre>', "\n";
+    print '<pre>Version: $Id: mvhsaid,v 1.1 1997/03/23 22:09:55 mjr Exp mjr $</pre>', "\n";
     print @submit_ftr, "\n";
     
     exit(0);
@@ -138,32 +138,41 @@ EOM
 }
 
 sub about_text {
+    require 'ctime.pl';
+
     local($retval);
     local($rawdata,$show_req_p) = @_;
     local($time,$id,$req,$last,$first,$married,
 	  $school,$year,$email,$homepage) = split(/;/, $rawdata);
 
     $retval = "<pre>\n";
-    $retval .= "First Name      : <strong>$first</strong>\n";
-    $retval .= "Last/Maiden Name: <strong>$last</strong>\n";
-    $retval .= "Married Name    : ";
+    $retval .= "First Name       : <strong>$first</strong>\n";
+    $retval .= "Last/Maiden Name : <strong>$last</strong>\n";
+    $retval .= "Married Name     : ";
     $retval .= ($married eq '') ? "(same as last name)\n" 
 	: "<strong>$married</strong>\n";
     
     $retval .= "\n";
-    $retval .= "School          : <strong>$school</strong>\n";
-    $retval .= "Grad. Year      : <strong>$year</strong>\n";
+    $retval .= "School           : <strong>$school</strong>\n";
+    $retval .= "Grad. Year       : <strong>$year</strong>\n";
 
     $retval .= "\n";
-    $retval .= "Email           : ";
+    $retval .= "Email            : ";
     $retval .= "<strong><a href=\"mailto:$email\">$email</a></strong>\n";
-    $retval .= "Web Page        : ";
+    $retval .= "Web Page         : ";
     $retval .= ($homepage eq '') ? "(none)\n" 
 	: "<strong><a href=\"$homepage\">$homepage</a></strong>\n";
 
     if ($show_req_p) {
-	$retval .= "Send Updates    : ";
+	$retval .= "Send Email Updates:";
 	$retval .= ($req) ? "yes\n" : "no\n";
+    }
+
+    if ($time ne '') {
+	$ENV{'TZ'} = 'EST';
+	$retval .= "\n";
+	$retval .= "Last Updated     : ";
+	$retval .= &ctime($time);
     }
 
     $retval .= "</pre>\n";
