@@ -2,11 +2,11 @@
 #     FILE: aid_util.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: perl library routines for the Alumni Internet Directory
-#      $Id: aid_util.pl,v 4.59 1999/03/15 23:50:11 mradwin Exp mradwin $
+#      $Id: aid_util.pl,v 4.60 1999/03/16 01:11:03 mradwin Exp mradwin $
 #
 
 $aid_util'rcsid =
- '$Id: aid_util.pl,v 4.59 1999/03/15 23:50:11 mradwin Exp mradwin $';
+ '$Id: aid_util.pl,v 4.60 1999/03/16 01:11:03 mradwin Exp mradwin $';
 
 # ----------------------------------------------------------------------
 # CONFIGURATION
@@ -503,6 +503,7 @@ sub aid_class_db {
     @db[sort bydatakeys $[..$#db];
 }
 
+
 sub aid_vcard_path {
     package aid_util;
 
@@ -510,6 +511,71 @@ sub aid_vcard_path {
 
     $config{'vcard_cgi'} . "/${id}.vcf";
 }
+
+sub aid_yahoo_abook_path {
+    package aid_util;
+
+    local(*rec) = @_;
+    local($url) = 'http://address.yahoo.com/yab?A=da&au=a';
+
+    $url .= '&fn=' . &url_escape($rec{'first'});
+    if ($rec{'married'} ne '')
+    {
+	$url .= '&mn=' . &url_escape($rec{'last'});
+	$url .= '&ln=' . &url_escape($rec{'married'});
+    }
+    else
+    {
+	$url .= '&mn=' . &url_escape($rec{'middle'});
+	$url .= '&ln=' . &url_escape($rec{'last'});
+    }
+    $url .= '&c=Unfiled';
+    $url .= '&nn=' . &url_escape($rec{'alias'});
+    $url .= '&e='  . &url_escape($rec{'email'});
+    $url .= '&yid=&wp=&pg=&pp=0&ti=';
+    $url .= '&co=' . $school_name[$rec{'sch_id'}];
+    if ($rec{'year'} =~ /^\d+$/) {
+	$url .= '+Class+of+' . $rec{'year'};
+    } else {	
+	$url .= '+' . &url_escape($rec{'year'});
+    }
+    $url .= '&f=';
+    $url .= '&pu=' . &url_escape($rec{'www'});
+    $url .= '&af=d&wa1=';
+
+    if ($rec{'location'} =~ /^(.*),\s+(\w\w)$/)
+    {
+	$url .= '&hc=' . &url_escape($1);
+	$url .= '&hs=' . $2;
+	$url .= '&hz=';
+    }
+    elsif ($rec{'location'} =~ /^(.*),\s+(\w\w)\s+(\d\d\d\d\d)$/)
+    {
+	$url .= '&hc=' . &url_escape($1);
+	$url .= '&hs=' . $2;
+	$url .= '&hz=' . $3;
+    }
+    else
+    {
+	$url .= '&hc=' . &url_escape($rec{'location'});
+	$url .= '&hs=&hz=';
+    }
+    $url .= '&hco=&mb=&op=&e1=&c1=';
+
+    $url .= '&.done=';
+    if (defined $ENV{'HTTP_REFERRER'} && $ENV{'HTTP_REFERRER'} =~ m,^http://,)
+    {
+	$url .= &url_escape($ENV{'HTTP_REFERRER'});
+    }
+    else
+    {
+	$url .= &url_escape('http://' .
+			    $config{'master_srv'} . $config{'master_path'});
+    }
+
+    $url;
+}
+
 
 
 sub aid_about_path {
@@ -892,6 +958,10 @@ sub aid_verbose_entry {
     $retval .= "&nbsp;|&nbsp;";
     $retval .= "<a href=\"" . $config{'about_cgi'} . "?about=$rec{'id'}\">";
     $retval .= "update</a>";
+    $retval .= "&nbsp;|&nbsp;";
+    $retval .= "<a href=\"" . &main'aid_yahoo_abook_path(*rec) . "\">"; #'#
+    $retval .= 'add to Y! address book';
+    $retval .= "</a>\n";
     $retval .= "]</small>\n";
 
     $retval .= &main'aid_is_new_html(*rec) unless $suppress_new; #'#
@@ -1092,6 +1162,11 @@ sub about_text {
 	$retval .= "vCard              : ";
 	$retval .= "<a href=\"" . &main'aid_vcard_path($rec{'id'}) . "\">"; #'#
 	$retval .= $image_tag{'vcard'};
+	$retval .= "</a>\n";
+
+	$retval .= "Yahoo! Address Book: ";
+	$retval .= "<a href=\"" . &main'aid_yahoo_abook_path(*rec) . "\">"; #'#
+	$retval .= 'Add to My Personal Address Book';
 	$retval .= "</a>\n";
     }
 
@@ -1545,6 +1620,26 @@ sub aid_db_unpack_rec
     %rec;
 };
 
+sub aid_util'url_escape
+{
+    local($_) = @_;
+    local($res) = '';
+
+    foreach (split(//))
+    {
+	if (/[^a-zA-Z0-9_.-]/)
+	{
+	    $res .= "\U" . sprintf("%%%02x", ord($_)) . "\E";
+	}
+	else
+	{
+	    $res .= $_;
+	}
+    }
+
+    $res;
+}
+
 sub old_encode_base64
 {
     package hacked_MIME;
@@ -1605,6 +1700,8 @@ if ($^W && 0)
     $aid_util'rcsid = '';
     $aid_util'disclaimer = '';
     $aid_util'site_tags = '';
+    &aid_yahoo_abook_path();
+    &aid_util'url_escape();
 }
 
 1;
