@@ -1,6 +1,6 @@
 #!/usr/local/bin/perl -w
 
-# $Id: aid_addname,v 6.4 2003/10/30 07:28:18 mradwin Exp mradwin $
+# $Id: aid_addname,v 6.5 2003/10/30 17:56:04 mradwin Exp mradwin $
 #
 # Copyright (c) 2003  Michael J. Radwin.
 # All rights reserved.
@@ -169,6 +169,8 @@ sub readspool
 
 sub rebuild
 {
+    sleep(2);	# dreamhost has problems with filesystem sync
+
     chdir aid_util::config('aiddir') || die "$0: can't chdir: $!\n";
 
     my $cmd = $make . ' MOD_IDS="' . join(' ', @new_ids, @upd_ids) . '"' .
