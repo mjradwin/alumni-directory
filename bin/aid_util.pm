@@ -2,11 +2,11 @@
 #     FILE: aid_util.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: perl library routines for the Alumni Internet Directory
-#      $Id: aid_util.pl,v 2.3 1998/04/02 20:39:45 mjr Exp mjr $
+#      $Id: aid_util.pl,v 2.4 1998/04/02 20:48:12 mjr Exp mjr $
 #
 
 $aid_util'rcsid =
- '$Id: aid_util.pl,v 2.3 1998/04/02 20:39:45 mjr Exp mjr $';
+ '$Id: aid_util.pl,v 2.4 1998/04/02 20:48:12 mjr Exp mjr $';
 
 # ----------------------------------------------------------------------
 # CONFIGURATION
@@ -21,6 +21,7 @@ $aid_util'rcsid =
     ('admin_name',   'Michael John Radwin',
      'admin_email',  "mjr\@acm.org",
      'school',       'Mountain View High School',
+     'short_school', 'MVHS',
      'admin_school', "Mountain View High School, Class of '93",
      'admin_phone',  '408-536-2554',
      'admin_url',    'http://slimy.com/~mjr/',
@@ -174,7 +175,7 @@ for ($i = 0; $i <= $#aid_util'field_names; $i++) { #'#
 $aid_util'blank_entry{'id'}      = -1;      #'#
 $aid_util'blank_entry{'request'} = 2;       #'#
 $aid_util'blank_entry{'message'} = '';      #'#
-$aid_util'blank_entry{'school'}  = 'MVHS';  #'#
+$aid_util'blank_entry{'school'}  = $config{'short_school'};  #'#
 
 %aid_util'image_tag = #'#
     (
@@ -304,7 +305,8 @@ sub affiliate {
 	if ($rec{'school'} eq 'Awalt') {
 	    $affil  .= "A'$year";
 	    $len    += length("A'$year");
-	} elsif ($rec{'school'} eq 'MVHS' || $rec{'school'} eq '') {
+	} elsif ($rec{'school'} eq $config{'short_school'} ||
+		 $rec{'school'} eq '') {
 	    $affil  .= "'$year";
 	    $len    += length("'$year");
 	} else {
@@ -500,7 +502,8 @@ sub submit_body {
 	$reqchk[$i] = ($newrec{'request'} == $i) ? ' checked' : '';
     }
 
-    if ($newrec{'school'} eq 'MVHS' || $newrec{'school'} eq '') {
+    if ($newrec{'school'} eq $config{'short_school'} || 
+	$newrec{'school'} eq '') {
 	$mvhs_checked = ' checked';
 	$newrec{'school'} = '';
     } elsif ($newrec{'school'} eq 'Awalt') {
@@ -566,7 +569,7 @@ are required.  All other fields are optional.</p>\n\n";
   <td valign=top><font color=\"#$cell_fg\">High School</font></td>
   <td>$star</td>
   <td valign=top><input type=radio name=\"school\"
-  value=\"MVHS\"$mvhs_checked><font color=\"#$cell_fg\">&nbsp;MVHS&nbsp;&nbsp;&nbsp;&nbsp;<input
+  value=\"$config{'short_school'}\"$mvhs_checked><font color=\"#$cell_fg\">&nbsp;$config{'short_school'}&nbsp;&nbsp;&nbsp;&nbsp;<input
   type=radio name=\"school\" value=\"Awalt\"$awalt_checked>&nbsp;Awalt</font></td>
 </tr>
 <tr>
@@ -714,7 +717,7 @@ sub aid_write_verbose_entry {
 
     print FMTOUT "</dt>\n";
     print FMTOUT "<dt>School: <strong>$rec{'school'}</strong></dt>\n" 
-	if $rec{'school'} ne 'MVHS';
+	if $rec{'school'} ne $config{'short_school'};
 #'#
     if ($rec{'year'} =~ /^\d+$/) {
 	if ($display_year) {
@@ -942,7 +945,7 @@ sub common_html_hdr {
     package aid_util;
 
     local($page,$title,$norobots) = @_;
-    local($hdr,$result,$timestamp);
+    local($hdr,$result,$timestamp,$titletag);
     local($rcstag) = "<!-- " . $config{'rcsid'} . " -->";
     local($date) = &main'ctime(time);  #'#
 
@@ -952,9 +955,13 @@ sub common_html_hdr {
 
     $result = &main'tableheader_internal($title,1,$header_fg); #'#
 
+    $titletag = ($page == 0) ?
+	($config{'school'} . " Alumni Internet Directory") :
+	($config{'short_school'} . " Alumni: " . $title);
+
     $hdr  = "<!DOCTYPE HTML PUBLIC \"-//IETF//DTD HTML//EN\">\n" .
 	"<html>\n<head>\n" .
-	"<title>" . $config{'school'} . " Alumni Internet Directory" .
+	"<title>" . $titletag .
 	"</title>\n" . $site_tags . "\n" . $pics_label . "\n";
     $hdr .= "$noindex\n" if $norobots;
     $hdr .= "$rcstag\n";
