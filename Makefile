@@ -2,7 +2,7 @@
 #     FILE: Makefile
 #   AUTHOR: Michael J. Radwin
 #    DESCR: Makefile for building the MVHS Alumni Internet Directory
-#      $Id: Makefile,v 1.26 1997/08/22 17:42:40 mjr Exp mjr $
+#      $Id: Makefile,v 1.27 1997/08/28 02:09:19 mjr Exp mjr $
 #
 
 WWWDIR=/home/divcom/mjr/public_html/mvhs
@@ -10,7 +10,7 @@ RM=/bin/rm -f
 
 TARFILES=Makefile *.pl index.include bin data
 
-all:	adrfile home submit new alpha class goners pages books
+all:	adrfile home submit new alpha class awalt goners pages books
 
 chmod:
 	( cd $(WWWDIR) ; chmod -R a+rX * )
@@ -32,6 +32,10 @@ $(WWWDIR)/all.html:	data/alpha.adr bin/mv_alpha_html
 class:	$(WWWDIR)/class.html
 $(WWWDIR)/class.html:	data/class.adr bin/mv_class_html
 	bin/mv_class_html data/class.adr $(WWWDIR)/class.html
+
+awalt:	$(WWWDIR)/awalt.html
+$(WWWDIR)/awalt.html:	data/awalt.adr bin/mv_class_html
+	bin/mv_class_html data/awalt.adr $(WWWDIR)/awalt.html
 
 new:	$(WWWDIR)/recent.html
 $(WWWDIR)/recent.html:	data/date.adr bin/mv_new_html
@@ -71,6 +75,9 @@ data/alpha.adr:	data/mvhs.adr
 
 data/class.adr:	data/mvhs.adr
 	sort -t\; +7 -8 +3 -6 data/mvhs.adr > data/class.adr
+
+data/awalt.adr:	data/class.adr
+	grep -i awalt data/class.adr > data/awalt.adr
 
 data/date.adr:	data/mvhs.adr
 	sort data/mvhs.adr > data/date.adr
