@@ -2,7 +2,7 @@
 #     FILE: Makefile
 #   AUTHOR: Michael J. Radwin
 #    DESCR: Makefile for building the Alumni Internet Directory
-#      $Id: Makefile,v 5.1 1999/05/31 21:19:10 mradwin Exp mradwin $
+#      $Id: Makefile,v 5.2 1999/05/31 23:00:47 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -39,8 +39,6 @@ RM=/bin/rm -f
 MV=/bin/mv -f
 CP=/bin/cp -pf
 
-ADR_MASTER=$(DATADIR)/master.adr
-
 TARFILES= \
 	$(TAR_AIDDIR)/README \
 	$(TAR_AIDDIR)/COPYING \
@@ -50,7 +48,6 @@ TARFILES= \
 	$(TAR_AIDDIR)/bin/$(SCHOOL)_config.pl \
 	$(TAR_AIDDIR)/bin/tableheader.pl \
 	$(TAR_AIDDIR)/cgi/[a-z]* \
-	$(TAR_AIDDIR)/data/test.adr \
 	$(TAR_AIDDIR)/data/*.include
 
 SNAPSHOTFILES= \
@@ -78,13 +75,11 @@ symlinks:
 	(cd $(WWWDIR) ; /bin/ln -sf $(CGISRC)/default.css . )
 	echo 'SetHandler cgi-script' > $(CGIDIR)/.htaccess
 
+WORKING_DB=$(DATADIR)/working.db
 DBFILE=$(WWWDIR)/master.db
 dbfile:	$(DBFILE)
-$(DBFILE):	$(ADR_MASTER) $(BINDIR)/aid_dbm_write $(AID_UTIL_PL)
-	$(RM) ./master.db
-	$(BINDIR)/aid_dbm_write $(ADR_MASTER) ./master.db
-	$(RM) $(DBFILE)
-	$(MV) ./master.db $(DBFILE)
+$(DBFILE):	$(WORKING_DB)
+	$(CP) $(WORKING_DB) $(DBFILE)
 	chmod 0444 $(DBFILE)
 	$(BINDIR)/aid_dbm_read -u ./data/master.u $(DBFILE)
 
