@@ -1,6 +1,6 @@
 #!/usr/bin/perl -w
 
-# $Id: aid_dbm_write,v 1.11 1999/02/27 00:32:28 mradwin Exp mradwin $
+# $Id: aid_dbm_write,v 1.12 1999/02/27 01:32:25 mradwin Exp mradwin $
 
 require 'aid_util.pl';
 require 'getopts.pl';
@@ -127,7 +127,6 @@ $DB{'__t_awalt__'} = pack("N", $latest_awalt);
 $DB{'__t_goner__'} = pack("N", $latest_goner);
 
 dbmclose(DB);
-utime $latest, $latest, "$ARGV[1].db";
 
 print STDERR ".";
 print STDERR "\n";

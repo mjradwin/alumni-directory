@@ -2,7 +2,7 @@
 
 #
 # does the html version of the invalid address list
-# $Id: aid_goners_html,v 3.18 1999/02/27 00:16:47 mradwin Exp mradwin $
+# $Id: aid_goners_html,v 3.19 1999/02/27 01:09:48 mradwin Exp mradwin $
 #
 
 require 'aid_util.pl';
@@ -55,5 +55,12 @@ print FMTOUT &common_html_ftr(-1, "Invalid&nbsp;Addresses");
 dbmclose(DB);
 close(FMTOUT);
 utime $time, $time, $ARGV[1];
+
+# touch timestamp
+$now = time;
+$ts = $ARGV[1];
+$ts =~ s,/([^/]+)$,/\.$1,;
+open(TS,">$ts") && close(TS);
+utime $now, $now, $ts;
 
 exit(0);
