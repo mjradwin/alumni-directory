@@ -2,11 +2,11 @@
 #     FILE: aid_util.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: perl library routines for the Alumni Internet Directory
-#      $Id: aid_util.pl,v 1.101 1998/03/20 04:32:02 mjr Exp mjr $
+#      $Id: aid_util.pl,v 1.102 1998/03/20 04:37:53 mjr Exp mjr $
 #
 
 $aid_util'rcsid =
- '$Id: aid_util.pl,v 1.101 1998/03/20 04:32:02 mjr Exp mjr $';
+ '$Id: aid_util.pl,v 1.102 1998/03/20 04:37:53 mjr Exp mjr $';
 
 # ----------------------------------------------------------------------
 # CONFIGURATION
@@ -706,10 +706,13 @@ sub aid_write_verbose_entry {
     print FMTOUT "</dt>\n";
     print FMTOUT "<dt>School: <strong>$rec{'school'}</strong></dt>\n" 
 	if $rec{'school'} ne 'MVHS';
-    print FMTOUT "<dt>Year:  <strong>$rec{'year'}</strong></dt>\n" 
-	if $display_year && !($rec{'year'} =~ /^\d+$/);
-    print FMTOUT "<dt>Affiliation:  <strong>$rec{'year'}</strong></dt>\n" 
-	unless ($rec{'year'} =~ /^\d+$/);
+
+    if ($rec{'year'} =~ /^\d+$/ && $display_year) {
+	print FMTOUT "<dt>Year:  <strong>$rec{'year'}</strong></dt>\n";
+    } else {
+	print FMTOUT "<dt>Affiliation:  <strong>$rec{'year'}</strong></dt>\n";
+    }
+
     print FMTOUT "<dt>Email: <tt><strong><a href=\"mailto:$rec{'email'}\">$rec{'email'}</a></strong></tt></dt>\n";
     print FMTOUT "<dt>Web Page: <tt><strong><a href=\"$rec{'homepage'}\">$rec{'homepage'}</a></strong></tt></dt>\n"
 	if $rec{'homepage'} ne '';
