@@ -2,7 +2,7 @@
 #     FILE: Makefile
 #   AUTHOR: Michael J. Radwin
 #    DESCR: Makefile for building the Alumni Internet Directory
-#      $Id: Makefile,v 3.85 1999/05/19 17:28:18 mradwin Exp mradwin $
+#      $Id: Makefile,v 3.86 1999/05/24 18:25:15 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -27,6 +27,7 @@ WWWDIR=$(WWWROOT)/docs/$(SCHOOL)-alumni
 CGIDIR=$(WWWROOT)/cgi-bin
 DATADIR=$(HOME)/$(SCHOOL)/data
 BINDIR=$(HOME)/$(SCHOOL)/bin
+CGISRC=$(HOME)/$(SCHOOL)/cgi
 AID_UTIL_PL=$(BINDIR)/aid_util.pl
 AID_SUBMIT_PL=$(BINDIR)/aid_submit.pl
 
@@ -48,16 +49,16 @@ TARFILES= \
 	$(TAR_AIDDIR)/bin/aid_* \
 	$(TAR_AIDDIR)/bin/generic_config.pl \
 	$(TAR_AIDDIR)/bin/$(SCHOOL)_config.pl \
-	$(TAR_AIDDIR)/bin/$(SCHOOL)aid \
-	$(TAR_AIDDIR)/bin/nph-aid-search \
 	$(TAR_AIDDIR)/bin/tableheader.pl \
+	$(TAR_AIDDIR)/cgi/$(SCHOOL)aid \
+	$(TAR_AIDDIR)/cgi/nph-* \
+	$(TAR_AIDDIR)/cgi/*.pl \
 	$(TAR_AIDDIR)/data/test.adr \
 	$(TAR_AIDDIR)/data/*.include \
 	$(TAR_WWWDIR)/default.css
 
 SNAPSHOTFILES= \
 	$(TAR_AIDDIR) \
-	$(TAR_AIDDIR)/cgi-bin/cgi-lib.pl \
 	$(TAR_WWWDIR)/default.css \
 	$(TAR_WWWDIR)/.htaccess \
 	$(TAR_WWWDIR)/master.db
@@ -71,7 +72,9 @@ all:	index submit \
 SYMLINKS=$(AID_SUBMIT_PL) $(AID_UTIL_PL) $(BINDIR)/aid_config.pl \
 	$(BINDIR)/$(SCHOOL)_config.pl $(BINDIR)/tableheader.pl
 symlinks:
-	(cd $(CGIDIR) ; /bin/ln -sf $(SYMLINKS) .; $(CP) $(BINDIR)/$(SCHOOL)aid .)
+	(cd $(CGIDIR) ; /bin/ln -sf $(SYMLINKS) .; \
+	 $(CP) $(CGISRC)/$(SCHOOL)aid $(CGISRC)/nph-aid-search . )
+	(cd $(WWWDIR) ; /bin/ln -sf $(CGISRC)/default.css . )
 
 DBFILE=$(WWWDIR)/master.db
 dbfile:	$(DBFILE)
