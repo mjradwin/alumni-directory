@@ -2,11 +2,11 @@
 #     FILE: aid_util.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: perl library routines for the Alumni Internet Directory
-#      $Id: aid_util.pl,v 2.2 1998/04/02 20:23:18 mjr Exp mjr $
+#      $Id: aid_util.pl,v 2.3 1998/04/02 20:39:45 mjr Exp mjr $
 #
 
 $aid_util'rcsid =
- '$Id: aid_util.pl,v 2.2 1998/04/02 20:23:18 mjr Exp mjr $';
+ '$Id: aid_util.pl,v 2.3 1998/04/02 20:39:45 mjr Exp mjr $';
 
 # ----------------------------------------------------------------------
 # CONFIGURATION
@@ -90,17 +90,18 @@ $aid_util'rcsid =
 #      );
 
 @aid_util'page_idx = #'#
-    ("Home,"                  . $aid_util'config{'master_path'},                 #'#
+    (
+     "Home,"                  . $aid_util'config{'master_path'},                 #'#
      "Alphabetically,"        . $aid_util'config{'master_path'} . "all.html",    #'#
      "Grad.&nbsp;Class,"      . $aid_util'config{'master_path'} . "class/",      #'#
      "Awalt&nbsp;Alumni,"     . $aid_util'config{'master_path'} . "awalt.html",  #'#
      "Recent&nbsp;Additions," . $aid_util'config{'master_path'} . "recent.html", #'#
      "Web&nbsp;Pages,"        . $aid_util'config{'master_path'} . "pages.html",  #'#
-     "Get&nbsp;Listed!,"      . $aid_util'config{'master_path'} . "add.html",    #'#
      );
 
 @aid_util'second_idx = #'#
-    ("Listings,"            . $aid_util'config{'master_path'} . "listings.html", #'#
+    (
+     "Add&nbsp;Your&nbsp;Listing!,"  . $aid_util'config{'master_path'} . "add.html",    #'#
      "Reunions,"            . $aid_util'config{'master_path'} . "reunions.html", #'#
      "Links,"               . $aid_util'config{'master_path'} . "links.html",    #'#
      "Nicknames,"           . $aid_util'config{'master_path'} . "books/",        #'#
