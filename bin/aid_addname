@@ -1,6 +1,6 @@
 #!/usr/bin/perl -w
 
-# $Id: aid_addname,v 3.25 1999/03/23 16:11:30 mradwin Exp mradwin $
+# $Id: aid_addname,v 3.26 1999/03/23 19:31:43 mradwin Exp mradwin $
 
 require 'getopts.pl';
 require 'aid_util.pl';
@@ -85,7 +85,7 @@ sub readspool {
 		    $maxlen = length($_) if (length($_) > $maxlen);
 		    $message .= $_;
 		}
-		if ($maxlen <= 56)
+		if ($maxlen <= 60)
 		{
 		    print STDOUT  $message;
 		    print NEWSOUT $message;
