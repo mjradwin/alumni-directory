@@ -2,11 +2,11 @@
 #     FILE: aid_util.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: perl library routines for the Alumni Internet Directory
-#      $Id: aid_util.pl,v 3.98 1999/01/22 21:31:49 mradwin Exp mradwin $
+#      $Id: aid_util.pl,v 3.99 1999/01/29 19:18:25 mradwin Exp mradwin $
 #
 
 $aid_util'rcsid =
- '$Id: aid_util.pl,v 3.98 1999/01/22 21:31:49 mradwin Exp mradwin $';
+ '$Id: aid_util.pl,v 3.99 1999/01/29 19:18:25 mradwin Exp mradwin $';
 
 # ----------------------------------------------------------------------
 # CONFIGURATION
@@ -675,7 +675,7 @@ are required.  All other fields are optional.</p>\n\n";
 <tr>
   <td valign=top><font color=\"#$cell_fg\"><label for=\"last\">Last
   Name/Maiden Name</label></font><br>
-  <font color=\"#$cell_fg\" size=\"-1\">(your last name in high school)</font></td>
+  <font color=\"#$cell_fg\"><small>(your last name in high school)</small></font></td>
   <td>$star</td>
   <td valign=top><input type=text name=\"last\" size=35
   value=\"$rec{'last'}\" id=\"last\"></td>
@@ -683,7 +683,7 @@ are required.  All other fields are optional.</p>\n\n";
 <tr>
   <td colspan=2 valign=top><font color=\"#$cell_fg\"><label
   for=\"married\">Married Last Name</label></font><br>
-  <font color=\"#$cell_fg\" size=\"-1\">(if different from maiden name)</font></td>
+  <font color=\"#$cell_fg\"><small>(if different from maiden name)</small></font></td>
   <td valign=top><input type=text name=\"married\" size=35
   value=\"$rec{'married'}\" id=\"married\"></td>
 </tr>
@@ -707,7 +707,7 @@ are required.  All other fields are optional.</p>\n\n";
 <tr>
   <td valign=top><font color=\"#$cell_fg\"><label
   for=\"year\">Graduation year or affiliation</label></font><br>
-  <font color=\"#$cell_fg\" size=\"-1\">(such as 1993, 2001, or Teacher)</font></td>
+  <font color=\"#$cell_fg\"><small>(such as 1993, 2001, or Teacher)</small></font></td>
   <td>$star</td>
   <td valign=top><input type=text name=\"year\" size=35
   value=\"$rec{'year'}\" id=\"year\"></td>
@@ -715,7 +715,7 @@ are required.  All other fields are optional.</p>\n\n";
 <tr>
   <td valign=top><font color=\"#$cell_fg\"><label
   for=\"email\">E-mail address</label></font><br>
-  <font color=\"#$cell_fg\" size=\"-1\">(such as chester\@aol.com)</font></td>
+  <font color=\"#$cell_fg\"><small>(such as chester\@aol.com)</small></font></td>
   <td>$star</td>
   <td valign=top><input type=text name=\"email\" size=35
   value=\"$rec{'email'}\" id=\"email\"></td>
@@ -729,7 +729,7 @@ are required.  All other fields are optional.</p>\n\n";
 <tr>
   <td colspan=2 valign=top><font color=\"#$cell_fg\"><label
   for=\"location\">Location</label></font><br>
-  <font color=\"#$cell_fg\" size=\"-1\">(your city, school, or company)</font></td>
+  <font color=\"#$cell_fg\"><small>(your city, school, or company)</small></font></td>
   <td valign=top><input type=text name=\"location\" size=35
   value=\"$rec{'location'}\" id=\"location\"></td>
 </tr>
@@ -743,7 +743,7 @@ are required.  All other fields are optional.</p>\n\n";
   </td>
 </tr>
 <tr>
-  <td colspan=3><font color=\"#$cell_fg\" size=\"-1\"><input type=checkbox
+  <td colspan=3><font color=\"#$cell_fg\"><small><input type=checkbox
   name=\"reunion\" id=\"reunion\" $reunion_chk><label
   for=\"reunion\">&nbsp;My class officers may notify me of
   reunion information via e-mail.</label><br><br>Please 
@@ -769,7 +769,7 @@ are required.  All other fields are optional.</p>\n\n";
 
   &nbsp;&nbsp;&nbsp;&nbsp;<input type=radio name=\"request\" id=\"request0\"
   value=\"0\"$reqchk[0]><label for=\"request0\">&nbsp;
-  $req_descr_long[0]</label></font>
+  $req_descr_long[0]</label></small></font>
 
   <input type=\"hidden\" name=\"id\" value=\"$rec{'id'}\">
   <input type=\"hidden\" name=\"created\" value=\"$rec{'created'}\">
@@ -844,21 +844,21 @@ sub aid_verbose_entry {
 
     $retval .= "<dl compact>\n";
 
-    $retval .= "<dt><font size=\"+1\">";
+    $retval .= "<dt><big>";
     $retval .= "<strong>";
     $retval .= "<a name=\"id-$rec{'id'}\">";
     $retval .=  $fullname;
     $retval .= "</a>";
     $retval .= "</strong>";
-    $retval .= "</font>\n";
+    $retval .= "</big>\n";
 
-    $retval .= "&nbsp;<font size=\"-1\">[";
+    $retval .= "&nbsp;<small>[";
     $retval .= "<a href=\"" . &main'aid_vcard_path($rec{'id'}) . "\">"; #'#
     $retval .= "vCard</a>";
     $retval .= "&nbsp;|&nbsp;";
     $retval .= "<a href=\"" . $config{'cgi_path'} . "/dyn?about=$rec{'id'}\">";
     $retval .= "update</a>";
-    $retval .= "]</font>\n";
+    $retval .= "]</small>\n";
     
     $retval .= $image_tag{'new_anchored'}
 	if !$suppress_new && &main'is_new($rec{'time'});  #'#
@@ -1089,30 +1089,30 @@ sub common_link_table {
     local($page) = @_;
     local($html,$name,$url,$idx);
 
-    $html  = "<!-- begin common_link_table -->\n";
-    $html .= "<p align=center><font size=\"-1\">";
+    $html  = "    <!-- nav begin -->\n";
+    $html .= "    <p align=center><small>";
 
     foreach $idx (0 .. $#page_idx) {
 	($name, $url) = split(/,/, $page_idx[$idx]);
         if ($idx == $page) {
-	    $html .= "\n  <strong>$name</strong>";
+	    $html .= "\n      <strong>$name</strong>";
         } else {
-            $html .= "<a\n  href=\"$url\">$name</a>";
+            $html .= "<a\n      href=\"$url\">$name</a>";
         }
 	$html .= " || " unless $idx == $#page_idx;
     }
-    $html .= "\n  <br>";
+    $html .= "\n      <br>";
     foreach $idx (0 .. $#second_idx) {
 	($name, $url) = split(/,/, $second_idx[$idx]);
         if ($idx == ($page - 10)) {
-	    $html .= "\n  <strong>$name</strong>";
+	    $html .= "\n      <strong>$name</strong>";
         } else {
-            $html .= "<a\n  href=\"$url\">$name</a>";
+            $html .= "<a\n      href=\"$url\">$name</a>";
         }
 	$html .= " || " unless $idx == $#second_idx;
     }
-    $html .= "\n</font></p>\n";
-    $html .= "<!-- end common_link_table -->\n";
+    $html .= "\n    </small></p>\n";
+    $html .= "    <!-- nav end -->\n";
     
     $html;
 }
@@ -1128,17 +1128,17 @@ sub common_html_ftr {
     $copyright = $second_idx[5];
     $copyright =~ s/^[^,]+,//;
 
-    $ftr  = "\n<!-- begin common_html_ftr -->\n";
+    $ftr  = "\n<!-- ftr begin -->\n";
 #    $ftr .= "<table cellspacing=0 cellpadding=6 border=1 width=\"100%\">\n" .
 #	"  <tr>\n    <td bgcolor=\"#$cell_bg\" valign=middle>\n";
     $ftr .= "<hr noshade size=\"1\">\n";
 #    $ftr .= &main'common_link_table($page); #'#
-    $ftr .= "\n<font size=\"-1\">" . $disclaimer . "</font><br>\n\n";
+    $ftr .= "\n<small>" . $disclaimer . "</small><br>\n\n";
 #    $ftr .= "    </td>\n  </tr>\n</table>\n";
 
-    $ftr .= "\n<br><font size=\"-1\"><a href=\"" . $copyright . "\">" .
-	"Copyright\n&copy; 1999 " . $config{'admin_name'} . "</a></font>\n\n" .
-	"<!-- end common_html_ftr -->\n\n</body>\n</html>\n";
+    $ftr .= "\n<br><small><a href=\"" . $copyright . "\">" .
+	"Copyright\n&copy; 1999 " . $config{'admin_name'} . "</a></small>\n\n" .
+	"<!-- ftr end -->\n\n</body>\n</html>\n";
 
     $ftr;
 }
@@ -1176,7 +1176,7 @@ sub common_html_hdr {
     $hdr .= "$noindex\n" if $norobots;
     $hdr .= "</head>\n\n";
     
-    $hdr .= "<!-- begin common_html_hdr -->\n";
+    $hdr .= "<!-- hdr begin -->\n";
 
     $hdr .= "<body bgcolor=\"#$body_bg\" text=\"#$body_fg\" link=\"#$body_link\" vlink=\"#$body_vlink\">\n";
     
@@ -1184,11 +1184,11 @@ sub common_html_hdr {
 <center>
 <table cellspacing=0 cellpadding=6 border=0 width=\"100%\">
   <tr>
-    <td bgcolor=\"#$header_bg\" valign=middle><p align=left><font size=\"+2\"
-    color=\"#$header_fg\"><strong><code>$config{'school'} Alumni
-    Internet Directory</code></strong></font>
-    </p><p align=right><font size=\"-1\" 
-    color=\"#$header_fg\"><em>$timestamp</em></font></p>
+    <td bgcolor=\"#$header_bg\" valign=middle><p align=left><font
+    color=\"#$header_fg\"><big><strong><tt>$config{'school'} Alumni
+    Internet Directory</tt></strong></big></font>
+    </p><p align=right><font
+    color=\"#$header_fg\"><small><em>$timestamp</em></small></font></p>
     </td>
   </tr>
   <tr>
@@ -1205,7 +1205,7 @@ $tablehdr";
 
 ";
 
-    $hdr .= "<!-- end common_html_hdr -->\n\n";
+    $hdr .= "<!-- hdr end -->\n\n";
 
     $hdr;
 }
