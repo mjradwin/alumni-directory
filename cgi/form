@@ -4,7 +4,7 @@
 #     FILE: form.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: Alumni Internet Directory CGI form-submission interface
-#      $Id: form,v 5.9 1999/06/22 18:52:08 mradwin Exp mradwin $
+#      $Id: form,v 5.10 1999/06/22 18:59:59 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -44,7 +44,7 @@ $mailprog = &aid_config('mailprog');
 $dbmfile = &aid_config('dbmfile');
 $dbmfile =~ s/\.db$//;
 
-$rcsid = '$Id: form,v 5.9 1999/06/22 18:52:08 mradwin Exp mradwin $'; #'fnt
+$rcsid = '$Id: form,v 5.10 1999/06/22 18:59:59 mradwin Exp mradwin $'; #'fnt
 
 $listing_upd_title = 'Modify Your Directory Listing';
 $listing_upl_title = 'Select a Listing to Modify';
@@ -266,7 +266,8 @@ close(STDOUT);
 exit(0);
 
 
-sub confirm_submission {
+sub confirm_submission
+{
     print "Content-Type: text/html\015\012\015\012";
     print &aid_common_html_hdr(20,$listing_sub_title,1);
 
@@ -282,38 +283,26 @@ sub confirm_submission {
     }
 
     print "
-<table border=0 cellspacing=7>
+<table border=\"0\" cellspacing=\"7\" width=\"100%\">
+<tr><td bgcolor=\"#$aid_util'header_bg\"><font color=\"#$aid_util'header_fg\"><big><strong>7.
+Final Review</strong></big></font></td></tr></table>
 
-<tr><td bgcolor=\"#$aid_util'header_bg\">
-<font color=\"#$aid_util'header_fg\"><big><strong>7.
-Final Review</strong></big></font>
-</td></tr>
+Here is what your listing will look like:
+<br${ht_empty_close_tag}<br${ht_empty_close_tag}
 
-<tr><td>
+<table border=\"1\" cellpadding=\"6\"><tr><td>";
 
-Please double-check all of the below information.  
-Be sure that your e-mail address
-(<strong class=\"alert\"><code>$in{'e'}</code></strong>)
-is spelled correctly or we won't be able to communicate with you!
+    print &aid_verbose_entry(*in,1,1,1);
 
-<ul>
-<li>If you have made any mistakes, select the
-<strong>&lt;&nbsp;Back</strong> button
-to edit your listing.
-<li>If everything is correct, please hit the
-<strong>Finish&nbsp;&gt;</strong> button.
-</ul>
-<input type=submit name=\"revise\" value=\"&lt;&nbsp;Back\">
-&nbsp;
-<input type=submit name=\"confirmed\" value=\"Finish&nbsp;&gt;\">
-</td></tr>
-</table>
-
+    print "</td></tr></table>
+<p>Want to change something?
+<input type=submit name=\"revise\" value=\"Edit Listing\"${ht_empty_close_tag}
+<br${ht_empty_close_tag}<br${ht_empty_close_tag}
+Everything above is correct?
+<input type=submit name=\"confirmed\" value=\"Submit Listing\"${ht_empty_close_tag}
+</p>
+</form>
 ";
-
-    $in{'u'} = time unless defined $in{'u'};
-    print "<div class=\"about\">", &aid_verbose_entry(*in,1,1,1), 
-          "</div></form>\n";
     print &aid_common_html_ftr(20);
 }
 
@@ -324,7 +313,7 @@ sub queue_submission {
     $in{'u'} = time unless defined $in{'u'};
     $in{'f'} = $in{'u'} unless defined $in{'f'};
     $in{'c'} = $in{'c'} ne '' ? $in{'c'} : $in{'u'};
-    $in{'h'} = $ENV{'REMOTE_HOST'} unless defined $in{'h'};
+    $in{'h'} = &remote_host() unless defined $in{'h'};
     $in{'b'} = 0 unless defined $in{'b'};
     $in{'n'} =~ s/\015\012/\n/g;
     $in{'n'} =~ s/\015/\n/g;
@@ -529,6 +518,20 @@ sub is_email_okay
     }
 }
 
+sub remote_host
+{
+    local($ip) = $ENV{'REMOTE_HOST'};
+
+    if ($ip =~ /^\d+\.\d+\.\d+\.\d+$/)
+    {
+	local($ipnum) = pack('C4', split(/\./, $ip));
+	local($host) = (gethostbyaddr($ipnum, 2))[0];
+
+	$ip = $host if defined $host;
+    }
+
+    $ip;
+}
 
 # avoid stupid warnings
 if ($^W && 0)
