@@ -2,11 +2,11 @@
 #     FILE: aid_util.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: perl library routines for the Alumni Internet Directory
-#      $Id: aid_util.pl,v 2.16 1998/05/15 21:11:46 mradwin Exp mradwin $
+#      $Id: aid_util.pl,v 2.17 1998/05/15 23:46:57 mradwin Exp mradwin $
 #
 
 $aid_util'rcsid =
- '$Id: aid_util.pl,v 2.16 1998/05/15 21:11:46 mradwin Exp mradwin $';
+ '$Id: aid_util.pl,v 2.17 1998/05/15 23:46:57 mradwin Exp mradwin $';
 
 # ----------------------------------------------------------------------
 # CONFIGURATION
@@ -612,9 +612,8 @@ are required.  All other fields are optional.</p>\n\n";
 </tr>
 <tr>
   <td colspan=3><font color=\"#$cell_fg\">
-  <br><strong>What's New?</strong> Tell us, in 100 words or less, what
-  you've been up to recently.</font>
-  $image_tag{'new'}<br>
+  <br><strong>What's New?</strong> Write a paragraph about what
+  you've been up to recently.</font><br>
   <textarea name=\"message\" rows=10 cols=55 wrap>$newrec{'message'}</textarea>
   </td>
 </tr>
@@ -629,7 +628,7 @@ are required.  All other fields are optional.</p>\n\n";
   value=\"2\"$reqchk[2]>&nbsp;&nbsp;Sorted by graduating class.<br>
   &nbsp;&nbsp;&nbsp;&nbsp;<input type=radio name=\"request\"
   value=\"0\"$reqchk[0]>&nbsp;&nbsp;No e-mail except for address
-  verification (1 per year).</font>
+  verification (once per year).</font>
   </td>
 </tr>
 </table>
