@@ -2,11 +2,11 @@
 #     FILE: aid_util.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: perl library routines for the Alumni Internet Directory
-#      $Id: aid_util.pl,v 3.11 1998/05/19 00:43:48 mradwin Exp mradwin $
+#      $Id: aid_util.pl,v 3.12 1998/05/19 00:55:38 mradwin Exp mradwin $
 #
 
 $aid_util'rcsid =
- '$Id: aid_util.pl,v 3.11 1998/05/19 00:43:48 mradwin Exp mradwin $';
+ '$Id: aid_util.pl,v 3.12 1998/05/19 00:55:38 mradwin Exp mradwin $';
 
 # ----------------------------------------------------------------------
 # CONFIGURATION
@@ -121,9 +121,16 @@ $aid_util'caldate = sprintf("%d/%02d/%02d", ($aid_util'yr+1900),
     ($aid_util'mon+1), $aid_util'mday);
 
 $aid_util'pics_label = #'#
-"<meta http-equiv=\"PICS-Label\" content='(PICS-1.1 \"http://www.rsac.org/ratingsv01.html\" l gen true comment \"RSACi North America Server\" by \"" . 
+"<meta http-equiv=\"PICS-Label\" content='(PICS-1.1 " . 
+"\"http://www.rsac.org/ratingsv01.html\" l gen true " . 
+"comment \"RSACi North America Server\" by \"" . 
 $aid_util'config{'admin_email'} . 
-"\" on \"1998.03.10T11:49-0800\" r (n 0 s 0 v 0 l 0))'>"; #"#
+"\" on \"1998.03.10T11:49-0800\" r (n 0 s 0 v 0 l 0))'>" .
+"<meta http-equiv=\"PICS-Label\" content='(PICS-1.1 " . 
+"\"http://www.classify.org/safesurf/\" l gen true " .
+"for \"http://" . $aid_util'config{'master_svr'} . "\" by \"" . 
+$aid_util'config{'admin_email'} .
+"\" r (SS~~000 1 SS~~100 1))'>"; #"#
 
 $aid_util'site_tags = #'#
 "<meta name=\"keywords\" content=\"Mountain View High School, Alumni, MVHS, Awalt High School, Mountain View, Los Altos, California, reunion, Radwin\">\n<meta name=\"description\" content=\"Alumni email and web page directory for Mountain View High School (MVHS) and Awalt High School in Mountain View, CA. Updated $aid_util'caldate.\">\n<link rev=made href=\"mailto:" . $aid_util'config{'admin_email'} . "\">\n<link rel=start href=\"http://" . $aid_util'config{'master_srv'} . $aid_util'config{'master_path'} . "\">\n<link rel=contents href=\"http://" . $aid_util'config{'master_srv'} . $aid_util'config{'master_path'} . "\">";
