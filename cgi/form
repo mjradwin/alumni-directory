@@ -4,7 +4,7 @@
 #     FILE: mvhsaid.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: Alumni Internet Directory CGI interface
-#      $Id: mvhsaid,v 3.82 1999/03/09 18:03:59 mradwin Exp mradwin $
+#      $Id: mvhsaid,v 3.83 1999/03/09 20:53:55 mradwin Exp mradwin $
 #
 
 require 'aid_util.pl';
@@ -22,7 +22,7 @@ if ($ENV{'SCRIPT_NAME'} =~ m,/nph-,)
 # configuration
 $mailprog = &aid_config('mailprog');
 $dbmfile = &aid_config('wwwdir') . 'master';
-$rcsid = '$Id: mvhsaid,v 3.82 1999/03/09 18:03:59 mradwin Exp mradwin $'; #'fnt
+$rcsid = '$Id: mvhsaid,v 3.83 1999/03/09 20:53:55 mradwin Exp mradwin $'; #'fnt
 
 $listing_upd_title = 'Update Your Directory Listing';
 $listing_upl_title = 'Select a Listing to Update';
@@ -377,7 +377,7 @@ Love,
 the \L$mailsubj\E cgi-bin script
 $date";
 
-    system("$mailprog -s $mailsubj $mailto <<'EOM'
+    system("$mailprog -s '$mailsubj [$in{'id'} $in{'email'}]' $mailto <<'EOM'
 $message_top
 $message_mid
 $message_bot
