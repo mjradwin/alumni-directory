@@ -1,0 +1,34 @@
+#!/usr/bin/perl -w
+
+# $Id$
+
+require 'aid_util.pl';
+
+$dbFile = &aid_config('aiddir') . "data/master.adr";
+@db = &aid_create_db($dbFile);
+
+dbmopen(DB, 'master', 0666);
+for (@db)
+{
+    next unless defined($_) && $_ ne '';
+    %rec = &aid_split($_);
+    $DB{$rec{'id'}} = 
+	pack("C3N4", $rec{'valid'}, $rec{'request'}, $rec{'reunion'},
+	     $rec{'bounce'}, $rec{'created'}, $rec{'time'}, $rec{'fresh'});
+}
+dbmclose(DB);
+
+
+dbmopen(DB2, 'master', 0444);
+while (($key,$val) = each %DB2)
+{
+    undef %rec;
+    ($rec{'valid'}, $rec{'request'}, $rec{'reunion'},
+     $rec{'bounce'}, $rec{'created'}, $rec{'time'}, $rec{'fresh'}) =
+	 unpack("C3N4", $val);
+
+    print $key, ' = ', join(';', $rec{'valid'}, $rec{'request'}, 
+			    $rec{'reunion'},  $rec{'bounce'}, $rec{'created'},
+			    $rec{'time'}, $rec{'fresh'}), "\n";
+}
+dbmclose(DB2);
