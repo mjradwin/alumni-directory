@@ -2,11 +2,11 @@
 #     FILE: aid_util.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: perl library routines for the Alumni Internet Directory
-#      $Id: aid_util.pl,v 4.12 1999/02/05 18:45:30 mradwin Exp mradwin $
+#      $Id: aid_util.pl,v 4.13 1999/02/08 19:24:31 mradwin Exp mradwin $
 #
 
 $aid_util'rcsid =
- '$Id: aid_util.pl,v 4.12 1999/02/05 18:45:30 mradwin Exp mradwin $';
+ '$Id: aid_util.pl,v 4.13 1999/02/08 19:24:31 mradwin Exp mradwin $';
 $aid_util'caldate = &aid_caldate(time); #'#
 
 # ----------------------------------------------------------------------
@@ -1352,6 +1352,40 @@ sub aid_http_date
 
     sprintf("%s, %02d %s %4d %02d:%02d:%02d GMT",
 	    $DoW[$wday],$mday,$MoY[$mon],$year,$hour,$min,$sec);
+}
+
+
+# We get a whole bunch of warnings about "possible typo" when running
+# with the -w switch.  Touch them all once to get rid of the warnings.
+# This is ugly and I hate it.
+if ($^W)
+{
+    if (0)
+    {
+	&aid_http_date();
+	&aid_book_write_suffix();
+	&aid_book_write_entry();
+	&aid_book_write_prefix();
+	&aid_class_jump_bar();
+	&aid_build_yearlist();
+	&about_text();
+	&aid_verbose_entry();
+	&aid_html_escape();
+	&aid_class_db();
+	&aid_alpha_db();
+	&aid_parse();
+	&aid_join();
+	&affiliate();
+	&aid_image_tag();
+	&common_html_hdr();
+	&common_html_ftr();
+	&common_intro_para();
+	&fullname();
+	&is_old();
+	&message_footer();
+	&sendmail();
+	&submit_body();
+    }
 }
 
 1;
