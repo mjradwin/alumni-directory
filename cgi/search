@@ -41,9 +41,9 @@ if (!&ReadParse() || !defined($in{'q'}) || $in{'q'} =~ /^\s*$/)
 {
     print "Content-Type: text/html\015\012\015\012";
 
-    print &common_html_hdr(6, 'Search', 1);
+    print &aid_common_html_hdr(6, 'Search', 1);
     &print_search_form('',defined $in{'y'} ? $in{'y'} : '');
-    print &common_html_ftr(6);
+    print &aid_common_html_ftr(6);
 
     close(STDOUT);
     exit(0);
@@ -135,10 +135,10 @@ else
     print "\n<ul>\n";
     foreach (@results)
     {
-	($last,$first,$married,$id) = split(/,/);
+	($ign,$ign,$ign,$id) = split(/,/);
 	%rec = &aid_db_unpack_rec($id,$DB{$id});
 	$fullname = &inorder_fullname(*rec);
-	($affil,$len) = &affiliate(*rec,0);
+	($affil,$ign) = &affiliate(*rec,0);
 	
 	print "<li><a href=\"", &aid_config('about_cgi'), 
 	"?about=", $rec{'id'}, "\">$fullname</a> $affil";
