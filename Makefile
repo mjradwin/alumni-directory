@@ -2,7 +2,7 @@
 #     FILE: Makefile
 #   AUTHOR: Michael J. Radwin
 #    DESCR: Makefile for building the MVHS Alumni Internet Directory
-#      $Id: Makefile,v 1.15 1997/03/26 18:12:32 mjr Exp mjr $
+#      $Id: Makefile,v 1.16 1997/03/26 23:16:04 mjr Exp $
 #
 
 WWWDIR=/home/divcom/mjr/public_html/mvhs
@@ -21,6 +21,9 @@ $(WWWDIR)/mvhs.adr:	mvhs.adr
 
 mvhs.txt:	alpha.adr mv_alpha_html
 	./mv_alpha_html -t alpha.adr mvhs.txt
+
+class.txt:	class.adr mv_class_html
+	./mv_class_html -t class.adr class.txt
 
 alpha:	$(WWWDIR)/all.html
 $(WWWDIR)/all.html:	alpha.adr mv_alpha_html

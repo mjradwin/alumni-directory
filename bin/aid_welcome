@@ -6,7 +6,6 @@
 
 require 'mv_util.pl';
 require 'getopts.pl';
-require 'ctime.pl';
 
 $usage = 'usage: mv_welcome [-h] [-u | -c] targets.adr
     -h        Display usage information.
@@ -19,14 +18,12 @@ $opt_h && die "$usage\n";
 ($opt_c && $opt_u) && die "$usage\n";
 $ARGV[0] || die "$usage\n";
 
-$today = &ctime(time);
-chop $today;
-
 $logfile = 'welcome.log';
 $subject = ($opt_c) ? 'Confirming your MVHS Alumni Internet Directory entry' :
     ($opt_u) ? 'Your MVHS Alumni Internet Directory entry is updated' : 
     'Welcome to the MVHS Alumni Internet Directory';
 
+$today = &today;
 open(LOG,">>$logfile") || die "Can't open $logfile: $!\n";
 open(TARGET,$ARGV[0]) || die "Can't open $ARGV[0]: $!\n";
 while(<TARGET>) {
@@ -44,7 +41,6 @@ while(<TARGET>) {
 }
 
 exit(0);
-
 
 sub message_body {
     local($time,$id,$req,$last,$first,$married,
@@ -68,8 +64,7 @@ $confirming
 The database (which produced this form letter) shows the following
 information about you:
 
-$about
-$denied
+$about$denied
 If you feel as if you have received this email in error or do not want
 to be listed in the database, please let me know and I will remove your
 name from the database.  Or, if any of the above information is

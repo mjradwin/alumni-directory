@@ -2,7 +2,7 @@
 #     FILE: mv_util.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: perl library routines for the MVHS Alumni Internet Directory
-#      $Id: mv_util.pl,v 1.18 1997/03/27 01:17:36 mjr Exp $
+#      $Id: mv_util.pl,v 1.19 1997/03/29 17:21:21 mjr Exp mjr $
 #
 
 CONFIG: {
@@ -365,6 +365,15 @@ sub message_footer {
 	"Phone     : " . $config{'admin_phone'};
 }
 
+# uhhh... looks like I don't truly get perl4's packaging.
+sub today {
+    package mv_util;
+    require 'ctime.pl';
+
+    local($today) = &ctime(time);
+    chop $today;
+    return $today;
+}
 
 sub about_text {
     package mv_util;
@@ -440,7 +449,7 @@ sub about_text {
     if ($time ne '') {
 	$retval .= "\n";
 	$retval .= "Last Updated      : ";
-	$retval .= &ctime($time);
+	$retval .= do ctime($time);
     }
 
     $do_html_p && $retval .= "</pre>\n";
