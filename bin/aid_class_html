@@ -2,7 +2,7 @@
 
 #
 # does the html version of the grad-date address list
-# $Id: aid_class_html,v 3.12 1998/05/26 18:31:14 mradwin Exp mradwin $
+# $Id: aid_class_html,v 3.13 1998/05/26 18:36:21 mradwin Exp mradwin $
 #
 
 require 'aid_util.pl';
@@ -22,7 +22,6 @@ $opt_h = $opt_h;		# avoid warning
 
 $info_gif = &aid_image_tag('info');
 $blank_gif = ($opt_t) ? "" : &aid_image_tag('blank');
-$cgi_path = &aid_config('cgi_path');
 
 open(DATAPRE,$ARGV[0]) || die "Can't open $ARGV[0]: $!\n";
 open(FMTOUT,">$ARGV[1]") || die "Can't open $ARGV[1]: $!\n";
@@ -103,7 +102,7 @@ while(<DATA>) {
     }
 
     print FMTOUT ' ';
-    $opt_t || print FMTOUT "<a href=\"$cgi_path/dyn?about=$rec{'id'}\">$info_gif</a>";
+    $opt_t || print FMTOUT "<a href=\"" . &aid_about_path(*rec) . "\">$info_gif</a>"; #'#
     $opt_t || print FMTOUT "<a name=\"$rec{'alias'}\"";
     $opt_t || print FMTOUT " href=\"$rec{'homepage'}\"" if $rec{'homepage'} ne '';
     $opt_t || print FMTOUT ">";
