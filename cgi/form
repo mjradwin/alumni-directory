@@ -4,7 +4,7 @@
 #     FILE: mvhsaid.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: Alumni Internet Directory CGI interface
-#      $Id: mvhsaid,v 3.94 1999/03/27 04:13:13 mradwin Exp mradwin $
+#      $Id: mvhsaid,v 3.95 1999/03/29 02:28:56 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -40,7 +40,7 @@ $mailprog = &aid_config('mailprog');
 $dbmfile = &aid_config('dbmfile');
 $dbmfile =~ s/\.db$//;
 
-$rcsid = '$Id: mvhsaid,v 3.94 1999/03/27 04:13:13 mradwin Exp mradwin $'; #'fnt
+$rcsid = '$Id: mvhsaid,v 3.95 1999/03/29 02:28:56 mradwin Exp mradwin $'; #'fnt
 
 $listing_upd_title = 'Update Your Directory Listing';
 $listing_upl_title = 'Select a Listing to Update';
@@ -388,7 +388,12 @@ sub queue_submission {
     $mailsubj = &aid_config('mailsubj');
     $mailname = &aid_config('admin_name');
 
-    $mailbody = "Dear $mailname,\n\n_AID_BEGIN_SUBMISSION_\n";
+    $mailbody  = "Dear $mailname,\n\n";
+
+    $mailbody .= 'Submission from ' . &aid_inorder_fullname(*in);
+    $mailbody .= ' <' . $in{'email'} . "> follows:\n";
+
+    $mailbody .= "\n_AID_BEGIN_SUBMISSION_\n";
 
     while (($key,$val) = each(%in))
     {
