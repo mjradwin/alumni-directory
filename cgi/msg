@@ -1,0 +1,233 @@
+#!/usr/local/bin/perl -w
+
+#
+#     FILE: msg.pl
+#   AUTHOR: Michael J. Radwin
+#    DESCR: Alumni Internet Directory update redirector
+#      $Id: go,v 5.10 2001/09/16 16:58:27 mradwin Exp $
+#
+#   Copyright (c) 2003  Michael John Radwin
+#
+#   This program is free software; you can redistribute it and/or modify
+#   it under the terms of the GNU General Public License as published by
+#   the Free Software Foundation; either version 2 of the License, or
+#   (at your option) any later version.
+#
+#   This program is distributed in the hope that it will be useful,
+#   but WITHOUT ANY WARRANTY; without even the implied warranty of
+#   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#   GNU General Public License for more details.
+#
+#   You should have received a copy of the GNU General Public License
+#   along with this program; if not, write to the Free Software
+#   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+#
+
+$dirname = $0;
+$dirname =~ s,/[^/]+$,,;
+unshift(@INC, $dirname);
+
+require 'aid_util.pl';
+use DB_File;
+use Fcntl qw(:DEFAULT :flock);
+use CGI;
+use CGI::Carp qw(fatalsToBrowser);
+
+use lib "/pub/m/r/mradwin/private/lib/perl5/site_perl";
+use Digest::MD5  qw(md5_hex);
+use Email::Valid;
+
+CGI::ReadParse();
+
+if (defined($in{'to'}) && $in{'to'} =~ /^\d+$/)
+{
+    my $id = $in{'to'};
+    my $val = get_db_val($id);
+    bail() unless $val;
+
+    %rec = &aid_db_unpack_rec($id,$val);
+    my $e = aid_protect_email($rec{'e'});
+    my $hash = md5_hex($rec{'e'});
+
+    print "Content-Type: text/html\015\012\015\012";
+    print &aid_common_html_hdr(9, 'Send Message', 1);
+
+    form($e,$id,$hash,'',&aid_config('short_school') . ' Alumni','');
+
+    print &aid_common_html_ftr(9);
+    exit(0);
+}
+elsif (defined($in{'id'}) && $in{'id'} =~ /^\d+$/ && $in{'hash'} &&
+       defined($in{'from'}) && defined($in{'subject'}) &&
+       defined($in{'message'}))
+{
+    my $id = $in{'id'};
+    my $val = get_db_val($id);
+    bail() unless $val;
+
+    %rec = &aid_db_unpack_rec($id,$val);
+    my $hash = md5_hex($rec{'e'});
+    bail() unless ($hash eq $in{'hash'});
+
+    my $from = $in{'from'};
+    check_blank("e-mail address",$from,$id,$hash);
+
+    my $subject = $in{'subject'};
+    check_blank("subject",$subject,$id,$hash);
+
+    my $message = $in{'message'};
+    check_blank("message body",$message,$id,$hash);
+
+    chomp($from);
+    if ($from =~ /^[^<]*<([^>]+)>/) {
+	$from = $1;
+    }
+
+    if (Email::Valid->address($from)) {
+	$from = Email::Valid->address($from);
+    } else {
+	print "Content-Type: text/html\015\012\015\012";
+	print &aid_common_html_hdr(9, 'Invalid Email Address', 1);
+
+	my $h = aid_html_entify_str($from);
+	
+	print <<_EOHTML_;
+<p><font color=\"red\">Your e-mail address
+<b>$h</b> appears to be invalid.</font>
+<br>It must be in the form of <code>user\@isp.net</code>.
+_EOHTML_
+
+	my $e = aid_protect_email($rec{'e'});
+	form($e,$id,$hash,$from,$subject,$message);
+
+	print &aid_common_html_ftr(9);
+	exit(0);
+    }
+
+    my $name = $rec{'gn'};
+    $name .= " $rec{'mi'}."
+	if defined $rec{'mi'} && $rec{'mi'} ne '';
+    $name .= " $rec{'sn'}";
+    $name .= " $rec{'mn'}"
+	if defined $rec{'mn'} && $rec{'mn'} ne '';
+    $name =~ s/\"/\'/g;
+
+    my $school = &aid_config('short_school');
+    my $status = &aid_sendmail_v2
+	(
+	 &aid_config('devnull_email'),
+	 "\"$from via $school Web Form\"",
+	 $subject,
+	 "Reply-To: $from\nX-Originating-IP: $ENV{'REMOTE_ADDR'}",
+	 $message,
+	 $name,
+	 $rec{'e'});
+
+    print "Content-Type: text/html\015\012\015\012";
+    print &aid_common_html_hdr(9, 'Message Sent', 1);
+    print <<_EOHTML_;
+<p>Your message has been sent.</p>
+_EOHTML_
+    print &aid_common_html_ftr(9);
+    exit(0);
+}
+else
+{
+    bail();
+}
+
+sub check_blank
+{
+    my($name,$val,$id,$hash) = @_;
+
+    my $e = aid_protect_email($rec{'e'});
+    my $from = $in{'from'};
+    my $subject = $in{'subject'};
+    my $message = $in{'message'};
+
+    unless (defined $val && $val !~ /^\s*$/) {
+	print "Content-Type: text/html\015\012\015\012";
+	print &aid_common_html_hdr(9, "Missing $name", 1);
+
+	print <<_EOHTML_;
+<p><font color=\"red\">Missing $name (can't be blank).  Please
+include your $name in the text area below.</font>
+_EOHTML_
+
+	form($e,$id,$hash,$from,$subject,$message);
+
+	print &aid_common_html_ftr(9);
+	exit(0);
+    }
+}
+
+sub form
+{
+    my($e,$id,$hash,$from,$subject,$message) = @_;
+    my $action = &aid_config('message_cgi');
+    my $t = POSIX::strftime("%a, %d %b %Y %H:%M:%S", localtime(time()));
+
+    $from = aid_html_entify_str($from);
+    $subject = aid_html_entify_str($subject);
+    $message = aid_html_entify_str($message);
+
+    print <<_EOHTML_;
+<form method="post" action="$action">
+<input type="hidden" name="id" value="$id">
+<input type="hidden" name="hash" value="$hash">
+<table border="0" cellspacing="1" cellpadding="2" >
+<tr><td align="right"><b>To:</b></td>
+<td>$e</td></tr>
+<tr><td align="right"><b>From:</b></td>
+<td><input type="text" name="from" size="60" 
+maxlength="128" value="$from"></td></tr>
+<tr><td align="right"><b>Date:</b></td>
+<td>$t</td></tr>
+<tr><td align="right"><b>Subject:</b></td>
+<td><input type="text" name="subject" size="60" 
+maxlength="80" value="$subject"></td></tr>
+</table>
+<textarea name="message" rows="20" cols="70"
+wrap="hard">$message</textarea>
+<br><input type="submit" name="send" value="Send">
+</form>
+_EOHTML_
+}
+
+sub bail
+{
+    my($err) = @_;
+
+    print "Status: 400 Bad Request\015\012";
+    &aid_cgi_die('Bad Request',
+		 "Sorry, looks like the form submission was broken.\n" .
+		 ($err ? "<br><b>$err</b>" : ""));
+    close(STDOUT);
+    exit(0);
+}
+
+sub get_db_val
+{
+    my($id) = @_;
+    my $dbmfile = &aid_config('dbmfile');
+    die "$dbmfile: $!\n" unless -r $dbmfile;
+
+    my($db) = tie(%DB, 'DB_File', $dbmfile, O_RDONLY, 0444, $DB_File::DB_HASH)
+	or die "$dbmfile: $!\n";
+
+    my($fd) = $db->fd;
+    open(DB_FH, "<&=$fd") || die "dup $!";
+
+    unless (flock (DB_FH, LOCK_SH | LOCK_NB)) {
+	unless (flock (DB_FH, LOCK_SH)) { die "flock: $!" }
+    }
+
+    my $val = $DB{$id};
+
+    flock(DB_FH, LOCK_UN);
+    undef $db;
+    untie(%DB);
+    close(DB_FH);
+    
+    $val;
+}
