@@ -1,6 +1,6 @@
 #!/usr/local/bin/perl5 -w
 
-# $Id: aid_edit_entry,v 5.14 2000/06/05 17:01:11 mradwin Exp mradwin $
+# $Id: aid_edit_entry,v 5.15 2001/05/06 20:09:17 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -30,16 +30,18 @@ require 'getopts.pl';
 require 'ctime.pl';
 
 $0 =~ s,.*/,,;  # basename
-$usage = "usage: $0 [-hdu] infile.db userid
+$usage = "usage: $0 [-hduf] infile.db userid
     -h        Display usage information.
     -d        Display debug diffs.
     -u        Don't set update time.
+    -f        Force creation of non-consecutive entry.
 ";
 
-&Getopts('hdu') || die "$usage\n";
+&Getopts('hduf') || die "$usage\n";
 $opt_h && die "$usage\n";
 $opt_h = $opt_h;		# avoid warning
 $opt_d = $opt_d;		# avoid warning
+$opt_f = $opt_f;		# avoid warning
 defined $ARGV[0] || die "$usage\n";
 defined $ARGV[1] || die "$usage\n";
 
@@ -58,9 +60,20 @@ if (-w $dbmfile) {
 $id = shift;
 if ($id =~ /^\d+$/)
 {
-    die "$0: no key $id in $dbmfile\n"
-	unless defined $DB{$id} && $DB{$id} ne '';
-    %rec = &aid_db_unpack_rec($id,$DB{$id});
+    if (defined $DB{$id} && $DB{$id} ne '')
+    {
+	%rec = &aid_db_unpack_rec($id,$DB{$id});
+    }
+    elsif ($opt_f)
+    {
+	%rec = %aid_util::blank_entry;
+	$rec{'c'} = $rec{'u'} = $rec{'f'} = time;
+	$rec{'id'} = $id;
+    }
+    else
+    {
+	die "$0: no key $id in $dbmfile\n";
+    }
 }
 elsif ($id =~ /\@/)
 {
@@ -91,7 +104,7 @@ $note_end_str = '_AID_END_NOTE_';
 $tmpfile = '/tmp/aid_edit_entry.' . $$;
 
 open(TMPFILE,">$tmpfile") || die "$tmpfile: $!\n";
-print TMPFILE '# $Id: aid_edit_entry,v 5.14 2000/06/05 17:01:11 mradwin Exp mradwin $', "\n";
+print TMPFILE '# $Id: aid_edit_entry,v 5.15 2001/05/06 20:09:17 mradwin Exp mradwin $', "\n";
 print TMPFILE "# record last touched: ",
  (($rec{'f'} > $rec{'b'}) ? &ctime($rec{'f'}) : &ctime($rec{'b'}));
 
