@@ -2,7 +2,7 @@
 
 #
 # does the html version of just home pages
-# $Id: aid_home_html,v 5.15 2000/06/01 23:34:10 mradwin Exp mradwin $
+# $Id: aid_home_html,v 5.16 2000/06/26 16:10:41 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -127,7 +127,11 @@ with your own.  Aliases (also called nicknames) are of the form
 <code><strong>l</strong></code> is last name.  If there are duplicates
 such as John Smith and Jane Smith, then the first one will be
 <code><strong>jsmith</strong></code> and the second will be
-<code><strong>jsmith2</strong></code>.</p>\n\n";
+<code><strong>jsmith2</strong></code>.</p>
+
+<p>For help on importing into your e-mail application, please see <a
+href=\"", &aid_config('master_path'), 
+"etc/faq.html#download">instructions</a>.</p>\n\n";
 
     print OUTFILE "<form method=\"get\" action=\"";
     print OUTFILE &aid_config('download_cgi') . "\">\n";
