@@ -1,6 +1,6 @@
 #!/usr/bin/perl -w
 
-# $Id: aid_dbm_read,v 5.4 1999/06/07 18:32:25 mradwin Exp mradwin $
+# $Id: aid_dbm_read,v 5.5 1999/06/18 03:19:26 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -230,4 +230,10 @@ sub display_key_val
     }
 
     1;
+}
+
+# avoid warnings
+if ($^W && 0)
+{
+    $a = $b;
 }
