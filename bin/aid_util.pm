@@ -2,7 +2,7 @@
 #     FILE: mv_util.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: perl library routines for the MVHS Alumni Internet Directory
-#      $Id: mv_util.pl,v 1.34 1997/09/22 17:45:02 mjr Exp mjr $
+#      $Id: mv_util.pl,v 1.35 1997/09/24 00:27:24 mjr Exp mjr $
 #
 
 CONFIG: {
@@ -48,9 +48,7 @@ CONFIG: {
 
     $site_tags = "<meta name=\"keywords\" content=\"Mountain View High School, Alumni, MVHS, Awalt High School, Mountain View, Los Altos, California, reunion, Radwin\">\n<meta name=\"description\" content=\"email/web page listing of alumni, students, faculty and staff from Mountain View High School in Mountain View, California.  Also catalogues alumni from Chester F. Awalt High School, which was merged with MVHS in the early 80's.\">";
 
-    $html_head = "<html>\n<head>\n" .
-	"<title>Mountain View High School Alumni Internet Directory" .
-	"</title>\n" . $site_tags . "\n" . $pics_label . "\n</head>\n\n";
+    $noindex = "<meta name=\"robots\" content=\"noindex,nofollow\">";
 
     %mv_aliases = ();   # global alias hash repository
 
@@ -547,8 +545,8 @@ sub common_html_hdr {
     package mv_util;
     require 'ctime.pl';
 
-    local($page, $page_name) = @_;
-    local($h1, $h2, $h3, $h4);
+    local($page, $page_name, $norobots) = @_;
+    local($h1, $h2, $h3, $h4, $html_head);
     local($name, $url);
 
 #    ($page_name) = split(/,/, $page_idx[$page]) unless $page_name;
@@ -590,6 +588,12 @@ sub common_html_hdr {
 <!-- discourage www.roverbot.com --><!--BAD-DOG-->
 
 ";
+
+    $html_head = "<html>\n<head>\n" .
+	"<title>Mountain View High School Alumni Internet Directory" .
+	"</title>\n" . $site_tags . "\n" . $pics_label . "\n";
+    $html_head .= "$noindex\n" if $norobots;
+    $html_head .= "</head>\n\n";
 
     return $html_head . $h1 . $h2 . $h3;
 }
