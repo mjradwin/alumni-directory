@@ -2,7 +2,7 @@
 #     FILE: Makefile
 #   AUTHOR: Michael J. Radwin
 #    DESCR: Makefile for building the Alumni Internet Directory
-#      $Id: Makefile,v 5.20 1999/08/11 01:15:41 mradwin Exp mradwin $
+#      $Id: Makefile,v 5.21 2000/04/25 00:54:58 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -47,6 +47,7 @@ TARFILES= \
 	$(TAR_AIDDIR)/bin/generic_config.pl \
 	$(TAR_AIDDIR)/bin/$(SCHOOL)_config.pl \
 	$(TAR_AIDDIR)/cgi/[a-z]* \
+	$(TAR_AIDDIR)/data/*.dat \
 	$(TAR_AIDDIR)/data/*.include
 
 SNAPSHOTFILES= \
@@ -142,11 +143,16 @@ $(INDEX_TS):	$(DATADIR)/index.include $(BINDIR)/aid_home_html $(DBFILE)
 REUNIONS=$(WWWDIR)/etc/reunions.html
 REUNIONS_TS=$(WWWDIR)/etc/.reunions.html
 reunions:	$(REUNIONS_TS)
-$(REUNIONS_TS):	$(DATADIR)/reunions.include $(BINDIR)/aid_home_html
+$(REUNIONS_TS):	$(DATADIR)/reunions.dat $(BINDIR)/aid_reunion_html \
+$(BINDIR)/aid_reunion_create
+	$(RM) $(DATADIR)/reunions.db
+	$(BINDIR)/aid_reunion_create \
+		$(DATADIR)/reunions.db $(DATADIR)/reunions.dat
+	$(RM) $(WWWDIR)/reunions.db
+	$(MV) $(DATADIR)/reunions.db $(WWWDIR)/reunions.db
+	chmod 0444 $(WWWDIR)/reunions.db
 	$(MKDIR) $(WWWDIR)/etc
-	$(BINDIR)/aid_home_html -p11 -f $(DATADIR)/reunions.include \
-		-t 'Reunion Information' \
-		$(REUNIONS)
+	$(BINDIR)/aid_reunion_html $(WWWDIR)/reunions.db $(REUNIONS)
 
 LINKS=$(WWWDIR)/etc/links.html
 LINKS_TS=$(WWWDIR)/etc/.links.html
