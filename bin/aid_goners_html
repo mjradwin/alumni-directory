@@ -2,7 +2,7 @@
 
 #
 # does the html version of the invalid address list
-# $Id$
+# $Id: mv_goners_html,v 1.23 1997/12/22 22:31:42 mjr Exp mjr $
 #
 
 require 'mv_util.pl';
@@ -31,7 +31,7 @@ while(<DATA>) {
      $school,$year,$email,$alias,$homepage,$location) = &mv_parse($_);
 
     $fullname = &fullname($first,$last,$married);
-    ($affil,$len) = &affiliate($year,$school,1);
+    ($affil,$len) = &affiliate($year,$school,0);
 
     # now that we've grabbed the fullname, modify the parts that
     # are likely to be bad for x-url-encoded.  Don't do anything fancy,
