@@ -2,7 +2,7 @@
 #     FILE: Makefile
 #   AUTHOR: Michael J. Radwin
 #    DESCR: Makefile for building the Alumni Internet Directory
-#      $Id: Makefile,v 5.24 2000/06/01 23:41:13 mradwin Exp mradwin $
+#      $Id: Makefile,v 5.25 2000/06/05 17:05:51 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -112,7 +112,7 @@ RECENT=$(WWWDIR)/recent.html
 RECENT_TS=$(WWWDIR)/.recent.html
 recent:	$(RECENT_TS)
 $(RECENT_TS):	$(DBFILE) $(BINDIR)/aid_shortlist_html
-	$(BINDIR)/aid_shortlist_html -v -m 0.5 -M 'two weeks' $(DBFILE) $(RECENT)
+	$(BINDIR)/aid_shortlist_html -v -m 0.25 -M 'week' $(DBFILE) $(RECENT)
 
 GONERS=$(WWWDIR)/invalid.html
 GONERS_TS=$(WWWDIR)/.invalid.html
