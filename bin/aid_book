@@ -2,7 +2,7 @@
 
 #
 # generates address books in several formats
-# $Id: aid_book,v 2.3 1998/05/17 01:02:30 mradwin Exp mradwin $
+# $Id: aid_book,v 3.10 1998/05/17 05:18:53 mradwin Exp mradwin $
 #
 
 require 'aid_util.pl';
@@ -14,8 +14,8 @@ $usage = 'usage: aid_book [-h] infile.adr -{p,e,b,w,m,n,l,v} outfile
     -p        Pine address book
     -e        Elm aliases
     -b        Berkeley Mail aliases
-    -w        Eudora for Windows nicknames
-    -m        Eudora Pro for Macintosh nicknames
+    -w        Eudora 2 nicknames
+    -m        Eudora 3/4 nicknames
     -n        Netscape3 address book
     -l        Netscape4 .ldif address book
     -v        vCard book
@@ -115,8 +115,8 @@ sub write_entry {
     $option eq 'p' && print BOOK "$rec{'alias'}\t$rec{'last'}, $rec{'first'}\t$rec{'email'}\t\t$rec{'school'} $rec{'year'}\n";
     $option eq 'e' && print BOOK "$rec{'alias'} = $rec{'last'}; $rec{'first'}, $rec{'school'} $rec{'year'} = $rec{'email'}\n";
     $option eq 'b' && print BOOK "alias $rec{'alias'}\t$rec{'email'}\n";
-    $option eq 'w' && print BOOK "<$rec{'alias'}>\n>$rec{'first'} $rec{'last'} <$rec{'email'}>\n<$rec{'alias'}>\n>$rec{'school'} $rec{'year'}\n";
-    $option eq 'm' && print BOOK "alias $rec{'alias'} $rec{'email'}\nnote $rec{'alias'} <name:$rec{'first'} $rec{'last'}>$rec{'school'} $rec{'year'}\n";
+    $option eq 'w' && print BOOK "<$rec{'alias'}>\r\n>$rec{'first'} $rec{'last'} <$rec{'email'}>\r\n<$rec{'alias'}>\r\n>$rec{'school'} $rec{'year'}\r\n";
+    $option eq 'm' && print BOOK "alias $rec{'alias'} $rec{'email'}\r\nnote $rec{'alias'} <name:$rec{'first'} $rec{'last'}>$rec{'school'} $rec{'year'}\r\n";
 
     # netscape is a bigger sucker
     if ($option eq 'n') {
