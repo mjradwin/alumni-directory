@@ -2,7 +2,7 @@
 #     FILE: aid_util.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: perl library routines for the Alumni Internet Directory
-#      $Id: aid_util.pl,v 5.12 1999/06/08 21:54:43 mradwin Exp mradwin $
+#      $Id: aid_util.pl,v 5.13 1999/06/08 21:56:10 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -362,7 +362,7 @@ Subject: $subject\
 sub aid_verbose_entry {
     package aid_util;
 
-    local(*rec_arg,$display_year,$suppress_new) = @_;
+    local(*rec_arg,$display_year,$suppress_new,$suppress_links) = @_;
     local($_);
     local($fullname);
     local(*rec);
@@ -382,18 +382,21 @@ sub aid_verbose_entry {
     $retval .= "</strong>";
     $retval .= "</big>\n";
 
-    $retval .= "&nbsp;<small>[";
-    $retval .= "<a href=\"" . &main'aid_vcard_path(*rec_arg) . "\">"; #'#
-    $retval .= "vCard</a>";
-    $retval .= "&nbsp;|&nbsp;";
-    $retval .= "<a\ntarget=\"_address\" href=\"" .
-	$config{'yab_cgi'} . "/$rec{'id'}\">"; #'#
-    $retval .= 'add to Y! address book';
-    $retval .= "</a>";
-    $retval .= "&nbsp;|&nbsp;";
-    $retval .= "<a\nhref=\"" . $config{'about_cgi'} . "/$rec{'id'}\">";
-    $retval .= "update</a>";
-    $retval .= "]</small>\n";
+    if (! $suppress_links)
+    {
+	$retval .= "&nbsp;<small>[";
+	$retval .= "<a href=\"" . &main'aid_vcard_path(*rec_arg) . "\">"; #'#
+	$retval .= "vCard</a>";
+	$retval .= "&nbsp;|&nbsp;";
+	$retval .= "<a\ntarget=\"_address\" href=\"" .
+	    $config{'yab_cgi'} . "/$rec{'id'}\">"; #'#
+	$retval .= 'add to Y! address book';
+	$retval .= "</a>";
+	$retval .= "&nbsp;|&nbsp;";
+	$retval .= "<a\nhref=\"" . $config{'about_cgi'} . "/$rec{'id'}\">";
+	$retval .= "update</a>";
+	$retval .= "]</small>\n";
+    }
 
     $retval .= &main'aid_is_new_html(*rec) unless $suppress_new; #'#
 
