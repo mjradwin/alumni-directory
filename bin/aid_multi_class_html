@@ -2,7 +2,7 @@
 
 #
 # does the html multi_class pages
-# $Id: aid_multi_class_html,v 3.13 1998/10/17 20:57:33 mradwin Exp mradwin $
+# $Id: aid_multi_class_html,v 3.14 1998/10/17 21:30:31 mradwin Exp mradwin $
 #
 
 require 'aid_util.pl';
@@ -50,8 +50,7 @@ while (defined($_ = shift(@db))) {
 	    "Faculty and Staff";
 	print FMTOUT &common_html_hdr(-1,$title,1);
 	print FMTOUT &common_intro_para(0);
-	print FMTOUT &aid_class_jump_bar(&aid_config('master_path') . 'class/',
-					 '.html', *years, 1, $prev);
+	print FMTOUT &aid_class_jump_bar('', '.html', *years, 1, $prev);
 	print FMTOUT "<hr noshade size=1>\n\n";
     }
 
@@ -68,16 +67,15 @@ open(FMTOUT,">$outFile") || die "Can't open $outFile: $!\n";
 print FMTOUT &common_html_hdr(2,'Alumni Listed by Graduating Class',0);
 
 print FMTOUT "<p align=center><font size=\"+1\">By&nbsp;Class:<br>\n";
-print FMTOUT &aid_class_jump_bar(&aid_config('master_path') . 'class/',
-				 '.html', *years, 0);
-print FMTOUT "</font></p>\n";
+print FMTOUT &aid_class_jump_bar('', '.html', *years, 0);
+print FMTOUT "</font></p>\n\n";
 
 print FMTOUT "<p align=center><font size=\"+1\">";
 print FMTOUT "Compact&nbsp;Form:<br>\n";
-print FMTOUT "<a href=\"" . &aid_config('master_path') . "class.html\">";
-print FMTOUT "All&nbsp;Alumni</a> |\n";
-print FMTOUT "<a href=\"" . &aid_config('master_path') . "awalt.html\">";
-print FMTOUT "Awalt&nbsp;Alumni</a></font></p>\n";
+print FMTOUT "<a href=\"all.html\">";
+print FMTOUT "All&nbsp;Alumni</a> (~ 240 kbytes)<br>\n";
+print FMTOUT "<a href=\"awalt.html\">";
+print FMTOUT "Awalt&nbsp;Alumni</a> (~ 50 kbytes)</font></p>\n";
 
 print FMTOUT &common_html_ftr(2);
 close(FMTOUT);
