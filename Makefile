@@ -2,7 +2,7 @@
 #     FILE: Makefile
 #   AUTHOR: Michael J. Radwin
 #    DESCR: Makefile for building the Alumni Internet Directory
-#      $Id: Makefile,v 3.53 1999/02/24 20:55:02 mradwin Exp mradwin $
+#      $Id: Makefile,v 3.54 1999/02/24 21:06:00 mradwin Exp mradwin $
 #
 
 WWWROOT=/home/web/radwin.org
@@ -121,7 +121,7 @@ LINKS=$(WWWDIR)/etc/links.html
 links:	$(LINKS)
 $(LINKS):	$(MVHSDIR)/data/links.include $(BIN_HOME)
 	$(BIN_HOME) -p12 -i $(MVHSDIR)/data/links.include \
-		-t 'Other MVHS and Awalt websites' \
+		-t 'Other MVHS and Awalt Web Resources' \
 		$(LINKS)
 
 FAQ=$(WWWDIR)/etc/faq.html
@@ -147,14 +147,14 @@ SUBMIT=$(WWWDIR)/add/new.html
 submit:	$(SUBMIT)
 $(SUBMIT):	$(BIN_HOME) $(AID_UTIL_PL)
 	$(BIN_HOME) -s -p20 \
-		-t 'Add an Entry to the Directory' \
+		-t 'Add Your Listing to the Directory' \
 		$(SUBMIT)
 
 ADDUPDATE=$(WWWDIR)/add/index.html
 addupdate:	$(ADDUPDATE)
 $(ADDUPDATE):	$(MVHSDIR)/data/add.include $(BIN_HOME)
 	$(BIN_HOME) -p10 -i $(MVHSDIR)/data/add.include \
-		-t 'Add or Update an entry' \
+		-t 'Add or Update Your Listing' \
 		$(ADDUPDATE)
 
 DOWNLOAD=$(WWWDIR)/download/index.html
@@ -162,7 +162,7 @@ download:	$(DOWNLOAD)
 $(DOWNLOAD):	$(BIN_HOME) $(AID_UTIL_PL)
 	mkdir -p $(WWWDIR)/download
 	$(BIN_HOME) -d -p13 \
-		-t 'Download Nickname and Address Book files' \
+		-t 'Download Nickname and Address Book Files' \
 		$(DOWNLOAD)
 
 BOOKS=$(WWWDIR)/books/mvhs.vdir
