@@ -4,7 +4,7 @@
 #     FILE: mvhsaid.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: MVHS Alumni Internet Directory CGI interface
-#      $Id: mvhsaid,v 1.22 1997/08/22 17:30:43 mjr Exp mjr $
+#      $Id: mvhsaid,v 1.23 1997/08/25 23:57:45 mjr Exp mjr $
 #
 
 require 'mv_util.pl';
@@ -22,7 +22,7 @@ $dbfile = &mv_config('wwwdir') . "mvhs.adr";
 if (defined($in{'version'})) {
     select(STDOUT);  $| = 1;
     print "Content-type: text/plain\n\n";
-    print '$Id: mvhsaid,v 1.22 1997/08/22 17:30:43 mjr Exp mjr $', "\n";
+    print '$Id: mvhsaid,v 1.23 1997/08/25 23:57:45 mjr Exp mjr $', "\n";
     exit(0);
 }
 
@@ -191,13 +191,23 @@ sub send_about {
     local($_);
     local($time,$id,$req,$last,$first,$married,
 	  $school,$year,$email,$homepage,$location) = split(/;/, $_[0]);
+    local($fullname) = &inorder_fullname($first,$last,$married);
 
     select(STDOUT);  $| = 1;
     print "Content-type: text/html\n\n";
     print &common_html_hdr(-1);
     print "<br>\n";
-    print &tableheader(&inorder_fullname($first,$last,$married),
-		       1, "ffff99", 1);
+    print &tableheader($fullname, 1, "ffff99", 1);
+    print "<p>Here is more detailed information about $fullname.  To see\n";
+    print "<a href=\"" . &mv_config('cgi_path') . "?vcard=$id\">";
+    print "${first}'s vCard</a>,\n";
+    print "you must be using Netscape 4 or a plugin like \n";
+    print "<a href=\"http://www.nowsoft.com/plugins/about_people.html\">";
+    print "About People</a>\n";
+    print "from <a href=\"http://www.nowsoft.com/\">Now Software</a>.\n";
+    print "To learn more about vCard, check out the\n";
+    print "<a href=\"http://www.imc.org/pdi/\">Internet Mail Consortium</a>'s";
+    print " website.\n\n";
     print &about_text($_[0],0,1,1), "\n";
     print &common_html_ftr(-1);
 }
