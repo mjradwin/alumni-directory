@@ -1,6 +1,6 @@
 #!/usr/bin/perl -w
 
-# $Id: aid_addname,v 3.15 1998/10/19 15:49:27 mradwin Exp mradwin $
+# $Id: aid_addname,v 3.16 1998/11/03 17:13:10 mradwin Exp mradwin $
 
 require 'getopts.pl';
 require 'aid_util.pl';
@@ -16,13 +16,14 @@ $opt_h && die "$usage\n";
 $opt_h = $opt_h;                # avoid warning
 $opt_w = $opt_w;                # avoid warning
 
-$echo = &aid_config('echo');
 $cp   = &aid_config('cp');
 $make = &aid_config('make');
 
--x $echo || die "$echo is not executable!";
 -x $cp   || die "$cp   is not executable!";
 -x $make || die "$make is not executable!";
+
+$adr_newmail = &aid_config('aiddir') . 'data/newmail.adr';
+$adr_update  = &aid_config('aiddir') . 'data/update.adr';
 
 &readspool(($ARGV[0]) ? $ARGV[0] : &aid_config('spoolfile'));
 &rebuild() unless $opt_m;
@@ -53,8 +54,9 @@ sub readspool {
 	while(<SPOOL>) {
 	    if (/^Browser: (.*)$/) {
 		$time = time;
-		system "$echo '$time - $id - $1' >> $browserLog"
-		    || die "failed to $echo '$time - $id - $1' >> $browserLog: $!\n";
+		open(BROWSERLOG,">>$browserLog") || die "$browserLog: $!\n";
+		print BROWSERLOG "$time - $id - $1\n";
+		close(BROWSERLOG);
 	    }
 	    last if /^_AID_END_SUBMISSION_/;
 	    if (/^_AID_BEGIN_MESSAGE_/) {
@@ -98,20 +100,20 @@ sub mail_welcome {
     chdir &aid_config('aiddir') || die "can't chdir: $!\n";
 
     print "mailing...";
-    if (-e 'data/newmail.adr') {
+    if (-e $adr_newmail) {
 	print ' new';
-	system "./bin/aid_welcome data/newmail.adr"
-	    || die "failed to ./bin/aid_welcome data/newmail.adr: $!\n";
-	unlink('data/newmail.adr')
-	    || die "couldn't unlink data/newmail.adr: $!\n";
+	system "./bin/aid_welcome $adr_newmail"
+	    || die "failed to ./bin/aid_welcome $adr_newmail: $!\n";
+	unlink($adr_newmail)
+	    || die "couldn't unlink $adr_newmail: $!\n";
     }
 
-    if (-e 'data/update.adr') {
+    if (-e $adr_update) {
 	print ' update';
-	system "./bin/aid_welcome -u data/update.adr"
-	    || die "failed to ./bin/aid_welcome -u data/update.adr: $!\n";
-	unlink('data/update.adr')
-	    || die "couldn't unlink data/update.adr: $!\n";
+	system "./bin/aid_welcome -u $adr_update"
+	    || die "failed to ./bin/aid_welcome -u $adr_update: $!\n";
+	unlink($adr_update)
+	    || die "couldn't unlink $adr_update: $!\n";
     }
 
     print "\n";
@@ -122,13 +124,11 @@ sub addname {
     local($rawdata) = @_;
     local($[) = 0;
     local($_);
-    local($dbFile,$newmailFile,$updFile,$logFile,@db,%oldrec);
+    local($dbFile,$logFile,@db,%oldrec);
     local(%rec) = &aid_split($rawdata);
-    local($addme,$tmpFile,*LOG,*TMP);
+    local($addme,$tmpFile,*LOG,*TMP,*ADR);
 
     $dbFile = &aid_config('aiddir') . "data/master.adr";
-    $newmailFile = &aid_config('aiddir') . "data/newmail.adr";
-    $updFile = &aid_config('aiddir') . "data/update.adr";
     $logFile = &aid_config('aiddir') . "logs/additions.log";
     @db = &aid_create_db($dbFile);
 
@@ -138,18 +138,24 @@ sub addname {
     if ($rec{'id'} == -1) {
 	$rec{'id'} = ($#db + 1);
 	$addme = &aid_join(*rec);
-	system "$echo '$addme' >> $newmailFile"
-	    || die "failed to $echo '$addme' >> $newmailFile: $!\n";
+
+	open(ADR,">>$adr_newmail") || die "$adr_newmail: $!\n";
+	print ADR $addme, "\n";
+	close(ADR);
+
 	print     "new - ";
 	print LOG "new - ";
 
     } else {
 	%oldrec = &aid_split($db[$rec{'id'}]);
+	$addme = $rawdata;
+
+	open(ADR,">>$adr_update") || die "$adr_update: $!\n";
+	print ADR $addme, "\n";
+	close(ADR);
+
 	print     "upd ", $oldrec{'email'}, " ";
 	print LOG "upd ", $oldrec{'email'}, " ";
-	$addme = $rawdata;
-	system "$echo '$addme' >> $updFile"
-	    || die "failed to $echo '$addme' >> $updFile: $!\n";
     }
 
     $db[$rec{'id'}] = $addme;
