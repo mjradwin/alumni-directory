@@ -29,7 +29,7 @@ print FMTOUT &tableheader("Alumni with Web Pages", 1, 'ffff99',
 print FMTOUT "<p>Any entries marked with\n" . &new_gif(0) .
 "\nhave been added to the Directory within the last month.  The
 $info_gif
-icon lets you get more detailed information about an alumnus.</p>\n";
+icon lets you get more detailed information about an alumnus.</p>\n\n";
 print FMTOUT "<pre>";
 print FMTOUT "Name and Graduation Year$blank_gif                  Email\n";
 print FMTOUT "---------------------------------------------------------------------------\n";

@@ -32,7 +32,7 @@ if (!$opt_t) {
     print FMTOUT "<p>Any entries marked with\n" . &new_gif(0) .
 "\nhave been added to the Directory within the last month.  The
 $info_gif
-icon lets you get more detailed information about an alumnus.</p>\n";
+icon lets you get more detailed information about an alumnus.</p>\n\n";
     print FMTOUT "<p><a name=\"top\">Index</a>: <tt>";
 
     $lastYear = '1900';
