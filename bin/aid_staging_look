@@ -1,6 +1,6 @@
 #!/usr/local/bin/perl -w
 
-# $Id: aid_staging_look,v 1.4 2001/01/09 21:36:12 mradwin Exp mradwin $
+# $Id: aid_staging_look,v 1.5 2001/09/16 16:57:51 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -30,11 +30,12 @@ require 'getopts.pl';
 require 'ctime.pl';
 
 $0 =~ s,.*/,,;  # basename
-$usage = "usage: $0 [-h]
+$usage = "usage: $0 [-h] [-I inifile]
     -h        Display usage information.
+    -I file   Dump data to <file>
 ";
 
-&Getopts('h') || die "$usage\n";
+&Getopts('hI:') || die "$usage\n";
 $opt_h && die "$usage\n";
 
 my($dbmfile) = &aid_config('staging');
@@ -52,6 +53,40 @@ if (defined $DB{'_verified'})
     }
 }
 
+if ($opt_I)
+{
+    open(DATA,">$opt_I") || die "can't open $opt_I: $!\n";
+
+    # sort the numeric keys by id
+    %id2key = ();
+    while (($key,$val) = each %DB)
+    {
+	if ($key =~ /^\w{8}$/ && $val =~ /^-?\d+\0/)
+	{
+	    my($id,$packed) = split(/\0/, $val, 2);
+	    $id2key{$id} = $key;
+	}
+    }
+
+    foreach (sort { $a <=> $b } keys %id2key)
+    {
+	$key = $id2key{$_};
+	my($id,$packed) = split(/\0/, $DB{$key}, 2);
+	%rec = &aid_db_unpack_rec($id,$packed);
+	print DATA "[$key]\n";
+
+	foreach (@aid_edit_field_names)
+	{
+	    print DATA $_, '=', $rec{$_}, "\n";
+	}
+
+	print DATA "verif=", (defined $verif{$key} ? 1 : 0), "\n";
+	print DATA 'n=', &aid_url_escape($rec{'n'}), "\n\n";
+    } 
+    close(DATA);
+}
+else
+{
 while (($key,$val) = each %DB)
 {
     if ($key =~ /^\w{8}$/ && $val =~ /^-?\d+\0/)
@@ -71,6 +106,7 @@ while (($key,$val) = each %DB)
 	print "\n";
     }
 }
+}
 
 untie(%DB);
 exit 0;
@@ -79,4 +115,5 @@ exit 0;
 if ($^W && 0)
 {
     $opt_h = $opt_h;		# avoid warning
+    @aid_edit_field_names = ();
 }
