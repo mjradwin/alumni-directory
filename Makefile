@@ -2,7 +2,7 @@
 #     FILE: Makefile
 #   AUTHOR: Michael J. Radwin
 #    DESCR: Makefile for building the Alumni Internet Directory
-#      $Id: Makefile,v 3.26 1998/10/14 19:37:14 mradwin Exp mradwin $
+#      $Id: Makefile,v 3.27 1998/10/15 21:11:18 mradwin Exp mradwin $
 #
 
 WWWROOT=/home/web/radwin.org
@@ -24,9 +24,9 @@ BIN_BOOK=./bin/aid_book
 BIN_CLASS=./bin/aid_class_html
 BIN_GONERS=./bin/aid_goners_html
 BIN_HOME=./bin/aid_home_html
-BIN_RECENT=./bin/aid_recent_html
+BIN_RECENT=./bin/aid_shortlist_html
 BIN_VERBOSE=./bin/aid_verbose_html
-BIN_WWW=./bin/aid_www_html
+BIN_PAGES=./bin/aid_shortlist_html
 
 TARFILES=README \
 	Makefile \
@@ -71,10 +71,8 @@ $(AWALT):	$(ADR_AWALT) $(BIN_CLASS)
 
 RECENT=$(WWWDIR)/recent.html
 recent:	$(RECENT)
-#$(RECENT):	$(ADR_DATE) $(BIN_RECENT)
-#	$(BIN_RECENT) $(ADR_DATE) $(RECENT)
 $(RECENT):	$(ADR_CLASS) $(BIN_RECENT)
-	$(BIN_RECENT) $(ADR_CLASS) $(RECENT)
+	$(BIN_RECENT) -v -m1 $(ADR_CLASS) $(RECENT)
 
 GONERS=$(WWWDIR)/invalid.html
 goners:	$(GONERS)
@@ -83,8 +81,8 @@ $(GONERS):	$(ADR_ALPHA) $(BIN_GONERS)
 
 PAGES=$(WWWDIR)/pages.html
 pages:	$(PAGES)
-$(PAGES):	$(ADR_ALPHA) $(BIN_WWW)
-	$(BIN_WWW) $(ADR_ALPHA) $(PAGES)
+$(PAGES):	$(ADR_CLASS) $(BIN_PAGES)
+	$(BIN_PAGES) -w $(ADR_CLASS) $(PAGES)
 
 VERBOSE=$(WWWDIR)/class/index.html
 verbose:	$(VERBOSE)
@@ -184,7 +182,7 @@ class.txt:	$(ADR_CLASS) $(BIN_CLASS)
 	$(BIN_CLASS) -t $(ADR_CLASS) class.txt
 
 recent.txt:	$(ADR_CLASS) $(BIN_RECENT)
-	$(BIN_RECENT) -t $(ADR_CLASS) recent.txt
+	$(BIN_RECENT) -m3 -t $(ADR_CLASS) recent.txt
 
 tar:
 	tar cf $(WWWDIR)/mvhsaid.tar $(TARFILES)

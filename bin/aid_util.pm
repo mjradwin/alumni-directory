@@ -2,11 +2,11 @@
 #     FILE: aid_util.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: perl library routines for the Alumni Internet Directory
-#      $Id: aid_util.pl,v 3.58 1998/10/14 19:35:30 mradwin Exp mradwin $
+#      $Id: aid_util.pl,v 3.59 1998/10/14 20:18:15 mradwin Exp mradwin $
 #
 
 $aid_util'rcsid =
- '$Id: aid_util.pl,v 3.58 1998/10/14 19:35:30 mradwin Exp mradwin $';
+ '$Id: aid_util.pl,v 3.59 1998/10/14 20:18:15 mradwin Exp mradwin $';
 
 # ----------------------------------------------------------------------
 # CONFIGURATION
@@ -71,21 +71,21 @@ $aid_util'rcsid =
 $aid_util'caldate = &aid_caldate(time); #'#
 
 $aid_util'pics_label = #'#
-"<meta http-equiv=\"PICS-Label\" content='(PICS-1.1 " . 
+"  <meta http-equiv=\"PICS-Label\" content='(PICS-1.1 " . 
 "\"http://www.rsac.org/ratingsv01.html\" l gen true " . 
 "comment \"RSACi North America Server\" by \"" . 
 $aid_util'config{'admin_email'} . 
 "\" on \"1998.03.10T11:49-0800\" r (n 0 s 0 v 0 l 0))'>\n" .
-"<meta http-equiv=\"PICS-Label\" content='(PICS-1.1 " . 
+"  <meta http-equiv=\"PICS-Label\" content='(PICS-1.1 " . 
 "\"http://www.classify.org/safesurf/\" l gen true " .
 "for \"http://" . $aid_util'config{'master_srv'} . "\" by \"" . 
 $aid_util'config{'admin_email'} .
 "\" r (SS~~000 1 SS~~100 1))'>"; #"#
 
 $aid_util'site_tags = #'#
-"<meta http-equiv=\"Content-Type\" content=\"text/html; charset=ISO-8859-1\">\n<meta name=\"keywords\"    content=\"Mountain View High School, Alumni, MVHS, Awalt High School, Mountain View, Los Altos, California, reunion, Radwin\">\n<meta name=\"description\" content=\"Alumni email and web page directory for Mountain View High School (MVHS) and Awalt High School in Mountain View, CA. Updated $aid_util'caldate.\">\n<meta name=\"author\"  content=\"$aid_util'config{'admin_name'}\">\n<link rev=\"made\"     href=\"mailto:" . $aid_util'config{'admin_email'} . "\">\n<link rel=\"start\"    href=\"http://" . $aid_util'config{'master_srv'} . $aid_util'config{'master_path'} . "\">\n<link rel=\"contents\" href=\"http://" . $aid_util'config{'master_srv'} . $aid_util'config{'master_path'} . "\">";
+"  <meta http-equiv=\"Content-Type\" content=\"text/html; charset=ISO-8859-1\">\n  <meta name=\"keywords\"    content=\"Mountain View High School, Alumni, MVHS, Awalt High School, Mountain View, Los Altos, California, reunion, Radwin\">\n  <meta name=\"description\" content=\"Alumni email and web page directory for Mountain View High School (MVHS) and Awalt High School in Mountain View, CA. Updated $aid_util'caldate.\">\n  <meta name=\"author\"  content=\"$aid_util'config{'admin_name'}\">\n  <link rev=\"made\"     href=\"mailto:" . $aid_util'config{'admin_email'} . "\">\n  <link rel=\"start\"    href=\"http://" . $aid_util'config{'master_srv'} . $aid_util'config{'master_path'} . "\">\n  <link rel=\"contents\" href=\"http://" . $aid_util'config{'master_srv'} . $aid_util'config{'master_path'} . "\">";
 
-$aid_util'noindex = "<meta name=\"robots\"  content=\"noindex\">"; #'#
+$aid_util'noindex = "  <meta name=\"robots\"  content=\"noindex\">"; #'#
 %aid_util'aid_aliases = ();   #'# global alias hash repository 
 
 $aid_util'disclaimer = #'#
@@ -126,7 +126,7 @@ $aid_util'ID_INDEX    = 0;     #'# position that the ID key is in datafile
     'school',			# high school (MVHS or Awalt)
     'year',			# 4-digit grad year or affiliation
     'email',			# email address
-    'homepage',			# personal web page
+    'www',			# personal web page
     'location',			# city, company, or college
     'inethost',			# REMOTE_HOST of last update
     );
@@ -201,6 +201,7 @@ sub aid_image_tag {
 sub aid_caldate {
     package aid_util;
 
+    local($[) = 0;
     local($time) = @_;
     local($i,$day,$month,$year);
 
@@ -225,7 +226,6 @@ sub is_new {
     package aid_util;
 
     local($time,$months) = @_;
-    local($[) = 0;
 
     $months = 1 unless $months;
     (((time - $time) < ($months * 2678400)) ? 1 : 0);
@@ -355,6 +355,7 @@ sub aid_join {
     package aid_util;
 
     local(*rec) = @_;
+    local($[) = 0;
     local($i,@fields);
 
     for ($i = 0; $i <= $#field_names; $i++) {
@@ -415,6 +416,7 @@ sub aid_create_db {
 
 sub aid_util'bydatakeys {   #'#
     package aid_util;
+
     $datakeys[$a] cmp $datakeys[$b];
 }
  
@@ -517,7 +519,7 @@ sub submit_body {
     local($mvhs_checked,$awalt_checked,$other_checked) = ('', '', '');
     local(@reqchk,$i,$reunion_chk);
 
-    $rec{'homepage'} = 'http://' if $rec{'homepage'} eq '';
+    $rec{'www'} = 'http://' if $rec{'www'} eq '';
 
     for ($i = 0; $i < 4; $i++) {
 	$reqchk[$i] = ($rec{'request'} == $i) ? ' checked' : '';
@@ -616,9 +618,9 @@ are required.  All other fields are optional.</p>\n\n";
 </tr>
 <tr>
   <td colspan=2 valign=top><font color=\"#$cell_fg\"><label
-  for=\"homepage\">Personal Web Page</label></font></td>
-  <td valign=top><input type=text name=\"homepage\" size=35
-  value=\"$rec{'homepage'}\" id=\"homepage\"></td>
+  for=\"www\">Personal Web Page</label></font></td>
+  <td valign=top><input type=text name=\"www\" size=35
+  value=\"$rec{'www'}\" id=\"www\"></td>
 </tr>
 <tr>
   <td colspan=2 valign=top><font color=\"#$cell_fg\"><label
@@ -708,74 +710,78 @@ sub message_footer {
     "\n--\n" .	$config{'admin_name'} . "\n" . $config{'admin_school'};
 }
 
-sub aid_write_verbose_entry {
+sub aid_verbose_entry {
     package aid_util;
 
-    local(*FMTOUT,*rec_arg,$display_year,$suppress_new) = @_;
-    local($[) = 0;
+    local(*rec_arg,$display_year,$suppress_new) = @_;
     local($_);
     local($fullname);
     local(*rec);
+    local($retval) = '';
 
-    $rec_arg{'message'} = &main'aid_get_usertext($rec_arg{'id'});
+    $rec_arg{'message'} = &main'aid_get_usertext($rec_arg{'id'}); #'#
     %rec = &main'rec_html_entify(*rec_arg);
 
     $fullname = &main'inorder_fullname(*rec); #'#
 
-    print FMTOUT "<dl compact>\n";
+    $retval .= "<dl compact>\n";
 
-    print FMTOUT "<dt><font size=\"+1\">";
-    print FMTOUT "<strong>";
-    print FMTOUT "<a name=\"id-$rec{'id'}\">";
-    print FMTOUT  $fullname;
-    print FMTOUT "</a>";
-    print FMTOUT "</strong>";
-    print FMTOUT "</font>\n";
+    $retval .= "<dt><font size=\"+1\">";
+    $retval .= "<strong>";
+    $retval .= "<a name=\"id-$rec{'id'}\">";
+    $retval .=  $fullname;
+    $retval .= "</a>";
+    $retval .= "</strong>";
+    $retval .= "</font>\n";
 
-    print FMTOUT "&nbsp;<font size=\"-1\">[";
-    print FMTOUT "<a href=\"" . &main'aid_vcard_path($rec{'id'}) . "\">"; #'#
-    print FMTOUT "vCard</a>";
-    print FMTOUT "&nbsp;|&nbsp;";
-    print FMTOUT "<a href=\"" . $config{'cgi_path'} . "/dyn?about=$rec{'id'}\">";
-    print FMTOUT "update</a>";
-    print FMTOUT "]</font>\n";
+    $retval .= "&nbsp;<font size=\"-1\">[";
+    $retval .= "<a href=\"" . &main'aid_vcard_path($rec{'id'}) . "\">"; #'#
+    $retval .= "vCard</a>";
+    $retval .= "&nbsp;|&nbsp;";
+    $retval .= "<a href=\"" . $config{'cgi_path'} . "/dyn?about=$rec{'id'}\">";
+    $retval .= "update</a>";
+    $retval .= "]</font>\n";
     
-    print FMTOUT $image_tag{'new_anchored'}
+    $retval .= $image_tag{'new_anchored'}
 	if !$suppress_new && &main'is_new($rec{'time'});  #'#
 
-    print FMTOUT "</dt>\n";
-    print FMTOUT "<dt>School: <strong>$rec{'school'}</strong></dt>\n" 
+    $retval .= "</dt>\n";
+    $retval .= "<dt>School: <strong>$rec{'school'}</strong></dt>\n" 
 	if $rec{'school'} ne $config{'short_school'};
 
     if ($rec{'year'} =~ /^\d+$/) {
 	if ($display_year) {
-	    print FMTOUT "<dt>Year:  <strong>";
-	    print FMTOUT 
+	    $retval .= "<dt>Year:  <strong>";
+	    $retval .= 
 		"<a href=\"" . &main'aid_about_path(*rec,1) . "\">"; #'#
-	    print FMTOUT $rec{'year'};
-	    print FMTOUT "</a></strong></dt>\n";
+	    $retval .= $rec{'year'};
+	    $retval .= "</a></strong></dt>\n";
 	}
     } else {
-	print FMTOUT "<dt>Affiliation:  <strong>";
-	print FMTOUT "<a href=\"" . &main'aid_about_path(*rec,1) . "\">"; #'#
-	print FMTOUT $rec{'year'};
-	print FMTOUT "</a></strong></dt>\n";
+	$retval .= "<dt>Affiliation:  <strong>";
+	$retval .= "<a href=\"" . &main'aid_about_path(*rec,1) . "\">"; #'#
+	$retval .= $rec{'year'};
+	$retval .= "</a></strong></dt>\n";
     }
 
-    print FMTOUT "<dt>Email: <code><strong><a href=\"mailto:$rec{'email'}\">$rec{'email'}</a></strong></code></dt>\n";
-    print FMTOUT "<dt>Web Page: <code><strong><a href=\"$rec{'homepage'}\">$rec{'homepage'}</a></strong></code></dt>\n"
-	if $rec{'homepage'} ne '';
-    print FMTOUT "<dt>Location: <strong>$rec{'location'}</strong></dt>\n"
+    $retval .= "<dt>Email: <code><strong><a href=\"mailto:$rec{'email'}\">";
+    $retval .= $rec{'email'};
+    $retval .= "</a></strong></code></dt>\n";
+    $retval .= "<dt>Web Page: <code><strong><a href=\"$rec{'www'}\">$rec{'www'}</a></strong></code></dt>\n"
+	if $rec{'www'} ne '';
+    $retval .= "<dt>Location: <strong>$rec{'location'}</strong></dt>\n"
 	if $rec{'location'} ne '';
-    print FMTOUT "<dt>Updated: ";
+    $retval .= "<dt>Updated: ";
     $date = &main'aid_caldate($rec{'time'}); #'#
-    print FMTOUT "<strong>$date</strong></dt>\n";
+    $retval .= "<strong>$date</strong></dt>\n";
 
     if ($rec{'message'} ne '') {
-	print FMTOUT "<dt>What's New?</dt>\n";
-	print FMTOUT "<dd>$rec{'message'}</dd>\n";
+	$retval .= "<dt>What's New?</dt>\n";
+	$retval .= "<dd>$rec{'message'}</dd>\n";
     }
-    print FMTOUT "</dl>\n\n";
+    $retval .= "</dl>\n\n";
+
+    $retval;
 }
 
 
@@ -808,7 +814,7 @@ sub aid_vcard_text {
     } else {
 	$retval .= "ADR:;;;$rec{'location'}\r\n" if $rec{'location'} ne '';
     }
-    $retval .= "URL:$rec{'homepage'}\r\n" if $rec{'homepage'} ne '';
+    $retval .= "URL:$rec{'www'}\r\n" if $rec{'www'} ne '';
     $retval .= "REV:" . &main'aid_vdate($rec{'time'}) . "\r\n"; #'#
     $retval .= "End:vCard\r\n";
 
@@ -876,9 +882,9 @@ sub about_text {
     $retval .= "\n";
 
     $retval .= "Personal Web Page  : ";
-    $retval .= ($rec{'homepage'} eq '') ? "(none)\n" :
-	((($do_html_p) ? "<strong><a href=\"$rec{'homepage'}\">" : "") .
-	 $rec{'homepage'} . 
+    $retval .= ($rec{'www'} eq '') ? "(none)\n" :
+	((($do_html_p) ? "<strong><a href=\"$rec{'www'}\">" : "") .
+	 $rec{'www'} . 
 	 (($do_html_p) ? "</a></strong>" : "") .
 	 "\n");
 
@@ -956,6 +962,7 @@ sub common_intro_para {
 sub common_link_table {
     package aid_util;
 
+    local($[) = 0;
     local($page) = @_;
     local($html,$name,$url,$idx);
 
@@ -991,6 +998,7 @@ sub common_link_table {
 sub common_html_ftr {
     package aid_util;
 
+    local($[) = 0;
     local($page) = @_;
     local($ftr,$copyright);
 
@@ -1037,14 +1045,14 @@ sub common_html_hdr {
 	"        \"http://www.w3.org/TR/REC-html40/loose.dtd\">\n" .
 	"<!--  " . $config{'rcsid'} . " -->\n" .
 	"<html>\n<head>\n" .
-	"<title>" . $titletag .
-	"</title>\n" . $pics_label . "\n" . $site_tags . "\n";
+	"  <title>" . $titletag . "</title>\n" . 
+	    $pics_label . "\n" . $site_tags . "\n";
     $hdr .= "$noindex\n" if $norobots;
     $hdr .= "</head>\n\n";
     
     $hdr .= "<!-- begin common_html_hdr -->\n";
 
-    $hdr .= "<body bgcolor=\"#$body_bg\" text=\"#$body_fg\" link=\"#$body_link\" vlink=\"#$body_vlink\">\n\n";
+    $hdr .= "<body bgcolor=\"#$body_bg\" text=\"#$body_fg\" link=\"#$body_link\" vlink=\"#$body_vlink\">\n";
     
     $hdr .= "
 <center>
@@ -1075,6 +1083,45 @@ sub common_html_hdr {
     $hdr .= "<!-- end common_html_hdr -->\n\n";
 
     $hdr;
+}
+
+sub aid_build_yearlist {
+    package aid_util;
+
+    local($[) = 0;
+    local(*years,$year) = @_;
+
+    if ($years[$#years] ne $year && $years[$#years] ne 'other') {
+	push(@years, ($year =~ /^\d+$/) ? $year : 'other');
+    }
+
+    1;
+}
+
+sub aid_class_jump_bar {
+    package aid_util;
+
+    local($href_begin,$href_end,*years,$do_paragraph) = @_;
+    local($first) = 1;
+    local($retval) = $do_paragraph ? '<p>' : '';
+    local($year);
+
+    foreach $year (@years) {
+	if ($first) {
+	    $first = 0;
+	    $retval .= "<a name=\"top\" ";
+	} else {
+	    $retval .= " |\n<a ";
+	}
+	$retval .= "href=\"${href_begin}${year}${href_end}\">";
+	$retval .= ($year eq 'other') ? "Faculty/Staff" : $year % 100;
+	$retval .= "</a>";
+    }
+
+    $do_paragraph && $retval .= '</p>';
+    $retval .= "\n\n";
+
+    $retval;
 }
 
 1;
