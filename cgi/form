@@ -4,7 +4,7 @@
 #     FILE: mvhsaid.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: Alumni Internet Directory CGI interface
-#      $Id: mvhsaid,v 3.62 1999/02/11 17:06:21 mradwin Exp mradwin $
+#      $Id: mvhsaid,v 3.63 1999/02/24 01:12:35 mradwin Exp mradwin $
 #
 
 require 'aid_util.pl';
@@ -22,8 +22,12 @@ if ($ENV{'SCRIPT_NAME'} =~ m,/nph-,)
 # configuration
 $mailprog = &aid_config('mailprog');
 $dbmfile = &aid_config('wwwdir') . 'master';
-$rcsid = '$Id: mvhsaid,v 3.62 1999/02/11 17:06:21 mradwin Exp mradwin $'; #'fnt
+$rcsid = '$Id: mvhsaid,v 3.63 1999/02/24 01:12:35 mradwin Exp mradwin $'; #'fnt
 
+$listing_upd_title = 'Step 1: Update Your Directory Listing';
+$listing_add_title = 'Step 1: Add Your Listing to the Directory';
+$listing_sub_title = 'Step 2: Review and Confirm Your Listing';
+$listing_cnf_title = 'Thank You! Your Listing is Queued';
 
 &CgiDie(&aid_config('short_school') . " Alumni: Script Error",
 	"The database is unreadable.\n" .
@@ -288,14 +292,14 @@ exit(0);
 
 sub confirm_submission {
     print "Content-Type: text/html\015\012\015\012";
-    print &common_html_hdr(-1,'Please confirm your submission',1);
+    print &common_html_hdr(-1,$listing_sub_title,1);
     print "\n<p>\n<strong><font color=\"#" . $aid_util'star_fg . "\">"; #'#
     print "Please confirm that all of the below information is
 correct.</font></strong></p>
 
 <ul>
 <li>If you have made any mistakes, select the
-<strong>&lt;&nbsp;Back</strong> button to edit your entry.
+<strong>&lt;&nbsp;Back</strong> button to edit your listing.
 <li>If everything is correct, please hit the
 <strong>Finish&nbsp;&gt;</strong> button.
 </ul>\n";
@@ -357,12 +361,12 @@ EOM
 ");
 
     print "Content-Type: text/html\015\012\015\012";
-    print &common_html_hdr(-1,'Your submission is confirmed and queued',1);
+    print &common_html_hdr(-1,$listing_cnf_title,1);
 
     $fullname = &inorder_fullname(*in);
     print "
 
-<p>The entry for <strong>$fullname</strong> has been added
+<p>The listing for <strong>$fullname</strong> has been added
 to the submission queue, but it has <em>not</em> yet been published in
 the Directory.  Processing your submission can take up to 48 hours.
 If your submission was made Monday-Friday between 9am and 5pm Pacific
@@ -371,7 +375,7 @@ Time, your submission will probably be processed within an hour.</p>
 <p>Email will be sent to <code><strong>$in{'email'}</strong></code>
 confirming receipt of this submission when it it processed.
 See \"<a href=\"" . &aid_config('master_path') . 
-"etc/faq.html#submit\">What happens when I submit my entry?</a>\"
+"etc/faq.html#submit\">What happens when I submit my listing?</a>\"
 for behind-the-scenes details.</p>
 
 ";
@@ -388,8 +392,7 @@ sub send_upd_real {
 
     print &common_html_hdr(-1,
 			   (($rec{'id'} == -1) ? 
-			    'Add an Entry to the Directory' :
-			    'Update Your Directory Entry'),
+			    $listing_add_title : $listing_upd_title),
 			   1);
 
     print &submit_body(*rec,$blank_entries);
@@ -404,7 +407,7 @@ sub send_about {
     print "Content-Type: text/html\015\012\015\012";
     print &common_html_hdr(-1,$fullname,1);
     print "<p>Here is more detailed information about $html_name.\n<br>";
-    print "To update this entry, please review the information and\n";
+    print "To update this listing, please review the information and\n";
     print "click the button below.</p>\n\n";
     print &about_text(*rec,0,1,1), "\n";
     print &modify_button($rec{'id'}, $html_name);
@@ -498,9 +501,9 @@ sub send_upd_notfound {
     local($_);
 
     print "Content-Type: text/html\015\012\015\012";
-    print &common_html_hdr(-1,'Update Your Directory Entry',1);
+    print &common_html_hdr(-1,$listing_upd_title,1);
     print "\n";
-    print "<p>Sorry, an entry with the address\n";
+    print "<p>Sorry, a listing with the address\n";
     print "<code><strong>$notfound</strong></code>\n";
     print "could not be found in the Directory.</p>\n";
     print "<p>Please check the spelling and <a href=\""
@@ -531,10 +534,10 @@ sub send_upd_list {
     }
 
     print "Content-Type: text/html\015\012\015\012";
-    print &common_html_hdr(-1,'Update Your Directory Entry',1);
+    print &common_html_hdr(-1,$listing_upd_title,1);
     print "\n";
     
-    print "<p>Please select an entry to update from the list below.</p>\n";
+    print "<p>Please select an listing to update from the list below.</p>\n";
     print "<p>\n", &jump_bar(), "</p>\n\n";
     print "<pre>";
     print "Name and Graduation Year                  Email\n";
