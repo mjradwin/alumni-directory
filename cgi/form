@@ -4,7 +4,7 @@
 #     FILE: form.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: Alumni Internet Directory CGI form-submission interface
-#      $Id: form,v 5.39 2001/01/08 17:53:26 mradwin Exp mradwin $
+#      $Id: form,v 5.40 2001/01/09 21:27:01 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -36,7 +36,7 @@ use CGI::Carp qw(fatalsToBrowser);
 # configuration
 $dbmfile = &aid_config('dbmfile');
 
-$rcsid = '$Id: form,v 5.39 2001/01/08 17:53:26 mradwin Exp mradwin $'; #'fnt
+$rcsid = '$Id: form,v 5.40 2001/01/09 21:27:01 mradwin Exp mradwin $'; #'fnt
 
 $listing_upd_title = 'Modify Your Directory Listing';
 $listing_add_title = 'Join the Directory';
@@ -440,69 +440,15 @@ Here is what your listing will look like:
 sub send_verify_email {
     my($randkey) = @_;
 
-    my($name) = $cgi{'gn'};
-    $name .= " $cgi{'mi'}."
-	if defined $cgi{'mi'} && $cgi{'mi'} ne '';
-    $name .= " $cgi{'sn'}";
-    $name .= " $cgi{'mn'}"
-	if defined $cgi{'mn'} && $cgi{'mn'} ne '';
-    $name =~ s/\"/\'/g;
-
-    $mailbody = &aid_inorder_fullname(*cgi) . ",
-
-You recently were asked to verify your e-mail address
-with the " . &aid_config('short_school') . " Alumni Internet Directory.
-
-Please follow the instructions below to complete the
-verification process.
-
-TO VERIFY YOUR ADDRESS:
-
-1. If your email reader will allow you to click on
-links, click the following link.  If not, enter the URL
-into your browser:
-
-http://" . &aid_config('master_srv') . &aid_config('verify_cgi') . "?$randkey
-
-2. If the page asks you to enter your 8-letter
-verification code, please enter this code:
-
-$randkey
-
-3. Then click on the \"Submit verification code\" button.
-
-
-WAS THIS EMAIL SENT TO THE WRONG ADDRESS?
-
-If you did not request this confirmation, you can
-remove your e-mail address from our database by
-clicking on the following link:
-
-http://" . &aid_config('master_srv') . &aid_config('remove_cgi') . "?$randkey
-
-If this link does not work for you, please reply to
-this message with the word REMOVE in the subject line
-(and be sure to include the full text of this email in
-your reply).
-
-Regards,
-
-" . &aid_config('short_school') . " Alumni Internet Directory
-http://" . &aid_config('master_srv') . &aid_config('master_path') . "\n";
+    my($return_path,$from,$subject,$body,@recip) =
+	&aid_verification_message($randkey, *cgi);
 
     my($i);
     my($status) = 0;
 
     for ($i = 0; $status == 0 && $i < 3; $i++)
     {
-	$status =
-	    &aid_sendmail_v2(&aid_config('admin_email'),
-			     &aid_config('short_school') . ' Alumni Robot',
-			     &aid_config('short_school') .
-			     ' Alumni Internet Directory Verification' .
-			     " [$randkey]",
-			     "Reply-To: " . &aid_config('admin_email'),
-			     $mailbody,$name,$cgi{'e'});
+	$status = &aid_sendmail_v2($return_path,$from,$subject,$body,@recip);
     }
 
     &aid_cgi_die('ERROR: Unable to send confirmation e-mail',
