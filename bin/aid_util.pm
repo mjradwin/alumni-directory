@@ -2,11 +2,11 @@
 #     FILE: aid_util.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: perl library routines for the Alumni Internet Directory
-#      $Id: aid_util.pl,v 4.6 1999/02/01 23:53:58 mradwin Exp mradwin $
+#      $Id: aid_util.pl,v 4.7 1999/02/03 00:36:27 mradwin Exp mradwin $
 #
 
 $aid_util'rcsid =
- '$Id: aid_util.pl,v 4.6 1999/02/01 23:53:58 mradwin Exp mradwin $';
+ '$Id: aid_util.pl,v 4.7 1999/02/03 00:36:27 mradwin Exp mradwin $';
 $aid_util'caldate = &aid_caldate(time); #'#
 
 # ----------------------------------------------------------------------
@@ -757,15 +757,16 @@ are required.  All other fields are optional.</p>\n\n";
 sub sendmail {
     package aid_util;
 
-    local($to,$return_path,$from,$subject,$body) = @_;
+    local($to,$name,$return_path,$from,$subject,$body) = @_;
     local(*F);
     local($toline,$header);
 
+    $name =~ s/"/'/g;
     $to =~ s/\s*\([^\)]*\)\s*//g;
     $toline = join(', ', split(/[ \t]+/, $to));
     $header =
 "From: $from <$return_path>\
-To: $toline\
+To: \"$name\" <$toline>\
 X-Sender: $ENV{'USER'}\@$ENV{'HOST'}\
 Organization: $config{'school'} Alumni Internet Directory\
 Content-Type: text/plain; charset=ISO-8859-1\
