@@ -2,11 +2,11 @@
 #     FILE: aid_util.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: perl library routines for the Alumni Internet Directory
-#      $Id: aid_util.pl,v 4.39 1999/03/04 01:21:50 mradwin Exp mradwin $
+#      $Id: aid_util.pl,v 4.40 1999/03/04 19:19:16 mradwin Exp mradwin $
 #
 
 $aid_util'rcsid =
- '$Id: aid_util.pl,v 4.39 1999/03/04 01:21:50 mradwin Exp mradwin $';
+ '$Id: aid_util.pl,v 4.40 1999/03/04 19:19:16 mradwin Exp mradwin $';
 
 # ----------------------------------------------------------------------
 # CONFIGURATION
@@ -113,6 +113,7 @@ $aid_util'ID_INDEX    = 0;     #'# position that the ID key is in datafile
     'location',			# city, company, or college
     'inethost',			# REMOTE_HOST of last update
     'middle',			# middle initial
+    'email_upd',		# date of last update to email
     );
 
 %aid_util'field_descr = #'#
@@ -135,7 +136,11 @@ $aid_util'ID_INDEX    = 0;     #'# position that the ID key is in datafile
     'location',	'Location',
     'inethost',	'',
     'middle',	'Middle Initial',
+    'email_upd','',
     );
+
+$aid_util'pack_format = 'C2N5'; #'#
+$aid_util'pack_len    = 22; #'#
 
 %aid_util'blank_entry =        #'# a prototypical blank entry to clone
     ();
@@ -1455,15 +1460,18 @@ sub aid_http_date
 
 sub aid_db_pack_rec
 {
+    package aid_util;
+
     local(*rec) = @_;
 
-    pack("C2N4",
+    pack($pack_format,
 	 (($rec{'valid'} ? 1 : 0) | (($rec{'reunion'} ? 1 : 0) << 1)),
 	 $rec{'request'},
 	 $rec{'bounce'},
 	 $rec{'created'},
 	 $rec{'time'},
-	 $rec{'fresh'}
+	 $rec{'fresh'},
+	 $rec{'email_upd'}
 	 ) .
     join("\0",
 	 $rec{'last'},
@@ -1484,6 +1492,8 @@ sub aid_db_pack_rec
 
 sub aid_db_unpack_rec
 {
+    package aid_util;
+
     local($key,$val) = @_;
     local(*rec,$masked);
 
@@ -1496,8 +1506,9 @@ sub aid_db_unpack_rec
      $rec{'bounce'},
      $rec{'created'},
      $rec{'time'},
-     $rec{'fresh'}
-     ) = unpack("C2N4", $val);
+     $rec{'fresh'},
+     $rec{'email_upd'}
+     ) = unpack($pack_format, $val);
 
     $rec{'valid'}   = ( $masked       & 1) ? 1 : 0;
     $rec{'reunion'} = (($masked >> 1) & 1) ? 1 : 0;
@@ -1515,7 +1526,7 @@ sub aid_db_unpack_rec
      $rec{'inethost'},
      $rec{'alias'},
      $rec{'message'}
-     ) = split(/\0/, substr($val, 18));
+     ) = split(/\0/, substr($val, $pack_len));
 
     %rec;
 };
