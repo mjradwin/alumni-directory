@@ -1,6 +1,6 @@
 #!/usr/bin/perl -w
 
-# $Id: aid_stats,v 1.21 1999/04/07 02:18:12 mradwin Exp mradwin $
+# $Id: aid_stats,v 1.22 1999/04/15 21:11:50 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -192,7 +192,7 @@ printf FMTOUT "median  time since update  : %.0f weeks\n", $median_update_weeks;
 
 if (!$opt_t)
 {
-    print FMTOUT "</pre><p>\n";
+    print FMTOUT "</pre>\n";
     print FMTOUT &aid_common_html_ftr(15);
 }
 else
