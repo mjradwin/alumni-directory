@@ -2,12 +2,15 @@
 #     FILE: Makefile
 #   AUTHOR: Michael J. Radwin
 #    DESCR: Makefile for building the MVHS Alumni Internet Directory
-#      $Id: Makefile,v 1.12 1997/03/25 17:49:36 mjr Exp mjr $
+#      $Id: Makefile,v 1.13 1997/03/25 17:52:33 mjr Exp $
 #
 
 WWWDIR=/home/divcom/mjr/public_html/mvhs
 CGIDIR=/home/divcom/mjr/public_html/cgi-bin
 CGIFILE=mvhsaid
+TARFILES=Makefile mvhs.adr goners.adr mv_* tableheader.pl \
+	-C $(CGIDIR) $(CGIFILE) \
+	-C $(WWWDIR) .home.include .submit.hdr .submit.ftr
 
 all:	alpha grad new goners pages books adrfile home submit
 	( cd $(WWWDIR) ; chmod 0644 * )
@@ -67,9 +70,7 @@ class.adr:	mvhs.adr
 	sort -t\; +7 -8 +3 -6 mvhs.adr > class.adr
 
 tar:
-	cp $(CGIDIR)/$(CGIFILE) .
-	tar cf $(WWWDIR)/mvhs_db.tar mv_* tableheader.pl $(CGIFILE) Makefile
-	$(RM) $(CGIFILE)
+	tar cf $(WWWDIR)/mvhs_db.tar $(TARFILES)
 
 backup:
 	ci -l mv_* tableheader.pl Makefile
