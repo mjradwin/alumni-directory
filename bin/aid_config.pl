@@ -2,7 +2,7 @@
 #     FILE: aid_config.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: configuration variables for Alumni Internet Directory
-#      $Id: aid_config.pl,v 5.5 1999/06/08 19:29:01 mradwin Exp mradwin $
+#      $Id: aid_config.pl,v 5.6 1999/06/08 21:54:43 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -23,15 +23,6 @@
 
 # $ht_empty_close_tag = ' />';
 $ht_empty_close_tag = '>';
-
-@aid_util'MoY = #'#
-    ('Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec');
-$aid_util'caldate = &aid_caldate(time); #'#
-
-if (defined $aid_util'descr_meta) #'#
-{
-    $aid_util'descr_meta =~ s/__DATE__/$aid_util'caldate/g;
-}
 
 @aid_util'req_descr_long =   #'#
     (
@@ -179,18 +170,6 @@ $aid_util'blank_entry{'n'}  = '';      #'#
      'blank',
      "<b>&nbsp;&nbsp;&nbsp;</b>",
      );
-
-sub aid_caldate
-{
-    package aid_util;
-
-    local($[) = 0;
-    local($time) = @_;
-    local($i,$day,$month,$year);
-
-    ($i,$i,$i,$day,$month,$year,$i,$i,$i) = localtime($time);
-    sprintf("%02d-%s-%d", $day, $MoY[$month], ($year+1900));
-}
 
 # give 'em back the configuration variable they need
 sub aid_config

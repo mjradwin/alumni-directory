@@ -2,7 +2,7 @@
 #     FILE: aid_util.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: perl library routines for the Alumni Internet Directory
-#      $Id: aid_util.pl,v 5.16 1999/06/11 00:02:00 mradwin Exp mradwin $
+#      $Id: aid_util.pl,v 5.17 1999/06/12 19:39:29 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -24,6 +24,20 @@
 require 'awalt_config.pl';
 require 'aid_config.pl';
 require 'aid_submit.pl';
+
+@aid_util'MoY = #'#
+    ('Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec');
+sub aid_caldate
+{
+    package aid_util;
+
+    local($[) = 0;
+    local($time) = @_;
+    local($i,$day,$month,$year);
+
+    ($i,$i,$i,$day,$month,$year,$i,$i,$i) = localtime($time);
+    sprintf("%02d-%s-%d", $day, $MoY[$month], ($year+1900));
+}
 
 sub aid_vdate {
     package aid_util;
@@ -726,9 +740,9 @@ sub aid_common_html_hdr
     package aid_util;
 
     local($page,$title,$norobots,$time,$subtitle) = @_;
-    local($hdr,$titletag,$srv_nowww);
-    local($pagetime) = (defined $time && $time ne '') ? $time : time;
-    local($timestamp) = &main'aid_caldate($pagetime); #'#
+    local($hdr,$titletag,$srv_nowww,$descr);
+    local($timestamp) =
+	&main'aid_caldate((defined $time && $time ne '') ? $time : time); #'#
 
     $title = &main'aid_html_entify_str($title);
     $subtitle = &main'aid_html_entify_str($subtitle)
@@ -740,16 +754,18 @@ sub aid_common_html_hdr
 
     $hdr  = 
 	"<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0 Transitional//EN\"\n" .
-	"\t\"http://www.w3.org/TR/REC-html40/loose.dtd\">\n" .
-#	"<html xmlns=\"http://www.w3.org/TR/xhtml1\">\n" .
-	"<html>\n" .
-	"<head>\n" .
-	"<title>" . $titletag . "</title>\n" . 
-	    $pics_label . "\n" . $author_meta . "\n" . $navigation_meta . "\n";
+	    "\t\"http://www.w3.org/TR/REC-html40/loose.dtd\">\n" .
+#		"<html xmlns=\"http://www.w3.org/TR/xhtml1\">\n" .
+		"<html>\n" .
+		    "<head>\n<title>" . $titletag . "</title>\n";
 
+    # do stylesheet before the rest of the meta tags on the theory that
+    # early evaluation is good
     $hdr .= "<link rel=\"stylesheet\" type=\"text/css\" href=\"http://";
-    $hdr .= $config{'master_srv'} . $config{'master_path'};;
+    $hdr .= $config{'master_srv'} . $config{'master_path'};
     $hdr .= "default.css\"${main'ht_empty_close_tag}\n";
+
+    $hdr .= $pics_label . "\n" . $author_meta . "\n" . $navigation_meta . "\n";
 
     if ($norobots)
     {
@@ -757,7 +773,9 @@ sub aid_common_html_hdr
     }
     else
     {
-	$hdr .= $descr_meta;
+	$descr = $descr_meta;
+	$descr =~ s/__DATE__/$timestamp/g;
+	$hdr .= $descr;
     }
 
     $hdr .= "\n</head>\n\n";
