@@ -2,7 +2,7 @@
 #     FILE: mv_util.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: perl library routines for the MVHS Alumni Internet Directory
-#      $Id: mv_util.pl,v 1.40 1997/10/07 23:53:23 mjr Exp mjr $
+#      $Id: mv_util.pl,v 1.41 1997/10/08 00:10:06 mjr Exp mjr $
 #
 
 CONFIG: {
@@ -291,14 +291,14 @@ All other fields are optional.";
   <td valign=top>High School</td>
   <td>$star</td>
   <td valign=top><input type=radio name=\"school\"
-  value=\"MVHS\"$mvhs_checked>MVHS&nbsp;&nbsp;<input type=radio
-  name=\"school\" value=\"Awalt\"$awalt_checked>Awalt</td>
+  value=\"MVHS\"$mvhs_checked>&nbsp;MVHS&nbsp;&nbsp;&nbsp;&nbsp;<input
+  type=radio name=\"school\" value=\"Awalt\"$awalt_checked>&nbsp;Awalt</td>
 </tr>
 <tr>
   <td valign=top>&nbsp;</td>
   <td valign=top>&nbsp;</td>
   <td valign=top><input type=radio name=\"school\" 
-  value=\"Other\"$other_checked>Other:&nbsp;<input type=text
+  value=\"Other\"$other_checked>&nbsp;Other:&nbsp;<input type=text
   name=\"sch_other\" size=27 value=\"$school\"></td>
 </tr>
 <tr>
@@ -331,20 +331,19 @@ All other fields are optional.";
   Please send an updated copy of the Directory to my
   email address every 3-4 months:<br>
   &nbsp;&nbsp;&nbsp;&nbsp;<input type=radio name=\"request\"
-  value=\"1\"$reqchk[1]>&nbsp;Sorted by name.<br>
+  value=\"1\"$reqchk[1]>&nbsp;&nbsp;Sorted by name.<br>
   &nbsp;&nbsp;&nbsp;&nbsp;<input type=radio name=\"request\" 
-  value=\"2\"$reqchk[2]>&nbsp;Sorted by graduating class.<br>
+  value=\"2\"$reqchk[2]>&nbsp;&nbsp;Sorted by graduating class.<br>
   &nbsp;&nbsp;&nbsp;&nbsp;<input type=radio name=\"request\"
-  value=\"0\"$reqchk[0]>&nbsp;No, please do not send me copies
+  value=\"0\"$reqchk[0]>&nbsp;&nbsp;No, please do not send me copies
   of the Directory.
-  <p>
-  <input type=\"submit\" value=\"Submit entry\">
-  <input type=\"reset\" value=\"Reset form\">
-  <input type=\"hidden\" name=\"id\" value=\"$id\">
   </td>
 </tr>
 </table>
 </td></tr></table>
+<input type=\"submit\" value=\"Submit entry\">
+<input type=\"reset\" value=\"Reset form\">
+<input type=\"hidden\" name=\"id\" value=\"$id\">
 </form>
 
 ";
