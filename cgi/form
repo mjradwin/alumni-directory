@@ -4,7 +4,7 @@
 #     FILE: mvhsaid.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: MVHS Alumni Internet Directory CGI interface
-#      $Id: mvhsaid,v 3.11 1998/05/19 00:43:13 mradwin Exp mradwin $
+#      $Id: mvhsaid,v 3.12 1998/05/19 00:54:04 mradwin Exp mradwin $
 #
 
 require 'aid_util.pl';
@@ -24,7 +24,7 @@ if (defined($ENV{'PATH_INFO'}) && $ENV{'PATH_INFO'} =~ m,^/vcard/,) {
     $in{'vcard'} =~ s,^/vcard/(\d+).*$,$1,;
 }
 
-$rcsid = '$Id: mvhsaid,v 3.11 1998/05/19 00:43:13 mradwin Exp mradwin $'; #'fnt
+$rcsid = '$Id: mvhsaid,v 3.12 1998/05/19 00:54:04 mradwin Exp mradwin $'; #'fnt
 
 # special flags: version, update, vcard, about
 #
@@ -193,10 +193,11 @@ sub confirm_submission {
     select(STDOUT);  $| = 1;
     print "Content-type: text/html\n\n";
     print &common_html_hdr(-1,'Please confirm your submission',1);
-    print "
-<p>Please confirm that all of the below information is correct.  If you
-have made any mistakes, select the <strong>&lt;&nbsp;Back</strong> button
-to edit your entry.  If everything is correct, please hit the
+    print "\n<p>\n<strong><font color=\"#" . $aid_util'star_fg . "\">"; #'#
+    print "Please confirm that all of the below information is
+correct.</font></strong>
+If you have made any mistakes, select the <strong>&lt;&nbsp;Back</strong>
+button to edit your entry.  If everything is correct, please hit the
 <strong>Finish</strong> button.</p>\n";
 
     print "<form method=post action=\"$cgi_path\">\n";
@@ -205,15 +206,21 @@ to edit your entry.  If everything is correct, please hit the
 	print "<input type=hidden name=\"$_\" value=\"$newrec{$_}\">\n";
     }
 
-    print "<table border=0><tr><td>\n";
+    print "<table border=0>\n";
+    print "<tr><td align=right>\n";
+    print "<input type=submit name=\"revise\" value=\"&lt; Back\">\n";
+    print "&nbsp;\n";
+    print "<input type=submit name=\"confirmed\" value=\"Finish\">\n";
+    print "</td></tr>\n";
+    print "<tr><td>\n";
     print &about_text(*in,1,1,0), "\n";
     print "</td></tr>\n";
     print "<tr><td align=right>\n";
     print "<input type=submit name=\"revise\" value=\"&lt; Back\">\n";
     print "&nbsp;\n";
     print "<input type=submit name=\"confirmed\" value=\"Finish\">\n";
-    print "</td></tr></table>\n";
-    print "</form>\n";
+    print "</td></tr>\n";
+    print "</table>\n</form>\n";
     print &common_html_ftr(-1);
 }
 
