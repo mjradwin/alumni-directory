@@ -1,0 +1,79 @@
+#!/usr/bin/perl -w
+
+#
+#     FILE: go.pl
+#   AUTHOR: Michael J. Radwin
+#    DESCR: Alumni Internet Directory update redirector
+#      $Id: about,v 5.1 1999/05/31 21:20:15 mradwin Exp $
+#
+#   Copyright (c) 1995-1999  Michael John Radwin
+#
+#   This program is free software; you can redistribute it and/or modify
+#   it under the terms of the GNU General Public License as published by
+#   the Free Software Foundation; either version 2 of the License, or
+#   (at your option) any later version.
+#
+#   This program is distributed in the hope that it will be useful,
+#   but WITHOUT ANY WARRANTY; without even the implied warranty of
+#   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#   GNU General Public License for more details.
+#
+#   You should have received a copy of the GNU General Public License
+#   along with this program; if not, write to the Free Software
+#   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+#
+
+require 'cgi-lib.pl';
+require 'aid_util.pl';
+
+$ENV{'PATH_INFO'} =~ s/\+/ /g;
+$ENV{'PATH_INFO'} =~ s/%([A-Fa-f0-9]{2})/pack("c",hex($1))/ge;
+
+if ($ENV{'PATH_INFO'} =~ m,/(\d+)$,)
+{
+    $id = $1;
+
+    $dbmfile = &aid_config('dbmfile');
+    $dbmfile =~ s/\.db$//;
+
+    &CgiDie(&aid_config('short_school') . " Alumni: Script Error",
+	    "The database is unreadable.\n" .
+	    "Please <a href=\"mailto:" . &aid_config('admin_email') .
+	    "\">e-mail " . &aid_config('admin_name') . "</a>.")
+	unless -r "${dbmfile}.db";
+
+    dbmopen(%DB,$dbmfile,0444);
+    if (defined $DB{$id})
+    {
+	$val = $DB{$id};
+	dbmclose(%DB);
+
+	%rec = &aid_db_unpack_rec($id,$val);
+
+	print "Content-Type: text/html\015\012\015\012";
+
+	print &aid_common_html_hdr(-1,'Update Your Directory Listing',
+				   1,$rec{'u'});
+	print &aid_submit_body(*rec,'');
+	print &aid_common_html_ftr(-1);
+
+	close(STDOUT);
+	exit(0);
+    }
+    else
+    {
+	dbmclose(%DB);
+    }
+}
+
+$ENV{'PATH_INFO'} =~ s/&/&amp;/g;
+$ENV{'PATH_INFO'} =~ s/</&lt;/g;
+$ENV{'PATH_INFO'} =~ s/>/&gt;/g;
+
+print "Status: 404 Not Found\015\012";
+&CgiError(&aid_config('short_school') . " Alumni: Not Found",
+	  "The alumnus " . $ENV{'PATH_INFO'} .
+	  " you requested could not be found.\n");
+
+close(STDOUT);
+exit(0);
