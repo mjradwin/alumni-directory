@@ -1,9 +1,6 @@
 #!/usr/local/bin/perl
 
 # does the html version of just home pages
-#
-
-
 
 require 'mv_util.pl';
 require 'getopts.pl';
@@ -22,7 +19,7 @@ $pageno = 0;
 $pageno = 5 if $opt_s;
 
 $home = &mv_config('wwwdir') . ".home.include";
-$fmtout = ($opt_i) ? &mv_config('wwwdir') . "index.html"
+$fmtout = ($opt_i) ? &mv_config('wwwdir') . &mv_config('index_page')
     : &mv_config('wwwdir') . "add.html";
 
 open(FMTOUT,">$fmtout") || die "Can't open $fmtout: $!\n";
@@ -34,7 +31,7 @@ if ($opt_i) {
     print FMTOUT @lines;
     close(HOME);
 } else {
-    print FMTOUT &submit_body(";-1;1;;;;MVHS;;;",0,0);
+    print FMTOUT &submit_body(";-1;2;;;;MVHS;;;",0,0);
 }
 
 print FMTOUT &common_html_ftr($pageno);
