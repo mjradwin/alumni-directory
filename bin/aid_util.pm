@@ -2,7 +2,7 @@
 #     FILE: aid_util.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: perl library routines for the Alumni Internet Directory
-#      $Id: aid_util.pl,v 5.55 2000/02/01 19:45:55 mradwin Exp mradwin $
+#      $Id: aid_util.pl,v 5.56 2000/02/25 20:18:33 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -384,31 +384,29 @@ Subject: $subject
 
     my($smtp) = Net::SMTP->new($config{'smtp_svr'}, Timeout => 30); 
     unless ($smtp->mail($return_path)) {
-	warn "smtp failure for @targets\n";
+	warn "smtp mail() failure for @targets\n";
         return 0;
     }
     foreach (@targets) {
 	unless($smtp->to($_)) {
-	    warn "smtp failure for @targets\n";
+	    warn "smtp to() failure for $_\n";
             return 0;
         }
     }
     unless($smtp->data()) {
-	warn "smtp failure for @targets\n";
+	warn "smtp data() failure for @targets\n";
         return 0;
     }
     unless($smtp->datasend($message)) {
-	warn "smtp failure for @targets\n";
+	warn "smtp datasend() failure for @targets\n";
         return 0;
     }
     unless($smtp->dataend()) {
-	warn "smtp failure for @targets\n";
+	warn "smtp dataend() failure for @targets\n";
         return 0;
     }
-    unless($smtp->quit) {
-	warn "smtp failure for @targets\n";
-        return 0;
-    }
+
+    $smtp->quit;
 }
 
 

@@ -2,7 +2,7 @@
 
 #
 # mails a welcome, update, confirm, or massmail message to members
-# $Id: aid_welcome,v 5.18 1999/12/23 00:26:15 mradwin Exp mradwin $
+# $Id: aid_welcome,v 5.19 2000/02/29 21:55:00 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -230,11 +230,15 @@ foreach (@ARGV)
 
     %rec = &aid_db_unpack_rec($_,$DB{$_});
     $time = time;
-    &mail_user($time, *rec);
-    $rec{'lm'} = $time;
-    $DB{$rec{'id'}} = &aid_db_pack_rec(*rec) 
-	if -w $dbmfile;
-    sleep($params{'sleep'}) if $params{'sleep'} > 0;
+    if (&mail_user($time, *rec))
+    {
+	# sucessful mailing; update timestamp
+	$rec{'lm'} = $time;
+	$DB{$rec{'id'}} = &aid_db_pack_rec(*rec) 
+	    if -w $dbmfile;
+
+	sleep($params{'sleep'}) if $params{'sleep'} > 0;
+    }
 }
 
 close(LOG);
@@ -246,6 +250,7 @@ sub mail_user
 {
     local($time,*rec) = @_;
     local($message,$name,@mailto);
+    local($status);
 
     if ($rec{'v'} == 0)
     {
@@ -278,7 +283,8 @@ sub mail_user
 	push(@mailto,$name,$rec{'eo'});
     }
 
-    &aid_sendmail(&aid_config('admin_email'), &aid_config('admin_name'),
+    $status =
+	&aid_sendmail(&aid_config('admin_email'), &aid_config('admin_name'),
 		  $params{'subject'} .
 		  ' [' . &aid_config('short_school') . '-' . $rec{'id'} . ']',
 		  $message,@mailto);
@@ -288,7 +294,7 @@ sub mail_user
 	if ($opt_u && defined $rec{'eo'} &&
 	    $rec{'eo'} ne '' && "\L$rec{'eo'}\E" ne "\L$rec{'e'}\E");
 
-    1;
+    $status;
 } 
 
 sub message_body
