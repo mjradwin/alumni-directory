@@ -2,7 +2,7 @@
 #     FILE: mv_util.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: perl library routines for the MVHS Alumni Internet Directory
-#      $Id: mv_util.pl,v 1.63 1997/12/19 20:41:48 mjr Exp mjr $
+#      $Id: mv_util.pl,v 1.64 1997/12/20 02:44:20 mjr Exp mjr $
 #
 
 CONFIG: {
@@ -138,6 +138,7 @@ sub affiliate {
 	$affil .= "<a href=\"" . $config{'master_path'} . "class.html" .
 	    "#grad${year}\">" if $do_html_p;
 
+	$year %= 100;
 	if ($school eq 'Awalt') {
 	    $affil  .= "A'$year";
 	    $len    += length("A'$year");
@@ -348,7 +349,7 @@ All other fields are optional.";
 </tr>
 <tr>
   <td valign=top><font color=\"#000000\">Graduation year or affiliation</font><br>
-  <font color=\"#000000\" size=\"-1\">(such as 93, 87, or Teacher)</font></td>
+  <font color=\"#000000\" size=\"-1\">(such as 1993, 2001, or Teacher)</font></td>
   <td>$star</td>
   <td valign=top><input type=text name=\"grad\" size=35
   value=\"$year\"></td>
@@ -540,17 +541,16 @@ sub about_text {
 	$retval .= do ctime($time);
     }
 
-    $retval .= "</pre>\n" if $do_html_p;
-
     $message = &'mv_get_usertext($id) if $message eq '';  #' fnt
     if ($message ne '') {
-	$retval .= "<tt>" if $do_html_p;
-	$retval .= "What's New? (beta) :";
-	$retval .= "</tt>" if $do_html_p;
 	$retval .= "\n";
-	$retval .= "<blockquote>\n" if $do_html_p;
-	$retval .= "$message\n";
-	$retval .= "</blockquote>\n" if $do_html_p;
+	$retval .= "What's New? (beta) :\n";
+	$retval .= "</pre>\n" if $do_html_p;
+	$retval .= $do_html_p ? "<blockquote>\n" : "\"";
+	$retval .= $message;
+	$retval .= $do_html_p ? "\n</blockquote>\n" : "\"\n";
+    } else {
+	$retval .= "</pre>\n" if $do_html_p;
     }
 
     $retval .= "</font></td></tr></table>\n" if $do_html_p;
