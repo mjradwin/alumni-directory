@@ -2,11 +2,11 @@
 #     FILE: aid_util.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: perl library routines for the Alumni Internet Directory
-#      $Id: aid_util.pl,v 4.9 1999/02/03 21:51:46 mradwin Exp mradwin $
+#      $Id: aid_util.pl,v 4.10 1999/02/04 19:21:53 mradwin Exp mradwin $
 #
 
 $aid_util'rcsid =
- '$Id: aid_util.pl,v 4.9 1999/02/03 21:51:46 mradwin Exp mradwin $';
+ '$Id: aid_util.pl,v 4.10 1999/02/04 19:21:53 mradwin Exp mradwin $';
 $aid_util'caldate = &aid_caldate(time); #'#
 
 # ----------------------------------------------------------------------
@@ -1337,5 +1337,20 @@ sub aid_book_write_suffix {
     $option eq 'n' && print BOOK "</DL><p>\n";
 }
 
+sub aid_http_date
+{
+    package aid_util;
+
+    local($time) = @_;
+    local(@DoW);
+    local($sec,$min,$hour,$mday,$mon,$year,$wday) =
+	gmtime($time);
+
+    @DoW = ('Sun','Mon','Tue','Wed','Thu','Fri','Sat');
+    $year += 1900;
+
+    sprintf("%s, %02d %s %4d %02d:%02d:%02d GMT",
+	    $DoW[$wday],$mday,$MoY[$mon],$year,$hour,$min,$sec);
+}
 
 1;

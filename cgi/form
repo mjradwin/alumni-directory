@@ -4,23 +4,25 @@
 #     FILE: mvhsaid.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: Alumni Internet Directory CGI interface
-#      $Id: mvhsaid,v 3.52 1999/02/04 19:21:53 mradwin Exp mradwin $
+#      $Id: mvhsaid,v 3.53 1999/02/04 19:56:12 mradwin Exp mradwin $
 #
-
-if ($ENV{'SCRIPT_NAME'} =~ m,/nph-,)
-{
-    print "HTTP/1.1 200 OK\015\012", &http_date();
-    print "Server: ", $ENV{'SERVER_SOFTWARE'}, "\015\012";
-    print "Connection: close\015\012";
-}
 
 require 'aid_util.pl';
 require 'cgi-lib.pl';
 
+if ($ENV{'SCRIPT_NAME'} =~ m,/nph-,)
+{
+    print "HTTP/1.1 200 OK\015\012",
+          "Date: ", &aid_http_date(time), "\015\012";
+    print "Server: ", $ENV{'SERVER_SOFTWARE'}, "\015\012"
+	if defined $ENV{'SERVER_SOFTWARE'};
+    print "Connection: close\015\012";
+}
+
 # configuration
 $mailprog = &aid_config('mailprog');
 $dbfile = &aid_config('wwwdir') . "master.adr";
-$rcsid = '$Id: mvhsaid,v 3.52 1999/02/04 19:21:53 mradwin Exp mradwin $'; #'fnt
+$rcsid = '$Id: mvhsaid,v 3.53 1999/02/04 19:56:12 mradwin Exp mradwin $'; #'fnt
 
 @required_headers = ('id', 'first', 'last', 'school', 'year', 'email');
 
@@ -541,21 +543,3 @@ sub jump_bar {
  
     $retval;
 }
-
-sub http_date
-{
-    local(@DoW, @MoY);
-    local($sec,$min,$hour,$mday,$mon,$year,$wday,$yday,$isdst) =
-	gmtime(time);
-
-    @DoW = ('Sun','Mon','Tue','Wed','Thu','Fri','Sat');
-    @MoY = ('Jan','Feb','Mar','Apr','May','Jun',
-	    'Jul','Aug','Sep','Oct','Nov','Dec');
-
-    $year += 1900;
-
-    sprintf("Date: %s, %02d %s %4d %2d:%02d:%02d GMT\015\012",
-	    $DoW[$wday],$mday,$MoY[$mon],$year,$hour,$min,$sec);
-}
-
-1;
