@@ -2,11 +2,11 @@
 #     FILE: aid_util.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: perl library routines for the Alumni Internet Directory
-#      $Id: aid_util.pl,v 3.35 1998/08/18 16:53:44 mradwin Exp mradwin $
+#      $Id: aid_util.pl,v 3.36 1998/08/18 16:57:45 mradwin Exp mradwin $
 #
 
 $aid_util'rcsid =
- '$Id: aid_util.pl,v 3.35 1998/08/18 16:53:44 mradwin Exp mradwin $';
+ '$Id: aid_util.pl,v 3.36 1998/08/18 16:57:45 mradwin Exp mradwin $';
 
 # ----------------------------------------------------------------------
 # CONFIGURATION
@@ -839,7 +839,7 @@ sub about_text {
     }
     $retval .= "<strong>" .
 	"<a href=\"" . &main'aid_about_path(*rec) . "\">" #'#
-	    if $do_html_p;
+	    if $do_html_p && !$show_req_p;
     $retval .= $rec{'year'};
     $retval .= "</a></strong>" if $do_html_p;
     $retval .= "\n";
@@ -1008,7 +1008,9 @@ sub common_html_hdr {
 	($config{'school'} . " Alumni Internet Directory") :
 	($config{'short_school'} . " Alumni: " . $title);
 
-    $hdr  = "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 3.2 Final//EN\">\n" .
+    $hdr  = 
+	"<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0 Transitional//EN\"\n" .
+	"        \"http://www.w3.org/TR/REC-html40/loose.dtd\">\n" .
 	"<!--  " . $config{'rcsid'} . " -->\n" .
 	"<html>\n<head>\n" .
 	"<title>" . $titletag .
