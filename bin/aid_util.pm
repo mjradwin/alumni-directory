@@ -2,9 +2,9 @@
 #     FILE: aid_util.pm
 #   AUTHOR: Michael J. Radwin
 #    DESCR: perl library routines for the Alumni Internet Directory
-#      $Id: aid_util.pm,v 6.14 2004/09/29 21:59:58 mradwin Exp mradwin $
+#      $Id: aid_util.pm,v 6.15 2005/01/17 20:13:52 mradwin Exp mradwin $
 #
-# Copyright (c) 2003  Michael J. Radwin.
+# Copyright (c) 2005  Michael J. Radwin.
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or
@@ -60,10 +60,12 @@ use strict;
 
 package aid_util;
 
-my($VERSION) = '$Revision: 6.14 $$';
+my($VERSION) = '$Revision: 6.15 $$';
 if ($VERSION =~ /(\d+)\.(\d+)/) {
     $VERSION = "$1.$2";
 }
+
+my $HOSTNAME;
 
 @aid_util::req_descr_long =  
     (
@@ -611,9 +613,12 @@ sub sendmail_v2
     }
     $cc = "Cc: $cc\n" if $cc ne '';
 
-    my $hostname = `/bin/hostname -f`;
-    chomp($hostname);
-    my $mid = "AID.$VERSION." . time() . ".$$\@$hostname";
+    if (!$HOSTNAME) {
+	$HOSTNAME = `/bin/hostname -f`;
+	chomp($HOSTNAME);
+    }
+
+    my $mid = "AID.$VERSION." . time() . ".$$\@$HOSTNAME";
 
     $message =
 "From: $from <$return_path>
