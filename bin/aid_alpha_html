@@ -2,7 +2,7 @@
 
 #
 # does the html version of the alphabetical address list
-# $Id: aid_alpha_html,v 3.29 1999/05/24 18:55:52 mradwin Exp mradwin $
+# $Id: aid_alpha_html,v 5.1 1999/05/31 21:20:48 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -23,7 +23,7 @@
 
 $dirname = $0;
 $dirname =~ s,/[^/]+$,,;
-push(@INC, $dirname);
+unshift(@INC, $dirname);
 
 require 'aid_util.pl';
 require 'getopts.pl';

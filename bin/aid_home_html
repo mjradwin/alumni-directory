@@ -2,7 +2,7 @@
 
 #
 # does the html version of just home pages
-# $Id: aid_home_html,v 5.2 1999/06/01 21:24:46 mradwin Exp mradwin $
+# $Id: aid_home_html,v 5.3 1999/06/03 17:25:30 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -23,7 +23,7 @@
 
 $dirname = $0;
 $dirname =~ s,/[^/]+$,,;
-push(@INC, $dirname);
+unshift(@INC, $dirname);
 
 require 'aid_util.pl';
 require 'getopts.pl';

@@ -1,6 +1,6 @@
 #!/usr/bin/perl -w
 
-# $Id: aid_history_graph,v 5.1 1999/05/31 21:20:48 mradwin Exp mradwin $
+# $Id: aid_history_graph,v 5.2 1999/06/01 17:19:34 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -21,7 +21,7 @@
 
 $dirname = $0;
 $dirname =~ s,/[^/]+$,,;
-push(@INC, $dirname);
+unshift(@INC, $dirname);
 
 require 'aid_util.pl';
 require 'ctime.pl';

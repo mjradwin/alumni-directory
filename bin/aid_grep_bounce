@@ -1,6 +1,6 @@
 #!/usr/bin/perl -w
 
-# $Id: aid_grep_bounce,v 5.2 1999/05/31 22:14:35 mradwin Exp mradwin $
+# $Id: aid_grep_bounce,v 5.3 1999/05/31 23:22:27 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -21,7 +21,7 @@
 
 $dirname = $0;
 $dirname =~ s,/[^/]+$,,;
-push(@INC, $dirname);
+unshift(@INC, $dirname);
 
 require 'aid_util.pl';
 

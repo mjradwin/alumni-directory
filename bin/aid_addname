@@ -1,6 +1,6 @@
 #!/usr/bin/perl -w
 
-# $Id: aid_addname,v 5.5 1999/06/02 16:46:12 mradwin Exp mradwin $
+# $Id: aid_addname,v 5.6 1999/06/02 16:52:13 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -21,7 +21,7 @@
 
 $dirname = $0;
 $dirname =~ s,/[^/]+$,,;
-push(@INC, $dirname);
+unshift(@INC, $dirname);
 
 require 'getopts.pl';
 require 'aid_util.pl';
