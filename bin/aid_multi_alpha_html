@@ -2,7 +2,7 @@
 
 #
 # does the html verbose pages
-# $Id: aid_multi_alpha_html,v 5.18 2000/04/25 18:22:58 mradwin Exp mradwin $
+# $Id: aid_multi_alpha_html,v 5.19 2000/06/01 23:34:10 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -99,19 +99,19 @@ foreach $initial (@initials)
 
     print FMTOUT &aid_common_html_hdr(1,"`\u$initial' Alumni",1,$time,
 				      '',$extra_meta),
-      &aid_common_intro_para(1),
+      &aid_common_intro_para(0),
       "<p>\n", &alpha_jump_bar($initial), "</p>\n",
-      "<hr noshade=\"noshade\" size=\"1\">\n\n<pre>";
+      "<hr noshade=\"noshade\" size=\"1\">\n\n<ul>";
 
     foreach $id (@alpha_ids)
     {
 	%rec = &aid_db_unpack_rec($id,$DB{$id});
 	next unless $rec{'v'};
 
-	print FMTOUT &html_pre_entry(*rec,'',1);
+	print FMTOUT &html_pre_entry(*rec);
     }
 
-    print FMTOUT "</pre>\n";
+    print FMTOUT "</ul>\n";
     print FMTOUT &aid_common_html_ftr(1,$time);
     close(FMTOUT);
     utime $time, $time, $outFile;
@@ -148,33 +148,14 @@ exit(0);
 
 
 sub html_pre_entry {
-    local(*rec,$a_name,$do_html_p) = @_;
-    local($fullname,$affil,$len,$needsanchor);
-    local($info_gif) = &aid_image_tag('info');
-    local($retval);
+    local(*rec) = @_;
+    local($fullname,$affil,$len);
 
     $fullname = &aid_fullname(*rec);
     ($affil,$len) = &aid_affiliate(*rec,0);
-    $needsanchor = ($do_html_p && (($a_name ne '') ||
-				   ($rec{'w'} ne ''))) ? 1 : 0;
-    $retval = '';
-    $retval .= "<a href=\"" . &aid_about_path(*rec) . "\">$info_gif</a> "
-	if $do_html_p;
-    $retval .= "<a" if $needsanchor;
-    $retval .= " name=\"$a_name\"" if ($do_html_p && $a_name ne '');
-    $retval .= " href=\"$rec{'w'}\"" if ($do_html_p && $rec{'w'} ne '');
-    $retval .= ">" if $needsanchor;
-    $retval .= $fullname;
-    $retval .= "</a>" if $needsanchor;
-    $retval .= $affil;
-    $retval .= ' ' . ' ' x (41 - (length($fullname) + $len));
-    $retval .= "<a href=\"mailto:" . $rec{'e'} . "\">" if $do_html_p;
-    $retval .= $rec{'e'};
-    $retval .= "</a>" if $do_html_p;
-    $retval .= &aid_is_new_html(*rec) if $do_html_p;
-    $retval .= "\n";
 
-    $retval;
+    "<li><a href=\"" . &aid_about_path(*rec) . "\">" .
+	$fullname . "</a>" . $affil . &aid_is_new_html(*rec) . "\n";
 }
 
 # do the funky quick-jump bar
