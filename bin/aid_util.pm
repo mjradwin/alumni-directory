@@ -2,11 +2,11 @@
 #     FILE: aid_util.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: perl library routines for the Alumni Internet Directory
-#      $Id: aid_util.pl,v 4.25 1999/02/22 19:07:57 mradwin Exp mradwin $
+#      $Id: aid_util.pl,v 4.26 1999/02/24 20:55:16 mradwin Exp mradwin $
 #
 
 $aid_util'rcsid =
- '$Id: aid_util.pl,v 4.25 1999/02/22 19:07:57 mradwin Exp mradwin $';
+ '$Id: aid_util.pl,v 4.26 1999/02/24 20:55:16 mradwin Exp mradwin $';
 
 # ----------------------------------------------------------------------
 # CONFIGURATION
@@ -1058,7 +1058,7 @@ sub common_intro_para {
     "</p>\n" .
     "<p>Were you previously listed but now your name isn't here?  If\n" .
     "e-mail to you has failed to reach you for more than 6 months, your\n" .
-    "entry has been moved to the\n" .
+    "listing has been moved to the\n" .
     "<a href=\"" . $config{'master_path'} . "invalid.html\">invalid\n" .
     "e-mail addresses</a> page.\n</p>\n\n";
 }
