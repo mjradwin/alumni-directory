@@ -2,7 +2,7 @@
 
 #
 # generates address books in several formats
-# $Id: aid_book,v 3.12 1998/09/23 22:16:06 mradwin Exp mradwin $
+# $Id: aid_book,v 3.13 1998/09/23 22:24:41 mradwin Exp mradwin $
 #
 
 require 'aid_util.pl';
@@ -58,14 +58,14 @@ while(<DATA>) {
     %rec = &aid_parse($_);
     next unless $rec{'valid'};
     
-    $opt_p && &write_entry(*BOOKp,'p',%rec);
-    $opt_e && &write_entry(*BOOKe,'e',%rec);
-    $opt_b && &write_entry(*BOOKb,'b',%rec);
-    $opt_w && &write_entry(*BOOKw,'w',%rec);
-    $opt_m && &write_entry(*BOOKm,'m',%rec);
-    $opt_n && &write_entry(*BOOKn,'n',%rec);
-    $opt_l && &write_entry(*BOOKl,'l',%rec);
-    $opt_v && &write_entry(*BOOKv,'v',%rec);
+    $opt_p && &write_entry(*BOOKp,'p',*rec);
+    $opt_e && &write_entry(*BOOKe,'e',*rec);
+    $opt_b && &write_entry(*BOOKb,'b',*rec);
+    $opt_w && &write_entry(*BOOKw,'w',*rec);
+    $opt_m && &write_entry(*BOOKm,'m',*rec);
+    $opt_n && &write_entry(*BOOKn,'n',*rec);
+    $opt_l && &write_entry(*BOOKl,'l',*rec);
+    $opt_v && &write_entry(*BOOKv,'v',*rec);
 }
 
 close(DATA);
@@ -108,7 +108,7 @@ Do Not Edit! -->
 }
 
 sub write_entry {
-    local(*BOOK,$option,%rec) = @_;
+    local(*BOOK,$option,*rec) = @_;
     local($long_last) = $rec{'last'};
 
     $long_last .= " $rec{'married'}" if $rec{'married'} ne '';
@@ -128,6 +128,10 @@ sub write_entry {
 
     elsif ($option eq 'l') {
         print BOOK "dn: cn=$rec{'first'} $long_last,mail=$rec{'email'}\r\n";
+	print BOOK "modifytimestamp: ";
+	$vdate = &aid_vdate($rec{'time'});
+	$vdate =~ s/T//;
+	print BOOK "$vdate\r\n";
         print BOOK "cn: $rec{'first'} $long_last\r\n";
         print BOOK "sn: $long_last\r\n";
         print BOOK "givenname: $rec{'first'}\r\n";
