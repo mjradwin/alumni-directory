@@ -2,11 +2,11 @@
 #     FILE: aid_util.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: perl library routines for the Alumni Internet Directory
-#      $Id: aid_util.pl,v 4.64 1999/03/16 02:21:53 mradwin Exp mradwin $
+#      $Id: aid_util.pl,v 4.65 1999/03/16 02:27:36 mradwin Exp mradwin $
 #
 
 $aid_util'rcsid =
- '$Id: aid_util.pl,v 4.64 1999/03/16 02:21:53 mradwin Exp mradwin $';
+ '$Id: aid_util.pl,v 4.65 1999/03/16 02:27:36 mradwin Exp mradwin $';
 
 # ----------------------------------------------------------------------
 # CONFIGURATION
@@ -1446,29 +1446,31 @@ sub aid_book_write_entry {
 
     local(*BOOK,$option,*rec) = @_;
     local($long_last) = $rec{'last'};
+    local($middle) = $rec{'middle'} ne '' ? "$rec{'middle'}." : '';
+    local($mid_spc) = $rec{'middle'} ne '' ? " $rec{'middle'}." : '';
 
     $long_last .= " $rec{'married'}" if $rec{'married'} ne '';
 
-    $option eq 'p' && print BOOK "$rec{'alias'}\t$long_last, $rec{'first'}\t$rec{'email'}\t\t$school_name[$rec{'sch_id'}] $rec{'year'}\n";
+    $option eq 'p' && print BOOK "$rec{'alias'}\t$long_last, $rec{'first'}$mid_spc\t$rec{'email'}\t\t$school_name[$rec{'sch_id'}] $rec{'year'}\n";
     $option eq 'e' && print BOOK "$rec{'alias'} = $long_last; $rec{'first'}, $school_name[$rec{'sch_id'}] $rec{'year'} = $rec{'email'}\n";
     $option eq 'b' && print BOOK "alias $rec{'alias'}\t$rec{'email'}\n";
-    $option eq 'w' && print BOOK "<$rec{'alias'}>\015\012>$rec{'first'} $long_last <$rec{'email'}>\015\012<$rec{'alias'}>\015\012>$school_name[$rec{'sch_id'}] $rec{'year'}\015\012";
-    $option eq 'm' && print BOOK "alias $rec{'alias'} $rec{'email'}\015\012note $rec{'alias'} <name:$rec{'first'} $long_last>$school_name[$rec{'sch_id'}] $rec{'year'}\015\012";
+    $option eq 'w' && print BOOK "<$rec{'alias'}>\015\012>$rec{'first'}$mid_spc $long_last <$rec{'email'}>\015\012<$rec{'alias'}>\015\012>$school_name[$rec{'sch_id'}] $rec{'year'}\015\012";
+    $option eq 'm' && print BOOK "alias $rec{'alias'} $rec{'email'}\015\012note $rec{'alias'} <name:$rec{'first'}$mid_spc $long_last>$school_name[$rec{'sch_id'}] $rec{'year'}\015\012";
 
     # netscape is a bigger sucker
     if ($option eq 'n') {
 	print BOOK "    <DT><A HREF=\"mailto:$rec{'email'}\" ";
-	print BOOK "NICKNAME=\"$rec{'alias'}\">$rec{'first'} $long_last</A>\n";
+	print BOOK "NICKNAME=\"$rec{'alias'}\">$rec{'first'}$mid_spc $long_last</A>\n";
 	print BOOK "<DD>$school_name[$rec{'sch_id'}] $rec{'year'}\n";
     }
 
     elsif ($option eq 'l') {
-        print BOOK "dn: cn=$rec{'first'} $long_last,mail=$rec{'email'}\015\012";
+        print BOOK "dn: cn=$rec{'first'}$mid_spc $long_last,mail=$rec{'email'}\015\012";
 	print BOOK "modifytimestamp: ";
 	$vdate = &main'aid_vdate($rec{'time'}); #'#
 	$vdate =~ s/T//;
 	print BOOK "$vdate\015\012";
-        print BOOK "cn: $rec{'first'} $long_last\015\012";
+        print BOOK "cn: $rec{'first'}$mid_spc $long_last\015\012";
 	if ($rec{'married'} ne '') {
 	    print BOOK "sn: $rec{'married'}\015\012";
 	} else {
@@ -1504,7 +1506,7 @@ sub aid_book_write_entry {
 	if ($rec{'married'} ne '') {
 	    print BOOK "\"$rec{'last'}\",\"$rec{'married'}\",";
 	} else {
-	    print BOOK "\"\",\"$rec{'last'}\",";
+	    print BOOK "\"$middle\",\"$rec{'last'}\",";
 	}
 
 	print BOOK "\"\",\"$school_name[$rec{'sch_id'}] $rec{'year'}\",\"\",";
