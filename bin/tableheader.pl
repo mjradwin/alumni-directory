@@ -3,7 +3,7 @@
 #   AUTHOR: Michael J. Radwin
 #    DESCR: generates small-caps HTML headers with colored tables
 #     DATE: Mon Nov 11 23:52:52 EST 1996
-#      $Id: tableheader.pl,v 1.2 1996/11/12 04:53:40 mjr Exp mjr $
+#      $Id: tableheader.pl,v 1.1 1996/11/23 17:47:15 mjr Exp $
 #
 
 
@@ -33,8 +33,11 @@ sub tableheader {
 	    next;
 	} elsif ($_ >= 65 && $_ <= 90) {
 	    $result .= sprintf("<font %s>%c</font>&nbsp;", $fn_size, $_);
+	} elsif ($_ >= 97 && $_ <= 122) {
+	    $result .= sprintf("%c", $_ - 32);
+	    $result .= "&nbsp;";
 	} else {
-	    $result .= uc(sprintf("%c", $_));
+	    $result .= sprintf("%c", $_);
 	    $result .= "&nbsp;";
 	}
     }
@@ -42,8 +45,10 @@ sub tableheader {
     # handle the last char differently
     if ($last >= 65 && $last <= 90) {
 	$result .= sprintf("<font %s>%c</font>", $fn_size, $last);
+    } elsif ($last >= 97 && $last <= 122) {
+	$result .= sprintf("%c", $last - 32);
     } else {
-	$result .= uc(sprintf("%c", $last));
+	$result .= sprintf("%c", $last);
     }
 
     return "
