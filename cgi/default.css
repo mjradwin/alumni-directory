@@ -1,57 +1,67 @@
+.navbar {
+   color : #000000;
+   background : #ffcc99;
+   padding : 2px;
+   border-width : thin;
+   border-style : none none solid none;
+   border-color : #ff9966;
+}
+
+
 PRE.example {
-   color : black; 
-   background : #dddddd; 
-   margin-right : 1em; 
-   margin-left : 1em; 
+   color : black;
+   background : #dddddd;
+   margin-right : 1em;
+   margin-left : 1em;
 }
 
 
 PRE.about {
-   color : black; 
-   background : #ffffcc; 
-   margin-right : 1em; 
-   margin-left : 1em; 
+   color : black;
+   background : #ffffcc;
+   margin-right : 1em;
+   margin-left : 1em;
 }
 
 
 PRE {
-   font-family : monospace; 
+   font-family : monospace;
 }
 
 
 H1, H2, H3, H4, H5, H6 {
-   font-family : Tahoma, Verdana, Arial, Helvetica, Geneva, SunSans-Regular, sans-serif; 
-   margin-bottom : 0; 
+   font-family : Tahoma, Verdana, Arial, Helvetica, Geneva, SunSans-Regular, sans-serif;
+   margin-bottom : 0;
 }
 
 
 DIV.example {
-   color : black; 
-   background : #dddddd; 
-   border-width : 0; 
-   border-style : none; 
-   border-color : inherit; 
+   color : black;
+   background : #dddddd;
+   border-width : 0;
+   border-style : none;
+   border-color : inherit;
 }
 
 
 .overline {
-   font-family : Tahoma, Verdana, Arial, Helvetica, Geneva, SunSans-Regular, sans-serif; 
-   margin-bottom : -2ex; 
+   font-family : Tahoma, Verdana, Arial, Helvetica, Geneva, SunSans-Regular, sans-serif;
+   margin-bottom : -2ex;
 }
 
 
 .nu {
-   color : black; 
-   background : #ffffcc; 
+   color : black;
+   background : #ffffcc;
 }
 
 
 .hl {
-   font-family : Tahoma, Verdana, Arial, Helvetica, Geneva, SunSans-Regular, sans-serif; 
+   font-family : Tahoma, Verdana, Arial, Helvetica, Geneva, SunSans-Regular, sans-serif;
 }
 
 
 .alert {
-   color : red; 
-   background : white; 
+   color : red;
+   background : white;
 }
