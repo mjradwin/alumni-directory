@@ -2,11 +2,11 @@
 #     FILE: aid_util.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: perl library routines for the Alumni Internet Directory
-#      $Id: aid_util.pl,v 3.28 1998/06/03 20:17:27 mradwin Exp mradwin $
+#      $Id: aid_util.pl,v 3.29 1998/06/03 20:25:03 mradwin Exp mradwin $
 #
 
 $aid_util'rcsid =
- '$Id: aid_util.pl,v 3.28 1998/06/03 20:17:27 mradwin Exp mradwin $';
+ '$Id: aid_util.pl,v 3.29 1998/06/03 20:25:03 mradwin Exp mradwin $';
 
 # ----------------------------------------------------------------------
 # CONFIGURATION
@@ -28,7 +28,7 @@ $aid_util'rcsid =
      'master_srv',   'www.radwin.org',
      'master_path',  '/mvhs-alumni/',
      'image_path',   '/images/',
-     'cgi_path',     '/mvhs-alumni/bin/mvhsaid',
+     'cgi_path',     '/cgi-bin/mvhsaid',
      'index_page',   'index.html',
      'wwwdir',       '/home/web/radwin.org/docs/mvhs-alumni/',
      'aiddir',       '/home/users/mradwin/mvhs/',
