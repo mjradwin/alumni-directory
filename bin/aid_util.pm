@@ -260,12 +260,12 @@ sub common_html_hdr {
 <meta http-equiv=\"PICS-Label\" content='(PICS-1.0 \"http://www.rsac.org/ratingsv01.html\" l gen true comment \"RSACi North America Server\" by \"mjr\@cs.brown.edu\" for \"http://www.cs.brown.edu/people/mjr/mvhs/\" on \"1996.04.16T08:15-0500\" exp \"1997.01.01T08:15-0500\" r (n 0 s 0 v 0 l 0))'>
 </head>
 
-<body bgcolor=\"#f0f0f0\" LINK=\"#0000ff\" TEXT=\"#000000\" VLINK=\"#541c8c\" ALINK=\"#ff0000\">
+<body bgcolor=\"#f0f0f0\" LINK=\"#000080\" TEXT=\"#000000\" VLINK=\"#800080\">
 <hr noshade size=1>
 <table border=0 cellpadding=8 cellspacing=0 width=\"100%\">
 <tr>
   <td bgcolor=\"#eeeecc\" align=left rowspan=2><font size=\"-1\"
-  color=\"#000000\">";
+  face=\"Arial, Helvetica\">";
 
 #' (unconfuse da font-lock)
 

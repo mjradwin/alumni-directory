@@ -40,7 +40,7 @@ print FMTOUT "</tt>";
 
 print FMTOUT "
 <pre>
-Name                       Email                                  School
+Name                                      Email
 ---------------------------------------------------------------------------";
 
 open(MVHS,$ARGV[0]) || die "Can't open $ARGV[0]: $!\n";
@@ -70,14 +70,24 @@ while(<MVHS>) {
     } else {
        $fullname = $last;
     }
-    print FMTOUT '   ';
-    print FMTOUT "<a href=\"$homepage\">" if $homepage ne '';
+
+    if ($school ne 'MVHS' && $school ne '') {
+	$affil     = "  [$school]";
+	$affil_len = length("  [$school]");
+    } else {
+	$affil     = "";
+	$affil_len = 0;
+    }
+
+    print FMTOUT '  ';
+    print FMTOUT "<a name=\"$alias\"";
+    print FMTOUT " href=\"$homepage\"" if $homepage ne '';
+    print FMTOUT ">";
     print FMTOUT $fullname;
-    print FMTOUT "</a>" if $homepage ne '';
-    print FMTOUT ' ' x (24 - length($fullname));
+    print FMTOUT "</a>";
+    print FMTOUT $affil;
+    print FMTOUT ' ' x (40 - (length($fullname) + $affil_len));
     print FMTOUT "<a href=\"mailto:", $email, "\">", $email, "</a>";
-    print FMTOUT ' ', ' ' x (37 - length($email));
-    print FMTOUT $school if $school ne 'MVHS' && $school ne '';
 print FMTOUT " <img alt=\"[new]\" WIDTH=28 HEIGHT=11 SRC=\"new.gif\">" if &is_new($time);
     print FMTOUT "\n";
 }

@@ -59,3 +59,6 @@ ${WWWDIR}/mvhs_db.tar:
 	cp /pro/web/cgi-bin/mjr-mvhs.cgi .
 	tar cf ${WWWDIR}/mvhs_db.tar mv_* mjr-mvhs.cgi Makefile
 	rm -f mjr-mvhs.cgi
+
+backup:
+	ci -l mv_* Makefile

@@ -39,9 +39,8 @@ if (!$opt_t) {
     print FMTOUT "\n<p>\n<pre>";
 }
 
-print FMTOUT "Name                       Email                           Grad. Class/School\n";
-print FMTOUT "-----------------------------------------------------------------------------";
-
+print FMTOUT "Name and Graduation Year                  Email\n";
+print FMTOUT "---------------------------------------------------------------------------";
 
 $lastInitial = "Z";
 while(<MVHS>) {
@@ -53,7 +52,7 @@ while(<MVHS>) {
 	print FMTOUT "\n";
 	$opt_t || print FMTOUT "<a name=\"$lastInitial\">";
 	print FMTOUT $lastInitial;
-	$opt_t || print FMTOUT "</a>  (<a href=\"$htmlname\">top</a>)";
+	$opt_t || print FMTOUT "</a> (<a href=\"$htmlname\">top</a>)";
 	print FMTOUT "\n";
     }
     if ($first) {
@@ -61,18 +60,30 @@ while(<MVHS>) {
     } else {
        $fullname = $last;
     }
-    print FMTOUT '   ';
-    $opt_t || print FMTOUT "<a href=\"$homepage\">" if $homepage ne '';
+
+    if ($year =~ /^\d+$/) {
+	$affil  = "  '$year";
+	$affil .= " $school" 
+	    if $school ne 'MVHS' && $school ne '';
+    } else {
+	$affil  = "  [$school $year]";
+    }
+    $affil_tmp = $affil;
+    $affil_tmp =~ s/<[^>]+>//g;
+    $affil_len = length($affil_tmp);
+
+    print FMTOUT '  ';
+    $opt_t || print FMTOUT "<a name=\"$alias\"";
+    $opt_t || print FMTOUT " href=\"$homepage\"" if $homepage ne '';
+    $opt_t || print FMTOUT ">";
     print FMTOUT $fullname;
-    $opt_t || print FMTOUT "</a>" if $homepage ne '';
-    print FMTOUT ' ' x (24 - length($fullname));
+    $opt_t || print FMTOUT "</a>";
+    print FMTOUT $affil;
+    print FMTOUT ' ' x (40 - (length($fullname) + $affil_len));
     $opt_t || print FMTOUT "<a href=\"mailto:", $email, "\">";
     print FMTOUT $email;
     $opt_t || print FMTOUT "</a>";
-    print FMTOUT ' ', ' ' x (35 - length($email));
-    print FMTOUT $year;
-    print FMTOUT " $school" if $school ne 'MVHS' && $school ne '';
-$opt_t || print FMTOUT " <img alt=\"[new]\" WIDTH=28 HEIGHT=11 SRC=\"new.gif\">" if &is_new($time);
+    $opt_t || print FMTOUT " <img alt=\"[new]\" WIDTH=28 HEIGHT=11 SRC=\"new.gif\">" if &is_new($time);
     print FMTOUT "\n";
 }
 
