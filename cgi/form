@@ -4,7 +4,7 @@
 #     FILE: form.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: Alumni Internet Directory CGI form-submission interface
-#      $Id: form,v 5.21 2000/04/25 01:43:55 mradwin Exp mradwin $
+#      $Id: form,v 5.22 2000/04/25 18:37:59 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -35,7 +35,7 @@ use CGI::Carp qw(fatalsToBrowser);
 # configuration
 $dbmfile = &aid_config('dbmfile');
 
-$rcsid = '$Id: form,v 5.21 2000/04/25 01:43:55 mradwin Exp mradwin $'; #'fnt
+$rcsid = '$Id: form,v 5.22 2000/04/25 18:37:59 mradwin Exp mradwin $'; #'fnt
 
 $listing_upd_title = 'Modify Your Directory Listing';
 $listing_upl_title = 'Select a Listing to Modify';
@@ -311,6 +311,7 @@ sub queue_submission {
     $cgi{'b'} = 0 unless defined $cgi{'b'};
     $cgi{'n'} =~ s/\015\012/\n/g;
     $cgi{'n'} =~ s/\015/\n/g;
+    $cgi{'n'} =~ s/[ \t]+\n/\n/g;
 
     if (($cgi{'id'} != -1) && ("\L$cgi{'pe'}\E" ne "\L$cgi{'e'}\E"))
     {
