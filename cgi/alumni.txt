@@ -4,7 +4,7 @@
 #     FILE: alumni.txt.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: Address Book/Nicknames Downloading module
-#      $Id: alumni.txt,v 5.9 2000/06/26 15:54:28 mradwin Exp mradwin $
+#      $Id: alumni.txt,v 5.10 2000/06/26 16:06:09 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -138,7 +138,8 @@ sub send_address_book {
 	next unless $rec{'v'};
 	if ($year =~ /^\d{4}$/)
 	{
-	    next unless ($rec{'yr'} <= $maxyr && $rec{'yr'} >= $minyr);
+	    next unless ($rec{'yr'} =~ /^\d{4}$/ &&
+			 $rec{'yr'} <= $maxyr && $rec{'yr'} >= $minyr);
 	}
 	else
 	{
