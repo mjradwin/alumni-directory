@@ -1,6 +1,6 @@
 #!/usr/local/bin/perl5 -w
 
-# $Id: aid_stats,v 5.11 2000/02/29 21:55:00 mradwin Exp mradwin $
+# $Id: aid_stats,v 5.12 2000/04/18 19:28:57 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -185,11 +185,15 @@ printf FMTOUT "%3.0f%% (%4d) have never modified their listings\n",
 
 print FMTOUT "\n";
 
-printf FMTOUT "average tenure             : %.0f weeks\n", $avg_tenure_weeks;
-printf FMTOUT "median  tenure             : %.0f weeks\n", $median_tenure_weeks;
+printf FMTOUT "average tenure             : %3.0f weeks\n",
+    $avg_tenure_weeks;
+printf FMTOUT "median  tenure             : %3.0f weeks\n",
+    $median_tenure_weeks;
 
-printf FMTOUT "average time since modify  : %.0f weeks\n", $avg_update_weeks;
-printf FMTOUT "median  time since modify  : %.0f weeks\n", $median_update_weeks;
+printf FMTOUT "average time since modify  : %3.0f weeks\n",
+    $avg_update_weeks;
+printf FMTOUT "median  time since modify  : %3.0f weeks\n",
+    $median_update_weeks;
 
 if (!$opt_t)
 {
