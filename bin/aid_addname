@@ -1,6 +1,6 @@
 #!/usr/bin/perl -w
 
-# $Id: aid_addname,v 3.11 1998/05/17 05:27:38 mradwin Exp mradwin $
+# $Id: aid_addname,v 3.12 1998/05/17 05:30:36 mradwin Exp mradwin $
 
 require 'getopts.pl';
 require 'aid_util.pl';
@@ -73,7 +73,7 @@ sub readspool {
 	    }
 	    last if /^_AID_END_SUBMISSION_/;
 	    if (/^_AID_BEGIN_MESSAGE_/) {
-		$newsFile = &aid_config('newsdir') . "${id}.txt";
+		$newsFile = &aid_newsfile($id);
 		open(NEWSOUT, ">$newsFile") ||
 		    die "Can't open $newsFile: $!\n";
 		print "MESSAGE $newsFile\n";
@@ -99,7 +99,7 @@ sub readspool {
 	}
 
 	if (!$newsp) {
-	    $newsFile = &aid_config('newsdir') . "${id}.txt";
+	    $newsFile = &aid_newsfile($id);
 	    if (-e $newsFile) {
 		print "No news, but newsFile exists.\nREMOVING $newsFile\n";
 		unlink($newsFile);
