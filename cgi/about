@@ -4,7 +4,7 @@
 #     FILE: about.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: Alumni Internet Directory CGI "About" page generation
-#      $Id: about,v 5.7 1999/06/22 19:31:09 mradwin Exp mradwin $
+#      $Id: about,v 5.8 1999/07/24 21:17:48 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -105,8 +105,9 @@ door.</small></p>
 </center>
 
 ";
-    print "<p>Current listing:</p>\n\n";
-    print &aid_about_text(*rec,0,1,1);
+    print "<table border=\"1\" cellpadding=\"6\"><tr><td>";
+    print &aid_verbose_entry(*rec,1,1,0);
+    print "</td></tr></table>\n&nbsp;";
     print &aid_common_html_ftr(20,$rec{'u'});
 
     1;
