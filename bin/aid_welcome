@@ -2,7 +2,7 @@
 
 #
 # mails a welcome or update note to everyone in targets.adr
-# $Id: aid_welcome,v 3.31 1999/03/09 18:29:38 mradwin Exp mradwin $
+# $Id: aid_welcome,v 3.32 1999/03/09 19:39:18 mradwin Exp mradwin $
 #
 
 require 'aid_util.pl';
@@ -180,7 +180,8 @@ while(<TARGET>) {
     
     &sendmail($rec{'email'}, $name,
 	      &aid_config('admin_email'), &aid_config('admin_name'),
-	      $params{'subject'}, $message);
+	      $params{'subject'} . " [AID-$rec{'id'}]",
+	      $message);
     print LOG time, " - $rec{'id'} - $rec{'email'}\n";
 
     if (defined $rec{'email_old'} &&
@@ -188,7 +189,8 @@ while(<TARGET>) {
     {
 	&sendmail($rec{'email_old'}, $name,
 		  &aid_config('admin_email'), &aid_config('admin_name'),
-		  $params{'subject'}, $message);
+		  $params{'subject'} . " [AID-$rec{'id'}]",
+		  $message);
 	print LOG time, " - $rec{'id'} - $rec{'email_old'} - OLD\n";
     }
  
