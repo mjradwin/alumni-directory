@@ -4,7 +4,7 @@
 #     FILE: alumni.txt.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: Address Book/Nicknames Downloading module
-#      $Id: alumni.txt,v 5.3 1999/06/07 18:27:47 mradwin Exp mradwin $
+#      $Id: alumni.txt,v 5.4 1999/12/22 23:36:15 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -28,16 +28,17 @@ $dirname =~ s,/[^/]+$,,;
 unshift(@INC, $dirname);
 
 require 'aid_util.pl';
+use DB_File;
+
 require 'cgi-lib.pl';
 
 $dbmfile = &aid_config('dbmfile');
-$dbmfile =~ s/\.db$//;
 
 &CgiDie(&aid_config('short_school') . " Alumni: Script Error",
 	"The database is unreadable.\n" .
 	"Please <a href=\"mailto:" . &aid_config('admin_email') .
 	"\">e-mail " . &aid_config('admin_name') . "</a>.")
-    unless -r "${dbmfile}.db";
+    unless -r $dbmfile;
 
 if (!&ReadParse())
 {
@@ -104,14 +105,15 @@ sub send_address_book {
 	$minyr = $maxyr = $year;
     }
 
-    dbmopen(%DB,$dbmfile,0444);
+    tie(%DB, 'DB_File', $dbmfile, O_RDONLY, 0444, $DB_File::DB_HASH)
+	or die "$dbmfile: $!\n";
     if (defined $DB{'_class'})
     {
 	@class_ids = unpack("n*",$DB{'_class'});
     }
     else
     {
-	dbmclose(%DB);
+	untie(%DB);
 	&CgiDie(&aid_config('short_school') . " Alumni: Script Error",
 		"The class database is unavailable.\n" .
 		"Please <a href=\"mailto:" . &aid_config('admin_email') .
@@ -129,7 +131,7 @@ sub send_address_book {
 
 	&aid_book_write_entry(*STDOUT,$format,*rec);
     }
-    dbmclose(%DB);
+    untie(%DB);
 
     &aid_book_write_suffix(*STDOUT,$format);
 }
