@@ -2,11 +2,11 @@
 #     FILE: aid_util.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: perl library routines for the Alumni Internet Directory
-#      $Id: aid_util.pl,v 1.106 1998/03/25 23:37:07 mjr Exp mjr $
+#      $Id: aid_util.pl,v 1.107 1998/03/25 23:41:19 mjr Exp mjr $
 #
 
 $aid_util'rcsid =
- '$Id: aid_util.pl,v 1.106 1998/03/25 23:37:07 mjr Exp mjr $';
+ '$Id: aid_util.pl,v 1.107 1998/03/25 23:41:19 mjr Exp mjr $';
 
 # ----------------------------------------------------------------------
 # CONFIGURATION
@@ -688,12 +688,18 @@ sub aid_write_verbose_entry {
     $rec_arg{'message'} = &main'aid_get_usertext($rec_arg{'id'});
     %rec = &main'rec_html_entify(*rec_arg);
 
-    $fullname = &main'inorder_fullname(*rec);
+    $fullname = &main'inorder_fullname(*rec); #'
 
     print FMTOUT "<dl compact>\n";
 
     print FMTOUT "<dt><font size=\"+1\">";
-    print FMTOUT "<strong>$fullname</strong>";
+    print FMTOUT "<strong>";
+    print FMTOUT "<a name=\"$rec{'alias'}\">"
+	if defined $rec{'alias'};
+    print FMTOUT  $fullname;
+    print FMTOUT "</a>"
+	if defined $rec{'alias'};
+    print FMTOUT "</strong>";
     print FMTOUT "</font>\n";
 
     print FMTOUT "&nbsp;<font size=\"-1\">[";
