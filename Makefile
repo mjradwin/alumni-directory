@@ -1,3 +1,10 @@
+#
+#     FILE: Makefile
+#   AUTHOR: Michael J. Radwin
+#    DESCR: Makefile for building the MVHS Alumni Internet Directory
+#      $Id: mv_util.pl,v 1.12 1997/01/20 19:07:35 mjr Exp mjr $
+#
+
 WWWDIR=/pro/web/web/people/mjr/mvhs
 CGIDIR=/pro/web/cgi-bin
 CGIFILE=mjr-mvhs.cgi
