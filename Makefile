@@ -2,7 +2,7 @@
 #     FILE: Makefile
 #   AUTHOR: Michael J. Radwin
 #    DESCR: Makefile for building the Alumni Internet Directory
-#      $Id: Makefile,v 3.35 1998/11/03 18:00:37 mradwin Exp mradwin $
+#      $Id: Makefile,v 3.36 1998/11/03 22:50:44 mradwin Exp mradwin $
 #
 
 WWWROOT=/home/web/radwin.org
@@ -184,12 +184,10 @@ recent.txt:	$(ADR_CLASS) $(BIN_RECENT)
 	$(BIN_RECENT) -m3 -t $(ADR_CLASS) recent.txt
 
 tar:
-	( cd $(MVHSDIR) ; tar cf $(WWWDIR)/etc/mvhsaid.tar $(TARFILES) )
-	gzip -f $(WWWDIR)/etc/mvhsaid.tar
+	( cd $(MVHSDIR) ; tar cfz $(WWWDIR)/etc/mvhsaid.tar.gz $(TARFILES) )
 
 snapshot:
-	( cd $(HOME) ; tar cf $(WWWDIR)/etc/snapshot.tar $(SNAPSHOTFILES) )
-	gzip -f $(WWWDIR)/etc/snapshot.tar
+	( cd $(HOME) ; tar cfz $(WWWDIR)/etc/snapshot.tar.gz $(SNAPSHOTFILES) )
 
 chmod:
 	( cd $(WWWDIR) ; chmod -R a+rX * )
