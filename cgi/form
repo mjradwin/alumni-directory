@@ -4,7 +4,7 @@
 #     FILE: mvhsaid.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: Alumni Internet Directory CGI interface
-#      $Id: mvhsaid,v 3.91 1999/03/26 20:21:26 mradwin Exp mradwin $
+#      $Id: mvhsaid,v 3.92 1999/03/27 03:43:53 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -40,7 +40,7 @@ $mailprog = &aid_config('mailprog');
 $dbmfile = &aid_config('dbmfile');
 $dbmfile =~ s/\.db$//;
 
-$rcsid = '$Id: mvhsaid,v 3.91 1999/03/26 20:21:26 mradwin Exp mradwin $'; #'fnt
+$rcsid = '$Id: mvhsaid,v 3.92 1999/03/27 03:43:53 mradwin Exp mradwin $'; #'fnt
 
 $listing_upd_title = 'Update Your Directory Listing';
 $listing_upl_title = 'Select a Listing to Update';
@@ -161,9 +161,9 @@ if (defined($in{'version'})) {
     {
 	print "Content-Type: text/html\015\012\015\012";
 	print &common_html_hdr(-1, (($in{'email'} =~ /^\s*$/) ? 'Blank' :
-				    'Invalid') . ' Email Address',1);
+				    'Invalid') . ' E-mail Address',1);
 	print "\n";
-	print "<p>You must submit a valid, non-blank email address to ";
+	print "<p>You must submit a valid, non-blank e-mail address to ";
 	print "download address books.\n";
 	print "<p>Please <a href=\"" . &aid_config('master_path') .
 	    "download/\">try again</a>.</p>\n";
@@ -430,7 +430,7 @@ the Directory.  Processing your submission can take up to 48 hours.
 If your submission was made Monday-Friday between 9am and 5pm Pacific
 Time, your submission will probably be processed within an hour.</p>
 
-<p>Email will be sent to <code><strong>$in{'email'}</strong></code>
+<p>E-mail will be sent to <code><strong>$in{'email'}</strong></code>
 confirming receipt of this submission when it it processed.
 See \"<a href=\"" . &aid_config('master_path') . 
 "etc/faq.html#submit\">What happens when I submit my listing?</a>\"
@@ -486,7 +486,7 @@ sub modify_button {
 </form>
 
 <p>To avoid malicious modification by other people passing through, we
-mail the original user about the change (plus the new user if the email
+mail the original user about the change (plus the new user if the e-mail
 changes). The honor system has worked for us so far; please don't abuse
 it and force us to install a password door.</p>
 ";
