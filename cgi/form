@@ -4,7 +4,7 @@
 #     FILE: form.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: Alumni Internet Directory CGI form-submission interface
-#      $Id: form,v 5.44 2003/02/20 01:09:16 mradwin Exp mradwin $
+#      $Id: form,v 5.45 2003/05/15 00:20:18 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -38,7 +38,7 @@ use Email::Valid;
 # configuration
 my $dbmfile = &aid_config('dbmfile');
 
-$rcsid = '$Id: form,v 5.44 2003/02/20 01:09:16 mradwin Exp mradwin $'; #'fnt
+$rcsid = '$Id: form,v 5.45 2003/05/15 00:20:18 mradwin Exp mradwin $'; #'fnt
 
 $listing_upd_title = 'Modify Your Directory Listing';
 $listing_add_title = 'Join the Directory';
@@ -375,7 +375,7 @@ sub queue_submission {
 <p>The listing for <strong>$fullname</strong> has been
 accepted into the submission queue, and it will be processed
 within 5 minutes. E-mail will be sent to
-<b>$rec{'e'}</b>
+<b>$cgi{'e'}</b>
 confirming receipt of this submission when it it processed.</p>
 
 Here is what your listing will look like:
