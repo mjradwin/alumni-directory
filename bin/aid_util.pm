@@ -2,11 +2,11 @@
 #     FILE: aid_util.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: perl library routines for the Alumni Internet Directory
-#      $Id: aid_util.pl,v 3.34 1998/08/18 16:24:17 mradwin Exp mradwin $
+#      $Id: aid_util.pl,v 3.35 1998/08/18 16:53:44 mradwin Exp mradwin $
 #
 
 $aid_util'rcsid =
- '$Id: aid_util.pl,v 3.34 1998/08/18 16:24:17 mradwin Exp mradwin $';
+ '$Id: aid_util.pl,v 3.35 1998/08/18 16:53:44 mradwin Exp mradwin $';
 
 # ----------------------------------------------------------------------
 # CONFIGURATION
@@ -88,7 +88,7 @@ $aid_util'noindex = "<meta name=\"robots\"  content=\"noindex\">"; #'#
 %aid_util'aid_aliases = ();   #'# global alias hash repository 
 
 $aid_util'disclaimer = #'#
-"<a name=\"disclaimer\">Acceptable use</a>: this directory
+"<a name=\"disclaimer\">Acceptable use:</a> this directory
 is provided solely for the information of alumni of Mountain View High
 School and Awalt High School.  Any unauthorized solicitation of business,
 information, contributions or other response from individuals listed in
