@@ -1,8 +1,8 @@
-#!/usr/local/bin/perl -w
+#!/usr/bin/perl -w
 
 #
 # does the html version of the grad-date address list
-# $Id: aid_class_html,v 2.1 1998/03/31 19:55:13 mjr Exp mradwin $
+# $Id: aid_class_html,v 2.2 1998/04/02 20:22:44 mjr Exp mradwin $
 #
 
 require 'aid_util.pl';

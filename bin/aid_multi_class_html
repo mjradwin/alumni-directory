@@ -1,8 +1,8 @@
-#!/usr/local/bin/perl -w
+#!/usr/bin/perl -w
 
 #
 # does the html verbose pages
-# $Id: aid_verbose_html,v 2.2 1998/04/02 20:22:44 mjr Exp mjr $
+# $Id: aid_verbose_html,v 2.3 1998/04/07 18:45:17 mjr Exp mradwin $
 #
 
 require 'aid_util.pl';

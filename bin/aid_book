@@ -1,8 +1,8 @@
-#!/usr/local/bin/perl -w
+#!/usr/bin/perl -w
 
 #
 # generates address books in several formats
-# $Id: aid_book,v 1.22 1998/01/05 23:55:44 mjr Exp mjr $
+# $Id: aid_book,v 2.1 1998/03/31 19:55:13 mjr Exp mradwin $
 #
 
 require 'aid_util.pl';
