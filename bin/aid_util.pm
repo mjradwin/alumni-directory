@@ -2,7 +2,7 @@
 #     FILE: aid_util.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: perl library routines for the Alumni Internet Directory
-#      $Id: aid_util.pl,v 5.29 1999/06/29 01:08:09 mradwin Exp mradwin $
+#      $Id: aid_util.pl,v 5.30 1999/06/29 01:14:35 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -794,9 +794,13 @@ sub aid_common_html_hdr
 	"<div class=\"navbar\"><small>\n<a href=\"/\">$srv_nowww</a> -&gt;\n";
     $hdr .= "<a href=\"$config{'master_path'}\">" unless $page == 0;
     $hdr .= $config{'short_school'} . ' Alumni';
-    $hdr .= "</a>" unless $page == 0;
-    if ($page != 0)
+    if ($page == 0)
     {
+	$hdr .= "\n";
+    }
+    else
+    {
+	$hdr .= "</a>" unless $page == 0;
 	if (defined $parent_page_name{$page})
 	{
 	    $hdr .= " -&gt;\n" .
@@ -806,10 +810,12 @@ sub aid_common_html_hdr
 
 	$hdr .= " -&gt;\n$title\n";
     }
-    $hdr .= "($timestamp)<br${main'ht_empty_close_tag}<br${main'ht_empty_close_tag}\n</small></div>\n\n";
-    
+
     $hdr .=
-"<table cellspacing=\"0\" cellpadding=\"6\" border=\"0\" width=\"100%\">
+"($timestamp)<br${main'ht_empty_close_tag}<br${main'ht_empty_close_tag}
+</small></div>
+
+<table cellspacing=\"0\" cellpadding=\"6\" border=\"0\" width=\"100%\">
 <tr><td bgcolor=\"#$header_bg\">
 ";
 
@@ -830,8 +836,7 @@ sub aid_common_html_hdr
 	$hdr .= "</font></h1>\n";
     }
 
-    $hdr .= "</td></tr></table>\n";
-    $hdr .= "\n";
+    $hdr .= "</td></tr></table>\n\n";
 
 #    $hdr .= "<div class=\"about\">";
 #    $hdr .= &main'aid_common_link_table($page); #'#
