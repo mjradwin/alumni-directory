@@ -1,6 +1,6 @@
 #!/usr/local/bin/perl5 -w
 
-# $Id: aid_multi_class_txt,v 5.6 1999/12/22 23:36:47 mradwin Exp mradwin $
+# $Id: aid_multi_class_txt,v 5.7 2000/02/29 21:55:00 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -66,6 +66,8 @@ foreach (@years)
     	'-qtc', $_,
     	$dbmfile,
     	$output_dir . '/' . $_ . '.txt';
+    &aid_die_if_failure();
 }
 
 exit(0);
+

@@ -1,6 +1,6 @@
 #!/usr/local/bin/perl5 -w
 
-# $Id: aid_addname,v 5.22 2000/05/31 16:17:30 mradwin Exp mradwin $
+# $Id: aid_addname,v 5.23 2000/06/01 23:39:03 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -152,7 +152,8 @@ sub rebuild
     print STDOUT "cd ", &aid_config('aiddir'), "; $cmd\n"
 	unless $opt_q;
 
-    system $cmd || die "$0: failed to run $cmd: $!\n";
+    system $cmd;
+    &aid_die_if_failure();
 }
 
 sub mail_welcome
@@ -166,7 +167,8 @@ sub mail_welcome
 	$cmd = "./bin/aid_welcome $dbmfile " . join(' ', @new_ids);
 	print STDOUT $cmd, "\n"
 	    unless $opt_q;
-	system $cmd || die "$0: failed to run $cmd: $!\n";
+	system $cmd;
+	&aid_die_if_failure();
     }
 
     if (@upd_ids)
@@ -174,7 +176,8 @@ sub mail_welcome
 	$cmd = "./bin/aid_welcome -u $dbmfile " . join(' ', @upd_ids);
 	print STDOUT $cmd, "\n"
 	    unless $opt_q;
-	system $cmd || die "$0: failed to run $cmd: $!\n";
+	system $cmd;
+	&aid_die_if_failure();
     }
 }
 

@@ -2,7 +2,7 @@
 #     FILE: aid_util.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: perl library routines for the Alumni Internet Directory
-#      $Id: aid_util.pl,v 5.67 2000/05/31 19:50:26 mradwin Exp mradwin $
+#      $Id: aid_util.pl,v 5.68 2000/05/31 19:58:18 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -1342,6 +1342,18 @@ sub aid_write_reunion_hash
     }
 
     print FH "</dl>\n\n" unless $first;
+    1;
+}
+
+sub aid_die_if_failure
+{
+    package aid_util;
+
+    my($exit_value) = $? >> 8;
+    my($signal_num) = $? & 127;
+    die "\nKilled with signal $signal_num\n" if $signal_num;
+    die "Exited with $exit_value\n" if $exit_value;
+
     1;
 }
 

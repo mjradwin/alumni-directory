@@ -1,6 +1,6 @@
 #!/usr/local/bin/perl5 -w
 
-# $Id: aid_edit_entry,v 5.12 2000/04/25 18:22:58 mradwin Exp mradwin $
+# $Id: aid_edit_entry,v 5.13 2000/06/02 03:01:39 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -91,7 +91,7 @@ $note_end_str = '_AID_END_NOTE_';
 $tmpfile = '/tmp/aid_edit_entry.' . $$;
 
 open(TMPFILE,">$tmpfile") || die "$tmpfile: $!\n";
-print TMPFILE '# $Id: aid_edit_entry,v 5.12 2000/04/25 18:22:58 mradwin Exp mradwin $', "\n";
+print TMPFILE '# $Id: aid_edit_entry,v 5.13 2000/06/02 03:01:39 mradwin Exp mradwin $', "\n";
 print TMPFILE "# record last touched: ",
  (($rec{'f'} > $rec{'b'}) ? &ctime($rec{'f'}) : &ctime($rec{'b'}));
 
@@ -104,7 +104,8 @@ close(TMPFILE);
 
 $editor = (defined $ENV{'VISUAL'} ? $ENV{'VISUAL'} : 
 	   (defined $ENV{'EDITOR'} ? $ENV{'EDITOR'} : 'vi'));
-system "$editor $tmpfile" || die "$0: $editor: $!\n";
+system "$editor $tmpfile";
+&aid_die_if_failure();
 
 %newrec = ();
 open(TMPFILE,$tmpfile) || die "$tmpfile: $!\n";
