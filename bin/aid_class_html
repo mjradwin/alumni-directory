@@ -2,7 +2,7 @@
 
 #
 # does the html version of the grad-date address list
-# $Id: aid_class_html,v 3.31 1999/03/09 20:50:23 mradwin Exp mradwin $
+# $Id: aid_class_html,v 3.32 1999/03/26 19:41:22 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -25,15 +25,16 @@ require 'aid_util.pl';
 require 'getopts.pl';
 
 $0 =~ s,.*/,,;  # basename
-$usage = "usage: $0 [-htaw] [-c class] infile.db outfile
+$usage = "usage: $0 [-hqtaw] [-c class] infile.db outfile
     -h        Display usage information.
+    -q        Quiet.
     -t        Output text only.
     -a        Awalt mode.
     -w        Web page mode.
     -c class  Only people from <class>.
 ";
 
-&Getopts('htawc:') || die "$usage\n";
+&Getopts('hqtawc:') || die "$usage\n";
 $opt_h && die "$usage\n";
 $ARGV[0] || die "$usage\n";
 $ARGV[1] || die "$usage\n";
@@ -83,7 +84,7 @@ print FMTOUT "------------------------------------------------------------------
 $prev = '1900';
 foreach $year (@years)
 {
-    print STDERR ".";
+    print STDERR "." unless $opt_q;
     @ids = unpack("n*",$DB{"__${prefix}${year}__"});
 
     print FMTOUT "\n";
@@ -143,7 +144,7 @@ foreach $year (@years)
 	print FMTOUT "\n";
     }
 }
-print STDERR "\n";
+print STDERR "\n" unless $opt_q;
 
 $opt_t || print FMTOUT "</pre>\n";
 $opt_t || print FMTOUT &common_html_ftr($pageno);
