@@ -2,7 +2,7 @@
 #     FILE: Makefile
 #   AUTHOR: Michael J. Radwin
 #    DESCR: Makefile for building the Alumni Internet Directory
-#      $Id: Makefile,v 3.10 1998/05/17 05:19:30 mradwin Exp mradwin $
+#      $Id: Makefile,v 3.11 1998/05/17 05:21:18 mradwin Exp mradwin $
 #
 
 WWWDIR=/home/web/radwin.org/docs/mvhs-alumni
@@ -135,6 +135,7 @@ $(BOOKS):	$(ADR_ALPHA) $(BIN_BOOK)
 		-l $(WWWDIR)/books/address-book.ldif \
 		-v $(WWWDIR)/books/mvhs.vcf \
 		$(ADR_ALPHA)
+	$(RM) $(WWWDIR)/books/pine.txt.lu
 
 $(ADR_ALPHA):	$(ADR_MASTER)
 	sort -f -t\; +2 -5 $(ADR_MASTER) > $(ADR_ALPHA)
