@@ -2,7 +2,7 @@
 #     FILE: Makefile
 #   AUTHOR: Michael J. Radwin
 #    DESCR: Makefile for building the Alumni Internet Directory
-#      $Id: Makefile,v 3.75 1999/04/15 21:11:50 mradwin Exp mradwin $
+#      $Id: Makefile,v 3.76 1999/04/15 21:21:17 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -100,7 +100,7 @@ VCARD_TS=$(WWWDIR)/vcard/.created
 vcard:	$(VCARD_TS)
 $(VCARD_TS):	$(DBFILE) $(BIN_VCARD)
 	mkdir -p $(WWWDIR)/vcard
-	$(BIN_VCARD) $(DBFILE) $(WWWDIR)/vcard
+	$(BIN_VCARD) $(DBFILE) $(WWWDIR)/vcard $(MOD_IDS)
 
 MULTI_ALPHA=$(WWWDIR)/alpha/a-index.html
 MULTI_ALPHA_TS=$(WWWDIR)/alpha/.z-index.html
