@@ -2,7 +2,7 @@
 #     FILE: aid_config.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: configuration variables for Alumni Internet Directory
-#      $Id: aid_config.pl,v 1.25 1999/04/07 16:46:21 mradwin Exp mradwin $
+#      $Id: aid_config.pl,v 1.26 1999/04/08 18:17:34 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -22,7 +22,7 @@
 #
 
 $aid_util'rcsid =
- '$Id: aid_config.pl,v 1.25 1999/04/07 16:46:21 mradwin Exp mradwin $';
+ '$Id: aid_config.pl,v 1.26 1999/04/08 18:17:34 mradwin Exp mradwin $';
 
 # radwin.org (FreeBSD 2.2.2) configuration
 %aid_util'config =   #'#
@@ -229,6 +229,19 @@ $aid_util'ID_INDEX    = 0;     #'# position that the ID key is in datafile
     'eo',	'Previous E-mail Address',
     );
 
+@aid_edit_field_names = # in the order we'd like to edit them
+    (
+     'id',
+     'sn', 'gn', 'mi', 'mn',
+     'e', 'a',
+     'w', 'l',
+     's', 'yr',
+     'v', 'q', 'r',
+     'c', 'u', 'f', 'b',
+     'eu', 'eo',
+     'h',
+    );
+
 $aid_util'pack_format = 'C3N5'; #'#
 $aid_util'pack_len    = 23;     #'#
 
@@ -342,6 +355,7 @@ if ($^W && 0)
     $aid_util'field_names = ''; # line 178.
     $aid_util'req_descr = ''; # line 130.
     $aid_util'body_link = ''; # line 117.
+    @aid_edit_field_names = ();
 }
 
 1;
