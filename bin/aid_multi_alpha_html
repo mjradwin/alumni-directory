@@ -2,7 +2,7 @@
 
 #
 # does the html verbose pages
-# $Id: aid_alpha2_html,v 1.2 1998/05/17 03:46:47 mradwin Exp mradwin $
+# $Id: aid_alpha2_html,v 3.10 1998/05/17 05:18:53 mradwin Exp mradwin $
 #
 
 require 'aid_util.pl';
@@ -21,6 +21,8 @@ $opt_h = $opt_h;		# avoid warning
 open(DATA,$ARGV[0]) || die "Can't open $ARGV[0]: $!\n";
 
 $initial = "Z";
+$alpha_header = &common_html_hdr(1,'Alumni Listed by Last Name',0) .
+    &common_intro_para(1);
 
 while(<DATA>) {
     chop;
@@ -32,27 +34,69 @@ while(<DATA>) {
     if ("\U${initial}\E" ne $cur_initial) {
         $initial = $cur_initial;
 	if ($initial ne 'A') {
-	    print FMTOUT &common_html_ftr(-1);
+	    print FMTOUT "</pre>\n";
+	    print FMTOUT &common_html_ftr(1);
 	    close(FMTOUT);
 	}
 
 	$outFile = &aid_config('wwwdir') . "alpha/\L${initial}\E-index.html";
 	open(FMTOUT,">$outFile") || die "Can't open $outFile: $!\n";
+	
+	print FMTOUT $alpha_header,
+	    "<p>\n", &jump_bar($initial), "<hr noshade size=1>\n\n";
 
-	print FMTOUT &common_html_hdr(1,'Alumni Listed by Last Name',0);
-	print FMTOUT "<p>\n", &jump_bar($initial), "<hr noshade size=1>\n\n";
-	print FMTOUT &common_intro_para(0);
+#	&aid_write_verbose_entry(*FMTOUT,*rec,1);
 
-	&aid_write_verbose_entry(*FMTOUT,*rec,1);
+	print FMTOUT "<pre>";
+#	print FMTOUT "Name and Graduation Year" . &aid_image_tag('blank') .
+	    "                  Email\n";
+#	print FMTOUT "---------------------------------------------------------------------------\n";
+
+	print FMTOUT &html_pre_entry(*rec,'',1);
     } else {
-	&aid_write_verbose_entry(*FMTOUT,*rec,1);
+#	&aid_write_verbose_entry(*FMTOUT,*rec,1);
+	print FMTOUT &html_pre_entry(*rec,'',1);
     }
 }
 
-print FMTOUT &common_html_ftr(-1);
+print FMTOUT "</pre>\n";
+print FMTOUT &common_html_ftr(1);
 close(FMTOUT);
 
 exit(0);
+
+
+sub html_pre_entry {
+    local(*rec,$a_name,$do_html_p) = @_;
+    local($fullname,$affil,$len,$needsanchor);
+    local($info_gif) = &aid_image_tag('info');
+    local($cgi) = &aid_config('cgi_path');
+    local($retval);
+
+    $fullname = &fullname(*rec);
+    ($affil,$len) = &affiliate(*rec,$do_html_p);
+    $needsanchor = ($do_html_p && (($a_name ne '') ||
+				   ($rec{'homepage'} ne ''))) ? 1 : 0;
+    $retval = '';
+    $retval .= "<a href=\"$cgi?about=$rec{'id'}\">$info_gif</a>" if $do_html_p;
+    $retval .= "<a" if $needsanchor;
+    $retval .= " name=\"$a_name\"" if ($do_html_p && $a_name ne '');
+    $retval .= " href=\"$rec{'homepage'}\""
+	if ($do_html_p && $rec{'homepage'} ne '');
+    $retval .= ">" if $needsanchor;
+    $retval .= $fullname;
+    $retval .= "</a>" if $needsanchor;
+    $retval .= $affil;
+    $retval .= ' ' . ' ' x (41 - (length($fullname) + $len));
+    $retval .= "<a href=\"mailto:" . $rec{'email'} . "\">" if $do_html_p;
+    $retval .= $rec{'email'};
+    $retval .= "</a>" if $do_html_p;
+    $retval .= " " . &aid_image_tag('new_anchored')
+	if ($do_html_p && &is_new($rec{'time'}));
+    $retval .= "\n";
+
+    $retval;
+}
 
 # do the funky quick-jump bar
 sub jump_bar {
