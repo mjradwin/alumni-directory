@@ -4,7 +4,7 @@
 #     FILE: search.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: Alumni Internet Directory CGI search
-#      $Id: search,v 5.16 2000/04/25 18:09:22 mradwin Exp mradwin $
+#      $Id: search,v 5.17 2000/05/30 17:26:41 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -33,19 +33,6 @@ use Fcntl qw(:DEFAULT :flock);
 use CGI;
 use CGI::Carp qw(fatalsToBrowser);
 
-$dbmfile = &aid_config('dbmfile');
-die "$dbmfile: $!\n" unless -r $dbmfile;
-
-my($db) = tie(%DB, 'DB_File', $dbmfile, O_RDONLY, 0444, $DB_File::DB_HASH)
-    or die "$dbmfile: $!\n";
-
-my($fd) = $db->fd;
-open(DB_FH, "<&=$fd") || die "dup $!";
-
-unless (flock (DB_FH, LOCK_SH | LOCK_NB)) {
-    unless (flock (DB_FH, LOCK_SH)) { die "flock: $!" }
-}
-
 CGI::ReadParse();
 if (!defined($in{'q'}) || $in{'q'} =~ /^[^\w]*$/)
 {
@@ -57,6 +44,19 @@ if (!defined($in{'q'}) || $in{'q'} =~ /^[^\w]*$/)
 
     close(STDOUT);
     exit(0);
+}
+
+$dbmfile = &aid_config('dbmfile');
+die "$dbmfile: $!\n" unless -r $dbmfile;
+
+my($db) = tie(%DB, 'DB_File', $dbmfile, O_RDONLY, 0444, $DB_File::DB_HASH)
+    or die "$dbmfile: $!\n";
+
+my($fd) = $db->fd;
+open(DB_FH, "<&=$fd") || die "dup $!";
+
+unless (flock (DB_FH, LOCK_SH | LOCK_NB)) {
+    unless (flock (DB_FH, LOCK_SH)) { die "flock: $!" }
 }
 
 defined $DB{'_alpha'} || die "$dbmfile: missing _alpha\n";
