@@ -2,7 +2,7 @@
 #     FILE: Makefile
 #   AUTHOR: Michael J. Radwin
 #    DESCR: Makefile for building the MVHS Alumni Internet Directory
-#      $Id: Makefile,v 1.41 1997/12/22 22:24:46 mjr Exp mjr $
+#      $Id: Makefile,v 1.42 1997/12/23 04:00:59 mjr Exp mjr $
 #
 
 HOMEDIR=/home/divcom/mjr
@@ -11,6 +11,7 @@ WWWDIR=$(HOMEDIR)/public_html/mvhs
 RM=/bin/rm -f
 
 TARFILES=Makefile *.pl bin data/*.include
+SNAPSHOTFILES=mvhs public_html/mvhs public_html/cgi-bin
 
 all:	adrfile home submit listings reunions links nicknames tech \
 	recent alpha class awalt goners pages \
@@ -129,8 +130,9 @@ tar:
 	tar cf $(WWWDIR)/mvhsaid.tar $(TARFILES)
 	gzip -f $(WWWDIR)/mvhsaid.tar
 
-backup:
-	ci -l mv_* tableheader.pl Makefile
+snapshot:
+	( cd $(HOMEDIR) ; tar cf $(WWWDIR)/snapshot.tar $(SNAPSHOTFILES) )
+	gzip -f $(WWWDIR)/snapshot.tar
 
 clean:
 	$(RM) TAGS class.txt mvhs.txt data/class.adr data/alpha.adr
