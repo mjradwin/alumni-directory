@@ -2,7 +2,7 @@
 
 #
 # does the html verbose pages
-# $Id: aid_multi_alpha_html,v 5.6 1999/06/08 21:56:56 mradwin Exp mradwin $
+# $Id: aid_multi_alpha_html,v 5.7 1999/06/11 00:42:21 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -54,7 +54,7 @@ for ($initial = 'a'; $initial ne 'aa'; $initial++)
 select(STDOUT); $| = 1;
 foreach $initial (@initials)
 {
-    $key = "_a_${initial}";
+    $key = "_t_${initial}";
     if (@incremental)
     {
 	next unless grep(/$key/, @incremental);
@@ -62,6 +62,7 @@ foreach $initial (@initials)
 
     print STDOUT "$initial ";
 
+    $key = "_a_${initial}";
     die "no $key key!\n" unless defined $DB{$key};
     @alpha_ids = unpack("n*",$DB{$key});
 

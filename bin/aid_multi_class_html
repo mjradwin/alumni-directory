@@ -2,7 +2,7 @@
 
 #
 # does the html multi_class pages
-# $Id: aid_multi_class_html,v 5.4 1999/06/08 21:54:43 mradwin Exp mradwin $
+# $Id: aid_multi_class_html,v 5.5 1999/06/11 00:42:21 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -53,7 +53,7 @@ push(@years, 'other');
 select(STDOUT); $| = 1;
 foreach $year (@years)
 {
-    $key = "_${year}";
+    $key = "_t_${year}";
     if (@incremental)
     {
 	next unless grep(/$key/, @incremental);
@@ -64,6 +64,7 @@ foreach $year (@years)
 	print STDOUT ".";
     }
 
+    $key = "_${year}";
     die "no $key key!\n" unless defined $DB{$key};
     @ids = unpack("n*",$DB{$key});
 
