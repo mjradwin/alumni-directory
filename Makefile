@@ -2,7 +2,7 @@
 #     FILE: Makefile
 #   AUTHOR: Michael J. Radwin
 #    DESCR: Makefile for building the Alumni Internet Directory
-#      $Id: Makefile,v 1.57 1998/05/15 21:30:36 mradwin Exp mradwin $
+#      $Id: Makefile,v 1.58 1998/05/15 21:31:06 mradwin Exp mradwin $
 #
 
 HOMEDIR=/home/users/mradwin
@@ -44,8 +44,8 @@ $(RECENT):	data/date.adr bin/aid_recent_html
 
 GONERS=$(WWWDIR)/invalid.html
 goners:	$(GONERS)
-$(GONERS):	data/gsort.adr bin/aid_goners_html
-	bin/aid_goners_html data/gsort.adr $(GONERS)
+$(GONERS):	data/alpha.adr bin/aid_goners_html
+	bin/aid_goners_html data/alpha.adr $(GONERS)
 
 PAGES=$(WWWDIR)/pages.html
 pages:	$(PAGES)
@@ -116,20 +116,17 @@ $(BOOKS):	data/alpha.adr bin/aid_book
 		-v $(WWWDIR)/books/mvhs.vcf \
 		data/alpha.adr
 
-data/gsort.adr:	data/goners.adr
-	sort -t\; +3 -6 data/goners.adr > data/gsort.adr
-
 data/alpha.adr:	data/master.adr
-	sort -t\; +3 -6 data/master.adr > data/alpha.adr
+	sort -t\; +2 -5 data/master.adr > data/alpha.adr
 
 data/class.adr:	data/master.adr
-	sort -t\; +7 -8 +3 -6 data/master.adr > data/class.adr
+	sort -t\; +12 -13 +2 -5 data/master.adr > data/class.adr
 
 data/awalt.adr:	data/class.adr
 	grep -i awalt data/class.adr > data/awalt.adr
 
 data/date.adr:	data/master.adr
-	sort data/master.adr > data/date.adr
+	sort -t\; +9 -10 data/master.adr > data/date.adr
 
 alpha.txt:	data/alpha.adr bin/aid_alpha_html
 	bin/aid_alpha_html -t data/alpha.adr alpha.txt
@@ -150,4 +147,4 @@ chmod:
 
 clean:
 	$(RM) TAGS class.txt alpha.txt data/class.adr data/alpha.adr
-	$(RM) data/gsort.adr data/date.adr data/awalt.adr
+	$(RM) data/date.adr data/awalt.adr
