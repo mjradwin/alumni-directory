@@ -2,7 +2,7 @@
 #     FILE: aid_config.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: configuration for Alumni Internet Directory
-#      $Id: aid_config.pl,v 1.15 1999/03/29 21:49:19 mradwin Exp mradwin $
+#      $Id: aid_config.pl,v 1.16 1999/03/30 01:20:25 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -55,6 +55,10 @@
      'mailsubj',     'MVHSAID',
      'spoolfile',    '/var/mail/mradwin',
      'rcsid',        "$aid_util'rcsid",
+     'sub_beg_str',  '_AID_BEGIN_SUBMISSION_',
+     'sub_end_str',  '_AID_END_SUBMISSION_',
+     'note_beg_str', '_AID_BEGIN_NOTE_',
+     'note_end_str', '_AID_END_NOTE_',
      'html_ad',
 "
 <h3>Want to network with other alumni?</h3>
