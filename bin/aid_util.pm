@@ -2,7 +2,7 @@
 #     FILE: aid_util.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: perl library routines for the Alumni Internet Directory
-#      $Id: aid_util.pl,v 5.57 2000/04/21 23:37:03 mradwin Exp mradwin $
+#      $Id: aid_util.pl,v 5.58 2000/04/25 00:42:41 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -1369,7 +1369,7 @@ sub aid_cgi_die
     print "Content-Type: text/html\015\012\015\012";
 
     print &main::aid_common_html_hdr(-1,$title,1);
-    print $html, "<p>\n" if (defined $html && $html !~ /^\s*$/);
+    print "<p>", $html, "<p>\n" if (defined $html && $html !~ /^\s*$/);
     print &main::aid_common_html_ftr(-1);
 
     close(STDOUT);
