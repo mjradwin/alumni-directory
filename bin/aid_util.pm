@@ -2,11 +2,11 @@
 #     FILE: aid_util.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: perl library routines for the Alumni Internet Directory
-#      $Id: aid_util.pl,v 4.20 1999/02/10 20:55:21 mradwin Exp mradwin $
+#      $Id: aid_util.pl,v 4.21 1999/02/11 17:01:15 mradwin Exp mradwin $
 #
 
 $aid_util'rcsid =
- '$Id: aid_util.pl,v 4.20 1999/02/10 20:55:21 mradwin Exp mradwin $';
+ '$Id: aid_util.pl,v 4.21 1999/02/11 17:01:15 mradwin Exp mradwin $';
 $aid_util'caldate = &aid_caldate(time); #'#
 
 # ----------------------------------------------------------------------
@@ -40,11 +40,11 @@ require 'aid_config.pl';
 @aid_util'page_idx = #'#
 (
  "Home,"             . $aid_util'config{'master_path'},
- "Alphabetically,"   . $aid_util'config{'master_path'} . "alpha/a-index.html",
- "Grad.&nbsp;Class," . $aid_util'config{'master_path'} . "class/",
+ "Alpha,"            . $aid_util'config{'master_path'} . "alpha/a-index.html",
+ "Class,"            . $aid_util'config{'master_path'} . "class/",
  "Awalt,"            . $aid_util'config{'master_path'} . "class/awalt.html",
  "Web&nbsp;Pages,"   . $aid_util'config{'master_path'} . "pages.html",
- "Recent&nbsp;Additions," . $aid_util'config{'master_path'} . "recent.html",
+ "Recent,"           . $aid_util'config{'master_path'} . "recent.html",
  "Search,"           . $aid_util'config{'search_cgi'},
 );
 
@@ -56,8 +56,7 @@ require 'aid_config.pl';
  "Download,"   . $aid_util'config{'master_path'} . "download/",        #'#
  "FAQ,"        . $aid_util'config{'master_path'} . "etc/faq.html",     #'#
  "Stats,"      . $aid_util'config{'master_path'} . "etc/stats.txt",    #'#
- "Acceptable&nbsp;Use/Privacy,"
-               . $aid_util'config{'master_path'} . "etc/copyright.html", #'#
+ "Privacy,"    . $aid_util'config{'master_path'} . "etc/copyright.html", #'#
 );
 
 @aid_util'MoY = #'#
