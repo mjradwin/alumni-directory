@@ -2,11 +2,11 @@
 #     FILE: aid_util.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: perl library routines for the Alumni Internet Directory
-#      $Id: aid_util.pl,v 3.84 1998/12/01 23:31:45 mradwin Exp mradwin $
+#      $Id: aid_util.pl,v 3.85 1998/12/02 21:12:01 mradwin Exp mradwin $
 #
 
 $aid_util'rcsid =
- '$Id: aid_util.pl,v 3.84 1998/12/01 23:31:45 mradwin Exp mradwin $';
+ '$Id: aid_util.pl,v 3.85 1998/12/02 21:12:01 mradwin Exp mradwin $';
 
 # ----------------------------------------------------------------------
 # CONFIGURATION
@@ -703,8 +703,9 @@ are required.  All other fields are optional.</p>\n\n";
 </tr>
 <tr>
   <td colspan=3><font color=\"#$cell_fg\">
-  <br><strong><label for=\"message\">What's New?</label></strong>
-  Write a paragraph about what you've been up to recently.</font><br>
+  <br><label for=\"message\"><strong>What's New?</strong>
+  Let your classmates know what you've been doing since<br>graduation,
+  or any important bits of news you'd like to share.</label></font><br>
   <textarea name=\"message\" rows=10 cols=55 wrap=hard
   id=\"message\">$rec{'message'}</textarea>
   </td>
