@@ -4,7 +4,7 @@
 #     FILE: mvhsaid.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: MVHS Alumni Internet Directory CGI interface
-#      $Id: mvhsaid,v 1.18 1997/07/31 23:05:50 mjr Exp mjr $
+#      $Id: mvhsaid,v 1.19 1997/08/11 16:28:14 mjr Exp mjr $
 #
 
 require 'mv_util.pl';
@@ -13,18 +13,8 @@ require 'cgi-lib.pl';
 # configuration
 $mailprog = &mv_config('mailprog');
 $dbfile = &mv_config('wwwdir') . "mvhs.adr";
-$hdr_file = &mv_config('wwwdir') . ".submit.hdr";
-$ftr_file = &mv_config('wwwdir') . ".submit.ftr";
 
 @required_headers = ('id', 'last', 'first', 'school', 'grad', 'mail');
-
-open(SUBMIT_HDR,$hdr_file) || &panic("Can't open $hdr_file: $!");
-@submit_hdr = <SUBMIT_HDR>;
-close(SUBMIT_HDR);
-
-open(SUBMIT_FTR,$ftr_file) || &panic("Can't open $ftr_file: $!");
-@submit_ftr = <SUBMIT_FTR>;
-close(SUBMIT_FTR);
 
 &ReadParse;
 
@@ -32,7 +22,7 @@ close(SUBMIT_FTR);
 if (defined($in{'version'})) {
     select(STDOUT);  $| = 1;
     print "Content-type: text/plain\n\n";
-    print '$Id: mvhsaid,v 1.18 1997/07/31 23:05:50 mjr Exp mjr $', "\n";
+    print '$Id: mvhsaid,v 1.19 1997/08/11 16:28:14 mjr Exp mjr $', "\n";
     exit(0);
 }
 
@@ -153,7 +143,7 @@ EOM
 
     select(STDOUT);  $| = 1;
     print "Content-type: text/html\n\n";
-    print @submit_hdr, "\n";
+    print &common_html_hdr(-1);
 
     print "<br>\n";
     print &tableheader("Your submission is queued", 1, "ffff99", 1);
@@ -162,7 +152,7 @@ EOM
 
     print &about_text(";;$in{'request'};$in{'last'};$in{'first'};$in{'married'};$in{'school'};$in{'grad'};$in{'mail'};$in{'homepage'};$in{'location'}",1,1), "\n";
 
-    print @submit_ftr, "\n";
+    print &common_html_ftr(-1);
 }
 
 
@@ -189,9 +179,10 @@ sub send_upd_real {
 
     select(STDOUT);  $| = 1;
     print "Content-type: text/html\n\n";
-    print @submit_hdr, "\n";
+
+    print &common_html_hdr(-1);
     print &submit_body($rawdata,$interactivep,$blank);
-    print @submit_ftr, "\n";
+    print &common_html_ftr(-1);
 }
 
 sub send_about {
@@ -204,11 +195,12 @@ sub send_about {
 
     select(STDOUT);  $| = 1;
     print "Content-type: text/html\n\n";
-    print @submit_hdr, "\n<br>\n";
+    print &common_html_hdr(-1);
+    print "<br>\n";
     print &tableheader(&inorder_fullname($first,$last,$married),
 		       1, "ffff99", 1);
     print &about_text($_[0],0,1), "\n";
-    print @submit_ftr, "\n";
+    print &common_html_ftr(-1);
 }
 
 sub send_vcard {
@@ -251,7 +243,7 @@ sub send_upd_list {
 
     select(STDOUT);  $| = 1;
     print "Content-type: text/html\n\n";
-    print @submit_hdr, "\n";
+    print &common_html_hdr(-1);
     print "<br>\n";
     print &tableheader("Update Your Directory Listing", 1, "ffff99", 1);
     print "\n";
@@ -288,7 +280,7 @@ sub send_upd_list {
 	print "\n";
     }
     print "</pre>\n\n";
-    print @submit_ftr, "\n";
+    print &common_html_ftr(-1);
 }
 
 sub panic {
