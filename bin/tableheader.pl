@@ -3,7 +3,7 @@
 #   AUTHOR: Michael J. Radwin
 #    DESCR: generates small-caps HTML headers with colored tables
 #     DATE: Mon Nov 11 23:52:52 EST 1996
-#      $Id: tableheader.pl,v 1.7 1998/01/03 11:32:37 mradwin Exp $
+#      $Id: tableheader.pl,v 1.7 1998/01/03 11:37:47 mjr Exp mradwin $
 #
 
 
@@ -21,24 +21,55 @@
 sub tableheader {
     package tableheader;
 
-    local($[) = 0;
-    local($_);
-    local($last,$result,$fn_size,$bgcolor,$fgcolor,$width);
+    local($result,$fn_size,$bgcolor,$fgcolor,$width);
     local($data,$size,$color,$fontcolor,$wide,$align,$valign,
 	  $pretext,$posttext) = @_;
 
-    @array = unpack('C*', $data);
-    $last = pop(@array);   # the last char is a special case
-
-    $result = ""; 
     $bgcolor = "bgcolor=\"#$color\"";
-    $fgcolor = "color=\"#$fontcolor\"";
-    $fn_size = "size=\"+$size\"";
     $width = " width=\"100%\"" if $wide;
     $align = "center" unless defined($align) && $align ne '';
     $valign = "middle" unless defined($valign) && $valign ne '';
     $pretext = '' unless defined($pretext) && $pretext ne '';
     $posttext = '' unless defined($posttext) && $posttext ne '';
+   
+    $result = &main'tableheader_internal($data,$fn_size,$fgcolor); #'
+
+    return "
+<!-- tableheader start \"$data\" -->
+<center>
+<table cellspacing=0 cellpadding=1 border=0$width>
+  <tr>
+    <td bgcolor=\"#000000\" align=center>
+    <table cellspacing=0 cellpadding=5 border=0 width=\"100%\">
+      <tr>
+        <td $bgcolor align=$align valign=$valign>
+        $pretext<strong>$result</strong>$posttext
+        </td>
+      </tr>
+    </table>
+    </td>
+  </tr>
+</table>
+</center>
+<!-- tableheader end \"$data\" -->
+
+";
+}
+
+sub tableheader_internal {
+    package tableheader;
+
+    local($data,$fn_size,$fgcolor) = @_;
+    local($last,$result,@array);
+    local($_);
+
+    $fgcolor = "color=\"#$fgcolor\"";
+    $fn_size = "size=\"+$fn_size\"";
+
+    @array = unpack('C*', $data);
+    $last = pop(@array);   # the last char is a special case
+
+    $result = ""; 
    
     for (@array) {
 	if ($_ == 32) {
@@ -67,26 +98,6 @@ sub tableheader {
 	$result .= sprintf("<font %s>%c</font>", $fgcolor, $last);
     }
 
-    return "
-<!-- tableheader start \"$data\" -->
-<center>
-<table cellspacing=0 cellpadding=1 border=0$width>
-  <tr>
-    <td bgcolor=\"#000000\" align=center>
-    <table cellspacing=0 cellpadding=5 border=0 width=\"100%\">
-      <tr>
-        <td $bgcolor align=$align valign=$valign>
-        $pretext<strong>$result</strong>$posttext
-        </td>
-      </tr>
-    </table>
-    </td>
-  </tr>
-</table>
-</center>
-<!-- tableheader end \"$data\" -->
-
-";
+    $result;
 }
-
 1;
