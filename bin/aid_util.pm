@@ -2,11 +2,11 @@
 #     FILE: aid_util.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: perl library routines for the Alumni Internet Directory
-#      $Id: aid_util.pl,v 3.16 1998/05/19 20:37:58 mradwin Exp mradwin $
+#      $Id: aid_util.pl,v 3.17 1998/05/19 22:26:50 mradwin Exp mradwin $
 #
 
 $aid_util'rcsid =
- '$Id: aid_util.pl,v 3.16 1998/05/19 20:37:58 mradwin Exp mradwin $';
+ '$Id: aid_util.pl,v 3.17 1998/05/19 22:26:50 mradwin Exp mradwin $';
 
 # ----------------------------------------------------------------------
 # CONFIGURATION
@@ -304,7 +304,7 @@ sub affiliate {
 
     if ($rec{'year'} =~ /^\d+$/) {
 	$affil .= "<a href=\"" . $config{'master_path'} . 
-	    "class/$rec{'year'}.html\">" if $do_html_p;
+	    "class/$rec{'year'}.html#id-$rec{'id'}\">" if $do_html_p;
 
 	$year = $rec{'year'} % 100;
 	if ($rec{'school'} eq 'Awalt') {
@@ -720,11 +720,9 @@ sub aid_write_verbose_entry {
 
     print FMTOUT "<dt><font size=\"+1\">";
     print FMTOUT "<strong>";
-    print FMTOUT "<a name=\"$rec{'alias'}\">"
-	if defined $rec{'alias'};
+    print FMTOUT "<a name=\"id-$rec{'id'}\">";
     print FMTOUT  $fullname;
-    print FMTOUT "</a>"
-	if defined $rec{'alias'};
+    print FMTOUT "</a>";
     print FMTOUT "</strong>";
     print FMTOUT "</font>\n";
 
@@ -738,14 +736,14 @@ sub aid_write_verbose_entry {
     print FMTOUT "<a href=\"" . $config{'cgi_path'} . "?about=$rec{'id'}\">";
     print FMTOUT "update</a>";
     print FMTOUT "]</font>\n";
-
+    
     print FMTOUT $image_tag{'new_anchored'}
-	if !$suppress_new && &main'is_new($rec{'time'});
+	if !$suppress_new && &main'is_new($rec{'time'});  #'#
 
     print FMTOUT "</dt>\n";
     print FMTOUT "<dt>School: <strong>$rec{'school'}</strong></dt>\n" 
 	if $rec{'school'} ne $config{'short_school'};
-#'#
+
     if ($rec{'year'} =~ /^\d+$/) {
 	if ($display_year) {
 	    print FMTOUT "<dt>Year:  <strong>";
@@ -830,10 +828,10 @@ sub about_text {
 	$retval .= "<strong>";
 	if ($newrec{'year'} =~ /^\d+$/) {
             $retval .= "<a href=\"" . $config{'master_path'} .
-                "class/$newrec{'year'}.html\">";
+                "class/$newrec{'year'}.html#id-$newrec{'id'}\">";
 	} else {
 	    $retval .= "<a href=\"" . $config{'master_path'} .
-		"class/other.html\">";
+		"class/other.html#id-$newrec{'id'}\">";
 	}
     }
     $retval .= $newrec{'year'};
