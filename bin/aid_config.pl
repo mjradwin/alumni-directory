@@ -2,7 +2,7 @@
 #     FILE: aid_config.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: configuration variables for Alumni Internet Directory
-#      $Id: aid_config.pl,v 1.38 1999/05/17 22:20:46 mradwin Exp mradwin $
+#      $Id: aid_config.pl,v 1.39 1999/05/17 23:00:49 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -20,9 +20,6 @@
 #   along with this program; if not, write to the Free Software
 #   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #
-
-$aid_util'rcsid =
- '$Id: aid_config.pl,v 1.38 1999/05/17 22:20:46 mradwin Exp mradwin $';
 
 @aid_util'MoY = #'#
     ('Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec');
