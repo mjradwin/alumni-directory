@@ -2,7 +2,7 @@
 #     FILE: Makefile
 #   AUTHOR: Michael J. Radwin
 #    DESCR: Makefile for building the Alumni Internet Directory
-#      $Id: Makefile,v 3.32 1998/10/26 22:50:55 mradwin Exp mradwin $
+#      $Id: Makefile,v 3.33 1998/11/02 18:01:52 mradwin Exp mradwin $
 #
 
 WWWROOT=/home/web/radwin.org
@@ -195,5 +195,5 @@ chmod:
 	( cd $(WWWDIR) ; chmod -R a+rX * )
 
 clean:
-	$(RM) TAGS class.txt alpha.txt $(ADR_CLASS) $(ADR_ALPHA)
-	$(RM) $(ADR_DATE) $(ADR_AWALT)
+	$(RM) TAGS class.txt alpha.txt recent.txt \
+	$(ADR_CLASS) $(ADR_ALPHA) $(ADR_DATE) $(ADR_AWALT)
