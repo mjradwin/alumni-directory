@@ -4,7 +4,7 @@
 #     FILE: form.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: Alumni Internet Directory CGI form-submission interface
-#      $Id: form,v 5.33 2000/07/10 16:35:53 mradwin Exp mradwin $
+#      $Id: form,v 5.34 2000/08/02 17:04:53 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -36,7 +36,7 @@ use CGI::Carp qw(fatalsToBrowser);
 # configuration
 $dbmfile = &aid_config('dbmfile');
 
-$rcsid = '$Id: form,v 5.33 2000/07/10 16:35:53 mradwin Exp mradwin $'; #'fnt
+$rcsid = '$Id: form,v 5.34 2000/08/02 17:04:53 mradwin Exp mradwin $'; #'fnt
 
 $listing_upd_title = 'Modify Your Directory Listing';
 $listing_add_title = 'Join the Directory';
@@ -423,23 +423,38 @@ Regards,
 " . &aid_config('short_school') . " Alumni Internet Directory
 http://" . &aid_config('master_srv') . &aid_config('master_path') . "\n";
 
-    &aid_sendmail_v2(&aid_config('devnull_email'),
-		  &aid_config('short_school') . ' Alumni Robot',
-		  &aid_config('short_school') .
-		  " Alumni Internet Directory Verification [$randkey]",
-		  "Reply-To: " . &aid_config('admin_email'),
-		  $mailbody,$name,$cgi{'e'})
-	|| &aid_cgi_die('aid_sendmail failed',
-			"Unable to process form submission.\n" .
-			"Please <a href=\"mailto:" .
-			&aid_config('admin_email') .
-			"\">e-mail " . &aid_config('admin_name') . "</a>.");
+    my($i);
+    my($status) = 0;
+
+    for ($i = 0; $status == 0 && $i < 3; $i++)
+    {
+	$status =
+	    &aid_sendmail_v2(&aid_config('admin_email'),
+			     &aid_config('short_school') . ' Alumni Robot',
+			     &aid_config('short_school') .
+			     ' Alumni Internet Directory Verification' .
+			     " [$randkey]",
+			     "Reply-To: " . &aid_config('admin_email'),
+			     $mailbody,$name,$cgi{'e'});
+    }
+
+    &aid_cgi_die('ERROR: Unable to send confirmation e-mail',
+		 "We're sorry, we were unable to send e-mail to\n" .
+		 "<b>$cgi{'e'}</b>.<p>This may be a problem with our\n" .
+		 "server or perhaps with your e-mail address.\n" .
+		 "Please try again in a few minutes.<p>If you continue\n" .
+		 "to get this error, please send e-mail to <a\n" .
+		 "href=\"mailto:" . &aid_config('admin_email') .
+		 "\">" . &aid_config('admin_email') . "</a>\n" .
+		 "with error code <b>$randkey</b>.")
+	if $status == 0;
 
     print "Content-Type: text/html\015\012\015\012";
     print &aid_common_html_hdr(20,'Final Step: verify e-mail address',1);
 
     print "
-<p>We sent a verification message to <b>$cgi{'e'}</b>.</p>
+<p>Our e-mail robot just sent a verification message to
+<b>$cgi{'e'}</b>.</p>
 
 <p>Please check your e-mail and find the 8-letter
 verification code that was sent to you by the ",

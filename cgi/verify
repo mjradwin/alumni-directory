@@ -4,7 +4,7 @@
 #     FILE: verify.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: CGI for verifcation of e-mail address
-#      $Id: verify,v 1.5 2000/06/06 20:54:28 mradwin Exp mradwin $
+#      $Id: verify,v 1.6 2000/06/07 22:44:14 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-2000  Michael John Radwin
 #
@@ -86,6 +86,15 @@ if ($ENV{'QUERY_STRING'} =~ /^(k=)?(\w+)$/)
 
 <p>The listing for <strong>$fullname</strong> has been added to the
 submission queue, and it will be processed within 5 minutes.</p>
+
+Here is what your listing will look like:
+<br><br>
+
+<table border=\"1\" cellpadding=\"6\"><tr><td>";
+
+    print &aid_verbose_entry(*rec,1,1,1);
+
+    print "</td></tr></table>
 
 <p>E-mail will be sent to
 <b>$rec{'e'}</b>
