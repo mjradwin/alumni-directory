@@ -1,6 +1,6 @@
 #!/usr/bin/perl -w
 
-# $Id: aid_stats,v 1.5 1999/02/03 22:14:51 mradwin Exp mradwin $
+# $Id: aid_stats,v 1.6 1999/02/03 22:16:39 mradwin Exp mradwin $
 
 require 'aid_util.pl';
 require 'ctime.pl';
@@ -50,21 +50,29 @@ print "------------------------------------------------------------------------\
 printf "%4d members w/valid   e-mail address\n", $nvalid;
 printf "%4d members w/valid   e-mail address but bounced recently\n",
     $ndubious;
-printf "%4d members w/invalid e-mail address\n",
-    ($ntotal - $nvalid - $ndubious);
 
-printf "%4d of %d requesting quarterly digests:\n",
-    ($nreq[1] + $nreq[2] + $nreq[3] + $nreq[4]), ($nvalid + $ndubious);
+$nlegit = $nvalid + $ndubious;
+
+printf "%4d members w/invalid e-mail address\n",
+    ($ntotal - $nlegit);
+
+printf "%4d (%2.0f%%) requesting quarterly digests:\n",
+    ($nreq[1] + $nreq[2] + $nreq[3] + $nreq[4]),
+    ((100 * ($nreq[1] + $nreq[2] + $nreq[3] + $nreq[4])) / $nlegit);
 
 printf "    %4d - %s\n", $nreq[1], $aid_util'req_descr_long[1];
 printf "    %4d - %s\n", $nreq[2], $aid_util'req_descr_long[2];
 printf "    %4d - %s\n", $nreq[3], $aid_util'req_descr_long[3];
 printf "    %4d - %s\n", $nreq[4], $aid_util'req_descr_long[4];
 
-printf "%4d allow class officers to mail reunion info\n", $nreunion;
-printf "%4d wrote some location info\n", $nlocation;
-printf "%4d have personal web page\n", $nweb;
-printf "%4d wrote What's New? paragraph\n", $nnews;
+printf "%4d (%2.0f%%) allow class officers to mail reunion info\n",
+    $nreunion, ((100 * $nreunion) / $nlegit);
+printf "%4d (%2.0f%%) wrote some location info\n",
+    $nlocation, ((100 * $nlocation) / $nlegit);
+printf "%4d (%2.0f%%) have personal web page\n",
+    $nweb, ((100 * $nweb) / $nlegit);
+printf "%4d (%2.0f%%) wrote What's New? paragraph\n",
+    $nnews, ((100 * $nnews) / $nlegit);
 
 print "\n------------------------------------------------------------------------\n";
 print &ctime(time);
