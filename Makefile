@@ -2,7 +2,7 @@
 #     FILE: Makefile
 #   AUTHOR: Michael J. Radwin
 #    DESCR: Makefile for building the Alumni Internet Directory
-#      $Id: Makefile,v 3.18 1998/06/10 16:23:41 mradwin Exp mradwin $
+#      $Id: Makefile,v 3.19 1998/06/10 16:24:29 mradwin Exp mradwin $
 #
 
 WWWROOT=/home/web/radwin.org
@@ -140,7 +140,7 @@ $(SUBMIT):	$(BIN_HOME) $(AID_UTIL_PL)
 		-t 'Add an Entry to the Directory' \
 		$(SUBMIT)
 
-BOOKS=$(WWWDIR)/books/mvhs.vcf
+BOOKS=$(WWWDIR)/books/mvhs.dir
 books:	$(BOOKS)
 $(BOOKS):	$(ADR_ALPHA) $(BIN_BOOK)
 	mkdir -p $(WWWDIR)/books
@@ -152,7 +152,7 @@ $(BOOKS):	$(ADR_ALPHA) $(BIN_BOOK)
 		-m $(WWWDIR)/books/eudora3.txt \
 		-n $(WWWDIR)/books/address-book.html \
 		-l $(WWWDIR)/books/address-book.ldif \
-		-v $(WWWDIR)/books/mvhs.vcf \
+		-v $(WWWDIR)/books/mvhs.dir \
 		$(ADR_ALPHA)
 	$(RM) $(WWWDIR)/books/pine.txt.lu
 
