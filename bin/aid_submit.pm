@@ -2,7 +2,7 @@
 #     FILE: aid_submit.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: submission form for Alumni Internet Directory
-#      $Id: aid_submit.pl,v 5.6 1999/06/10 21:25:36 mradwin Exp mradwin $
+#      $Id: aid_submit.pl,v 5.7 1999/06/21 18:44:53 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -96,7 +96,8 @@ Fields marked with a $star
 are required.  All other fields are optional.</p>
 ";
 
-    $instr .= "<p>Are you an alumnus of Awalt High School?
+    $instr .= "<p><font color=\"red\">Are you an alumnus of Awalt High
+School?</font>
 Please add your listing  to the<br${main'ht_empty_close_tag}
 <a href=\"/awalt/\">Awalt High School Alumni Internet Directory</a>
 instead.</p>
