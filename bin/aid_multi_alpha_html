@@ -2,7 +2,7 @@
 
 #
 # does the html verbose pages
-# $Id: aid_multi_alpha_html,v 5.16 2000/02/29 21:55:00 mradwin Exp mradwin $
+# $Id: aid_multi_alpha_html,v 5.17 2000/04/25 01:31:38 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -155,7 +155,7 @@ sub html_pre_entry {
     $needsanchor = ($do_html_p && (($a_name ne '') ||
 				   ($rec{'w'} ne ''))) ? 1 : 0;
     $retval = '';
-    $retval .= "<a href=\"" . &aid_about_path(*rec) . "\">$info_gif</a> " #'#
+    $retval .= "<a href=\"" . &aid_about_path(*rec) . "\">$info_gif</a> "
 	if $do_html_p;
     $retval .= "<a" if $needsanchor;
     $retval .= " name=\"$a_name\"" if ($do_html_p && $a_name ne '');

@@ -2,7 +2,7 @@
 #     FILE: aid_submit.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: submission form for Alumni Internet Directory
-#      $Id: aid_submit.pl,v 5.10 1999/08/11 18:04:06 mradwin Exp mradwin $
+#      $Id: aid_submit.pl,v 5.11 2000/04/25 01:31:38 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -30,7 +30,7 @@ sub aid_submit_body
     local($body,$instr);
     local($star) = "<font color=\"#$star_fg\">*</font>";
     local(*rec_arg,$empty_fields) = @_;
-    local(%rec) = &main'aid_html_entify_rec(*rec_arg); #'#
+    local(%rec) = &main::aid_html_entify_rec(*rec_arg);
     local(@reqradio,$i,$reunion_chk,@empty_fields,$prev_email);
 
     $prev_email = defined $rec{'pe'} ? 

@@ -2,7 +2,7 @@
 
 #
 # does the html version of the alphabetical address list
-# $Id: aid_alpha_html,v 5.5 1999/12/22 23:36:47 mradwin Exp mradwin $
+# $Id: aid_alpha_html,v 5.6 2000/02/29 21:55:00 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -99,7 +99,7 @@ foreach $id (@alpha_ids)
     ($affil,$len) = &aid_affiliate(*rec,!$opt_t);
 
     print FMTOUT ' ';
-    $opt_t || print FMTOUT "<a href=\"" . &aid_about_path(*rec) . "\">$info_gif</a>"; #'#
+    $opt_t || print FMTOUT "<a href=\"" . &aid_about_path(*rec) . "\">$info_gif</a>";
     $opt_t || print FMTOUT "<a name=\"$rec{'a'}\"";
     $opt_t || print FMTOUT " href=\"$rec{'w'}\"" if $rec{'w'} ne '';
     $opt_t || print FMTOUT ">";

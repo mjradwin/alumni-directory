@@ -1,6 +1,6 @@
 #!/usr/local/bin/perl5 -w
 
-# $Id: aid_history_graph,v 5.7 2000/02/29 21:55:00 mradwin Exp mradwin $
+# $Id: aid_history_graph,v 5.8 2000/04/25 01:31:38 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -51,7 +51,7 @@ $outfile = shift;
 open(FMTOUT,">$outfile") || die "Can't open $outfile: $!\n";
 
 ($i,$i,$i,$i,$i,$epoch_year,$i,$epoch_yday,$i) =
-    localtime($aid_util::EPOCH); #'#);#
+    localtime($aid_util::EPOCH);
 
 @members = ();
 $tot = 0;
