@@ -2,7 +2,7 @@
 #     FILE: Makefile
 #   AUTHOR: Michael J. Radwin
 #    DESCR: Makefile for building the Alumni Internet Directory
-#      $Id: Makefile,v 5.9 1999/06/08 19:27:21 mradwin Exp mradwin $
+#      $Id: Makefile,v 5.10 1999/06/11 00:44:54 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -105,7 +105,7 @@ PAGES=$(WWWDIR)/pages.html
 PAGES_TS=$(WWWDIR)/.pages.html
 pages:	$(PAGES_TS)
 $(PAGES_TS):	$(DBFILE) $(BINDIR)/aid_class_html
-	$(BINDIR)/aid_class_html -w $(DBFILE) $(PAGES)
+	$(BINDIR)/aid_class_html -w -i "$(MOD_KEYS)" $(DBFILE) $(PAGES)
 
 MULTI_CLASS=$(WWWDIR)/class/.index.html
 multi_class:	$(MULTI_CLASS)
