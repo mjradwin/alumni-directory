@@ -1,6 +1,6 @@
 #!/usr/local/bin/perl5 -w
 
-# $Id: aid_addname,v 5.16 2000/04/25 18:22:58 mradwin Exp mradwin $
+# $Id: aid_addname,v 5.17 2000/05/30 23:46:00 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -90,14 +90,17 @@ sub readspool
 
 	foreach $key8 (@key8s)
 	{
-	    my($val) = $DBS{$key8};
-	    my($id,$packed) = split(/\0/, $val, 2);
-	    %rec = &aid_db_unpack_rec($id,$packed);
+	    if (defined $DBS{$key8} && $DBS{$key8} ne "\0")
+	    {
+		my($val) = $DBS{$key8};
+		my($id,$packed) = split(/\0/, $val, 2);
+		%rec = &aid_db_unpack_rec($id,$packed);
 
-	    &addname(*rec) || die "$0: can't add $rec{'id'} $rec{'e'}!\n";
-	    $success = 1;
+		&addname(*rec) || die "$0: can't add $rec{'id'} $rec{'e'}!\n";
+		$success = 1;
 
-	    $DBS{$key8} = "\0";
+		$DBS{$key8} = "\0";
+	    }
 	}
 
 	delete $DBS{'_verified'};
