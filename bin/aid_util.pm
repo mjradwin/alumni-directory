@@ -2,11 +2,11 @@
 #     FILE: aid_util.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: perl library routines for the Alumni Internet Directory
-#      $Id: aid_util.pl,v 4.49 1999/03/09 02:06:17 mradwin Exp mradwin $
+#      $Id: aid_util.pl,v 4.50 1999/03/09 16:51:11 mradwin Exp mradwin $
 #
 
 $aid_util'rcsid =
- '$Id: aid_util.pl,v 4.49 1999/03/09 02:06:17 mradwin Exp mradwin $';
+ '$Id: aid_util.pl,v 4.50 1999/03/09 16:51:11 mradwin Exp mradwin $';
 
 # ----------------------------------------------------------------------
 # CONFIGURATION
@@ -114,6 +114,7 @@ $aid_util'ID_INDEX    = 0;     #'# position that the ID key is in datafile
     'inethost',			# REMOTE_HOST of last update
     'middle',			# middle initial
     'email_upd',		# date of last update to email
+    'email_old',		# previous email address
     );
 
 %aid_util'field_descr = #'#
@@ -137,6 +138,7 @@ $aid_util'ID_INDEX    = 0;     #'# position that the ID key is in datafile
     'inethost',	'',
     'middle',	'Middle Initial',
     'email_upd','',
+    'email_old','Previous E-mail Address',
     );
 
 $aid_util'pack_format = 'C2N5'; #'#
@@ -155,6 +157,7 @@ $aid_util'blank_entry{'request'} = 4;       #'#
 $aid_util'blank_entry{'reunion'} = 1;       #'#
 $aid_util'blank_entry{'bounce'} = 0;        #'#
 $aid_util'blank_entry{'email_upd'} = 0;     #'#
+$aid_util'blank_entry{'email_old'} = '';    #'#
 $aid_util'blank_entry{'message'} = '';      #'#
 $aid_util'blank_entry{'school'}  = $aid_util'config{'short_school'};
 
