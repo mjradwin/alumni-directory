@@ -2,7 +2,7 @@
 #     FILE: Makefile
 #   AUTHOR: Michael J. Radwin
 #    DESCR: Makefile for building the MVHS Alumni Internet Directory
-#      $Id: Makefile,v 1.39 1997/12/21 02:23:48 mjr Exp mjr $
+#      $Id: Makefile,v 1.40 1997/12/22 22:20:33 mjr Exp mjr $
 #
 
 HOMEDIR=/home/divcom/mjr
@@ -60,38 +60,38 @@ $(WWWDIR)/class/index.html:	data/class.adr bin/mv_verbose_html
 home:	$(WWWDIR)/index.html
 $(WWWDIR)/index.html:	data/index.include bin/mv_home_html mv_util.pl data/mvhs.adr
 	bin/mv_home_html -p0 -i data/index.include \
-	-t 'Welcome to the MVHS Alumni Internet Directory!' \
-	$(WWWDIR)/index.html
+		-t 'Welcome to the MVHS Alumni Internet Directory!' \
+		$(WWWDIR)/index.html
 
 listings:	$(WWWDIR)/listings.html
 $(WWWDIR)/listings.html:	data/listings.include bin/mv_home_html mv_util.pl
 	bin/mv_home_html -p10 -i data/listings.include \
-	-t 'Listings: email addresses and web pages' \
-	$(WWWDIR)/listings.html
+		-t 'Listings: email addresses and web pages' \
+		$(WWWDIR)/listings.html
 
 reunions:	$(WWWDIR)/reunions.html
 $(WWWDIR)/reunions.html:	data/reunions.include bin/mv_home_html mv_util.pl
 	bin/mv_home_html -p11 -i data/reunions.include \
-	-t 'Reunions: when, where, who to contact' \
-	$(WWWDIR)/reunions.html
+		-t 'Reunions: when, where, who to contact' \
+		$(WWWDIR)/reunions.html
 
 links:	$(WWWDIR)/links.html
 $(WWWDIR)/links.html:	data/links.include bin/mv_home_html mv_util.pl
 	bin/mv_home_html -p12 -i data/links.include \
-	-t 'Links: other MVHS and Awalt websites' \
-	$(WWWDIR)/links.html
+		-t 'Links: other MVHS and Awalt websites' \
+		$(WWWDIR)/links.html
 
 nicknames:	$(WWWDIR)/nicknames.html
 $(WWWDIR)/nicknames.html:	data/nicknames.include bin/mv_home_html mv_util.pl
 	bin/mv_home_html -p13 -i data/nicknames.include \
-	-t 'Nicknames: address books for your e-mail program' \
-	$(WWWDIR)/nicknames.html
+		-t 'Nicknames: address books for your e-mail program' \
+		$(WWWDIR)/nicknames.html
 
 tech:	$(WWWDIR)/tech.html
 $(WWWDIR)/tech.html:	data/tech.include bin/mv_home_html mv_util.pl
 	bin/mv_home_html -p14 -i data/tech.include \
-	-t 'Tech Notes: info about the Directory' \
-	$(WWWDIR)/tech.html
+		-t 'Tech Notes: info about the Directory' \
+		$(WWWDIR)/tech.html
 
 submit:	$(WWWDIR)/add.html
 $(WWWDIR)/add.html:	bin/mv_home_html mv_util.pl
