@@ -2,7 +2,7 @@
 #     FILE: generic_config.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: configuration variables for Alumni Internet Directory
-#      $Id: generic_config.pl,v 1.3 1999/05/24 19:02:19 mradwin Exp mradwin $
+#      $Id: generic_config.pl,v 5.1 1999/05/31 21:20:48 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -22,7 +22,7 @@
 #
 
 $aid_util'rcsid =
- '$Id: generic_config.pl,v 1.3 1999/05/24 19:02:19 mradwin Exp mradwin $';
+ '$Id: generic_config.pl,v 5.1 1999/05/31 21:20:48 mradwin Exp mradwin $';
 
 # Generic HS on bogus-domain.org (FreeBSD 2.2.2) configuration
 %aid_util'config =   #'#
@@ -36,10 +36,10 @@ $aid_util'rcsid =
      'master_srv',   'www.bogus-domain.org',
      'master_path',  '/ghs-alumni/',
      'search_cgi',   '/ghs-alumni/bin/nph-search',
-     'vcard_cgi',    '/ghs-alumni/vcard',
+     'vcard_cgi',    '/ghs-alumni/bin/vcard',
      'goners_cgi',   '/ghs-alumni/bin/gone',
      'download_cgi', '/ghs-alumni/bin/alumni.txt',
-     'go_cgi',       '/ghs-alumni/bin/go',
+     'go_cgi',       '/ghs-alumni/bin/form/go',
      'about_cgi',    '/ghs-alumni/bin/about',
      'submit_cgi',   '/ghs-alumni/bin/form/sub',
      'update_cgi',   '/ghs-alumni/bin/form/upd',
@@ -56,13 +56,15 @@ $aid_util'rcsid =
      'cp',           '/bin/cp',
      'make',         '/usr/bin/make',
      'mailto',       "ghs-submissions\@bogus-domain.org",
-     'mailsubj',     'GHSAID',
      'spoolfile',    '/var/mail/jsmith',
      'rcsid',        "$aid_util'rcsid",
      'sub_beg_str',  '_AID_BEGIN_SUBMISSION_',
      'sub_end_str',  '_AID_END_SUBMISSION_',
      'note_beg_str', '_AID_BEGIN_NOTE_',
      'note_end_str', '_AID_END_NOTE_',
+     'mail_intro',   
+        "This e-mail was sent to you by the Generic High\n" .
+        "School Alumni Internet Directory:",
      'html_ad', '',
      );
 
@@ -79,7 +81,7 @@ $aid_util'navigation_meta = #'#
 
 $aid_util'descr_meta = #'#
 "  <meta name=\"keywords\"    content=\"" . $aid_util'config{'school'} . ", " .
-$aid_util'config{'short_school'} . ", Anytown, California, reunion, alumni, directory\" />\n  <meta name=\"description\" content=\"Alumni e-mail and web page directory for " . $aid_util'config{'school'} . " in Anytown, CA. Updated __DATE__.\" />";
+$aid_util'config{'short_school'} . ", Anytown, California, reunion, alumni, directory\" />\n  <meta name=\"description\" content=\"Alumni e-mail and web page directory for " . $aid_util'config{'school'} . " in Anytown, CA. Updated __DATE__.\" />"; #'#
 
 $aid_util'disclaimer = #'#
 "<a name=\"disclaimer\">Acceptable use:</a> the Alumni Internet
@@ -94,6 +96,8 @@ $aid_util'header_bg  = '99ccff'; #'#
 $aid_util'header_fg  = '000000'; #'#
 
 $aid_util'cell_bg    = 'eeeeee'; #'#
+$aid_util'cell_fg    = '000000'; #'#
+
 $aid_util'star_fg    = 'ff0000'; #'#
 
 $aid_util'body_bg    = 'ffffff'; #'#
@@ -101,20 +105,16 @@ $aid_util'body_fg    = '000000'; #'#
 $aid_util'body_link  = '0000cc'; #'#
 $aid_util'body_vlink = '990099'; #'#
 
-
 if ($^W && 0)
 {
     $aid_util'disclaimer = '';
     $aid_util'author_meta = $aid_util'navigation_meta = $aid_util'descr_meta;
 
-    $aid_util'header_bg  = ''; #'#
-    $aid_util'header_fg  = ''; #'#
-    $aid_util'cell_bg    = ''; #'#
+    $aid_util'header_bg  = $aid_util'header_fg  = '';
+    $aid_util'cell_bg    = $aid_util'cell_fg  = '';
     $aid_util'star_fg    = ''; #'#
-    $aid_util'body_bg    = ''; #'#
-    $aid_util'body_fg    = ''; #'#
-    $aid_util'body_link  = ''; #'#
-    $aid_util'body_vlink = ''; #'#
+    $aid_util'body_bg    = $aid_util'body_fg =
+	$aid_util'body_link  = $aid_util'body_vlink = ''; #'#
 }
 
 1;
