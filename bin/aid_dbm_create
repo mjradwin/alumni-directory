@@ -1,6 +1,6 @@
 #!/usr/local/bin/perl -w
 
-# $Id: aid_dbm_create,v 6.1 2003/08/25 04:10:32 mradwin Exp mradwin $
+# $Id: aid_dbm_create,v 6.2 2003/08/25 05:32:04 mradwin Exp mradwin $
 #
 #   Copyright (c) 2003  Michael J. Radwin
 #
@@ -61,7 +61,7 @@ foreach my $section ($data->Sections())
 {
     my %rec;
 
-    foreach my $key (@aid_edit_field_names)
+    foreach my $key (@aid_util::edit_field_names)
     {
 	my $val = $data->val($section, $key);
 	if (defined $val)
@@ -113,5 +113,4 @@ exit(0);
 if ($^W && 0)
 {
     $opt_h = $opt_h;
-    @aid_edit_field_names = ();
 }

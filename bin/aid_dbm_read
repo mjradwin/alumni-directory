@@ -1,6 +1,6 @@
 #!/usr/local/bin/perl -w
 
-# $Id: aid_dbm_read,v 6.2 2003/08/25 05:32:04 mradwin Exp mradwin $
+# $Id: aid_dbm_read,v 6.3 2003/08/25 05:34:45 mradwin Exp mradwin $
 #
 #   Copyright (c) 2003  Michael J. Radwin
 #
@@ -93,7 +93,7 @@ elsif ($opt_I)
 	my %rec = aid_util::db_unpack_rec($_,$DB{$_});
 	printf DATA "[id%06d]\n", $rec{'id'};
 
-	foreach (@aid_edit_field_names)
+	foreach (@aid_util::edit_field_names)
 	{
 	    print DATA $_, '=', $rec{$_}, "\n";
 	}
@@ -308,5 +308,4 @@ if ($^W && 0)
 {
     $a = $b;
     $opt_h = $opt_h;		# avoid warning
-    $aid_edit_field_names[0] = '';
 }

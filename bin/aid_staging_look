@@ -1,6 +1,6 @@
 #!/usr/local/bin/perl -w
 
-# $Id: aid_staging_look,v 6.3 2003/08/25 05:34:45 mradwin Exp mradwin $
+# $Id: aid_staging_look,v 6.4 2003/08/25 06:07:47 mradwin Exp mradwin $
 #
 #   Copyright (c) 2003  Michael J. Radwin
 #
@@ -73,7 +73,7 @@ if ($opt_I)
 	my %rec = aid_util::db_unpack_rec($id,$packed);
 	print DATA "[$key]\n";
 
-	foreach (@aid_edit_field_names)
+	foreach (@aid_util::edit_field_names)
 	{
 	    print DATA $_, '=', $rec{$_}, "\n";
 	}
@@ -114,5 +114,4 @@ exit 0;
 if ($^W && 0)
 {
     $opt_h = $opt_h;		# avoid warning
-    @aid_edit_field_names = ();
 }
