@@ -2,7 +2,7 @@
 
 #
 # mails a welcome or update note to everyone in targets.adr
-# $Id: aid_welcome,v 3.13 1998/10/09 20:51:02 mradwin Exp mradwin $
+# $Id: aid_welcome,v 3.14 1998/10/13 23:19:11 mradwin Exp mradwin $
 #
 
 require 'aid_util.pl';
@@ -14,7 +14,7 @@ $usage = "usage: $pname [options] targets.adr
     -h            Display usage information.
     -d <secs>     Sleep for <secs> seconds between sending email
                   (default 10 for -m, 0 for all others).
-    -r <reqtype>  Request type (0, 1 or 2) (only valid with -m and -c).
+    -r <reqtype>  Request type (0-3) (only valid with -m and -c).
     -l <logfile>  Log to <logfile> instead of default.
 
 Mutually exclusive optional message types (instead of 'welcome' email):
