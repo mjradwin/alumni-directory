@@ -1,7 +1,7 @@
 #!/usr/local/bin/perl
 
 #
-# mails everyone the nifty mvhs address list
+# mails a welcome or update note to everyone in targets.adr
 #
 
 require 'mv_util.pl';
@@ -18,7 +18,7 @@ $opt_h && die "$usage\n";
 ($opt_c && $opt_u) && die "$usage\n";
 $ARGV[0] || die "$usage\n";
 
-$logfile = 'welcome.log';
+$logfile = &mv_config('mvhsdir') . "logs/welcome.log";
 $subject = ($opt_c) ? 'Confirming your MVHS Alumni Internet Directory entry' :
     ($opt_u) ? 'Your MVHS Alumni Internet Directory entry is updated' : 
     'Welcome to the MVHS Alumni Internet Directory';
