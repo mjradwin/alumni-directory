@@ -2,7 +2,7 @@
 #     FILE: aid_submit.pm
 #   AUTHOR: Michael J. Radwin
 #    DESCR: submission form for Alumni Internet Directory
-#      $Id: aid_submit.pm,v 6.2 2003/08/25 05:32:04 mradwin Exp mradwin $
+#      $Id: aid_submit.pm,v 6.3 2003/08/25 06:17:39 mradwin Exp mradwin $
 #
 #   Copyright (c) 2003  Michael J. Radwin
 #
@@ -107,7 +107,7 @@ sub submit_body
 
 	    foreach my $ef (@empty_fields)
 	    {
-		$body .= "<li>" . $aid_util::field_descr->{$ef} . "</li>\n";
+		$body .= "<li>" . $aid_util::field_descr{$ef} . "</li>\n";
 	    }
 	    $body .= "</ul>\n\n";
 	}
