@@ -2,7 +2,7 @@
 #     FILE: aid_config.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: configuration variables for Alumni Internet Directory
-#      $Id: aid_config.pl,v 1.31 1999/04/30 18:24:50 mradwin Exp mradwin $
+#      $Id: aid_config.pl,v 1.32 1999/05/03 18:01:23 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -22,7 +22,7 @@
 #
 
 $aid_util'rcsid =
- '$Id: aid_config.pl,v 1.31 1999/04/30 18:24:50 mradwin Exp mradwin $';
+ '$Id: aid_config.pl,v 1.32 1999/05/03 18:01:23 mradwin Exp mradwin $';
 
 # radwin.org (FreeBSD 2.2.2) configuration
 %aid_util'config =   #'#
@@ -89,7 +89,7 @@ the services currently provided by this Directory.</p>
 $aid_util'caldate = &aid_caldate(time); #'#
 
 $aid_util'site_tags = #'#
-"  <meta name=\"keywords\"    content=\"Mountain View High School, Alumni, MVHS, Awalt High School, Mountain View, Los Altos, California, reunion, Radwin\">\n  <meta name=\"description\" content=\"Alumni e-mail and web page directory for Mountain View High School (MVHS) and Awalt High School in Mountain View, CA. Updated $aid_util'caldate.\">\n  <meta name=\"author\"  content=\"$aid_util'config{'admin_name'}\">\n  <link rev=\"made\"     href=\"mailto:" . $aid_util'config{'admin_email'} . "\">\n  <link rel=\"contents\" href=\"http://" . $aid_util'config{'master_srv'} . $aid_util'config{'master_path'} . "\" title=\"Home page for MVHS Alumni Internet Directory\">";
+"  <meta name=\"keywords\"    content=\"Mountain View High School, Alumni, MVHS, Awalt High School, Mountain View, Los Altos, California, reunion, Radwin\" />\n  <meta name=\"description\" content=\"Alumni e-mail and web page directory for Mountain View High School (MVHS) and Awalt High School in Mountain View, CA. Updated $aid_util'caldate.\" />\n  <meta name=\"author\"  content=\"$aid_util'config{'admin_name'}\" />\n  <link rev=\"made\"     href=\"mailto:" . $aid_util'config{'admin_email'} . "\" />\n  <link rel=\"contents\" href=\"http://" . $aid_util'config{'master_srv'} . $aid_util'config{'master_path'} . "\" title=\"Home page for MVHS Alumni Internet Directory\" />";
 
 $aid_util'disclaimer = #'#
 "<a name=\"disclaimer\">Acceptable use:</a> the Alumni Internet
@@ -167,14 +167,14 @@ $aid_util'pics_label = #'#
 "\"http://www.rsac.org/ratingsv01.html\" l gen true " . 
 "comment \"RSACi North America Server\" by \"" . 
 $aid_util'config{'admin_email'} . 
-"\" on \"1998.03.10T11:49-0800\" r (n 0 s 0 v 0 l 0))'>\n" .
+"\" on \"1998.03.10T11:49-0800\" r (n 0 s 0 v 0 l 0))' />\n" .
 "  <meta http-equiv=\"PICS-Label\" content='(PICS-1.1 " . 
 "\"http://www.classify.org/safesurf/\" l gen true " .
 "for \"http://" . $aid_util'config{'master_srv'} . "\" by \"" . 
 $aid_util'config{'admin_email'} .
-"\" r (SS~~000 1 SS~~100 1))'>"; #"#
+"\" r (SS~~000 1 SS~~100 1))' />"; #"#
 
-$aid_util'noindex = "  <meta name=\"robots\"  content=\"noindex\">"; #'#
+$aid_util'noindex = "  <meta name=\"robots\"  content=\"noindex\" />"; #'#
 %aid_util'aid_aliases = ();   #'# global alias hash repository 
 
 $aid_util'EPOCH       = 815130000; #'# Tue Oct 31 09:00:00 GMT 1995
