@@ -1,6 +1,6 @@
 #!/usr/bin/perl -w
 
-# $Id: aid_edit_entry,v 5.6 1999/06/07 18:32:25 mradwin Exp mradwin $
+# $Id: aid_edit_entry,v 5.7 1999/06/29 01:08:09 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -28,12 +28,13 @@ require 'getopts.pl';
 require 'ctime.pl';
 
 $0 =~ s,.*/,,;  # basename
-$usage = "usage: $0 [-h] infile.db userid
+$usage = "usage: $0 [-hdu] infile.db userid
     -h        Display usage information.
     -d        Display debug diffs.
+    -u        Don't set update time.
 ";
 
-&Getopts('hd') || die "$usage\n";
+&Getopts('hdu') || die "$usage\n";
 $opt_h && die "$usage\n";
 $opt_h = $opt_h;		# avoid warning
 $opt_d = $opt_d;		# avoid warning
@@ -83,7 +84,7 @@ $note_end_str = &aid_config('note_end_str');
 $tmpfile = '/tmp/aid_edit_entry.' . $$;
 
 open(TMPFILE,">$tmpfile") || die "$tmpfile: $!\n";
-print TMPFILE '# $Id: aid_edit_entry,v 5.6 1999/06/07 18:32:25 mradwin Exp mradwin $', "\n"; #'#
+print TMPFILE '# $Id: aid_edit_entry,v 5.7 1999/06/29 01:08:09 mradwin Exp mradwin $', "\n"; #'#
 print TMPFILE "# record last touched: ",
  (($rec{'f'} > $rec{'b'}) ? &ctime($rec{'f'}) : &ctime($rec{'b'}));
 
@@ -167,6 +168,8 @@ elsif ($changed == 1)
 	delete $DB{$id};
     }
 
+    $newrec{'u'} = $newrec{'f'} = time
+	if (!$opt_u && $newrec{'u'} == $rec{'u'} && $newrec{'f'} == $rec{'f'});
     $DB{$newrec{'id'}} = &aid_db_pack_rec(*newrec);
 
     # if the id or email has changed, we need to redo the mapping
@@ -197,4 +200,5 @@ if ($^W && 0)
 {
     @aid_edit_field_names = ();
     %aid_util'blank_entry = (); #'
+    $opt_u = 0;
 }
