@@ -2,11 +2,11 @@
 #     FILE: aid_util.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: perl library routines for the Alumni Internet Directory
-#      $Id: aid_util.pl,v 1.103 1998/03/20 04:41:29 mjr Exp mjr $
+#      $Id: aid_util.pl,v 1.104 1998/03/20 04:45:02 mjr Exp mjr $
 #
 
 $aid_util'rcsid =
- '$Id: aid_util.pl,v 1.103 1998/03/20 04:41:29 mjr Exp mjr $';
+ '$Id: aid_util.pl,v 1.104 1998/03/20 04:45:02 mjr Exp mjr $';
 
 # ----------------------------------------------------------------------
 # CONFIGURATION
@@ -679,11 +679,13 @@ sub aid_write_verbose_entry {
     require 'ctime.pl';
     package aid_util;
 
-    local(*FMTOUT,*rec,$display_year,$suppress_new) = @_;
+    local(*FMTOUT,*oldrec,$display_year,$suppress_new) = @_;
     local($[) = 0;
     local($_);
     local($fullname,$message);
+    local(*rec);
 
+    %rec = &main'aid_html_entify(*oldrec);
     $fullname = &main'inorder_fullname(*rec);
 
     print FMTOUT "<dl compact>\n";
@@ -706,12 +708,21 @@ sub aid_write_verbose_entry {
     print FMTOUT "</dt>\n";
     print FMTOUT "<dt>School: <strong>$rec{'school'}</strong></dt>\n" 
 	if $rec{'school'} ne 'MVHS';
-
-    if ($rec{'year'} =~ /^\d+$/ && $display_year) {
-	print FMTOUT "<dt>Year:  <strong>$rec{'year'}</strong></dt>\n";
+#'
+    if ($rec{'year'} =~ /^\d+$/) {
+	if ($display_year) {
+	    print FMTOUT "<dt>Year:  <strong>";
+	    print FMTOUT "<a href=\"" . $config{'master_path'} .
+		"class/$rec{'year'}.html\">";
+	    print FMTOUT $rec{'year'};
+	    print FMTOUT "</a></strong></dt>\n";
+	}
     } else {
-	print FMTOUT "<dt>Affiliation:  <strong>$rec{'year'}</strong></dt>\n"
-	    unless $rec{'year'} =~ /^\d+$/;
+	print FMTOUT "<dt>Affiliation:  <strong>";
+	print FMTOUT "<a href=\"" . $config{'master_path'} .
+	    "class/other.html\">";
+	print FMTOUT $rec{'year'};
+	print FMTOUT "</a></strong></dt>\n";
     }
 
     print FMTOUT "<dt>Email: <tt><strong><a href=\"mailto:$rec{'email'}\">$rec{'email'}</a></strong></tt></dt>\n";
