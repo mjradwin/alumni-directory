@@ -2,13 +2,13 @@
 #     FILE: mv_util.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: perl library routines for the MVHS Alumni Internet Directory
-#      $Id: mv_util.pl,v 1.36 1997/09/24 00:57:00 mjr Exp mjr $
+#      $Id: mv_util.pl,v 1.37 1997/09/29 16:22:34 mjr Exp mjr $
 #
 
 CONFIG: {
     package mv_util;
 
-    # divcom configuration
+    # divcom.umop-ap.com configuration
     %config =
 	('admin_name',   "Michael John Radwin",
 	 'admin_email',  "mjr\@acm.org",
@@ -27,6 +27,25 @@ CONFIG: {
 	 'mailto',       "mjr\@divcom",
 	 'mailsubj',	 "MVHSAID"
 	  );
+
+    # foo.metamorphosis.net configuration
+#    %config =
+#        ('admin_name',   "Michael John Radwin",
+#         'admin_email',  "mjr\@acm.org",
+#         'admin_school', "Mountain View High School, Class of '93",
+#         'admin_phone',  "408-536-2554",
+#         'admin_url',    "http://umop-ap.com/~mjr/",
+#         'master_url',   "http://metamorphosis.net/~mjr/mvhs/",
+#         'cgi_url',      "http://metamorphosis.net/~mjr/cgi-bin/mvhsaid.cgi",
+#         'cgi_path',     "/~mjr/cgi-bin/mvhsaid.cgi",
+#         'index_page',   "index.html",
+#         'wwwdir',       "/home/mjr/public_html/mvhs/",
+#         'mvhsdir',      "/home/mjr/mvhs/",
+#         'sendmail',     "/usr/sbin/sendmail",
+#         'mailprog',     "/usr/bin/mail",
+#         'mailto',       "mjr\@foo",
+#         'mailsubj',     "MVHSAID"
+#	 );
 
     @page_idx = 
 	("Home,"                  . $config{'master_path'},
