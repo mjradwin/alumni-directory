@@ -4,7 +4,7 @@
 #     FILE: form.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: Alumni Internet Directory CGI form-submission interface
-#      $Id: form,v 5.20 2000/04/25 01:30:38 mradwin Exp mradwin $
+#      $Id: form,v 5.21 2000/04/25 01:43:55 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -35,7 +35,7 @@ use CGI::Carp qw(fatalsToBrowser);
 # configuration
 $dbmfile = &aid_config('dbmfile');
 
-$rcsid = '$Id: form,v 5.20 2000/04/25 01:30:38 mradwin Exp mradwin $'; #'fnt
+$rcsid = '$Id: form,v 5.21 2000/04/25 01:43:55 mradwin Exp mradwin $'; #'fnt
 
 $listing_upd_title = 'Modify Your Directory Listing';
 $listing_upl_title = 'Select a Listing to Modify';
@@ -156,18 +156,16 @@ $cgi{'yr'} =~ s/^class\s+of\s*//i;
 $cgi{'yr'} =~ s/^\'(\d\d)$/$1/;
 $cgi{'yr'} = '0' . $cgi{'yr'} if $cgi{'yr'} =~ /^\d$/;
 
-# Year 2000 stuff: make 2-digit year fields be 4 digits.
-# either 20 years in the future, or 80 years in the past.
+# find the right century for a 2-digit year
 if ($cgi{'yr'} =~ /^\d\d$/) {
-    $year = (localtime(time))[5];
-    $year += 1900;  # localtime() returns number of years since 1900
-    if ((($year % 100) - $cgi{'yr'}) <= 80) {
-	$year = int($year / 100);
-	$cgi{'yr'} = $year . $cgi{'yr'};
-    } else {
-	$year = int($year / 100);
-	$cgi{'yr'} = ++$year . $cgi{'yr'};
-    }
+    # localtime() returns number of years since 1900
+    $this_year = (localtime(time))[5] + 1900;
+
+    $fourdigit = substr($this_year,0,2) . $cgi{'yr'};
+    $fourdigit = ((substr($this_year,0,2) - 1) . $cgi{'yr'})
+	if ($fourdigit > $this_year + 4);
+
+    $cgi{'yr'} = $fourdigit;
 }
 
 $cgi{'r'} = (defined $cgi{'r'} && 
@@ -380,8 +378,8 @@ $date";
 <h3>Your submission has been received but is not yet published.</h3>
 
 <p>The listing for <strong>$fullname</strong> has been added
-to the submission queue, but it has <em>not</em> yet been published in
-the Directory.  Processing your submission can take up to 48 hours.
+to the submission queue, but it has <strong>not yet been published in
+the Directory</strong>.  Processing your submission can take up to 48 hours.
 If your submission was made Monday-Friday between 9am and 5pm Pacific
 Time, your submission will probably be processed within an hour.</p>
 
