@@ -1,7 +1,8 @@
 #!/usr/local/bin/perl
+
 #
-# converts UC-Update type alias file into a
-# pine-style address book
+# generates address books in several formats
+# $Id$
 #
 
 require 'mv_util.pl';

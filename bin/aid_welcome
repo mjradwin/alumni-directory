@@ -2,6 +2,7 @@
 
 #
 # mails a welcome or update note to everyone in targets.adr
+# $Id$
 #
 
 require 'mv_util.pl';

@@ -1,6 +1,9 @@
 #!/usr/local/bin/perl
 
+#
 # does the html verbose pages
+# $Id$
+#
 
 require 'mv_util.pl';
 require 'tableheader.pl';

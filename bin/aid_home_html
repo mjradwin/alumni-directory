@@ -1,6 +1,9 @@
 #!/usr/local/bin/perl
 
+#
 # does the html version of just home pages
+# $Id$
+#
 
 require 'mv_util.pl';
 require 'getopts.pl';

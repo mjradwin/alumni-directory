@@ -1,6 +1,9 @@
 #!/usr/local/bin/perl
 
+#
 # does the html version of the recent address list
+# $Id$
+#
 
 require 'mv_util.pl';
 require 'tableheader.pl';
