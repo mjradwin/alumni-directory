@@ -1,0 +1,29 @@
+#!/usr/bin/perl -w
+
+# $Id$
+
+require 'aid_util.pl';
+
+$dbFile = &aid_config('aiddir') . "data/master.adr";
+@db = &aid_create_db($dbFile);
+
+$nvalid = 0;
+$ntotal = 0;
+@nreq = (0, 0, 0, 0, 0);
+
+for (@db)
+{
+    next unless defined($_) && $_ ne '';
+    %rec = &aid_split($_);
+
+    $ntotal++;
+
+    next unless $rec{'valid'};
+    $nvalid++;
+    $nreq[$rec{'request'}]++;
+}
+
+print "$ntotal total users, $nvalid valid\n";
+print "", ($nreq[1] + $nreq[2] + $nreq[3] + $nreq[4]),
+    " requesting updates\n";
+print "(", join(', ', @nreq), ")\n";
