@@ -4,7 +4,7 @@
 #     FILE: mvhsaid.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: Alumni Internet Directory CGI interface
-#      $Id: mvhsaid,v 3.65 1999/02/26 20:16:29 mradwin Exp mradwin $
+#      $Id: mvhsaid,v 3.66 1999/02/26 20:30:32 mradwin Exp mradwin $
 #
 
 require 'aid_util.pl';
@@ -22,7 +22,7 @@ if ($ENV{'SCRIPT_NAME'} =~ m,/nph-,)
 # configuration
 $mailprog = &aid_config('mailprog');
 $dbmfile = &aid_config('wwwdir') . 'master';
-$rcsid = '$Id: mvhsaid,v 3.65 1999/02/26 20:16:29 mradwin Exp mradwin $'; #'fnt
+$rcsid = '$Id: mvhsaid,v 3.66 1999/02/26 20:30:32 mradwin Exp mradwin $'; #'fnt
 
 $listing_upd_title = 'Step 1: Update Your Directory Listing';
 $listing_upl_title = 'Select a Listing to Update';
@@ -406,7 +406,7 @@ sub send_about {
     local($html_name) = &aid_html_escape($fullname);
 
     print "Content-Type: text/html\015\012\015\012";
-    print &common_html_hdr(-1,$fullname,1);
+    print &common_html_hdr(-1,$fullname,1,$rec{'time'});
     print "<p>Here is more detailed information about $html_name.\n<br>";
     print "To update this listing, please click the button below.</p>\n\n";
     print &about_text(*rec,0,1,1), "\n";
