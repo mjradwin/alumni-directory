@@ -2,7 +2,7 @@
 #     FILE: Makefile
 #   AUTHOR: Michael J. Radwin
 #    DESCR: Makefile for building the Alumni Internet Directory
-#      $Id: Makefile,v 3.21 1998/08/18 21:35:20 mradwin Exp mradwin $
+#      $Id: Makefile,v 3.22 1998/09/18 23:20:06 mradwin Exp mradwin $
 #
 
 WWWROOT=/home/web/radwin.org
@@ -144,7 +144,7 @@ ADDUPDATE=$(WWWDIR)/add.html
 addupdate:	$(ADDUPDATE)
 $(ADDUPDATE):	data/add.include $(BIN_HOME)
 	$(BIN_HOME) -p10 -i data/add.include \
-		-t 'Add an Entry to the Directory' \
+		-t 'Add or Update an entry' \
 		$(ADDUPDATE)
 
 BOOKS=$(WWWDIR)/books/mvhs.vdir
