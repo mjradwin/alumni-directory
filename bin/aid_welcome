@@ -61,8 +61,9 @@ below is still current.\n" : '';
     return "Dear $first,
 
 Your email address is listed in the Mountain View High School/Awalt High
-School Alumni Internet Directory, located on the World Wide Web at:\n\n"
-. &mv_config('master_url') . "
+School Alumni Internet Directory, located on the World Wide Web at:\n\n" .
+
+"http://" . &mv_config('master_srv') . &mv_config('master_path') . "
 $confirming
 The directory (which produced this form letter) shows the following
 information about you:
@@ -73,7 +74,7 @@ to be listed in the directory, please let me know and I will remove your
 entry.  If any of the above information is incorrect or out of date, you
 can update your entry online at:\n\n" .
 
-&mv_config('cgi_url') . "?update=$id
+"http://" . &mv_config('master_srv') . &mv_config('cgi_path') . "?update=$id
 
 If you don't have web access, just email me corrections and I'll be happy
 to fix your entry.  If everything you see above is correct, you're all set.\n";

@@ -2,7 +2,7 @@
 #     FILE: mv_util.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: perl library routines for the MVHS Alumni Internet Directory
-#      $Id: mv_util.pl,v 1.37 1997/09/29 16:22:34 mjr Exp mjr $
+#      $Id: mv_util.pl,v 1.38 1997/09/29 17:18:20 mjr Exp mjr $
 #
 
 CONFIG: {
@@ -15,9 +15,8 @@ CONFIG: {
 	 'admin_school', "Mountain View High School, Class of '93",
 	 'admin_phone',  "408-536-2554",
 	 'admin_url',    "http://umop-ap.com/~mjr/",
-	 'master_url',   "http://umop-ap.com/~mjr/mvhs/",
+	 'master_srv',   "umop-ap.com",
 	 'master_path',  "/~mjr/mvhs/",
-	 'cgi_url',      "http://umop-ap.com/cgi-bin/cgiwrap/mjr/mvhsaid",
 	 'cgi_path',     "/cgi-bin/cgiwrap/mjr/mvhsaid",
 	 'index_page',	 "index.html",
 	 'wwwdir',       "/home/divcom/mjr/public_html/mvhs/",
@@ -35,8 +34,8 @@ CONFIG: {
 #         'admin_school', "Mountain View High School, Class of '93",
 #         'admin_phone',  "408-536-2554",
 #         'admin_url',    "http://umop-ap.com/~mjr/",
-#         'master_url',   "http://metamorphosis.net/~mjr/mvhs/",
-#         'cgi_url',      "http://metamorphosis.net/~mjr/cgi-bin/mvhsaid.cgi",
+#	 'master_srv',   "metamorphosis.net",
+#	 'master_path',  "/~mjr/mvhs/",
 #         'cgi_path',     "/~mjr/cgi-bin/mvhsaid.cgi",
 #         'index_page',   "index.html",
 #         'wwwdir',       "/home/mjr/public_html/mvhs/",
@@ -63,7 +62,7 @@ CONFIG: {
 	 "Nicknames,"             . $config{'master_path'} . "nicknames.html",
 	 "Tech&nbsp;Notes,"       . $config{'master_path'} . "tech.html");
 
-    $pics_label = "<meta http-equiv=\"PICS-Label\" content='(PICS-1.1 \"http://www.rsac.org/ratingsv01.html\" l gen true comment \"RSACi North America Server\" by \"" . $config{'admin_email'} . "\" for \"" . $config{'master_url'} . "\" on \"1996.04.04T08:15-0500\" r (n 0 s 0 v 0 l 0))'>";
+    $pics_label = "<meta http-equiv=\"PICS-Label\" content='(PICS-1.1 \"http://www.rsac.org/ratingsv01.html\" l gen true comment \"RSACi North America Server\" by \"" . $config{'admin_email'} . "\" for \"http://" . $config{'master_srv'} . $config{'master_path'} . "\" on \"1996.04.04T08:15-0500\" r (n 0 s 0 v 0 l 0))'>";
 
     $site_tags = "<meta name=\"keywords\" content=\"Mountain View High School, Alumni, MVHS, Awalt High School, Mountain View, Los Altos, California, reunion, Radwin\">\n<meta name=\"description\" content=\"email/web page listing of alumni, students, faculty and staff from Mountain View High School in Mountain View, California.  Also catalogues alumni from Chester F. Awalt High School, which was merged with MVHS in the early 80's.\">";
 
@@ -78,7 +77,7 @@ CONFIG: {
 sub mv_config {
     package mv_util;
 
-    die if !defined($config{$_[0]});
+    die "NO CONFIG $_[0]!\n" if !defined($config{$_[0]});
     return $config{$_[0]};
 }
 
