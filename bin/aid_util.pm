@@ -2,11 +2,11 @@
 #     FILE: aid_util.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: perl library routines for the Alumni Internet Directory
-#      $Id: aid_util.pl,v 4.53 1999/03/09 18:18:32 mradwin Exp mradwin $
+#      $Id: aid_util.pl,v 4.54 1999/03/09 20:52:41 mradwin Exp mradwin $
 #
 
 $aid_util'rcsid =
- '$Id: aid_util.pl,v 4.53 1999/03/09 18:18:32 mradwin Exp mradwin $';
+ '$Id: aid_util.pl,v 4.54 1999/03/09 20:52:41 mradwin Exp mradwin $';
 
 # ----------------------------------------------------------------------
 # CONFIGURATION
@@ -610,6 +610,13 @@ sub submit_body {
 	$rec{'prev_email'} : $rec{'email'};
     $rec{'www'} = 'http://' if $rec{'www'} eq '';
 
+    # give defaults if they're being revalidated
+    if ($rec{'valid'} == 0)
+    {
+	$rec{'request'} = $blank_entry{'request'};
+	$rec{'reunion'} = $blank_entry{'reunion'};
+    }
+
     for ($i = 0; $i < 5; $i++) {
 	$reqchk[$i] = ($rec{'request'} == $i) ? ' checked' : '';
     }
@@ -1090,7 +1097,7 @@ sub about_text {
 	 (($do_html_p) ? "</strong>" : "") .
 	 "\n");
 
-    if ($do_vcard_p && $do_html_p) {
+    if ($do_vcard_p && $do_html_p && $rec{'valid'}) {
 	$retval .= "vCard              : ";
 	$retval .= "<a href=\"" . &main'aid_vcard_path($rec{'id'}) . "\">"; #'#
 	$retval .= $image_tag{'vcard'};
