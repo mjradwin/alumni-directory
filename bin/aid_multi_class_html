@@ -2,7 +2,7 @@
 
 #
 # does the html multi_class pages
-# $Id: aid_multi_class_html,v 5.10 1999/06/28 23:36:24 mradwin Exp mradwin $
+# $Id: aid_multi_class_html,v 5.11 1999/06/29 01:08:09 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -133,6 +133,7 @@ foreach $year (@years)
 <input type=\"submit\"
  value=\"Receive e-mail when $title changes (courtesy of NetMind)\"${ht_empty_close_tag}
 <input type=\"hidden\" name=\"UPDATE_PERIOD\" value=\"7\"${ht_empty_close_tag}
+<input type=\"hidden\" name=\"EMAIL\" value=\"\"${ht_empty_close_tag}
 <input type=\"hidden\" name=\"URL\"
  value=\"http://" .  &aid_config('master_srv') . &aid_config('master_path') . 
 "class/${year}.html\"${ht_empty_close_tag}
