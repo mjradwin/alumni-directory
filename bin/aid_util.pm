@@ -2,7 +2,7 @@
 #     FILE: mv_util.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: perl library routines for the MVHS Alumni Internet Directory
-#      $Id: mv_util.pl,v 1.21 1997/04/12 03:30:20 mjr Exp mjr $
+#      $Id: mv_util.pl,v 1.22 1997/04/24 13:26:43 mjr Exp mjr $
 #
 
 CONFIG: {
@@ -15,8 +15,8 @@ CONFIG: {
 	 'admin_school', "Mountain View High School, Class of '93",
 	 'admin_phone',  "401-863-6418",
 	 'admin_usmail', "Brown University, Box 4505, Providence, RI, 02912",
-	 'admin_url',    "http://www.cs.brown.edu/people/mjr/",
-#	 'admin_url',    "http://umop-ap.com/~mjr/",
+#	 'admin_url',    "http://www.cs.brown.edu/people/mjr/",
+	 'admin_url',    "http://umop-ap.com/~mjr/",
 	 'master_url',   "http://umop-ap.com/~mjr/mvhs/",
 #	 'master_url',   "http://www.cs.brown.edu/people/mjr/mvhs/",
 	 'cgi_url',      "http://umop-ap.com/cgi-bin/cgiwrap/mjr/mvhsaid",
@@ -30,7 +30,7 @@ CONFIG: {
 #	 'mvhsdir',      "/home/mjr/doc/mvhs/",
 	 'sendmail',     "/usr/lib/sendmail",
 	 'mailprog',     "/usr/ucb/mail",
-	 'mailto',       "mjr\@divcom mjr\@acm.org",
+	 'mailto',       "mjr\@divcom",
 	 'mailsubj',	 "MVHSAID"
 	  );
 
@@ -41,6 +41,8 @@ CONFIG: {
 		 'Web&nbsp;Pages,pages.html',
 		 'Get&nbsp;Listed!,add.html',
 		 'Acceptable&nbsp;Use,#disclaimer');
+
+    $pics_label = "<meta http-equiv=\"PICS-Label\" content='(PICS-1.1 \"http://www.rsac.org/ratingsv01.html\" l gen true comment \"RSACi North America Server\" by \"" . $config{'admin_email'} . "\" for \"" . $config{'master_url'} . "\" on \"1996.04.04T08:15-0500\" r (n 0 s 0 v 0 l 0))'>";
 
     $pics_label = "<meta http-equiv=\"PICS-Label\" content='(PICS-1.0 \"http://www.rsac.org/ratingsv01.html\" l gen true comment \"RSACi North America Server\" by \"" . $config{'admin_email'} . "\" for \"" . $config{'master_url'} . "\" on \"1996.04.04T08:15-0500\" exp \"1997.07.01T08:15-0500\" r (n 0 s 0 v 0 l 0))'>";
 
