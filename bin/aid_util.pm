@@ -2,7 +2,7 @@
 #     FILE: mv_util.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: perl library routines for the MVHS Alumni Internet Directory
-#      $Id: mv_util.pl,v 1.59 1997/12/06 00:37:10 mjr Exp $
+#      $Id: mv_util.pl,v 1.61 1997/12/19 20:20:30 mjr Exp mjr $
 #
 
 CONFIG: {
@@ -374,8 +374,9 @@ All other fields are optional.";
 <tr>
   <td colspan=3><font color=\"#000000\">
   <br><strong>What's New?</strong> Tell us, in 100 words or less, what
-  you've been up to recently.  HTML tags will be removed.</font><p>
-  <textarea name=\"message\" rows=10 cols=40 wrap>$message</textarea>
+  you've been up to recently.</font><img src=\"" . $config{'master_path'} .
+  "new.gif\" alt=\"[new]\" width=\"28\" height=\"11\"><p>
+  <textarea name=\"message\" rows=10 cols=55 wrap>$message</textarea>
   </td>
 </tr>
 <tr>

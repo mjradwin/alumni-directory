@@ -4,7 +4,7 @@
 #     FILE: mvhsaid.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: MVHS Alumni Internet Directory CGI interface
-#      $Id: mvhsaid,v 1.42 1997/12/03 00:49:08 mjr Exp $
+#      $Id: mvhsaid,v 1.44 1997/12/19 20:20:54 mjr Exp mjr $
 #
 
 require 'mv_util.pl';
@@ -22,7 +22,7 @@ $dbfile = &mv_config('wwwdir') . "mvhs.adr";
 if (defined($in{'version'})) {
     select(STDOUT);  $| = 1;
     print "Content-type: text/plain\n\n";
-    print '$Id: mvhsaid,v 1.42 1997/12/03 00:49:08 mjr Exp $', "\n"; #'fnt
+    print '$Id: mvhsaid,v 1.44 1997/12/19 20:20:54 mjr Exp mjr $', "\n"; #'fnt
     exit(0);
 }
 
@@ -128,8 +128,7 @@ $in{'married'} = "\u$in{'married'}";
 $in{'message'} =~ s/<[^>]*>//g;        # ignore HTML tags
 $in{'message'} =~ s/^\s*//;
 $in{'message'} =~ s/\s*$//;
-$in{'message'} =~ s/\s+/ /g;           # make multiple spaces a single space
-
+#$in{'message'} =~ s/\s+/ /g;           # make multiple spaces a single space
 
 # did they have the required fields?
 if ($in{'school'} eq 'Other') {
@@ -214,7 +213,7 @@ $time;$in{'id'};$in{'request'};$in{'last'};$in{'first'};$in{'married'};$in{'scho
 
     $message_mid =
 	(($in{'message'} eq '') ? '' :
-	 "_MVHSAID_BEGIN_MESSAGE_\n$in{'message'}_MVHSAID_END_MESSAGE_\n");
+	 "_MVHSAID_BEGIN_MESSAGE_\n$in{'message'}\n_MVHSAID_END_MESSAGE_\n");
     
     $message_bot =
 "The kind soul who submitted it was using the web from $ENV{'REMOTE_HOST'}
