@@ -2,11 +2,11 @@
 #     FILE: aid_util.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: perl library routines for the Alumni Internet Directory
-#      $Id: aid_util.pl,v 3.61 1998/10/17 21:31:16 mradwin Exp mradwin $
+#      $Id: aid_util.pl,v 3.62 1998/10/19 22:57:53 mradwin Exp mradwin $
 #
 
 $aid_util'rcsid =
- '$Id: aid_util.pl,v 3.61 1998/10/17 21:31:16 mradwin Exp mradwin $';
+ '$Id: aid_util.pl,v 3.62 1998/10/19 22:57:53 mradwin Exp mradwin $';
 
 # ----------------------------------------------------------------------
 # CONFIGURATION
@@ -49,19 +49,19 @@ $aid_util'rcsid =
      "Home,"                  . $aid_util'config{'master_path'},                 #'#
      "Alphabetically,"        . $aid_util'config{'master_path'} . "alpha/a-index.html",    #'#
      "Grad.&nbsp;Class,"      . $aid_util'config{'master_path'} . "class/",      #'#
-     "Awalt&nbsp;Alumni,"     . $aid_util'config{'master_path'} . "awalt.html",  #'#
+     "Awalt&nbsp;Alumni,"     . $aid_util'config{'master_path'} . "class/awalt.html",  #'#
      "Web&nbsp;Pages,"        . $aid_util'config{'master_path'} . "pages.html",  #'#
      "Recent&nbsp;Additions," . $aid_util'config{'master_path'} . "recent.html", #'#
      );
 
 @aid_util'second_idx = #'#
     (
-     "Add/Update,"          . $aid_util'config{'master_path'} . "add.html", #'#
-     "Reunions,"            . $aid_util'config{'master_path'} . "reunions.html", #'#
-     "Links,"               . $aid_util'config{'master_path'} . "links.html",    #'#
+     "Add/Update,"          . $aid_util'config{'master_path'} . "add/", #'#
+     "Reunions,"            . $aid_util'config{'master_path'} . "etc/reunions.html", #'#
+     "Links,"               . $aid_util'config{'master_path'} . "etc/links.html",    #'#
      "Download,"            . $aid_util'config{'master_path'} . "books/",        #'#
-     "FAQ,"                 . $aid_util'config{'master_path'} . "faq.html",     #'#
-     "Acceptable&nbsp;Use," . $aid_util'config{'master_path'} . "copyright.html", #'#
+     "FAQ,"                 . $aid_util'config{'master_path'} . "etc/faq.html",     #'#
+     "Acceptable&nbsp;Use," . $aid_util'config{'master_path'} . "etc/copyright.html", #'#
      );
 
 @aid_util'MoY = #'#
@@ -642,7 +642,7 @@ are required.  All other fields are optional.</p>\n\n";
   name=\"reunion\" id=\"reunion\" $reunion_chk><label
   for=\"reunion\">&nbsp;My class officers may notify me of
   reunion information via email.</label><br><br>Please 
-  <a href=\"" . $config{'master_path'} . "faq.html#mailings\">send 
+  <a href=\"" . $config{'master_path'} . "/etc/faq.html#mailings\">send 
   an updated copy</a> of the Directory to my email address every 3 
   months:<br>
   &nbsp;&nbsp;&nbsp;&nbsp;<input type=radio name=\"request\" id=\"request3\"
