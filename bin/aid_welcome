@@ -2,7 +2,7 @@
 
 #
 # mails a welcome or update note to everyone in targets.adr
-# $Id: aid_welcome,v 2.5 1998/05/17 02:24:18 mradwin Exp $
+# $Id: aid_welcome,v 3.10 1998/05/17 05:18:53 mradwin Exp mradwin $
 #
 
 require 'aid_util.pl';
@@ -162,7 +162,7 @@ the Directory, please let me know and I will remove your entry.  If any
 of the above information is incorrect or out of date, you can update
 your entry online at:\n\n" .
 
-$srv_prefix . &aid_config('cgi_path') . "?update=$rec{'id'}
+$srv_prefix . &aid_config('cgi_path') . "/go?update=$rec{'id'}
 
 If you don't have web access, just email me corrections and I'll be
 happy to fix your entry.
