@@ -2,7 +2,7 @@
 #     FILE: mv_util.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: perl library routines for the MVHS Alumni Internet Directory
-#      $Id: mv_util.pl,v 1.26 1997/07/29 00:05:40 mjr Exp mjr $
+#      $Id: mv_util.pl,v 1.27 1997/07/30 19:49:15 mjr Exp mjr $
 #
 
 CONFIG: {
@@ -372,7 +372,7 @@ sub about_text {
     local($time,$id,$req,$last,$first,$married,
 	  $school,$year,$email,$homepage,$location) = split(/;/, $rawdata);
 
-    $do_html_p && $retval .= "<pre>\n";
+    $retval .= "<pre>\n" if $do_html_p;
     $retval .= "First Name        : ";
     $retval .= ($first eq '') ? "\n" : 
 	((($do_html_p) ? "<strong>" : "") .
@@ -381,9 +381,9 @@ sub about_text {
 	 "\n");
     
     $retval .= "Last/Maiden Name  : ";
-    $do_html_p && $retval .= "<strong>";
+    $retval .= "<strong>" if $do_html_p;
     $retval .= $last;
-    $do_html_p && $retval .= "</strong>";
+    $retval .= "</strong>" if $do_html_p;
     $retval .= "\n";
     
     $retval .= "Married Name      : ";
@@ -395,22 +395,22 @@ sub about_text {
     
     $retval .= "\n";
     $retval .= "School            : ";
-    $do_html_p && $retval .= "<strong>";
+    $retval .= "<strong>" if $do_html_p;
     $retval .= $school;
-    $do_html_p && $retval .= "</strong>";
+    $retval .= "</strong>" if $do_html_p;
     $retval .= "\n";
     
     $retval .= "Grad. Year        : ";
-    $do_html_p && $retval .= "<strong>";
+    $retval .= "<strong>" if $do_html_p;
     $retval .= $year;
-    $do_html_p && $retval .= "</strong>";
+    $retval .= "</strong>" if $do_html_p;
     $retval .= "\n";
 
     $retval .= "\n";
     $retval .= "Email             : ";
-    $do_html_p && $retval .= "<strong><a href=\"mailto:$email\">";
+    $retval .= "<strong><a href=\"mailto:$email\">" if $do_html_p;
     $retval .= $email;
-    $do_html_p && $retval .= "</a></strong>";
+    $retval .= "</a></strong>" if $do_html_p;
     $retval .= "\n";
 
     $retval .= "Web Page          : ";
@@ -440,7 +440,7 @@ sub about_text {
 	$retval .= do ctime($time);
     }
 
-    $do_html_p && $retval .= "</pre>\n";
+    $retval .= "</pre>\n" if $do_html_p;
 
     if ($do_html_p && $time ne '') {
 	$retval .= &'modify_html($id,&'inorder_fullname($first,$last,$married));
