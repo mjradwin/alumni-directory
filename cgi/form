@@ -4,7 +4,7 @@
 #     FILE: mvhsaid.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: MVHS Alumni Internet Directory CGI interface
-#      $Id: mvhsaid,v 1.20 1997/08/22 16:57:57 mjr Exp mjr $
+#      $Id: mvhsaid,v 1.21 1997/08/22 17:09:36 mjr Exp mjr $
 #
 
 require 'mv_util.pl';
@@ -22,7 +22,7 @@ $dbfile = &mv_config('wwwdir') . "mvhs.adr";
 if (defined($in{'version'})) {
     select(STDOUT);  $| = 1;
     print "Content-type: text/plain\n\n";
-    print '$Id: mvhsaid,v 1.20 1997/08/22 16:57:57 mjr Exp mjr $', "\n";
+    print '$Id: mvhsaid,v 1.21 1997/08/22 17:09:36 mjr Exp mjr $', "\n";
     exit(0);
 }
 
@@ -116,12 +116,11 @@ exit(0);
 
 sub queue_submission {
     require 'tableheader.pl';
-    require 'ctime.pl';
 
     # a little more cleanup and then update the db.
     $in{'homepage'} = '' if $in{'homepage'} eq 'http://';
     $time = time;
-    $date = &ctime($time);
+    $date = &today($time);
     $mailto = &mv_config('mailto');
     $mailsubj = &mv_config('mailsubj');
     $mailname = &mv_config('admin_name');
