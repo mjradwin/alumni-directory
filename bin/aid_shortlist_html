@@ -4,7 +4,7 @@
 # does a short list, either compact or verbose, sorted by graduating
 # class with a jump bar
 #
-# $Id: aid_shortlist_html,v 1.13 1999/03/02 01:26:34 mradwin Exp mradwin $
+# $Id: aid_shortlist_html,v 1.14 1999/03/02 03:24:17 mradwin Exp mradwin $
 #
 
 require 'aid_util.pl';
@@ -68,8 +68,8 @@ if (!$opt_t) {
 	$time = unpack("N",$DB{'__t__'});
 	print FMTOUT &common_html_hdr(5,'Recent Additions and Updates',1,$time);
 	print FMTOUT
-"<p>All entries on this page have been added to the Directory within the
-last $opt_M.</p>\n\n";
+"<p>All alumni on this page have been added to the Directory
+or updated their listings within the last $opt_M.</p>\n\n";
     }
 
     print FMTOUT &aid_class_jump_bar('#grad','',*years,1);
