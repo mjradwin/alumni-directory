@@ -1,8 +1,8 @@
-#!/usr/local/bin/perl
+#!/usr/local/bin/perl -w
 
 #
 # does the html version of the invalid address list
-# $Id: aid_goners_html,v 1.26 1998/01/02 20:14:18 mradwin Exp $
+# $Id: aid_goners_html,v 1.28 1998/01/03 11:32:52 mradwin Exp $
 #
 
 require 'aid_util.pl';
@@ -25,28 +25,28 @@ print FMTOUT "------------------------------------------------------------------
 
 while(<DATA>) {
     chop;
-    ($time,$id,$req,$last,$first,$married,
-     $school,$year,$email,$homepage,$location) = &aid_split($_);
+    %rec = &aid_split($_);
 
-    $fullname = &fullname($first,$last,$married);
-    ($affil,$len) = &affiliate($year,$school,0);
+    $fullname = &fullname(*rec);
+    ($affil,$len) = &affiliate(*rec,0);
 
     # now that we've grabbed the fullname, modify the parts that
     # are likely to be bad for x-url-encoded.  Don't do anything fancy,
     # just replace spaces with plusses.
-    $first =~ s/[ \t]/+/g;
-    $last =~ s/[ \t]/+/g;
-    $married =~ s/[ \t]/+/g;
+    $rec{'first'} =~ s/[ \t]/+/g;
+    $rec{'last'} =~ s/[ \t]/+/g;
+    $rec{'married'} =~ s/[ \t]/+/g;
 
-    print FMTOUT "<a href=\"", &aid_config('cgi_path'), "?revise&";
-    print FMTOUT "id=$id&request=$req&first=$first&last=$last&";
-    print FMTOUT "married=$married&school=$school&grad=$year&";
-    print FMTOUT "mail=$email&homepage=$homepage&location=$location\">";
+    print FMTOUT "<a href=\"", &aid_config('cgi_path'), "?revise";
+    foreach (keys %rec) {
+	print FMTOUT "&$_=$rec{$_}";
+    }
+    print FMTOUT "\">";
     print FMTOUT $fullname;
     print FMTOUT "</a>";
     print FMTOUT $affil;
     print FMTOUT ' ', ' ' x (41 - (length($fullname) + $len));
-    print FMTOUT $email;
+    print FMTOUT $rec{'email'};
     print FMTOUT "\n";
 }
 

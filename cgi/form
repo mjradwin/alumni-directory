@@ -4,7 +4,7 @@
 #     FILE: mvhsaid.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: MVHS Alumni Internet Directory CGI interface
-#      $Id: mvhsaid,v 1.56 1998/01/02 20:17:33 mjr Exp mjr $
+#      $Id: mvhsaid,v 1.59 1998/01/03 11:32:52 mradwin Exp $
 #
 
 require 'aid_util.pl';
@@ -14,17 +14,17 @@ require 'cgi-lib.pl';
 $mailprog = &aid_config('mailprog');
 $dbfile = &aid_config('wwwdir') . "master.adr";
 
-@required_headers = ('id', 'last', 'first', 'school', 'grad', 'mail');
+@required_headers = ('id', 'last', 'first', 'school', 'year', 'email');
 
 &ReadParse();
 
 # convert "cgi-bin/mvhsaid/vcard/123.vcf" to "cgi-bin/mvhsaid?vcard=123"
-if ($ENV{'PATH_INFO'} =~ m,^/vcard/,) {
+if (defined($ENV{'PATH_INFO'}) && $ENV{'PATH_INFO'} =~ m,^/vcard/,) {
     $in{'vcard'} = $ENV{'PATH_INFO'};
     $in{'vcard'} =~ s,^/vcard/(\d+).*$,$1,;
 }
 
-$rcsid = '$Id: mvhsaid,v 1.56 1998/01/02 20:17:33 mjr Exp mjr $'; #'fnt
+$rcsid = '$Id: mvhsaid,v 1.59 1998/01/03 11:32:52 mradwin Exp $'; #'fnt
 
 # special flags: version, update, vcard, about
 #
@@ -40,10 +40,11 @@ if (defined($in{'version'})) {
     if ($in{'update'} =~ /^\d+$/) {
 	@db = &aid_create_db($dbfile);
 	if (defined($db[$in{'update'}])) {
-	    &send_upd_real($db[$in{'update'}],
+	    %updateme = &aid_split($db[$in{'update'}]);
+	    &send_upd_real(*updateme,
 			   &aid_get_usertext($in{'update'}),0);
 	} else {
-	    &send_upd_real(&blank_rawdata(),'',0);
+	    &send_upd_real(*aid_util'blank_entry,'',0);
 	}
     } else {
 	&send_upd_list();
@@ -56,19 +57,19 @@ if (defined($in{'version'})) {
 	if (defined($db[$in{'vcard'}])) {
 	    &send_vcard($db[$in{'vcard'}]);
 	} else {
-	    &send_upd_real(&blank_rawdata(),'',0);
+	    &send_upd_real(*aid_util'blank_entry,'',0);
 	}
     } else {
-	&send_upd_real(&blank_rawdata(),'',0);
+	&send_upd_real(*aid_util'blank_entry,'',0);
     }
     exit(0);
 
-} elsif ($in{'about'} =~ /^\d+$/) {
+} elsif (defined($in{'about'}) && $in{'about'} =~ /^\d+$/) {
     @db = &aid_create_db($dbfile);
     if (defined($db[$in{'about'}])) {
 	&send_about($db[$in{'about'}]);
     } else {
-	&send_upd_real(&blank_rawdata(),'',0);
+	&send_upd_real(*aid_util'blank_entry,'',0);
     }
     exit(0);
 }
@@ -79,7 +80,7 @@ if (defined($in{'version'})) {
 foreach (@required_headers) {
     if (!defined($in{$_})) {
 	# wrong form
-	&send_upd_real(&blank_rawdata(),'',0);
+	&send_upd_real(*aid_util'blank_entry,'',0);
 	exit(0);
     }
 }
@@ -96,20 +97,21 @@ foreach $key (keys(%in)) {
 }
 
 # remove apostropies and add a leading year to gradyear field
-$in{'grad'} =~ s/^class\s+of\s*//i;
-$in{'grad'} =~ s/^\'(\d\d)$/$1/;
+$in{'year'} =~ s/^class\s+of\s*//i;
+$in{'year'} =~ s/^\'(\d\d)$/$1/;
 
 # the MS approach to 2-digit year fields: either 35 years in the future,
 # or 65 years in the past.
-if ($in{'grad'} =~ /^\d\d$/) {
-    ($sec,$min,$hour,$mday,$mon,$year,$wday,$yday,$isdst) = localtime(time);
+if ($in{'year'} =~ /^\d\d$/) {
+#    ($sec,$min,$hour,$mday,$mon,$year,$wday,$yday,$isdst) = localtime(time);
+    $year = (localtime(time))[5];
     $year += 1900;  # localtime() returns number of years since 1900
-    if ((($year % 100) - $in{'grad'}) <= 65) {
+    if ((($year % 100) - $in{'year'}) <= 65) {
 	$year = int($year / 100);
-	$in{'grad'} = $year . $in{'grad'};
+	$in{'year'} = $year . $in{'year'};
     } else {
 	$year = int($year / 100);
-	$in{'grad'} = ++$year . $in{'grad'};
+	$in{'year'} = ++$year . $in{'year'};
     }
 }
 
@@ -118,8 +120,8 @@ $in{'school'} = ($in{'school'} eq 'Other' && $in{'sch_other'} ne '') ?
     $in{'sch_other'} : $in{'school'};
 
 # lowercase the hostname portion of the email address
-if (!($in{'mail'} =~ /^\s*$/)) {
-    ($mail_user, $mail_addr) = split(/\@/, $in{'mail'});
+if (!($in{'email'} =~ /^\s*$/)) {
+    ($mail_user, $mail_addr) = split(/\@/, $in{'email'});
     $mail_addr = 'aol.com' if $mail_addr eq '';
 	
     # test for initial-cap, rest lower user
@@ -129,7 +131,7 @@ if (!($in{'mail'} =~ /^\s*$/)) {
     # test for all-caps user
     $mail_user = $lower_user if $mail_user eq "\U$mail_user\E";
 
-    $in{'mail'} = $mail_user . '@' . "\L$mail_addr\E";
+    $in{'email'} = $mail_user . '@' . "\L$mail_addr\E";
 }
 
 # uncapitalize those overzealous capslock names
@@ -151,19 +153,21 @@ $in{'message'} =~ s/\s*$//;
 $in{'message'} =~ s/&/&amp;/g;
 $in{'message'} =~ s/</&lt;/g;
 $in{'message'} =~ s/>/&gt;/g;
-$in{'message'} =~ s/\"/\'/g;
-#$in{'message'} =~ s/\s+/ /g;           # make multiple spaces a single space
+$in{'message'} =~ s/\"/&quot;/g;
+$in{'message'} =~ s/\s+/ /g;           # make multiple spaces a single space
 
 # did they check the "other" box for school, but not fill in any text?
 if ($in{'school'} eq 'Other') {
-    &send_upd_real(&make_rawdata(%in),$in{'message'},1);
+    $in{'time'} = '';
+    &send_upd_real(*in,$in{'message'},1);
     exit(0);
 }
 
 # did they have non-blank entries for all the required fields?
 foreach (@required_headers) {
     if ($in{$_} =~ /^\s*$/) {
-	&send_upd_real(&make_rawdata(%in),$in{'message'},1);
+	$in{'time'} = '';
+	&send_upd_real(*in,$in{'message'},1);
 	exit(0);
     }
 }
@@ -172,7 +176,8 @@ foreach (@required_headers) {
 # the confirmation phase or the queueing phase.
 
 if (defined($in{'revise'})) {
-    &send_upd_real(&make_rawdata(%in),$in{'message'},0);
+    $in{'time'} = '';
+    &send_upd_real(*in,$in{'message'},0);
 } elsif (defined($in{'confirmed'})) {
     &queue_submission();
 } else {
@@ -181,14 +186,6 @@ if (defined($in{'revise'})) {
 
 exit(0);
 
-sub make_rawdata {
-    local(%in) = @_;
-
-    return &aid_join(0,$in{'id'},$in{'request'},
-		     $in{'last'},$in{'first'},$in{'married'},
-		     $in{'school'},$in{'grad'},$in{'mail'},
-		     $in{'homepage'},$in{'location'});
-}
 
 sub confirm_submission {
     local($cgi_path) = &aid_config('cgi_path');
@@ -215,7 +212,7 @@ to edit your entry.  If everything is correct, please hit the
     }
 
     print "<table border=0><tr><td>\n";
-    print &about_text(";;$in{'request'};$in{'last'};$in{'first'};$in{'married'};$in{'school'};$in{'grad'};$in{'mail'};$in{'homepage'};$in{'location'}",$in{'message'},1,1), "\n";
+    print &about_text(*in,$in{'message'},1,1), "\n";
     print "</td></tr>\n";
     print "<tr><td align=right>\n";
     print "<input type=submit name=\"revise\" value=\"&lt; Back\">\n";
@@ -231,19 +228,17 @@ sub queue_submission {
 
     # a little more cleanup and then update the db.
     $in{'homepage'} = '' if $in{'homepage'} eq 'http://';
-    $time = time;
-    $date = &ctime($time);
+    $in{'time'} = time;
+    $in{'created'} = $in{'created'} ne '' ? $in{'created'} : $in{'time'};
+    $in{'inethost'} = $ENV{'REMOTE_HOST'};
+    $date = &ctime($in{'time'});
     $mailto = &aid_config('mailto');
     $mailsubj = &aid_config('mailsubj');
     $mailname = &aid_config('admin_name');
+    $record = &aid_join(*in);
 
-    $message_top = 
-"Dear $mailname,
-
-This was submitted to the Alumni Internet Directory:
-
-$time;$in{'id'};$in{'request'};$in{'last'};$in{'first'};$in{'married'};$in{'school'};$in{'grad'};$in{'mail'};$in{'homepage'};$in{'location'}
-";
+    $message_top = "Dear $mailname,\n\n" .
+	"This was submitted to the Alumni Internet Directory:\n\n$record\n";
 
     $message_mid =
 	(($in{'message'} eq '') ? '' :
@@ -270,10 +265,10 @@ EOM
 
     print "<br>\n";
     print &aid_tableheader('Your submission is confirmed and queued');
-    $fullname = &inorder_fullname($in{'first'},$in{'last'},$in{'married'});
+    $fullname = &inorder_fullname(*in);
     print "<p>The entry for <strong>$fullname</strong> has been\n";
     print "added to the submission queue.\n";
-    print "Email will be sent to <tt>$in{'mail'}</tt> confirming\n";
+    print "Email will be sent to <tt>$in{'email'}</tt> confirming\n";
     print "receipt of this submission when it it processed.</p>\n";
 
     print "<p>Processing your sumbission might take a day or two.\n";
@@ -285,21 +280,20 @@ EOM
 
 
 sub send_upd_real {
-    local($rawdata,$message,$blankp) = @_;
+    local(*rec,$message,$blankp) = @_;
 
     select(STDOUT);  $| = 1;
     print "Content-type: text/html\n\n";
 
     print &common_html_hdr(-1,1);
-    print &submit_body($rawdata,$message,$blankp);
+    print &submit_body(*rec,$message,$blankp);
     print &common_html_ftr(-1);
 }
 
 sub send_about {
     local($rawdata) = @_;
-    local($time,$id,$req,$last,$first,$married,
-	  $school,$year,$email,$homepage,$location) = &aid_split($rawdata);
-    local($fullname) = &inorder_fullname($first,$last,$married);
+    local(%rec) = &aid_split($rawdata);
+    local($fullname) = &inorder_fullname(*rec);
 
     select(STDOUT);  $| = 1;
     print "Content-type: text/html\n\n";
@@ -307,40 +301,39 @@ sub send_about {
     print "<br>\n";
     print &aid_tableheader($fullname);
     print "<p>Here is more detailed information about $fullname.  To see\n";
-    print "<a href=\"" . &aid_config('cgi_path') . "/vcard/${id}.vcf\">";
-    print "${first}'s vCard</a>,\n";
+    print "<a href=\"" . &aid_config('cgi_path') . "/vcard/$rec{'id'}.vcf\">";
+    print "$rec{'first'}'s vCard</a>,\n";
     print "you must be using Netscape 4 or have the \n";
     print "<a href=\"http://www.nowsoft.com/plugins/about_people.html\">";
     print "About People</a>\n";
     print "plugin installed.  To learn more about vCard, check out the\n";
     print "<a href=\"http://www.imc.org/pdi/\">Internet Mail Consortium</a>'s";
     print " website.\n\n";
-    print &about_text($rawdata,'',0,1,1), "\n";
+    print &about_text(*rec,'',0,1,1), "\n";
     print &common_html_ftr(-1);
 }
 
 sub send_vcard {
     local($rawdata) = @_;
-    local($time,$id,$req,$last,$first,$married,
-	  $school,$year,$email,$homepage,$location) = &aid_split($rawdata);
+    local(%rec) = &aid_split($rawdata);
 
-    $long_last  = $last;
-    $long_last .= " $married" if $married ne '';
+    $long_last  = $rec{'last'};
+    $long_last .= " $rec{'married'}" if $rec{'married'} ne '';
 
     select(STDOUT);  $| = 1;
     print "Content-type: text/x-vCard\n\n";
     print "Begin:vCard\n";
-    print "ORG:$school;";
-    if ($year =~ /^\d+$/) {
-	print "Class of '$year\n";
+    print "ORG:$rec{'school'};";
+    if ($rec{'year'} =~ /^\d+$/) {
+	print "Class of $rec{'year'}\n";
     } else {
-	print "$year\n";
+	print "$rec{'year'}\n";
     }
-    print "FN: $first $long_last\n";
-    print "N:$last;$first;$married\n";
-    print "EMAIL;PREF;INTERNET:$email\n";
-    print "ADR:$location\n" if $location ne '';
-    print "URL:$homepage\n" if $homepage ne '';
+    print "FN: $rec{'first'} $long_last\n";
+    print "N:$rec{'last'};$rec{'first'};$rec{'married'}\n";
+    print "EMAIL;PREF;INTERNET:$rec{'email'}\n";
+    print "ADR:$rec{'location'}\n" if $rec{'location'} ne '';
+    print "URL:$rec{'homepage'}\n" if $rec{'homepage'} ne '';
     print "End:vCard\n";
 }
 
@@ -349,8 +342,7 @@ sub send_upd_list {
     local($_);
     local(@db) = &aid_alpha_db($dbfile);
     local($fullname,$affil,$len);
-    local($time,$req,$id,$last,$first,$married,
-	  $school,$year,$email,$homepage,$location);
+    local(%rec);
 
     select(STDOUT);  $| = 1;
     print "Content-type: text/html\n\n";
@@ -365,18 +357,17 @@ sub send_upd_list {
 
     foreach (@db) {
 	next if $_ eq '';
-	($time,$id,$req,$last,$first,$married,
-	 $school,$year,$email,$homepage,$location) = &aid_split($_);
+	%rec = &aid_split($_);
 
-	$fullname = &fullname($first,$last,$married);
-	($affil,$len) = &affiliate($year,$school,0);
+	$fullname = &fullname(*rec);
+	($affil,$len) = &affiliate(*rec,0);
 
-	print "<a href=\"", &aid_config('cgi_path'), "?update=$id\">";
+	print "<a href=\"", &aid_config('cgi_path'), "?update=$rec{'id'}\">";
 	print $fullname;
 	print "</a>";
 	print $affil;
 	print ' ', ' ' x (41 - (length($fullname) + $len));
-	print $email;
+	print $rec{'email'};
 	print "\n";
     }
     print "</pre>\n\n";

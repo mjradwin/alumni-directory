@@ -1,8 +1,8 @@
-#!/usr/local/bin/perl
+#!/usr/local/bin/perl -w
 
 #
 # does the html version of just home pages
-# $Id: aid_home_html,v 1.16 1998/01/02 20:14:18 mradwin Exp $
+# $Id: aid_home_html,v 1.18 1998/01/03 11:32:52 mradwin Exp $
 #
 
 require 'aid_util.pl';
@@ -20,6 +20,8 @@ $usage = 'usage: aid_home_html [-hs] [-p <pg>] [-t <text>] [-i <infile>] <outfil
 
 &Getopts('hst:i:p:') || die "$usage\n";
 $opt_h && die "$usage\n";
+$opt_h = $opt_h;		# avoid warning
+%blank_entry = %aid_util'blank_entry = %aid_util'blank_entry;
 
 die "$usage\n" unless $ARGV[0];
 die "$usage\n" unless ($opt_s || $opt_i);
@@ -27,6 +29,7 @@ die "$usage\n" unless defined($opt_p);
 
 $infile = $opt_i;
 $outfile = $ARGV[0];
+
 
 if ($opt_i) {
     open(INFILE,$infile) || die "Can't open $infile: $!\n";
@@ -43,7 +46,7 @@ if ($opt_t) {
 }
 
 if ($opt_s) {
-    print OUTFILE &submit_body(&blank_rawdata(),'',0);
+    print OUTFILE &submit_body(*blank_entry,'',0);
 } else {
     print OUTFILE @lines;
 }

@@ -1,8 +1,8 @@
-#!/usr/local/bin/perl
+#!/usr/local/bin/perl -w
 
 #
 # does the html version of the recent address list
-# $Id: aid_recent_html,v 1.25 1998/01/02 20:14:18 mradwin Exp $
+# $Id: aid_recent_html,v 1.27 1998/01/03 11:32:52 mradwin Exp $
 #
 
 require 'aid_util.pl';
@@ -30,23 +30,21 @@ print FMTOUT "------------------------------------------------------------------
 
 while(<DATA>) {
     chop;
-    ($alias,
-     $time,$id,$req,$last,$first,$married,
-     $school,$year,$email,$homepage,$location) = &aid_parse($_);
-    next unless &is_new($time);
+    %rec = &aid_parse($_);
+    next unless &is_new($rec{'time'});
 
-    $fullname = &fullname($first,$last,$married);
-    ($affil,$len) = &affiliate($year,$school,1);
+    $fullname = &fullname(*rec);
+    ($affil,$len) = &affiliate(*rec,1);
 
-    print FMTOUT "<a href=\"$cgi?about=$id\">$info_gif</a>";
-    print FMTOUT "<a name=\"$alias\"";
-    print FMTOUT " href=\"$homepage\"" if $homepage ne '';
+    print FMTOUT "<a href=\"$cgi?about=$rec{'id'}\">$info_gif</a>";
+    print FMTOUT "<a name=\"$rec{'alias'}\"";
+    print FMTOUT " href=\"$rec{'homepage'}\"" if $rec{'homepage'} ne '';
     print FMTOUT ">";
     print FMTOUT $fullname;
     print FMTOUT "</a>";
     print FMTOUT $affil;
     print FMTOUT ' ', ' ' x (41 - (length($fullname) + $len));
-    print FMTOUT "<a href=\"mailto:", $email, "\">", $email, "</a>";
+    print FMTOUT "<a href=\"mailto:", $rec{'email'}, "\">", $rec{'email'}, "</a>";
     print FMTOUT "\n";
 }
 

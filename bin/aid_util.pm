@@ -2,11 +2,11 @@
 #     FILE: aid_util.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: perl library routines for the Alumni Internet Directory
-#      $Id: aid_util.pl,v 1.82 1998/01/02 20:54:24 mjr Exp mjr $
+#      $Id: aid_util.pl,v 1.85 1998/01/03 11:32:37 mradwin Exp $
 #
 
 $aid_util'rcsid =
- '$Id: aid_util.pl,v 1.82 1998/01/02 20:54:24 mjr Exp mjr $';
+ '$Id: aid_util.pl,v 1.85 1998/01/03 11:32:37 mradwin Exp $';
 
 # ----------------------------------------------------------------------
 # CONFIGURATION
@@ -36,6 +36,29 @@ $aid_util'rcsid =
      'mailto',       "mjr\@divcom",
      'mailsubj',     'MVHSAID',
      'spoolfile',    '/var/spool/mail/mjr',
+     'rcsid',        "$aid_util'rcsid",
+     );
+
+# albert.corp.adobe.com configuration
+%aid_util'config =  #'font-lock
+    ('admin_name',   'Michael John Radwin',
+     'admin_email',  "mjr\@acm.org",
+     'school',       'Mountain View High School',
+     'admin_school', "Mountain View High School, Class of '93",
+     'admin_phone',  '408-536-2554',
+     'admin_url',    'http://slimy.com/~mjr/',
+     'master_srv',   'albert.corp.adobe.com',
+     'master_path',  '/~mradwin/mvhs/',
+     'cgi_path',     '/~mradwin/mvhs/cgi-bin/mvhsaid.cgi',
+     'index_page',   'index.html',
+     'wwwdir',       '/user/mradwin/public_html/mvhs/',
+     'newsdir',      '/user/mradwin/public_html/mvhs/whatsnew/',
+     'aiddir',       '/user/mradwin/mvhs/',
+     'sendmail',     '/usr/lib/sendmail',
+     'mailprog',     '/usr/ucb/mail',
+     'mailto',       "mradwin",
+     'mailsubj',     'MVHSAID',
+     'spoolfile',    '/var/mail/mradwin', 
      'rcsid',        "$aid_util'rcsid",
      );
 
@@ -109,6 +132,24 @@ $aid_util'body_fg    = '000000'; #'font-lock
 $aid_util'body_link  = '0000cc'; #'font-lock
 $aid_util'body_vlink = '990099'; #'font-lock
 
+$aid_util'ID_INDEX    = 1; #'font-lock
+%aid_util'blank_entry =    #'font-lock
+    (
+     'time',         '',
+     'id',           -1,
+     'request',       2,
+     'last',         '',
+     'first',        '',
+     'married',      '',
+     'school',   'MVHS',
+     'year',         '',
+     'email',        '',
+     'homepage',     '',
+     'location',     '',
+     'created',      '',
+     'inethost',     '',
+     );
+
 %aid_util'image_tag = #'font-lock
     (
      'new',
@@ -153,7 +194,7 @@ sub aid_config {
     local($[) = 0;
 
     die "NO CONFIG $_[0]!\n" if !defined($config{$_[0]});
-    return $config{$_[0]};
+    $config{$_[0]};
 }
 
 # give 'em back the image_tag they need
@@ -163,7 +204,7 @@ sub aid_image_tag {
     local($[) = 0;
 
     die "NO IMAGE_TAG $_[0]!\n" if !defined($image_tag{$_[0]});
-    return $image_tag{$_[0]};
+    $image_tag{$_[0]};
 }
 
 sub aid_tableheader {
@@ -172,7 +213,7 @@ sub aid_tableheader {
 
     local($text) = @_;
     
-    return &main'tableheader($text,1,$header_bg,$header_fg,1); #'fnt
+    &main'tableheader($text,1,$header_bg,$header_fg,1); #'fnt
 }
 
 # is the GMT less than one month ago?
@@ -182,22 +223,22 @@ sub is_new {
 
     local($[) = 0;
 
-    return ((time - $_[0]) < 2678400) ? 1 : 0;
+    (((time - $_[0]) < 2678400) ? 1 : 0);
 }
 
 
 sub fullname {
     package aid_util;
 
-    local($first,$last,$married) = @_;
+    local(*rec) = @_;
 
-    if ($first eq '') {
-	return $last;
+    if ($rec{'first'} eq '') {
+	$rec{'last'};
     } else {
-	if ($married ne '') {
-	    return "$last (now $married), $first";
+	if ($rec{'married'} ne '') {
+	    "$rec{'last'} (now $rec{'married'}), $rec{'first'}";
 	} else {
-	    return "$last, $first";
+	    "$rec{'last'}, $rec{'first'}";
 	}
     }
 }
@@ -206,15 +247,15 @@ sub fullname {
 sub inorder_fullname {
     package aid_util;
 
-    local($first,$last,$married) = @_;
+    local(*rec) = @_;
 
-    if ($first eq '') {
-	return $last;
+    if ($rec{'first'} eq '') {
+	$rec{'last'};
     } else {
-	if ($married ne '') {
-	    return "$first $last (now $married)";
+	if ($rec{'married'} ne '') {
+	    "$rec{'first'} $rec{'last'} (now $rec{'married'})";
 	} else {
-	    return "$first $last";
+	    "$rec{'first'} $rec{'last'}";
 	}
     }
 }
@@ -223,26 +264,26 @@ sub inorder_fullname {
 sub affiliate {
     package aid_util;
 
-    local($year, $school,$do_html_p) = @_;
-    local($affil,$len);
+    local(*rec,$do_html_p) = @_;
+    local($year,$affil,$len);
 
     $affil = '  ';
     $len   = 2;
 
-    if ($year =~ /^\d+$/) {
+    if ($rec{'year'} =~ /^\d+$/) {
 	$affil .= "<a href=\"" . $config{'master_path'} . 
-	    "class/${year}.html\">" if $do_html_p;
+	    "class/$rec{'year'}.html\">" if $do_html_p;
 
-	$year %= 100;
-	if ($school eq 'Awalt') {
+	$year = $rec{'year'} % 100;
+	if ($rec{'school'} eq 'Awalt') {
 	    $affil  .= "A'$year";
 	    $len    += length("A'$year");
-	} elsif ($school eq 'MVHS' || $school eq '') {
+	} elsif ($rec{'school'} eq 'MVHS' || $rec{'school'} eq '') {
 	    $affil  .= "'$year";
 	    $len    += length("'$year");
 	} else {
-	    $affil  .= "$school '$year";
-	    $len    += length("$school '$year");
+	    $affil  .= "$rec{'school'} '$year";
+	    $len    += length("$rec{'school'} '$year");
 	}
 
 	$affil .= "</a>" if $do_html_p;
@@ -250,12 +291,12 @@ sub affiliate {
     } else {
 	$affil .= "<a href=\"" . $config{'master_path'} . 
 	    "class/other.html\">" if $do_html_p;
-	$affil .= "[$school $year]";
-	$len   += length("[$school $year]");
+	$affil .= "[$rec{'school'} $rec{'year'}]";
+	$len   += length("[$rec{'school'} $rec{'year'}]");
 	$affil .= "</a>" if $do_html_p;
     }
 
-    return ($affil,$len);
+    ($affil,$len);
 }
 
 
@@ -272,7 +313,7 @@ sub mangle {
     $name =~ s/\(.*\)//g;
     $name =~ s/\'.*\'//g;
 
-    return $name;
+    $name;
 }
 
 
@@ -280,22 +321,54 @@ sub aid_split {
     package aid_util;
 
     local($_) = @_;
-    local($time,$id,$req,$last,$first,$married,
-	  $school,$year,$email,$homepage,$location) = split(/;/);
+    local($[) = 0;
+    local(@fields) = split(/;/);
+    local($field) = 0;
+    local(%rec);
 
-    return ($time,$id,$req,$last,$first,$married,
-	    $school,$year,$email,$homepage,$location);
+    $rec{'time'}     = $fields[$field++];
+    $rec{'id'}       = $fields[$field++];
+    $rec{'request'}  = $fields[$field++];
+    $rec{'last'}     = $fields[$field++];
+    $rec{'first'}    = $fields[$field++];
+    $rec{'married'}  = $fields[$field++];
+    $rec{'school'}   = $fields[$field++];
+    $rec{'year'}     = $fields[$field++];
+    $rec{'email'}    = $fields[$field++];
+    $rec{'homepage'} = $fields[$field++];
+    $rec{'location'} = $fields[$field++];
+    $rec{'created'}  = $fields[$field++];
+    $rec{'inethost'} = $fields[$field++];
+
+    foreach (keys %rec) {
+	$rec{$_} = '' unless defined($rec{$_});
+    }
+
+    %rec;
 }
 
 
 sub aid_join {
     package aid_util;
 
-    local($time,$id,$req,$last,$first,$married,
-	  $school,$year,$email,$homepage,$location) = @_;
+    local(*rec) = @_;
 
-    return join(';', ($time,$id,$req,$last,$first,$married,
-		      $school,$year,$email,$homepage,$location));
+    join(';', (
+	       $rec{'time'},
+	       $rec{'id'},
+	       $rec{'request'},
+	       $rec{'last'},
+	       $rec{'first'},
+	       $rec{'married'},
+	       $rec{'school'},
+	       $rec{'year'},
+	       $rec{'email'},
+	       $rec{'homepage'},
+	       $rec{'location'},
+	       $rec{'created'},
+	       $rec{'inethost'},
+	       )
+	 );
 }
 
 
@@ -303,26 +376,25 @@ sub aid_parse {
     package aid_util;
 
     local($_) = @_;
-    local($time,$id,$req,$last,$first,$married,
-	  $school,$year,$email,$homepage,$location) = &main'aid_split($_);
+    local(%rec) = &main'aid_split($_); #'font-lock
     local($mangledLast,$mangledFirst,$alias);
 
-    $mangledLast = &main'mangle($last);   #' font-lock
-    $mangledFirst = &main'mangle($first); #' font-lock
+    $mangledLast = &main'mangle($rec{'last'});   #' font-lock
+    $mangledFirst = &main'mangle($rec{'first'}); #' font-lock
 
     $alias = substr($mangledFirst, 0, 1) . substr($mangledLast, 0, 7);
     $alias = "\L$alias\E";
 
-    if ($aid_aliases{$alias} > 0) {
+    if (defined($aid_aliases{$alias})) {
         $aid_aliases{$alias}++;
         $alias = substr($alias, 0, 7) . $aid_aliases{$alias};
     } else {
         $aid_aliases{$alias} = 1;
     }
 
-    return ($alias,
-	    $time,$id,$req,$last,$first,$married,
-	    $school,$year,$email,$homepage,$location);
+
+    $rec{'alias'} = $alias;
+    %rec;
 }
 
 
@@ -337,14 +409,14 @@ sub aid_create_db {
     open(INFILE,$filename) || die "Can't open $filename: $!\n";
     while(<INFILE>) {
 	chop;
-	$db[(split(/;/))[1]] = $_;
+	$db[(split(/;/))[$ID_INDEX]] = $_;
     }
     close(INFILE);
     
-    return @db;
+    @db;
 }
 
-sub aid_util'bydatakeys { 
+sub aid_util'bydatakeys {   #'fnt
     package aid_util;
     $datakeys[$a] cmp $datakeys[$b];
 }
@@ -353,22 +425,20 @@ sub aid_alpha_db {
     package aid_util;
 
     local($filename) = @_;
-    local(@db) = &main'aid_create_db($filename);  #'fnt
-    local($time,$id,$req,$last,$first,$married,
-	  $school,$year,$email,$homepage,$location);
+    local(@db) = &main'aid_create_db($filename);   #'fnt
+    local(%rec);
     local($[) = 0;
     local($_);
 
     @datakeys = ();
 
     foreach (@db) {
-	($time,$id,$req,$last,$first,$married,
-	 $school,$year,$email,$homepage,$location) = &main'aid_split($_);
-	push(@datakeys, "$last,$married,$first");
+	%rec = &main'aid_split($_);  #'font-lock
+	push(@datakeys, "$rec{'last'},$rec{'married'},$rec{'first'}");
     }
 
     @alpha = @db[sort bydatakeys $[..$#db];
-    return @alpha;
+    @alpha;
 }
 
 sub aid_get_usertext {
@@ -387,15 +457,14 @@ sub aid_get_usertext {
 	close(TEXTFILE);
     }
     
-    return $text;
+    $text;
 }
 
 
-sub blank_rawdata {
+sub aid_blank_entry {
     package aid_util;
 
-    return &main'aid_join(0,-1,2,'','','',
-			  'MVHS','','','',''); #'fnt
+    %blank_entry;
 }
 
 sub submit_body {
@@ -405,30 +474,28 @@ sub submit_body {
     local($_);
     local($tableh);
     local($star) = "<font color=\"#$star_fg\">*</font>";
-    local($rawdata,$message,$blankp) = @_;
+    local(*rec,$message,$blankp) = @_;
     local($mvhs_checked,$awalt_checked,$other_checked) = ('', '', '');
-    local($time,$id,$req,$last,$first,$married,
-	  $school,$year,$email,$homepage,$location) = &main'aid_split($rawdata);
     local(@reqchk,$i);
 
-    $homepage = 'http://' if $homepage eq '';
+    $rec{'homepage'} = 'http://' if $rec{'homepage'} eq '';
 
     for ($i = 0; $i < 3; $i++) {
-	$reqchk[$i] = ($req == $i) ? ' checked' : '';
+	$reqchk[$i] = ($rec{'request'} == $i) ? ' checked' : '';
     }
 
-    if ($school eq 'MVHS' || $school eq '') {
+    if ($rec{'school'} eq 'MVHS' || $rec{'school'} eq '') {
 	$mvhs_checked = ' checked';
-	$school = '';
-    } elsif ($school eq 'Awalt') {
+	$rec{'school'} = '';
+    } elsif ($rec{'school'} eq 'Awalt') {
 	$awalt_checked = ' checked';
-	$school = '';
+	$rec{'school'} = '';
     } else {
 	$other_checked = ' checked';
-	$school = '' if $school eq 'Other';
+	$rec{'school'} = '' if $rec{'school'} eq 'Other';
     }
 
-    if ($id != -1) {
+    if ($rec{'id'} != -1) {
 	$tableh = &main'aid_tableheader('Update Your Directory Listing'); #'f
 	$tableh .= "
 <p>Please update the following information and hit the
@@ -457,7 +524,7 @@ are required.  All other fields are optional.</p>\n\n";
 	$tableh .= "and resubmit.</strong></font></p>\n\n";
     }
 	
-    return "<br>\n" . $tableh . "
+    "<br>\n" . $tableh . "
 <form method=post action=\"" . $config{'cgi_path'} . "\"> 
 <table border=0>
 <tr><td>
@@ -467,19 +534,19 @@ are required.  All other fields are optional.</p>\n\n";
   <td valign=top><font color=\"#$cell_fg\">First Name</font></td>
   <td>$star</td>
   <td valign=top><input type=text name=\"first\" size=35 
-  value=\"$first\"></td>
+  value=\"$rec{'first'}\"></td>
 </tr>
 <tr>
   <td valign=top><font color=\"#$cell_fg\">Last/Maiden Name</font></td>
   <td>$star</td>
   <td valign=top><input type=text name=\"last\" size=35
-  value=\"$last\"></td>
+  value=\"$rec{'last'}\"></td>
 </tr>
 <tr>
   <td colspan=2 valign=top><font color=\"#$cell_fg\">Married Name</font><br>
   <font color=\"#$cell_fg\" size=\"-1\">(if different from Maiden Name)</font></td>
   <td valign=top><input type=text name=\"married\" size=35
-  value=\"$married\"></td>
+  value=\"$rec{'married'}\"></td>
 </tr>
 <tr>
   <td valign=top><font color=\"#$cell_fg\">High School</font></td>
@@ -493,32 +560,32 @@ are required.  All other fields are optional.</p>\n\n";
   <td valign=top>&nbsp;</td>
   <td valign=top><input type=radio name=\"school\" 
   value=\"Other\"$other_checked><font color=\"#$cell_fg\">&nbsp;Other:&nbsp;</font><input type=text
-  name=\"sch_other\" size=27 value=\"$school\"></td>
+  name=\"sch_other\" size=27 value=\"$rec{'school'}\"></td>
 </tr>
 <tr>
   <td valign=top><font color=\"#$cell_fg\">Graduation year or affiliation</font><br>
   <font color=\"#$cell_fg\" size=\"-1\">(such as 1993, 2001, or Teacher)</font></td>
   <td>$star</td>
-  <td valign=top><input type=text name=\"grad\" size=35
-  value=\"$year\"></td>
+  <td valign=top><input type=text name=\"year\" size=35
+  value=\"$rec{'year'}\"></td>
 </tr>
 <tr>
   <td valign=top><font color=\"#$cell_fg\">E-mail address</font><br>
   <font color=\"#$cell_fg\" size=\"-1\">(such as albert\@aol.com)</font></td>
   <td>$star</td>
-  <td valign=top><input type=text name=\"mail\" size=35
-  value=\"$email\"></td>
+  <td valign=top><input type=text name=\"email\" size=35
+  value=\"$rec{'email'}\"></td>
 </tr>
 <tr>
   <td colspan=2 valign=top><font color=\"#$cell_fg\">Web Page</font></td>
   <td valign=top><input type=text name=\"homepage\" size=35
-  value=\"$homepage\"></td>
+  value=\"$rec{'homepage'}\"></td>
 </tr>
 <tr>
   <td colspan=2 valign=top><font color=\"#$cell_fg\">Location</font><br>
   <font color=\"#$cell_fg\" size=\"-1\">(city, school, or company)</font></td>
   <td valign=top><input type=text name=\"location\" size=35
-  value=\"$location\"></td>
+  value=\"$rec{'location'}\"></td>
 </tr>
 <tr>
   <td colspan=3><font color=\"#$cell_fg\">
@@ -547,7 +614,8 @@ are required.  All other fields are optional.</p>\n\n";
 <tr><td align=right><input type=\"submit\" value=\"Next &gt;\">
 &nbsp;
 <input type=\"reset\" value=\"Start Over\">
-<input type=\"hidden\" name=\"id\" value=\"$id\">
+<input type=\"hidden\" name=\"id\" value=\"$rec{'id'}\">
+<input type=\"hidden\" name=\"created\" value=\"$rec{'created'}\">
 </td></tr></table>
 </form>
 
@@ -583,7 +651,7 @@ To: $toline\
 sub message_footer {
     package aid_util;
 
-    return "\n--\n" . 
+    "\n--\n" . 
 	$config{'admin_name'} . "\n" .
 	$config{'admin_school'} . "\n\n" .
 	"Email     : " . $config{'admin_email'} . "\n" .
@@ -596,70 +664,68 @@ sub about_text {
     package aid_util;
 
     local($retval) = '';
-    local($rawdata,$message,$show_req_p,$do_html_p,$do_vcard_p) = @_;
-    local($time,$id,$req,$last,$first,$married,
-	  $school,$year,$email,$homepage,$location) = &main'aid_split($rawdata);
+    local(*rec,$message,$show_req_p,$do_html_p,$do_vcard_p) = @_;
 
     $do_vcard_p = 0 unless defined($do_vcard_p);
 
     $retval .= "<table border=0 cellpadding=6><tr><td bgcolor=\"#$cell_bg\"><font color=\"#$cell_fg\"><pre>\n\n" if $do_html_p;
     $retval .= "First Name         : ";
-    $retval .= ($first eq '') ? "\n" : 
+    $retval .= ($rec{'first'} eq '') ? "\n" : 
 	((($do_html_p) ? "<strong>" : "") .
-	 $first . 
+	 $rec{'first'} . 
 	 (($do_html_p) ? "</strong>" : "") .
 	 "\n");
     
     $retval .= "Last/Maiden Name   : ";
     $retval .= "<strong>" if $do_html_p;
-    $retval .= $last;
+    $retval .= $rec{'last'};
     $retval .= "</strong>" if $do_html_p;
     $retval .= "\n";
     
     $retval .= "Married Name       : ";
-    $retval .= ($married eq '') ? "(same as last name)\n" :
+    $retval .= ($rec{'married'} eq '') ? "(same as last name)\n" :
 	((($do_html_p) ? "<strong>" : "") .
-	 $married . 
+	 $rec{'married'} . 
 	 (($do_html_p) ? "</strong>" : "") .
 	 "\n");
     
     $retval .= "\n";
     $retval .= "School             : ";
     $retval .= "<strong>" if $do_html_p;
-    $retval .= $school;
+    $retval .= $rec{'school'};
     $retval .= "</strong>" if $do_html_p;
     $retval .= "\n";
     
     $retval .= "Grad. Year         : ";
     $retval .= "<strong>" if $do_html_p;
-    $retval .= $year;
+    $retval .= $rec{'year'};
     $retval .= "</strong>" if $do_html_p;
     $retval .= "\n";
 
     $retval .= "\n";
     $retval .= "Email              : ";
-    $retval .= "<strong><a href=\"mailto:$email\">" if $do_html_p;
-    $retval .= $email;
+    $retval .= "<strong><a href=\"mailto:$rec{'email'}\">" if $do_html_p;
+    $retval .= $rec{'email'};
     $retval .= "</a></strong>" if $do_html_p;
     $retval .= "\n";
 
     $retval .= "Web Page           : ";
-    $retval .= ($homepage eq '') ? "(none)\n" :
-	((($do_html_p) ? "<strong><a href=\"$homepage\">" : "") .
-	 $homepage . 
+    $retval .= ($rec{'homepage'} eq '') ? "(none)\n" :
+	((($do_html_p) ? "<strong><a href=\"$rec{'homepage'}\">" : "") .
+	 $rec{'homepage'} . 
 	 (($do_html_p) ? "</a></strong>" : "") .
 	 "\n");
 
     $retval .= "Location           : ";
-    $retval .= ($location eq '') ? "(none provided)\n" :
+    $retval .= ($rec{'location'} eq '') ? "(none provided)\n" :
 	((($do_html_p) ? "<strong>" : "") .
-	 $location .
+	 $rec{'location'} .
 	 (($do_html_p) ? "</strong>" : "") .
 	 "\n");
 
     if ($do_vcard_p && $do_html_p) {
 	$retval .= "vCard              : ";
-	$retval .= "<a href=\"$config{'cgi_path'}/vcard/${id}.vcf\">";
+	$retval .= "<a href=\"$config{'cgi_path'}/vcard/$rec{'id'}.vcf\">";
 	$retval .= $image_tag{'vcard'};
 	$retval .= "</a>\n";
     }
@@ -667,17 +733,24 @@ sub about_text {
     if ($show_req_p) {
 	$retval .= "\n";
 	$retval .= "Send Email Updates : ";
-	$retval .= ($req == 2) ? "yes (sorted by graduating class)\n" :
-	    ($req == 1) ? "yes (sorted by name)\n" : "no\n";
+	$retval .= ($rec{'request'} == 2) ?
+	    "yes (sorted by graduating class)\n" :
+	    ($rec{'request'} == 1) ? "yes (sorted by name)\n" : "no\n";
     } 
 
-    if ($time ne '') {
+    if ($rec{'time'} ne '' && $rec{'time'} != 0 &&
+	$rec{'created'} ne '' && $rec{'created'} != 0) {
 	$retval .= "\n";
-	$retval .= "Last Updated       : ";
-	$retval .= &main'ctime($time);
+	$retval .= "Joined Directory   : ";
+	$retval .= &main'ctime($rec{'created'}); #'fnt
     }
 
-    $message = &main'aid_get_usertext($id) if $message eq '';  #' fnt
+    if ($rec{'time'} ne '' && $rec{'time'} != 0) {
+	$retval .= "Last Updated       : ";
+	$retval .= &main'ctime($rec{'time'}); #'fnt
+    }
+
+    $message = &main'aid_get_usertext($rec{'id'}) if $message eq '';  #' fnt
     if ($message ne '') {
 	$retval .= "\n";
 	$retval .= "What's New? (beta) :\n";
@@ -691,12 +764,12 @@ sub about_text {
 
     $retval .= "</font></td></tr></table>\n" if $do_html_p;
 
-    if ($do_html_p && $time ne '') {
-	$retval .= &main'modify_button($id,
-	    &main'inorder_fullname($first,$last,$married));
+    if ($do_html_p && $rec{'time'} ne '' && $rec{'time'} != 0) {
+	$retval .= &main'modify_button($rec{'id'},
+				       &main'inorder_fullname(*rec));
     }
 
-    return $retval;
+    $retval;
 }
 
 sub modify_button {
@@ -705,7 +778,7 @@ sub modify_button {
     local($id,$name) = @_;
     local($cgi) = $config{'cgi_path'};
 
-    return "
+    "
 <!-- borrowed from gamelan -->
 To update the entry for this person, please click the button below.
 
@@ -732,7 +805,7 @@ sub common_intro_para {
 	"\nicon lets you get more detailed information about an alumnus.";
     local($end) = "</p>\n\n";
 
-    return $new . ($_[0] ? $info : '') . $end;
+    $new . ($_[0] ? $info : '') . $end;
 }
 
 sub common_html_ftr {
@@ -740,7 +813,7 @@ sub common_html_ftr {
 
     local($page) = @_;
     local($rcstag) = "<!-- " . $config{'rcsid'} . " -->";
-    local($ftr);
+    local($ftr,$name,$url,$idx);
 
     $ftr  = "\n<!-- begin common_html_ftr -->\n$rcstag\n\n";
     $ftr .= "<hr noshade size=1>\n<p align=center><font size=\"-1\">";
@@ -772,7 +845,7 @@ sub common_html_ftr {
 	"\"><tt>" . $config{'admin_email'} . "</tt></a></p>\n\n" .
 	"<!-- end common_html_ftr -->\n\n</body>\n</html>\n";
 
-    return $ftr;
+    $ftr;
 }
 
 
@@ -782,7 +855,7 @@ sub common_html_hdr {
 
     local($page,$norobots) = @_;
     local($h1,$h2,$h3,$html_head);
-    local($name,$url);
+    local($name,$url,$idx);
     local($timestamp);
     local($rcstag) = "<!-- " . $config{'rcsid'} . " -->";
     local($date) = &main'ctime(time);  #'font-lock
@@ -844,7 +917,7 @@ sub common_html_hdr {
     $html_head .= "$noindex\n" if $norobots;
     $html_head .= "</head>\n\n";
     
-    return $html_head .
+    $html_head .
 	"<!-- begin common_html_hdr -->\n$rcstag\n" .
         $h1 . $h2 . $h3 .
         "<!-- end common_html_hdr -->\n";

@@ -1,8 +1,8 @@
-#!/usr/local/bin/perl
+#!/usr/local/bin/perl -w
 
 #
 # generates address books in several formats
-# $Id: aid_book,v 1.20 1998/01/02 20:14:18 mradwin Exp $
+# $Id: aid_book,v 1.22 1998/01/03 11:32:52 mradwin Exp $
 #
 
 require 'aid_util.pl';
@@ -26,6 +26,7 @@ $usage = 'usage: aid_book [-h] infile.adr -{p,e,b,w,m,n,l,v} outfile
 &Getopts('hp:e:b:w:m:n:l:v:') || die "$usage\n";
 $opt_h && die "$usage\n";
 $ARGV[0] || die "$usage\n";
+$opt_h = $opt_h;		# avoid warning
 
 # must have at least 1 option
 die "$usage\n" unless
@@ -54,42 +55,16 @@ $opt_v && &write_prefix(*BOOKv,'v');
 
 while(<DATA>) {
     chop;
-    ($alias,
-     $time,$id,$req,$last,$first,$married,
-     $school,$year,$email,$homepage,$location) = &aid_parse($_);
+    %rec = &aid_parse($_);
     
-    $opt_p && &write_entry(*BOOKp,'p',
-			   $alias,
-			   $time,$id,$req,$last,$first,$married,
-			   $school,$year,$email,$homepage,$location);
-    $opt_e && &write_entry(*BOOKe,'e',
-                           $alias,
-			   $time,$id,$req,$last,$first,$married,
-                           $school,$year,$email,$homepage,$location);
-    $opt_b && &write_entry(*BOOKb,'b',
-                           $alias,
-			   $time,$id,$req,$last,$first,$married,
-                           $school,$year,$email,$homepage,$location);
-    $opt_w && &write_entry(*BOOKw,'w',
-                           $alias,
-			   $time,$id,$req,$last,$first,$married,
-                           $school,$year,$email,$homepage,$location);
-    $opt_m && &write_entry(*BOOKm,'m',
-                           $alias,
-			   $time,$id,$req,$last,$first,$married,
-                           $school,$year,$email,$homepage,$location);
-    $opt_n && &write_entry(*BOOKn,'n',
-                           $alias,
-			   $time,$id,$req,$last,$first,$married,
-                           $school,$year,$email,$homepage,$location);
-    $opt_l && &write_entry(*BOOKl,'l',
-                           $alias,
-			   $time,$id,$req,$last,$first,$married,
-                           $school,$year,$email,$homepage,$location);
-    $opt_v && &write_entry(*BOOKv,'v',
-                           $alias,
-			   $time,$id,$req,$last,$first,$married,
-                           $school,$year,$email,$homepage,$location);
+    $opt_p && &write_entry(*BOOKp,'p',%rec);
+    $opt_e && &write_entry(*BOOKe,'e',%rec);
+    $opt_b && &write_entry(*BOOKb,'b',%rec);
+    $opt_w && &write_entry(*BOOKw,'w',%rec);
+    $opt_m && &write_entry(*BOOKm,'m',%rec);
+    $opt_n && &write_entry(*BOOKn,'n',%rec);
+    $opt_l && &write_entry(*BOOKl,'l',%rec);
+    $opt_v && &write_entry(*BOOKv,'v',%rec);
 }
 
 close(DATA);
@@ -131,44 +106,41 @@ Do Not Edit! -->
 }
 
 sub write_entry {
-    local(*BOOK,$option,
-	  $alias,
-	  $time,$id,$req,$last,$first,$married,
-	  $school,$year,$email,$homepage,$location) = @_;
+    local(*BOOK,$option,%rec) = @_;
     
-    $last = "$last $married" if $married ne '';
+    $rec{'last'} = "$rec{'last'} $rec{'married'}" if $rec{'married'} ne '';
 
-    $option eq 'p' && print BOOK "$alias\t$last, $first\t$email\t\t$school $year\n";
-    $option eq 'e' && print BOOK "$alias = $last; $first, $school $year = $email\n";
-    $option eq 'b' && print BOOK "alias $alias\t$email\n";
-    $option eq 'w' && print BOOK "<$alias>\n>$first $last <$email>\n<$alias>\n>$school $year\n";
-    $option eq 'm' && print BOOK "alias $alias $email\nnote $alias <name:$first $last>$school $year\n";
+    $option eq 'p' && print BOOK "$rec{'alias'}\t$rec{'last'}, $rec{'first'}\t$rec{'email'}\t\t$rec{'school'} $rec{'year'}\n";
+    $option eq 'e' && print BOOK "$rec{'alias'} = $rec{'last'}; $rec{'first'}, $rec{'school'} $rec{'year'} = $rec{'email'}\n";
+    $option eq 'b' && print BOOK "alias $rec{'alias'}\t$rec{'email'}\n";
+    $option eq 'w' && print BOOK "<$rec{'alias'}>\n>$rec{'first'} $rec{'last'} <$rec{'email'}>\n<$rec{'alias'}>\n>$rec{'school'} $rec{'year'}\n";
+    $option eq 'm' && print BOOK "alias $rec{'alias'} $rec{'email'}\nnote $rec{'alias'} <name:$rec{'first'} $rec{'last'}>$rec{'school'} $rec{'year'}\n";
 
     # netscape is a bigger sucker
     if ($option eq 'n') {
-	print BOOK "    <DT><A HREF=\"mailto:$email\" ";
-	print BOOK "NICKNAME=\"$alias\">$first $last</A>\n";
-	print BOOK "<DD>$school $year\n";
+	print BOOK "    <DT><A HREF=\"mailto:$rec{'email'}\" ";
+	print BOOK "NICKNAME=\"$rec{'alias'}\">$rec{'first'} $rec{'last'}</A>\n";
+	print BOOK "<DD>$rec{'school'} $rec{'year'}\n";
     }
 
     elsif ($option eq 'l') {
-        print BOOK "dn: cn=$first $last,mail=$email\n";
-        print BOOK "cn: $first $last\n";
-        print BOOK "sn: $last\n";
-        print BOOK "givenname: $first\n";
+        print BOOK "dn: cn=$rec{'first'} $rec{'last'},mail=$rec{'email'}\n";
+        print BOOK "cn: $rec{'first'} $rec{'last'}\n";
+        print BOOK "sn: $rec{'last'}\n";
+        print BOOK "givenname: $rec{'first'}\n";
         print BOOK "objectclass: top\nobjectclass: person\n";
-        print BOOK "mail: $email\n";
-        print BOOK "locality: $location\n" if $location ne '';
-        print BOOK "o: $school $year\n";
-        print BOOK "xmozillanickname: $alias\n";
+        print BOOK "mail: $rec{'email'}\n";
+        print BOOK "locality: $rec{'location'}\n" if $rec{'location'} ne '';
+        print BOOK "o: $rec{'school'} $rec{'year'}\n";
+        print BOOK "xmozillanickname: $rec{'alias'}\n";
         print BOOK "\n";
     }
     
     # lots of data for a vCard
     elsif ($option eq 'v') {
-	print BOOK "Begin:vCard\nORG:$school $year;\nFN:$first $last\n";
-	print BOOK "N:$last;$first\nEMAIL;PREF;INTERNET:$email\n";
-	print BOOK "URL:$homepage\n" if $homepage ne '';
+	print BOOK "Begin:vCard\nORG:$rec{'school'} $rec{'year'};\nFN:$rec{'first'} $rec{'last'}\n";
+	print BOOK "N:$rec{'last'};$rec{'first'}\nEMAIL;PREF;INTERNET:$rec{'email'}\n";
+	print BOOK "URL:$rec{'homepage'}\n" if $rec{'homepage'} ne '';
 	print BOOK "End:vCard\n\n";
     }
 }

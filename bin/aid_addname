@@ -1,6 +1,6 @@
-#!/usr/local/bin/perl
+#!/usr/local/bin/perl -w
 
-# $Id: aid_addname,v 1.9 1998/01/02 20:14:18 mradwin Exp $
+# $Id: aid_addname,v 1.11 1998/01/03 11:32:52 mradwin Exp $
 
 require 'getopts.pl';
 require 'aid_util.pl';
@@ -107,8 +107,7 @@ sub addname {
     local($[) = 0;
     local($_);
     local($dbFile,$newmailFile,$updFile,$logFile,@db);
-    local($time,$id,$req,$last,$first,$married,
-	  $school,$year,$email,$homepage,$location);
+    local(%rec) = &aid_split($rawdata);
     local($addme,$tmpFile,*LOG,*TMP);
 
     $dbFile = &aid_config('aiddir') . "data/master.adr";
@@ -117,25 +116,21 @@ sub addname {
     $logFile = &aid_config('aiddir') . "logs/additions.log";
     @db = &aid_create_db($dbFile);
 
-    ($time,$id,$req,$last,$first,$married,
-     $school,$year,$email,$homepage,$location)  = &aid_split($rawdata);
-
     open(LOG, ">>$logFile") || die "Can't open $logFile: $!\n";
     select(LOG); $| = 1; select(STDOUT);
 
-    if ($id == -1) {
-	$id = ($#db + 1);
-	$addme = &aid_join($time,$id,$req,$last,$first,$married,
-			   $school,$year,$email,$homepage,$location);
+    if ($rec{'id'} == -1) {
+	$rec{'id'} = ($#db + 1);
+	$addme = &aid_join(*rec);
 	system("echo '$addme' >> $newmailFile");
     } else {
-	print     "==> UPDATE ", $db[$id], "\n";
-	print LOG "==> UPDATE ", $db[$id], "\n";
+	print     "==> UPDATE ", $db[$rec{'id'}], "\n";
+	print LOG "==> UPDATE ", $db[$rec{'id'}], "\n";
 	$addme = $rawdata;
 	system("echo '$addme' >> $updFile");
     }
 
-    $db[$id] = $addme;
+    $db[$rec{'id'}] = $addme;
     print $addme, "\n";
     print LOG $addme, "\n";
     close(LOG);
@@ -151,5 +146,5 @@ sub addname {
     system "/usr/local/gnu/bin/cp -f $tmpFile $dbFile";
     unlink($tmpFile) || die "couldn't unlink $tmpFile: $!\n";
 
-    return $id;
+    $rec{'id'};
 }

@@ -1,14 +1,12 @@
-#!/usr/local/bin/perl
+#!/usr/local/bin/perl -w
 
 #
 # does the html version of the alphabetical address list
-# $Id: aid_alpha_html,v 1.29 1998/01/02 20:14:18 mradwin Exp $
+# $Id: aid_alpha_html,v 1.31 1998/01/03 11:32:52 mradwin Exp $
 #
 
 require 'aid_util.pl';
 require 'getopts.pl';
-
-$htmlname = "all.html";
 
 $usage = 'usage: aid_alpha_html [-ht] infile.adr outfile
     -h        Display usage information.
@@ -19,6 +17,7 @@ $usage = 'usage: aid_alpha_html [-ht] infile.adr outfile
 $opt_h && die "$usage\n";
 $ARGV[0] || die "$usage\n";
 $ARGV[1] || die "$usage\n";
+$opt_h = $opt_h;		# avoid warning
 
 $info_gif = &aid_image_tag('info');
 $blank_gif = ($opt_t) ? "" : &aid_image_tag('blank');
@@ -34,10 +33,10 @@ if (!$opt_t) {
     print FMTOUT &common_intro_para(1);
     print FMTOUT "<p><a name=\"top\">Index</a>: <tt>";
     # do the funky quick-jump bar
-    $lastInitial = 'A';
-    while ($lastInitial ne 'AA') {
-	print FMTOUT "<a href=\"#last$lastInitial\">$lastInitial</a>\n";
-	$lastInitial++;
+    $initial = 'A';
+    while ($initial ne 'AA') {
+	print FMTOUT "<a href=\"#last$initial\">$initial</a>\n";
+	$initial++;
     }
     print FMTOUT "</tt>";
     print FMTOUT "\n<p>\n<pre>";
@@ -46,42 +45,40 @@ if (!$opt_t) {
 print FMTOUT "Name and Graduation Year$blank_gif                 Email\n";
 print FMTOUT "---------------------------------------------------------------------------";
 
-$lastInitial = "Z";
+$initial = "Z";
 while(<DATA>) {
     chop;
-    ($alias,
-     $time,$id,$req,$last,$first,$married,
-     $school,$year,$email,$homepage,$location) = &aid_parse($_);
+    %rec = &aid_parse($_);
 
-    if ($lastInitial ne substr($last, 0, 1)) {
-	$lastInitial = substr($last, 0, 1);
+    if ($initial ne substr($rec{'last'}, 0, 1)) {
+	$initial = substr($rec{'last'}, 0, 1);
 	print FMTOUT "\n";
-	$opt_t || print FMTOUT "<a name=\"last$lastInitial\">";
-	print FMTOUT $lastInitial;
+	$opt_t || print FMTOUT "<a name=\"last$initial\">";
+	print FMTOUT $initial;
 	$opt_t || print FMTOUT "</a> (<a href=\"#top\">top</a>)";
 	print FMTOUT "\n";
     }
 
-    $fullname = &fullname($first,$last,$married);
-    ($affil,$len) = &affiliate($year,$school,(!$opt_t));
+    $fullname = &fullname(*rec);
+    ($affil,$len) = &affiliate(*rec,!$opt_t);
 
     print FMTOUT ' ';
-    $opt_t || print FMTOUT "<a href=\"$cgi?about=$id\">$info_gif</a>";
-    $opt_t || print FMTOUT "<a name=\"$alias\"";
-    $opt_t || print FMTOUT " href=\"$homepage\"" if $homepage ne '';
+    $opt_t || print FMTOUT "<a href=\"$cgi?about=$rec{'id'}\">$info_gif</a>";
+    $opt_t || print FMTOUT "<a name=\"$rec{'alias'}\"";
+    $opt_t || print FMTOUT " href=\"$rec{'homepage'}\"" if $rec{'homepage'} ne '';
     $opt_t || print FMTOUT ">";
     print FMTOUT $fullname;
     $opt_t || print FMTOUT "</a>";
     print FMTOUT $affil;
     print FMTOUT ' ', ' ' x (39 - (length($fullname) + $len));
-    $opt_t || print FMTOUT "<a href=\"mailto:", $email, "\">";
-    print FMTOUT $email;
+    $opt_t || print FMTOUT "<a href=\"mailto:", $rec{'email'}, "\">";
+    print FMTOUT $rec{'email'};
     $opt_t || print FMTOUT "</a>";
-    $opt_t || print FMTOUT " " . &aid_image_tag('new_anchored') if &is_new($time);
+    $opt_t || print FMTOUT " " . &aid_image_tag('new_anchored') if &is_new($rec{'time'});
     print FMTOUT "\n";
 }
 
-$opt_t || print FMTOUT "</PRE>\n";
+$opt_t || print FMTOUT "</pre>\n";
 $opt_t || print FMTOUT &common_html_ftr(1);
 
 exit(0);

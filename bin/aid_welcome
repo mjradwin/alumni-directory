@@ -1,8 +1,8 @@
-#!/usr/local/bin/perl
+#!/usr/local/bin/perl -w
 
 #
 # mails a welcome or update note to everyone in targets.adr
-# $Id: aid_welcome,v 1.25 1998/01/02 20:14:18 mradwin Exp $
+# $Id: aid_welcome,v 1.27 1998/01/03 11:32:52 mradwin Exp $
 #
 
 require 'aid_util.pl';
@@ -33,34 +33,33 @@ select(LOG); $| = 1; select(STDOUT);
 
 while(<TARGET>) {
     chop;
-    ($time,$id,$req,$last,$first,$married,
-     $school,$year,$email,$homepage,$location) = &aid_split($_);
-    next unless $email;
-    next if $opt_c && !$req;
+    %rec = &aid_split($_);
+    next unless $rec{'email'};
+    next if $opt_c && !$rec{'request'};
 
     $message = &message_body($_) . &message_footer;
 
-    &sendmail($email, &aid_config('admin_email'), &aid_config('admin_name'),
+    &sendmail($rec{'email'}, &aid_config('admin_email'), &aid_config('admin_name'),
 	      $subject, $message);
-    print LOG "$today $email\n";
+    print LOG "$today $rec{'email'}\n";
 }
 
 exit(0);
 
 sub message_body {
-    local($time,$id,$req,$last,$first,$married,
-	  $school,$year,$email,$homepage,$location) = &aid_split($_[0]);
-    local($denied) = ($req) ? '' :
+    local($[) = 0;
+    local(%rec) = &aid_split($_[0]);
+    local($denied) = ($rec{'request'}) ? '' :
 	"\nSince you asked not to receive the Alumni Internet Directory via email,\nthis is the only notice you will receive.\n";
 
-    local($about) = &about_text($_[0],'',1,0);
+    local($about) = &about_text(*rec,'',1,0);
     local($confirming) = ($opt_c) ? 
 "\nAs a service to alumni who do not have Web access, I will email a copy
 of the most current Internet Directory to everyone listed in it
 (including yourself) in a couple of weeks.  Please make sure your entry
 below is still current.\n" : '';
 
-    return "Dear $first,
+    return "Dear $rec{'first'},
 
 Your email address is listed in the Mountain View High School/Awalt High
 School Alumni Internet Directory, located on the World Wide Web at:\n\n" .
@@ -76,7 +75,7 @@ to be listed in the directory, please let me know and I will remove your
 entry.  If any of the above information is incorrect or out of date, you
 can update your entry online at:\n\n" .
 
-"http://" . &aid_config('master_srv') . &aid_config('cgi_path') . "?update=$id
+"http://" . &aid_config('master_srv') . &aid_config('cgi_path') . "?update=$rec{'id'}
 
 If you don't have web access, just email me corrections and I'll be happy
 to fix your entry.  If everything you see above is correct, you're all set.\n";
