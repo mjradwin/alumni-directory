@@ -2,13 +2,13 @@
 
 #
 # generates address books in several formats
-# $Id: aid_book,v 3.15 1998/10/27 18:45:41 mradwin Exp mradwin $
+# $Id: aid_book,v 3.16 1998/10/27 18:56:16 mradwin Exp mradwin $
 #
 
 require 'aid_util.pl';
 require 'getopts.pl';
 
-$usage = 'usage: aid_book [-h] infile.adr -{p,e,b,w,m,n,l,v} outfile
+$usage = 'usage: aid_book [-h] infile.adr -{p,e,b,w,m,n,l,v,o} outfile
     -h        Display usage information.
 
     -p        Pine address book
@@ -19,11 +19,12 @@ $usage = 'usage: aid_book [-h] infile.adr -{p,e,b,w,m,n,l,v} outfile
     -n        Netscape3 address book
     -l        Netscape4 .ldif address book
     -v        vCard book
+    -o        Outlook Express .csv
 ';
 
 # get the command-line options and die if there is a bad option or
 # there are no filenames
-&Getopts('hp:e:b:w:m:n:l:v:') || die "$usage\n";
+&Getopts('hp:e:b:w:m:n:l:v:o:') || die "$usage\n";
 $opt_h && die "$usage\n";
 $ARGV[0] || die "$usage\n";
 $opt_h = $opt_h;		# avoid warning
@@ -31,18 +32,19 @@ $opt_h = $opt_h;		# avoid warning
 # must have at least 1 option
 die "$usage\n" unless
     $opt_p || $opt_e || $opt_b || $opt_w || 
-    $opt_m || $opt_n || $opt_l || $opt_v;
+    $opt_m || $opt_n || $opt_l || $opt_v || $opt_o;
 
 open(DATA,$ARGV[0]) || die "Can't open $ARGV[0]: $!\n";
 
-$opt_p && open(BOOKp,">$opt_p") || die "Can't open $opt_p: $!\n";
-$opt_e && open(BOOKe,">$opt_e") || die "Can't open $opt_e: $!\n";
-$opt_b && open(BOOKb,">$opt_b") || die "Can't open $opt_b: $!\n";
-$opt_w && open(BOOKw,">$opt_w") || die "Can't open $opt_w: $!\n";
-$opt_m && open(BOOKm,">$opt_m") || die "Can't open $opt_m: $!\n";
-$opt_n && open(BOOKn,">$opt_n") || die "Can't open $opt_n: $!\n";
-$opt_l && open(BOOKl,">$opt_l") || die "Can't open $opt_l: $!\n";
-$opt_v && open(BOOKv,">$opt_v") || die "Can't open $opt_v: $!\n";
+if ($opt_p) { open(BOOKp,">$opt_p") || die "Can't open $opt_p: $!\n"; }
+if ($opt_e) { open(BOOKe,">$opt_e") || die "Can't open $opt_e: $!\n"; }
+if ($opt_b) { open(BOOKb,">$opt_b") || die "Can't open $opt_b: $!\n"; }
+if ($opt_w) { open(BOOKw,">$opt_w") || die "Can't open $opt_w: $!\n"; }
+if ($opt_m) { open(BOOKm,">$opt_m") || die "Can't open $opt_m: $!\n"; }
+if ($opt_n) { open(BOOKn,">$opt_n") || die "Can't open $opt_n: $!\n"; }
+if ($opt_l) { open(BOOKl,">$opt_l") || die "Can't open $opt_l: $!\n"; }
+if ($opt_v) { open(BOOKv,">$opt_v") || die "Can't open $opt_v: $!\n"; }
+if ($opt_o) { open(BOOKo,">$opt_o") || die "Can't open $opt_o: $!\n"; }
 
 $opt_p && &write_prefix(*BOOKp,'p');
 $opt_e && &write_prefix(*BOOKe,'e');
@@ -52,6 +54,7 @@ $opt_m && &write_prefix(*BOOKm,'m');
 $opt_n && &write_prefix(*BOOKn,'n');
 $opt_l && &write_prefix(*BOOKl,'l');
 $opt_v && &write_prefix(*BOOKv,'v');
+$opt_o && &write_prefix(*BOOKo,'o');
 
 while(<DATA>) {
     chop;
@@ -66,6 +69,7 @@ while(<DATA>) {
     $opt_n && &write_entry(*BOOKn,'n',*rec);
     $opt_l && &write_entry(*BOOKl,'l',*rec);
     $opt_v && &write_entry(*BOOKv,'v',*rec);
+    $opt_o && &write_entry(*BOOKo,'o',*rec);
 }
 
 close(DATA);
@@ -78,6 +82,7 @@ $opt_m && &write_suffix(*BOOKm,'m');
 $opt_n && &write_suffix(*BOOKn,'n');
 $opt_l && &write_suffix(*BOOKl,'l');
 $opt_v && &write_suffix(*BOOKv,'v');
+$opt_o && &write_suffix(*BOOKo,'o');
 
 $opt_p && close(BOOKp);
 $opt_e && close(BOOKe);
@@ -87,6 +92,7 @@ $opt_m && close(BOOKm);
 $opt_n && close(BOOKn);
 $opt_l && close(BOOKl);
 $opt_v && close(BOOKv);
+$opt_o && close(BOOKo);
 
 exit(0);
 
@@ -104,6 +110,11 @@ Do Not Edit! -->
 <H1>$school Alumni Address book</H1>
 
 <DL><p>\n";
+    }
+
+    elsif ($option eq 'o') {
+	print BOOK
+	    "\"Title\",\"First Name\",\"Middle Name\",\"Last Name\",\"Suffix\",\"Company\",\"Department\",\"Job Title\",\"Business Street\",\"Business Street 2\",\"Business Street 3\",\"Business City\",\"Business State\",\"Business Postal Code\",\"Business Country\",\"Home Street\",\"Home Street 2\",\"Home Street 3\",\"Home City\",\"Home State\",\"Home Postal Code\",\"Home Country\",\"Other Street\",\"Other Street 2\",\"Other Street 3\",\"Other City\",\"Other State\",\"Other Postal Code\",\"Other Country\",\"Assistant's Phone\",\"Business Fax\",\"Business Phone\",\"Business Phone 2\",\"Callback\",\"Car Phone\",\"Company Main Phone\",\"Home Fax\",\"Home Phone\",\"Home Phone 2\",\"ISDN\",\"Mobile Phone\",\"Other Fax\",\"Other Phone\",\"Pager\",\"Primary Phone\",\"Radio Phone\",\"TTY/TDD Phone\",\"Telex\",\"Account\",\"Anniversary\",\"Assistant's Name\",\"Billing Information\",\"Birthday\",\"Categories\",\"Children\",\"E-mail Address\",\"E-mail Display Name\",\"E-mail 2 Address\",\"E-mail 2 Display Name\",\"E-mail 3 Address\",\"E-mail 3 Display Name\",\"Gender\",\"Government ID Number\",\"Hobby\",\"Initials\",\"Keywords\",\"Language\",\"Location\",\"Mileage\",\"Notes\",\"Office Location\",\"Organizational ID Number\",\"PO Box\",\"Private\",\"Profession\",\"Referred By\",\"Spouse\",\"User 1\",\"User 2\",\"User 3\",\"User 4\",\"Web Page\"\r\n";
     }
 }
 
@@ -161,6 +172,33 @@ sub write_entry {
     # lots of data for a vCard
     elsif ($option eq 'v') {
 	print BOOK &aid_vcard_text(*rec), "\r\n";
+    }
+
+    elsif ($option eq 'o') {
+	print BOOK "\"\",\"$rec{'first'}\",";
+	if ($rec{'married'} ne '') {
+	    print BOOK "\"$rec{'last'}\",\"$rec{'married'}\",";
+	} else {
+	    print BOOK "\"\",\"$rec{'last'}\",";
+	}
+
+	print BOOK "\"\",\"$rec{'school'} $rec{'year'}\",\"\"";
+#	print BOOK "\"\",\"$rec{'school'}\",";
+#	if ($rec{'year'} =~ /^\d+$/) {
+#	    print BOOK "\"Class of $rec{'year'}\",";
+#	} else {
+#	    print BOOK "\"$rec{'year'}\",";
+#	}
+
+	print BOOK "\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",";
+
+	if ($rec{'location'} =~ /^(.*),\s+(\w\w)$/) {
+	    print BOOK "\"$1\",\"$2\",";
+	} else {
+	    print BOOK "\"$rec{'location'}\",\"\",";
+	}
+
+	print BOOK "\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"MVHS Alumni\",\"\",\"$rec{'email'}\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"$rec{'www'}\"\n";
     }
 }
 
