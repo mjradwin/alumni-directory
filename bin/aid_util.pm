@@ -2,7 +2,7 @@
 #     FILE: mv_util.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: perl library routines for the MVHS Alumni Internet Directory
-#      $Id: mv_util.pl,v 1.28 1997/08/22 16:39:20 mjr Exp mjr $
+#      $Id: mv_util.pl,v 1.29 1997/08/22 16:58:15 mjr Exp mjr $
 #
 
 CONFIG: {
@@ -545,7 +545,8 @@ sub common_html_hdr {
     }
     $h2 .= "</font>\n  </td>\n";
 
-    $h3 = "  <td align=right valign=top bgcolor=\"#ffffcc\"><a href=\"./\"><img
+    $h3 = "  <td align=right valign=top bgcolor=\"#ffffcc\"><a href=\""
+  . $config{'master_path'} . "\"><img
   src=\"" . $config{'master_path'} . "title.gif\"
   alt=\"Mountain View High School Alumni Internet Directory\"
   align=bottom width=398 height=48 border=0></a>
