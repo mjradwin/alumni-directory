@@ -2,7 +2,7 @@
 #     FILE: Makefile
 #   AUTHOR: Michael J. Radwin
 #    DESCR: Makefile for building the Alumni Internet Directory
-#      $Id: Makefile,v 3.40 1998/11/26 00:52:41 mradwin Exp mradwin $
+#      $Id: Makefile,v 3.41 1998/11/26 01:01:19 mradwin Exp mradwin $
 #
 
 WWWROOT=/home/web/radwin.org
@@ -90,8 +90,7 @@ $(MULTI_CLASS):	$(ADR_CLASS) $(BIN_MULTI_CLASS)
 
 INDEX=$(WWWDIR)/index.html
 index:	$(INDEX)
-$(INDEX):	$(MVHSDIR)/data/index.include $(BIN_HOME) $(AID_UTIL_PL) \
-		$(ADR_MASTER)
+$(INDEX):	$(MVHSDIR)/data/index.include $(BIN_HOME) $(ADR_MASTER)
 	$(BIN_HOME) -p0 -i $(MVHSDIR)/data/index.include \
 		-t '' \
 		$(INDEX)
