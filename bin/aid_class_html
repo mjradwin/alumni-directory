@@ -2,7 +2,7 @@
 
 #
 # does the html version of the grad-date address list
-# $Id: aid_class_html,v 5.15 2000/04/25 18:22:58 mradwin Exp mradwin $
+# $Id: aid_class_html,v 5.16 2000/06/01 23:34:10 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -55,9 +55,6 @@ if (@incremental && $opt_w && (! grep(/_t_www/, @incremental)))
     exit(0);
 }
 
-$info_gif = &aid_image_tag('info');
-$blank_gif = ($opt_t) ? '' : &aid_image_tag('blank') . ' ';
-
 $dbmfile = shift;
 tie(%DB, 'DB_File', $dbmfile, O_RDONLY, 0444, $DB_File::DB_HASH)
     or die "$dbmfile: $!\n";
@@ -99,9 +96,8 @@ if (!$opt_t) {
     $time = unpack("N",$DB{"_t${affix}"});
 
     print FMTOUT &aid_common_html_hdr($pageno,$title,1,$time);
-    print FMTOUT &aid_common_intro_para(1);
+    print FMTOUT &aid_common_intro_para(0);
     print FMTOUT &aid_class_jump_bar('#grad','',*years,1);
-    print FMTOUT "<pre>";
 }
 
 if ($opt_c)
@@ -122,8 +118,11 @@ if ($opt_c)
     print FMTOUT "  (Last updated ", &aid_caldate($time), ")\n\n";
 }
 
-print FMTOUT "Name $blank_gif                                    E-Mail\n";
-print FMTOUT "---------------------------------------------------------------------------";
+if ($opt_t)
+{
+    print FMTOUT "Name                                     E-Mail\n";
+    print FMTOUT "---------------------------------------------------------------------------";
+}
 
 select(STDOUT); $| = 1;
 $prev = '1900';
@@ -145,6 +144,7 @@ foreach $year (@years)
 	    print FMTOUT "Class of $year";
 	    $opt_t || print FMTOUT "</a>  (<a href=\"#top\">top</a>)";
 	    print FMTOUT "\n";
+	    $opt_t || print FMTOUT "<ul>\n";
 	}
 	$prev = $year;
     }
@@ -160,6 +160,7 @@ foreach $year (@years)
 	    print FMTOUT ' ' x (13 - length("Faculty/Staff"));
 	    $opt_t || print FMTOUT "  (<a href=\"#top\">top</a>)";
 	    print FMTOUT "\n";
+	    $opt_t || print FMTOUT "<ul>\n";
 	}
 	$prev = $year;
     }
@@ -172,23 +173,18 @@ foreach $year (@years)
 	$fullname = &aid_fullname(*rec);
 
 	print FMTOUT ' ';
-	$opt_t || print FMTOUT "<a href=\"" . &aid_about_path(*rec) . "\">$info_gif</a> ";
-	$opt_t || print FMTOUT "<a name=\"$rec{'a'}\"";
-	$opt_t || print FMTOUT " href=\"$rec{'w'}\"" if $rec{'w'} ne '';
-	$opt_t || print FMTOUT ">";
+	$opt_t || print FMTOUT "<li><a href=\"" . &aid_about_path(*rec) . "\">";
 	print FMTOUT $fullname;
 	$opt_t || print FMTOUT "</a>";
-	print FMTOUT ' ', ' ' x (39 - (length($fullname)));
-	$opt_t || print FMTOUT "<a href=\"mailto:", $rec{'e'}, "\">";
-	print FMTOUT $rec{'e'};
-	$opt_t || print FMTOUT "</a>";
+	$opt_t && print FMTOUT ' ', ' ' x (39 - (length($fullname))), $rec{'e'};
 	$opt_t || print FMTOUT &aid_is_new_html(*rec);
 	print FMTOUT "\n";
     }
+
+    $opt_t || print FMTOUT "</ul>\n";
 }
 print STDOUT "\n" unless $opt_q;
 
-$opt_t || print FMTOUT "</pre>\n";
 $opt_t || print FMTOUT &aid_common_html_ftr($pageno,$time);
 
 untie(%DB);
