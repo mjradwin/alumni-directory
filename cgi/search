@@ -74,13 +74,13 @@ $query =~ s/\bor\b//ig;
 foreach (@alpha_ids)
 {
     %rec = &aid_db_unpack_rec($_,$DB{$_});
-    $fullname = &aid_inorder_fullname(*rec) . $rec{'email'};
-    $key = "\L$rec{'last'},$rec{'first'},$rec{'married'}\E,$rec{'id'}";
+    $fullname = &aid_inorder_fullname(*rec) . $rec{'e'};
+    $key = "\L$rec{'sn'},$rec{'gn'},$rec{'mn'}\E,$rec{'id'}";
 
     if (defined $in{'y'} && $in{'y'} ne '')
     {
-	next if $in{'y'} eq 'other' && $rec{'year'} =~ /^\d+$/;
-	next unless ($in{'y'} eq $rec{'year'}) || $in{'y'} eq 'other';
+	next if $in{'y'} eq 'other' && $rec{'yr'} =~ /^\d+$/;
+	next unless ($in{'y'} eq $rec{'yr'}) || $in{'y'} eq 'other';
     }
 
     $results{$key} = 1;
@@ -154,9 +154,9 @@ else
 	print "<li><a href=\"", &aid_config('about_cgi'), 
 	"?about=", $rec{'id'}, "\">$fullname</a> $affil";
 	
-	if ($rec{'valid'})
+	if ($rec{'v'})
 	{
-	    print " (<code>$rec{'email'}</code>)";
+	    print " (<code>$rec{'e'}</code>)";
 	}
 	else
 	{
