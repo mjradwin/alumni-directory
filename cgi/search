@@ -4,7 +4,7 @@
 #     FILE: search.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: Alumni Internet Directory CGI search
-#      $Id: search,v 5.11 1999/12/22 23:36:15 mradwin Exp mradwin $
+#      $Id: search,v 5.12 2000/02/29 21:02:09 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -29,30 +29,17 @@ unshift(@INC, $dirname);
 
 require 'aid_util.pl';
 use DB_File;
-
-require 'cgi-lib.pl';
-
-if ($ENV{'SCRIPT_NAME'} =~ m,/nph-,)
-{
-    print "HTTP/1.1 200 OK\015\012",
-          "Date: ", &aid_http_date(time), "\015\012";
-    print "Server: ", $ENV{'SERVER_SOFTWARE'}, "\015\012"
-	if defined $ENV{'SERVER_SOFTWARE'};
-    print "Connection: close\015\012";
-}
+use CGI;
+use CGI::Carp qw(fatalsToBrowser);
 
 $dbmfile = &aid_config('dbmfile');
-
-&CgiDie(&aid_config('short_school') . " Alumni: Script Error",
-	"The database is unreadable.\n" .
-	"Please <a href=\"mailto:" . &aid_config('admin_email') .
-	"\">email " . &aid_config('admin_name') . "</a>.")
-    unless -r $dbmfile;
+die "$dbmfile: $!\n" unless -r $dbmfile;
 
 tie(%DB, 'DB_File', $dbmfile, O_RDONLY, 0444, $DB_File::DB_HASH)
     or die "$dbmfile: $!\n";
 
-if (!&ReadParse() || !defined($in{'q'}) || $in{'q'} =~ /^[^\w]*$/)
+CGI::ReadParse();
+if (!defined($in{'q'}) || $in{'q'} =~ /^[^\w]*$/)
 {
     print "Content-Type: text/html\015\012\015\012";
 
@@ -64,18 +51,8 @@ if (!&ReadParse() || !defined($in{'q'}) || $in{'q'} =~ /^[^\w]*$/)
     exit(0);
 }
 
-if (defined $DB{'_alpha'})
-{
-    @alpha_ids = unpack("n*",$DB{'_alpha'});
-}
-else
-{
-    untie(%DB);
-    &CgiDie(&aid_config('short_school') . " Alumni: Script Error",
-	    "The alphabetic database is unavailable.\n" .
-	    "Please <a href=\"mailto:" . &aid_config('admin_email') .
-	    "\">email " . &aid_config('admin_name') . "</a>.");
-}
+defined $DB{'_alpha'} || die "$dbmfile: missing _alpha\n";
+@alpha_ids = unpack("n*",$DB{'_alpha'});
 
 $in{'q'} =~ s/^\s*//;
 $in{'q'} =~ s/\s*$//;
@@ -198,12 +175,7 @@ sub print_search_form
     local($q,$y) = @_;
     local(@years);
 
-    &CgiDie(&aid_config('short_school') . " Alumni: Script Error",
-	    "The database is missing the years list!\n" .
-	    "Please <a href=\"mailto:" . &aid_config('admin_email') .
-	    "\">email " . &aid_config('admin_name') . "</a>.")
-	unless defined $DB{'_class'};
-
+    defined $DB{'_years'} || die "$dbmfile: missing _years\n";
     @years = unpack("n*",$DB{'_years'});
     push(@years, 'other');
 

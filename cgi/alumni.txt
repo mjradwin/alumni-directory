@@ -4,7 +4,7 @@
 #     FILE: alumni.txt.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: Address Book/Nicknames Downloading module
-#      $Id: alumni.txt,v 5.4 1999/12/22 23:36:15 mradwin Exp mradwin $
+#      $Id: alumni.txt,v 5.5 2000/02/29 21:02:09 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -29,25 +29,20 @@ unshift(@INC, $dirname);
 
 require 'aid_util.pl';
 use DB_File;
-
-require 'cgi-lib.pl';
+use CGI;
+use CGI::Carp qw(fatalsToBrowser);
 
 $dbmfile = &aid_config('dbmfile');
+die "$dbmfile: $!\n" unless -r $dbmfile;
 
-&CgiDie(&aid_config('short_school') . " Alumni: Script Error",
-	"The database is unreadable.\n" .
-	"Please <a href=\"mailto:" . &aid_config('admin_email') .
-	"\">e-mail " . &aid_config('admin_name') . "</a>.")
-    unless -r $dbmfile;
-
-if (!&ReadParse())
+CGI::ReadParse();
+if (! keys %in)
 {
-    &CgiError(&aid_config('short_school') . " Alumni: Bad Download Request",
+    print "Status: 400 Bad Request\015\012";
+    &aid_cgi_die("Bad Download Request",
 	      "The download request could not be processed.\n" .
 	      "Please <a href=\"" . &aid_config('master_path') .
 	      "download/\">try again</a>.");
-    close(STDOUT);
-    exit(0);
 }
 
 $in{'plusminus'} = defined $in{'plusminus'} && 
@@ -72,7 +67,7 @@ elsif (defined $in{'format'} && defined $in{'year'})
 else
 {
     print "Status: 400 Bad Request\015\012";
-    &CgiError(&aid_config('short_school') . " Alumni: Bad Download Request",
+    &aid_cgi_die("Bad Download Request",
 	      "The download request could not be processed.\n" .
 	      "Please <a href=\"" . &aid_config('master_path') .
 	      "download/\">try again</a>.");
@@ -107,18 +102,9 @@ sub send_address_book {
 
     tie(%DB, 'DB_File', $dbmfile, O_RDONLY, 0444, $DB_File::DB_HASH)
 	or die "$dbmfile: $!\n";
-    if (defined $DB{'_class'})
-    {
-	@class_ids = unpack("n*",$DB{'_class'});
-    }
-    else
-    {
-	untie(%DB);
-	&CgiDie(&aid_config('short_school') . " Alumni: Script Error",
-		"The class database is unavailable.\n" .
-		"Please <a href=\"mailto:" . &aid_config('admin_email') .
-		"\">e-mail " . &aid_config('admin_name') . "</a>.");
-    }
+    defined $DB{'_class'} || die "$dbmfile: missing _class\n";
+
+    @class_ids = unpack("n*",$DB{'_class'});
     
     print "Content-Type: text/$subtype\015\012\015\012";
     &aid_book_write_prefix(*STDOUT,$format);
