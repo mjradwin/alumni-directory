@@ -3,7 +3,7 @@
 #
 # generates reunion info page
 #
-# $Id: aid_reunion_html,v 1.4 2000/05/24 23:32:43 mradwin Exp mradwin $
+# $Id: aid_reunion_html,v 1.5 2000/05/24 23:34:44 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -148,16 +148,23 @@ sub writehash
 	    print FMTOUT "<dt><br><b>";
 	}
 
-	my($page) = ($key =~ /^\d+$/) ? $key : 'other';
+	print FMTOUT &aid_config('school');
 
-	print FMTOUT &aid_config('school'),
-	" <a name=\"r$key\"\nhref=\"", &aid_config('master_path'),
-	"class/$page.html\">", ($key =~ /^\d+$/) ? "Class of $key" : $key,
-	"</a></b></dt>\n";
+	if ($key =~ /^\d+$/)
+	{
+	    print FMTOUT " <a name=\"r$key\"\nhref=\"", 
+	    &aid_config('master_path'),
+	    "class/$key.html\">Class of $key</a>";
+	}
+	else
+	{
+	    print FMTOUT " - $key";
+	}
 
-	print FMTOUT "<dd>Date: $DoW[$wday], $MoY[$mon] $mday, ", ($year+1900),
-	"</dd>\n";
-	print FMTOUT $html, "\n";
+	print FMTOUT "</b></dt>\n",
+	"<dd>Date: $DoW[$wday], $MoY[$mon] $mday, ", ($year+1900),
+	"</dd>\n",
+	$html, "\n";
     }
 
     print FMTOUT "</dl>\n\n" unless $first;
