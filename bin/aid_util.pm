@@ -2,27 +2,29 @@
 #     FILE: mv_util.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: perl library routines for the MVHS Alumni Internet Directory
-#      $Id: mv_util.pl,v 1.76 1997/12/31 20:18:46 mjr Exp mjr $
+#      $Id: mv_util.pl,v 1.77 1997/12/31 20:43:20 mjr Exp mjr $
 #
 
 # divcom.umop-ap.com configuration
 %mv_util'config =  #'font-lock
-    ('admin_name',   "Michael John Radwin",
+    ('admin_name',   'Michael John Radwin',
      'admin_email',  "mjr\@acm.org",
      'admin_school', "Mountain View High School, Class of '93",
-     'admin_phone',  "408-536-2554",
-     'admin_url',    "http://slimy.com/~mjr/",
-     'master_srv',   "umop-ap.com",
-     'master_path',  "/~mjr/mvhs/",
-     'cgi_path',     "/cgi-bin/cgiwrap/mjr/mvhsaid",
-     'index_page',   "index.html",
-     'wwwdir',       "/home/divcom/mjr/public_html/mvhs/",
-     'newsdir',      "/home/divcom/mjr/public_html/mvhs/whatsnew/",
-     'mvhsdir',      "/home/divcom/mjr/mvhs/",
-     'sendmail',     "/usr/lib/sendmail",
-     'mailprog',     "/usr/ucb/mail",
+     'admin_phone',  '408-536-2554',
+     'admin_url',    'http://slimy.com/~mjr/',
+     'master_srv',   'umop-ap.com',
+     'master_path',  '/~mjr/mvhs/',
+     'cgi_path',     '/cgi-bin/cgiwrap/mjr/mvhsaid',
+     'index_page',   'index.html',
+     'wwwdir',       '/home/divcom/mjr/public_html/mvhs/',
+     'newsdir',      '/home/divcom/mjr/public_html/mvhs/whatsnew/',
+     'mvhsdir',      '/home/divcom/mjr/mvhs/',
+     'sendmail',     '/usr/lib/sendmail',
+     'mailprog',     '/usr/ucb/mail',
      'mailto',       "mjr\@divcom",
-     'mailsubj',     "MVHSAID",
+     'mailsubj',     'MVHSAID',
+     'spoolfile',    '/var/spool/mail/mjr',
+     'rcsid',        '$Id$',
      );
 
 # foo.metamorphosis.net configuration
@@ -597,7 +599,7 @@ sub common_html_ftr {
     package mv_util;
 
     local($page) = @_;
-    local($rcsid) = '<!-- $Id: mv_util.pl,v 1.76 1997/12/31 20:18:46 mjr Exp mjr $ -->';
+    local($rcsid) = "<!-- " . $config{'rcsid'} . " -->";
     local($ftr);
 
     $ftr = "
@@ -660,7 +662,7 @@ sub common_html_hdr {
     local($h1, $h2, $h3, $h4, $html_head);
     local($name, $url);
     local($timestamp);
-    local($rcsid) = '<!-- $Id: mv_util.pl,v 1.76 1997/12/31 20:18:46 mjr Exp mjr $ -->';
+    local($rcsid) = "<!-- " . $config{'rcsid'} . " -->";
 
     $timestamp = ($page == 0) ? 'Last update to Directory: ' :
 	'Last update to this page: ';
