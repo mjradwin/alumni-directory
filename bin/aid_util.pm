@@ -2,11 +2,11 @@
 #     FILE: aid_util.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: perl library routines for the Alumni Internet Directory
-#      $Id: aid_util.pl,v 3.24 1998/05/27 21:39:09 mradwin Exp mradwin $
+#      $Id: aid_util.pl,v 3.25 1998/05/27 21:51:32 mradwin Exp mradwin $
 #
 
 $aid_util'rcsid =
- '$Id: aid_util.pl,v 3.24 1998/05/27 21:39:09 mradwin Exp mradwin $';
+ '$Id: aid_util.pl,v 3.25 1998/05/27 21:51:32 mradwin Exp mradwin $';
 
 # ----------------------------------------------------------------------
 # CONFIGURATION
@@ -27,6 +27,7 @@ $aid_util'rcsid =
      'admin_url',    'http://www.radwin.org/michael/',
      'master_srv',   'www.radwin.org',
      'master_path',  '/mvhs-alumni/',
+     'image_path',   '/images/',
      'cgi_path',     '/cgi-bin/mvhsaid',
      'index_page',   'index.html',
      'wwwdir',       '/home/web/radwin.org/docs/mvhs-alumni/',
@@ -42,33 +43,6 @@ $aid_util'rcsid =
      'spoolfile',    '/var/mail/mradwin',
      'rcsid',        "$aid_util'rcsid",
      );
-
-# divcom.umop-ap.com (SunOS 4.1.3) configuration
-# %aid_util'config =  #'#
-#     ('admin_name',   'Michael John Radwin',
-#      'admin_email',  "mjr\@acm.org",
-#      'school',       'Mountain View High School',
-#      'short_school', 'MVHS',
-#      'admin_school', "Mountain View High School, Class of '93",
-#      'admin_phone',  '408-536-2554',
-#      'admin_url',    'http://slimy.com/~mjr/',
-#      'master_srv',   'umop-ap.com',
-#      'master_path',  '/~mjr/mvhs/',
-#      'cgi_path',     '/cgi-bin/cgiwrap/mjr/mvhsaid',
-#      'index_page',   'index.html',
-#      'wwwdir',       '/home/divcom/mjr/public_html/mvhs/',
-#      'aiddir',       '/home/divcom/mjr/mvhs/',
-#      'sendmail',     '/usr/lib/sendmail',
-#      'mailprog',     '/usr/ucb/mail',
-#      'echo',         '/usr/bin/echo',
-#      'cat',          '/usr/local/gnu/bin/cat',
-#      'cp',           '/usr/local/gnu/bin/cp',
-#      'make',         '/usr/local/gnu/bin/make',
-#      'mailto',       "mjr\@divcom",
-#      'mailsubj',     'MVHSAID',
-#      'spoolfile',    '/var/spool/mail/mjr',
-#      'rcsid',        "$aid_util'rcsid",
-#      );
 
 @aid_util'page_idx = #'#
     (
@@ -184,13 +158,8 @@ $aid_util'blank_entry{'school'}  = $aid_util'config{'short_school'};
      "new.gif\" border=0 width=28 height=10 " .
      "alt=\"[new]\"></a>",
 
-     'title',
-     "<img src=\"" . $aid_util'config{'master_path'} . #'#
-     "title.gif\"\nborder=0 align=bottom width=398 height=48\n" .
-     "alt=\"Mountain View High School Alumni Internet Directory\">",
-
      'vcard',
-     "<img src=\"" . $aid_util'config{'master_path'} . #'#
+     "<img src=\"" . $aid_util'config{'image_path'} . #'#
      "vcard.gif\" border=0 align=top width=32 height=32 " .
      "alt=\"[vCard]\">",
 
