@@ -4,7 +4,7 @@
 #     FILE: mvhsaid.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: Alumni Internet Directory CGI interface
-#      $Id: mvhsaid,v 3.107 1999/05/06 16:21:09 mradwin Exp mradwin $
+#      $Id: form,v 3.108 1999/05/19 01:06:17 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -40,7 +40,7 @@ $mailprog = &aid_config('mailprog');
 $dbmfile = &aid_config('dbmfile');
 $dbmfile =~ s/\.db$//;
 
-$rcsid = '$Id: mvhsaid,v 3.107 1999/05/06 16:21:09 mradwin Exp mradwin $'; #'fnt
+$rcsid = '$Id: form,v 3.108 1999/05/19 01:06:17 mradwin Exp mradwin $'; #'fnt
 
 $listing_upd_title = 'Update Your Directory Listing';
 $listing_upl_title = 'Select a Listing to Update';
@@ -53,16 +53,7 @@ $listing_sub_title = 'Review and Confirm Your Listing';
 	"\">e-mail " . &aid_config('admin_name') . "</a>.")
     unless -r "${dbmfile}.db";
 
-@required_headers = ('id', 'gn', 'sn', 's', 'yr', 'e');
-
-# hack: convert "cgi-bin/mvhsaid/vcard/123.vcf" to "cgi-bin/mvhsaid?vcard=123"
-if (defined($ENV{'PATH_INFO'}) && $ENV{'PATH_INFO'} =~ m,^/vcard/,) 
-{
-    $ENV{'QUERY_STRING'} =  substr($ENV{'PATH_INFO'}, 1);
-    $ENV{'QUERY_STRING'} =~ s,/,=,;
-    $ENV{'QUERY_STRING'} =~ s,\.vcf$,,;
-    $ENV{'PATH_INFO'}    =  '/vc';
-}
+@form_required = ('id', 'gn', 'sn', 'yr', 'e');
 
 if (!&ReadParse())
 {
@@ -79,34 +70,6 @@ if (defined($in{'version'})) {
     print "Content-Type: text/plain\015\012\015\012$rcsid\015\012";
     print &aid_config('rcsid'), "\015\012",
 	"cgi-lib.pl version ", $cgi_lib'version, "\015\012"; #'#
-    close(STDOUT);
-    exit(0);
-
-}
-elsif (defined($in{'yab'}))
-{
-    if ($in{'yab'} =~ /^\d+$/)
-    {
-	dbmopen(%DB,$dbmfile,0444);
-	if (defined $DB{$in{'yab'}})
-	{
-	    %rec = &aid_db_unpack_rec($in{'yab'},$DB{$in{'yab'}});
-	    local($url) = &aid_yahoo_abook_path(*rec);
-	    $url =~ s/\&amp;/\&/g;
-	    print "Location: ", $url, "\015\012\015\012";
-	}
-	else
-	{
-	    &send_upd_notfound($in{'yab'});
-	}
-	dbmclose(%DB);
-
-    }
-    else
-    {
-	&send_upd_notfound($in{'yab'});
-    }
-
     close(STDOUT);
     exit(0);
 
@@ -165,35 +128,6 @@ elsif (defined($in{'update'}) || defined($in{'upd'}))
     close(STDOUT);
     exit(0);
 
-} elsif (defined($in{'vcard'})) {
-    if ($in{'vcard'} =~ /^\d+$/) {
-	dbmopen(%DB,$dbmfile,0444);
-	if (defined $DB{$in{'vcard'}}) {
-	    %rec = &aid_db_unpack_rec($in{'vcard'},$DB{$in{'vcard'}});
-	    &send_vcard(*rec);
-	} else {
-	    &send_upd_real(*aid_util'blank_entry,''); #'#
-	}
-	dbmclose(%DB);
-
-    } else {
-	&send_upd_real(*aid_util'blank_entry,''); #'#
-    }
-    close(STDOUT);
-    exit(0);
-
-} elsif (defined($in{'about'}) && $in{'about'} =~ /^\d+$/) {
-    dbmopen(%DB,$dbmfile,0444);
-    if (defined $DB{$in{'about'}}) {
-	%rec = &aid_db_unpack_rec($in{'about'},$DB{$in{'about'}});
-	&send_about(*rec);
-    } else {
-	&send_upd_real(*aid_util'blank_entry,''); #'#
-    }
-    dbmclose(%DB);
-    close(STDOUT);
-    exit(0);
-
 } elsif (defined($in{'download'})) {
     $in{'plusminus'} = defined $in{'plusminus'} && 
 	($in{'plusminus'} eq 'on' || $in{'plusminus'} == 1) ? 1 : 0;
@@ -221,7 +155,7 @@ elsif (defined($in{'update'}) || defined($in{'upd'}))
 
 # no special flags, so this should be a submission-processing request.
 # did they access this with the right form?
-foreach (@required_headers) {
+foreach (@form_required) {
     select(STDOUT); $| = 1;
     &CgiDie(&aid_config('short_school') . " Alumni: Script Error",
 	    "The required form data was not present or something is awry.\n" .
@@ -300,7 +234,7 @@ $in{'mn'} = '' if defined $in{'mn'} &&
 
 # did they have non-empty entries for all the required fields?
 $empty_fields = '';
-foreach (@required_headers) 
+foreach (@form_required) 
 {
     $empty_fields .= $_ . "\t"
 	if ($in{$_} =~ /^\s*$/);
@@ -458,7 +392,7 @@ sub queue_submission {
     $mailbody .= &aid_config('sub_end_str') . "
 
 Love,
-the \L$mailsubj\E cgi-bin script
+the Alumni Internet Directory form-submission script
 $date";
 
     system("$mailprog -s '$mailsubj [$in{'id'} $in{'e'}]' $mailto <<'EOM'
@@ -511,49 +445,6 @@ sub send_upd_real {
 
     print &aid_submit_body(*rec,$empty_fields);
     print &aid_common_html_ftr(-1);
-}
-
-sub send_about {
-    local(*rec) = @_;
-    local($fullname) = &aid_inorder_fullname(*rec);
-    local($html_name) = &aid_html_entify_str($fullname);
-
-    print "Last-Modified: ", &aid_http_date($rec{'u'}), "\015\012";
-    print "Content-Type: text/html\015\012\015\012";
-
-    print &aid_common_html_hdr(-1,$fullname,1,$rec{'u'});
-    print "<p>Here is more detailed information about $html_name.\n<br>";
-    print "To update this listing, please click the button below.</p>\n\n";
-    print &aid_about_text(*rec,0,1,1), "\n";
-    print &modify_button($rec{'id'}, $html_name);
-    print &aid_common_html_ftr(-1);
-}
-
-sub modify_button {
-    local($id,$name) = @_;
-
-    "
-<!-- borrowed from gamelan -->
-
-<form method=\"get\" action=\"" . &aid_config('update_cgi') . "/$rec{'id'}\">
-<input type=\"hidden\" name=\"upd\" value=\"$id\">
-<input type=\"submit\" value=\"Update $name\">
-</form>
-
-<p>To avoid malicious modification by other people passing through, we
-mail the original user about the change (plus the new user if the e-mail
-changes). The honor system has worked for us so far; please don't abuse
-it and force us to install a password door.</p>
-";
-
-}
-
-sub send_vcard {
-    local(*rec) = @_;
-
-    print "Last-Modified: ", &aid_http_date($rec{'u'}), "\015\012";
-    print "Content-Type: text/x-vcard\015\012\015\012";
-    print &aid_vcard_text(*rec);
 }
 
 
