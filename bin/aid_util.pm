@@ -2,7 +2,7 @@
 #     FILE: aid_util.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: perl library routines for the Alumni Internet Directory
-#      $Id: aid_util.pl,v 5.61 2000/04/26 00:56:51 mradwin Exp mradwin $
+#      $Id: aid_util.pl,v 5.62 2000/04/26 00:58:22 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -571,10 +571,10 @@ sub aid_about_text
 
     $retval .= "\nPreferences\n-----------\n";
     $retval .= "My class officers may send me reunion info via e-mail:\n";
-    $retval .= ($rec{'r'} == 1) ? " ==> yes\n" : " ==> no\n";
+    $retval .= ($rec{'r'} == 1) ? " --> yes\n" : " --> no\n";
     $retval .= "Receive a digest of the Directory every quarter:\n";
     $retval .= defined $req_descr[$rec{'q'}] ?
-	" ==> $req_descr[$rec{'q'}]\n" : " ==> no\n";
+	" --> $req_descr[$rec{'q'}]\n" : " --> no\n";
 
     $retval;
 }
