@@ -2,7 +2,7 @@
 
 #
 # mails a welcome, update, confirm, or massmail message to members
-# $Id: aid_welcome,v 5.37 2003/05/15 01:29:39 mradwin Exp mradwin $
+# $Id: aid_welcome,v 5.38 2003/08/01 20:16:41 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -175,12 +175,6 @@ $params{'sleep'} = $opts{'d'} if defined $opts{'d'};
 my $dbmfile = shift;
 die "$0: $dbmfile: $!\n" unless -r $dbmfile;
 
-my(%DB);
-tie(%DB, 'DB_File::Lock', $dbmfile, O_RDONLY, 0444, $DB_HASH, 'read')
-    or die "$dbmfile: $!\n";
-
-die "invalid DB: $dbmfile\n" unless defined $DB{'_class'};
-
 open(LOG,">>$logfile") || die "$0: Can't open $logfile: $!\n";
 select(LOG); $| = 1; select(STDOUT);
 
@@ -224,14 +218,21 @@ foreach $id (@ARGV)
 	warn "$0: skipping target `$id' (invalid id)\n";
 	next;
     }
-    
+
+    my(%DB);
+    tie(%DB, 'DB_File::Lock', $dbmfile, O_RDONLY, 0444, $DB_HASH, 'read')
+	or die "$dbmfile: $!\n";
+
     unless (defined $DB{$id})
     {
 	warn "$0: skipping target `$id' (missing from $dbmfile)\n";
+	untie(%DB);
 	next;
     }
 
     %rec = &aid_db_unpack_rec($id,$DB{$id});
+
+    untie(%DB);
 
     if (mail_user(*rec))
     {
@@ -240,7 +241,6 @@ foreach $id (@ARGV)
     }
 }
 
-untie(%DB);
 close(LOG);
 
 #if (-w $dbmfile)
