@@ -2,7 +2,7 @@
 #     FILE: Makefile
 #   AUTHOR: Michael J. Radwin
 #    DESCR: Makefile for building the Alumni Internet Directory
-#      $Id: Makefile,v 3.77 1999/04/27 06:31:59 mradwin Exp mradwin $
+#      $Id: Makefile,v 3.78 1999/05/03 22:26:52 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -85,12 +85,14 @@ $(CGIDIR)/nph-mvhsaid: $(CGIDIR)/mvhsaid
 	$(CP) $(CGIDIR)/mvhsaid $(CGIDIR)/nph-mvhsaid
 
 DBFILE=$(WWWDIR)/master.db
+dbfile:	$(DBFILE)
 $(DBFILE):	$(ADR_MASTER) $(BIN_DBM_WRITE) $(AID_UTIL_PL)
 	$(RM) ./master.db
 	$(BIN_DBM_WRITE) $(ADR_MASTER) ./master.db
 	$(RM) $(DBFILE)
 	$(MV) ./master.db $(DBFILE)
 	chmod 0444 $(DBFILE)
+	$(AIDDIR)/bin/aid_dbm_read -u ./data/master.u $(DBFILE)
 
 VCARD_TS=$(WWWDIR)/vcard/.created
 vcard:	$(VCARD_TS)
