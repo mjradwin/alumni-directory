@@ -2,7 +2,7 @@
 
 #
 # generates address books in several formats
-# $Id: aid_book,v 6.3 2003/10/30 07:28:18 mradwin Exp mradwin $
+# $Id: aid_book,v 6.4 2003/10/30 17:56:04 mradwin Exp mradwin $
 #
 # Copyright (c) 2003  Michael J. Radwin.
 # All rights reserved.
@@ -54,7 +54,7 @@ use aid_util;
 use strict;
 
 $0 =~ s,.*/,,;  # basename
-my $usage = "usage: $0 [-h] infile.db -{p,e,b,w,m,n,l,v,o} outfile
+my $usage = "usage: $0 [-h] [-y year] -{p,e,b,w,m,n,l,v,o} outfile infile.db
     -h        Display usage information.
 
     -p        Pine address book
@@ -66,12 +66,14 @@ my $usage = "usage: $0 [-h] infile.db -{p,e,b,w,m,n,l,v,o} outfile
     -l        Netscape4 .ldif address book
     -v        vCard book
     -o        Outlook Express .csv
+
+    -y year   Only output for a given graduating class.
 ";
 
 # get the command-line options and die if there is a bad option or
 # there are no filenames
 my(%opts);
-getopts('hp:e:b:w:m:n:l:v:o:', \%opts) || die "$usage\n";
+getopts('hp:e:b:w:m:n:l:v:o:y:', \%opts) || die "$usage\n";
 $opts{'h'} && die "$usage\n";
 $ARGV[0] || die "$usage\n";
 
@@ -118,7 +120,16 @@ $opts{'l'} && aid_util::book_write_prefix($BOOKl,'l');
 $opts{'v'} && aid_util::book_write_prefix($BOOKv,'v');
 $opts{'o'} && aid_util::book_write_prefix($BOOKo,'o');
 
-my @alpha_ids = unpack("n*",$DB{'_alpha'});
+my @alpha_ids;
+if ($opts{'y'}) {
+    my $key = '_' . $opts{'y'};
+    die "corrupt/missing $key key!"
+	unless defined $DB{$key} && $DB{$key} ne '';
+    @alpha_ids = unpack("n*",$DB{$key});
+} else {
+    @alpha_ids = unpack("n*",$DB{'_alpha'});
+}
+
 foreach my $id (@alpha_ids)
 {
     my %rec = aid_util::db_unpack_rec($id,$DB{$id});
