@@ -4,7 +4,7 @@
 #     FILE: mvhsaid.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: Alumni Internet Directory CGI interface
-#      $Id: mvhsaid,v 3.79 1999/03/09 01:35:40 mradwin Exp mradwin $
+#      $Id: mvhsaid,v 3.80 1999/03/09 17:14:06 mradwin Exp mradwin $
 #
 
 require 'aid_util.pl';
@@ -22,7 +22,7 @@ if ($ENV{'SCRIPT_NAME'} =~ m,/nph-,)
 # configuration
 $mailprog = &aid_config('mailprog');
 $dbmfile = &aid_config('wwwdir') . 'master';
-$rcsid = '$Id: mvhsaid,v 3.79 1999/03/09 01:35:40 mradwin Exp mradwin $'; #'fnt
+$rcsid = '$Id: mvhsaid,v 3.80 1999/03/09 17:14:06 mradwin Exp mradwin $'; #'fnt
 
 $listing_upd_title = 'Update Your Directory Listing';
 $listing_upl_title = 'Select a Listing to Update';
@@ -310,23 +310,10 @@ sub confirm_submission {
 </td></tr>
 
 <tr><td>
-Please confirm that all of the below information is correct.
-<br>
-</td></tr>
 
-<tr><td>
-";
+Please double-check all of the below information.  Be sure that your
+e-mail address is spelled correctly!
 
-    print &about_text(*in,1,1,0), "\n";
-
-    print "
-</td></tr>
-
-<tr><td bgcolor=\"#$aid_util'header_bg\">
-<font size=\"+1\"><strong>8. Finish or Edit Listing Again</strong></font>
-</td></tr>
-
-<tr><td>
 <ul>
 <li>If you have made any mistakes, select the
 <strong>&lt;&nbsp;Back</strong> button
@@ -337,6 +324,14 @@ to edit your listing.
 <input type=submit name=\"revise\" value=\"&lt;&nbsp;Back\">
 &nbsp;
 <input type=submit name=\"confirmed\" value=\"Finish&nbsp;&gt;\">
+</td></tr>
+
+<tr><td>
+";
+
+    print &about_text(*in,1,1,0), "\n";
+
+    print "
 </td></tr>
 
 </table>
