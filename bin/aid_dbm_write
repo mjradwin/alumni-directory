@@ -1,6 +1,6 @@
 #!/usr/bin/perl -w
 
-# $Id: aid_dbm_write,v 1.20 1999/04/05 16:26:17 mradwin Exp mradwin $
+# $Id: aid_dbm_write,v 1.21 1999/04/09 02:26:03 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -23,20 +23,31 @@ require 'aid_util.pl';
 require 'getopts.pl';
 
 $0 =~ s,.*/,,;  # basename
-$usage = "usage: $0 [-h] infile.adr outfile.db
+$usage = "usage: $0 [-hc] infile.adr outfile.db
     -h        Display usage information.
+    -c        Rebuild cleanly (first remove all keys).
 ";
 
-&Getopts('h') || die "$usage\n";
+&Getopts('hc') || die "$usage\n";
 $opt_h && die "$usage\n";
 defined $ARGV[0] || die "$usage\n";
 defined $ARGV[1] || die "$usage\n";
 $opt_h = $opt_h;		# avoid warning
+$opt_c = $opt_c;		# avoid warning
 
 @db = &aid_create_db($ARGV[0]);
 
 $ARGV[1] =~ s/\.db$//;
 dbmopen(%DB,$ARGV[1],0666);
+
+if ($opt_c)
+{
+    # rebuild cleanly...
+    while (($key,$val) = each %DB)
+    {
+	delete $DB{$key};
+    }
+}
 
 $i = 0;
 print STDERR "$0: writing primary data...";
