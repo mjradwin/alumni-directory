@@ -2,11 +2,11 @@
 #     FILE: aid_util.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: perl library routines for the Alumni Internet Directory
-#      $Id: aid_util.pl,v 3.91 1999/01/04 19:12:52 mradwin Exp mradwin $
+#      $Id: aid_util.pl,v 3.92 1999/01/11 19:21:01 mradwin Exp mradwin $
 #
 
 $aid_util'rcsid =
- '$Id: aid_util.pl,v 3.91 1999/01/04 19:12:52 mradwin Exp mradwin $';
+ '$Id: aid_util.pl,v 3.92 1999/01/11 19:21:01 mradwin Exp mradwin $';
 
 # ----------------------------------------------------------------------
 # CONFIGURATION
@@ -41,6 +41,14 @@ $aid_util'rcsid =
      'mailsubj',     'MVHSAID',
      'spoolfile',    '/var/mail/mradwin',
      'rcsid',        "$aid_util'rcsid",
+     );
+
+@aid_util'req_descr =   #'#
+    ('only address verification',
+     'yes (sorted by name)',
+     'yes (sorted by graduating class)',
+     'yes (new and changed entries)',
+     'yes (brief reminder)',
      );
 
 @aid_util'page_idx = #'#
@@ -161,7 +169,7 @@ for ($i = 0; $i <= $#aid_util'field_names; $i++) { #'#
 
 $aid_util'blank_entry{'id'}      = -1;      #'#
 $aid_util'blank_entry{'valid'}   = 1;       #'#
-$aid_util'blank_entry{'request'} = 3;       #'#
+$aid_util'blank_entry{'request'} = 4;       #'#
 $aid_util'blank_entry{'reunion'} = 1;       #'#
 $aid_util'blank_entry{'bounce'} = 0;       #'#
 $aid_util'blank_entry{'message'} = '';      #'#
@@ -578,7 +586,7 @@ sub submit_body {
 
     $rec{'www'} = 'http://' if $rec{'www'} eq '';
 
-    for ($i = 0; $i < 4; $i++) {
+    for ($i = 0; $i < 5; $i++) {
 	$reqchk[$i] = ($rec{'request'} == $i) ? ' checked' : '';
     }
     $reunion_chk = ($rec{'reunion'} == 1) ? ' checked' : '';
@@ -724,26 +732,37 @@ are required.  All other fields are optional.</p>\n\n";
   </td>
 </tr>
 <tr>
-  <td colspan=3><font color=\"#$cell_fg\"><input type=checkbox
+  <td colspan=3><font color=\"#$cell_fg\" size=\"-1\"><input type=checkbox
   name=\"reunion\" id=\"reunion\" $reunion_chk><label
   for=\"reunion\">&nbsp;My class officers may notify me of
   reunion information via email.</label><br><br>Please 
   <a href=\"" . $config{'master_path'} . "etc/faq.html#mailings\">send 
   an updated copy</a> of the Directory to my email address every 3 
   months:<br>
+
+  &nbsp;&nbsp;&nbsp;&nbsp;<input type=radio name=\"request\" id=\"request4\"
+  value=\"4\"$reqchk[4]><label
+  for=\"request4\">&nbsp;Brief reminder about what has changed.</label><br>
+
   &nbsp;&nbsp;&nbsp;&nbsp;<input type=radio name=\"request\" id=\"request3\"
   value=\"3\"$reqchk[3]><label
   for=\"request3\">&nbsp;Only new and changed alumni entries. [~ 10 kbytes]</label><br>
+
   &nbsp;&nbsp;&nbsp;&nbsp;<input type=radio name=\"request\" id=\"request2\"
   value=\"2\"$reqchk[2]><label
-  for=\"request2\">&nbsp;All alumni, sorted by graduating class. [~ 50 kbytes]</label><br>
+  for=\"request2\">&nbsp;All alumni, sorted by graduating class.
+  [~ 50 kbytes]</label><br>
+
   &nbsp;&nbsp;&nbsp;&nbsp;<input type=radio name=\"request\" id=\"request1\"
   value=\"1\"$reqchk[1]><label
-  for=\"request1\">&nbsp;All alumni, sorted by name. [~ 50 kbytes]</label><br>
+  for=\"request1\">&nbsp;All alumni, sorted by name.
+  [~ 50 kbytes]</label><br>
+
   &nbsp;&nbsp;&nbsp;&nbsp;<input type=radio name=\"request\" id=\"request0\"
   value=\"0\"$reqchk[0]><label
   for=\"request0\">&nbsp;No e-mail except for yearly address
   verification.</label></font>
+
   <input type=\"hidden\" name=\"id\" value=\"$rec{'id'}\">
   <input type=\"hidden\" name=\"created\" value=\"$rec{'created'}\">
   <input type=\"hidden\" name=\"valid\" value=\"1\">
@@ -1004,11 +1023,8 @@ sub about_text {
 	$retval .= ($rec{'reunion'} == 1) ?
 	    "yes\n" : "no\n";
 	$retval .= "Send Email Updates : ";
-	$retval .= ($rec{'request'} == 2) ?
-	    "yes (sorted by graduating class)\n" :
-	    ($rec{'request'} == 1) ? "yes (sorted by name)\n" : 
-	    ($rec{'request'} == 3) ? "yes (new and changed entries)\n" : 
-		"only address verification\n";
+	$retval .= defined $req_descr[$rec{'request'}] ?
+	    "$req_descr[$rec{'request'}]\n" : "(none)\n";
     } 
 
     if ($rec{'time'} ne '' && $rec{'time'} != 0 &&
