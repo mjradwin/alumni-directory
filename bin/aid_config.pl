@@ -2,7 +2,7 @@
 #     FILE: aid_config.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: configuration variables for Alumni Internet Directory
-#      $Id: aid_config.pl,v 1.34 1999/05/04 18:29:26 mradwin Exp mradwin $
+#      $Id: aid_config.pl,v 1.35 1999/05/04 23:16:31 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -22,7 +22,7 @@
 #
 
 $aid_util'rcsid =
- '$Id: aid_config.pl,v 1.34 1999/05/04 18:29:26 mradwin Exp mradwin $';
+ '$Id: aid_config.pl,v 1.35 1999/05/04 23:16:31 mradwin Exp mradwin $';
 
 # radwin.org (FreeBSD 2.2.2) configuration
 %aid_util'config =   #'#
@@ -45,6 +45,7 @@ $aid_util'rcsid =
      'submit_cgi',   '/cgi-bin/mvhsaid/sub',
      'update_cgi',   '/cgi-bin/mvhsaid/upd',
      'confirm_cgi',  '/cgi-bin/mvhsaid/cnf',
+     'yab_cgi',      '/cgi-bin/mvhsaid/yab',
      'index_page',   'index.html',
      'cgidir',       '/home/web/radwin.org/cgi-bin/',
      'wwwdir',       '/home/web/radwin.org/docs/mvhs-alumni/',

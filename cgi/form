@@ -4,7 +4,7 @@
 #     FILE: mvhsaid.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: Alumni Internet Directory CGI interface
-#      $Id: mvhsaid,v 3.104 1999/04/06 18:04:56 mradwin Exp mradwin $
+#      $Id: mvhsaid,v 3.105 1999/04/29 23:18:49 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -40,7 +40,7 @@ $mailprog = &aid_config('mailprog');
 $dbmfile = &aid_config('dbmfile');
 $dbmfile =~ s/\.db$//;
 
-$rcsid = '$Id: mvhsaid,v 3.104 1999/04/06 18:04:56 mradwin Exp mradwin $'; #'fnt
+$rcsid = '$Id: mvhsaid,v 3.105 1999/04/29 23:18:49 mradwin Exp mradwin $'; #'fnt
 
 $listing_upd_title = 'Update Your Directory Listing';
 $listing_upl_title = 'Select a Listing to Update';
@@ -79,6 +79,34 @@ if (defined($in{'version'})) {
     print "Content-Type: text/plain\015\012\015\012$rcsid\015\012";
     print &aid_config('rcsid'), "\015\012",
 	"cgi-lib.pl version ", $cgi_lib'version, "\015\012"; #'#
+    close(STDOUT);
+    exit(0);
+
+}
+elsif (defined($in{'yab'}))
+{
+    if ($in{'yab'} =~ /^\d+$/)
+    {
+	dbmopen(%DB,$dbmfile,0444);
+	if (defined $DB{$in{'yab'}})
+	{
+	    %rec = &aid_db_unpack_rec($in{'yab'},$DB{$in{'yab'}});
+	    local($url) = &aid_yahoo_abook_path(*rec);
+	    $url =~ s/\&amp;/\&/g;
+	    print "Location: ", $url, "\015\012\015\012";
+	}
+	else
+	{
+	    &send_upd_notfound($in{'yab'});
+	}
+	dbmclose(%DB);
+
+    }
+    else
+    {
+	&send_upd_notfound($in{'yab'});
+    }
+
     close(STDOUT);
     exit(0);
 
