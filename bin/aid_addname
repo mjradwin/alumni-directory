@@ -1,6 +1,6 @@
 #!/usr/local/bin/perl5 -w
 
-# $Id: aid_addname,v 5.24 2000/06/05 17:01:11 mradwin Exp mradwin $
+# $Id: aid_addname,v 5.25 2000/06/06 20:55:16 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -89,7 +89,7 @@ sub readspool
 
 	foreach $key8 (@key8s)
 	{
-	    if (defined $DBS{$key8} && $DBS{$key8} =~ /^-?\d+\0.+$/)
+	    if (defined $DBS{$key8} && $DBS{$key8} =~ /^-?\d+\0/)
 	    {
 		push(@vals, $DBS{$key8});
 		$DBS{$key8} = "p\0";
