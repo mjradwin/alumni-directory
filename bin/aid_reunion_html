@@ -3,7 +3,7 @@
 #
 # generates reunion info page
 #
-# $Id: aid_reunion_html,v 1.2 2000/05/24 23:20:45 mradwin Exp mradwin $
+# $Id: aid_reunion_html,v 1.3 2000/05/24 23:31:55 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -66,8 +66,8 @@ print FMTOUT <<END_OF_HTML;
 <h2>Alumni: help keep this page up-to-date!</h2>
 
 <p>If you know the details about a reunion that isn't listed on this
-page, please send e-mail to (<code><a
-href="mailto:$admin">$admin</a></code>).</p>
+page, please send e-mail to <code><a
+href="mailto:$admin">$admin</a></code>.</p>
 
 <p>If your class reunion isn't listed here, contact your Senior year
 class officers (see your yearbook).  Failing that, try the Activities
