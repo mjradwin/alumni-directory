@@ -2,7 +2,7 @@
 
 #
 # mails a welcome, update, confirm, or massmail message to members
-# $Id: aid_welcome,v 5.4 1999/05/31 22:59:31 mradwin Exp mradwin $
+# $Id: aid_welcome,v 5.5 1999/06/02 16:46:20 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -296,8 +296,8 @@ You are listed in the Directory as follows:
 -------------------------------------------------------
 ${about}-------------------------------------------------------
 $denied
-If any of the above information is incorrect or out of
-date, please update your listing online at:
+If any of the above information is incorrect or out
+of date, please update your listing online at:
 
   " .
 
@@ -305,8 +305,8 @@ $srv_prefix . &aid_config('go_cgi') . "/$rec{'id'}
 
 If you don't have web access, e-mail me corrections.
 If you have received this e-mail in error, or you do
-not want to be listed in the Directory, please let me
-know and I will remove your listing.
+not want to be listed in the Directory, please let
+me know and I will remove your listing.
 $params{'closing'}";
 
 }
