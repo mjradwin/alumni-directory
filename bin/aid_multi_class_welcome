@@ -1,6 +1,6 @@
 #!/usr/bin/perl -w
 
-# $Id: aid_multi_class_welcome,v 5.5 1999/06/29 01:08:09 mradwin Exp mradwin $
+# $Id: aid_multi_class_welcome,v 5.6 1999/08/04 18:24:33 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -79,6 +79,8 @@ foreach (@years)
 
     if (@mail_ids)
     {
+	@mail_ids = sort { $a <=> $b } @mail_ids;
+
 	print "$welcome_exe -l logs/massmail-$date-4.log -r4 ",
 	      "-m ${dir}/${_}.txt ${dbmfile}.db ", join(' ', @mail_ids), "\n"
 		  unless $opt_q;
@@ -101,4 +103,5 @@ if ($^W && 0)
 {
     ($sec,$min,$hour,$mday,$mon,$year,$wday,$yday,$isdst) =
 	localtime(time);
+    $a = $b = 0;
 }
