@@ -1,5 +1,5 @@
 Alumni Internet Directory README file
-$Id: README,v 5.4 1999/06/25 16:47:49 mradwin Exp mradwin $
+$Id: README,v 5.5 1999/06/29 21:46:01 mradwin Exp mradwin $
 
 ========================================================================
  Copyright (c) 1995-1999  Michael John Radwin
@@ -109,6 +109,17 @@ In addition to notifying new/updated alumni that their submissions have
 been processed, aid_welcome can also be used for sending out the
 quarterly digests or bi-yearly verification messages.
 
+For quarterly digests, you'll probably want to run: 
+  make recent.txt
+  ./bin/aid_welcome -a -r3 -m recent.txt data/working.db
+  rm recent.txt
+
+and:
+
+  mkdir classonly
+  ./bin/aid_multi_class_txt data/working.db classonly
+  ./bin/aid_multi_class_welcome data/working.db classonly
+  rm -rf classonly
 
 ========================================================================
 Michael John Radwin
