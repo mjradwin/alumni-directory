@@ -4,7 +4,7 @@
 #     FILE: mvhsaid.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: MVHS Alumni Internet Directory CGI interface
-#      $Id: mvhsaid,v 1.39 1997/11/03 22:07:45 mjr Exp mjr $
+#      $Id: mvhsaid,v 1.40 1997/11/07 21:26:41 mjr Exp mjr $
 #
 
 require 'mv_util.pl';
@@ -22,7 +22,7 @@ $dbfile = &mv_config('wwwdir') . "mvhs.adr";
 if (defined($in{'version'})) {
     select(STDOUT);  $| = 1;
     print "Content-type: text/plain\n\n";
-    print '$Id: mvhsaid,v 1.39 1997/11/03 22:07:45 mjr Exp mjr $', "\n";
+    print '$Id: mvhsaid,v 1.40 1997/11/07 21:26:41 mjr Exp mjr $', "\n";
     exit(0);
 }
 
@@ -160,7 +160,7 @@ sub confirm_submission {
     print "
 
 <p>Please confirm that all of the below information is correct.  If you
-have made any mistakes, select the <strong>&lt; Back</strong> button
+have made any mistakes, select the <strong>&lt;&nbsp;Back</strong> button
 to edit your entry.  If everything is correct, please hit the
 <strong>Finish</strong> button.</p>\n";
 
