@@ -2,11 +2,11 @@
 #     FILE: aid_util.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: perl library routines for the Alumni Internet Directory
-#      $Id: aid_util.pl,v 4.13 1999/02/08 19:24:31 mradwin Exp mradwin $
+#      $Id: aid_util.pl,v 4.14 1999/02/08 21:20:44 mradwin Exp mradwin $
 #
 
 $aid_util'rcsid =
- '$Id: aid_util.pl,v 4.13 1999/02/08 19:24:31 mradwin Exp mradwin $';
+ '$Id: aid_util.pl,v 4.14 1999/02/08 21:20:44 mradwin Exp mradwin $';
 $aid_util'caldate = &aid_caldate(time); #'#
 
 # ----------------------------------------------------------------------
@@ -1039,13 +1039,18 @@ sub common_intro_para {
     package aid_util;
 
     local($[) = 0;
-    local($new) = "<p>Any entries marked with\n" . $image_tag{'new'} .
-	"\nhave been added to the Directory within the last month.\n";
     local($info) = "The " . $image_tag{'info'} .
 	"\nicon lets you get more detailed information about an alumnus.";
-    local($end) = "</p>\n\n";
 
-    $new . ($_[0] ? $info : '') . $end;
+    "<p>Any entries marked with\n" . $image_tag{'new'} .
+    "\nhave been added to the Directory or updated within the last month.\n" .
+	($_[0] ? $info : '') .
+    "</p>\n" .
+    "<p>Were you previously listed but now your name isn't here?  If\n" .
+    "e-mail to you has failed to reach you for more than 6 months, your\n" .
+    "entry has been moved to the\n" .
+    "<a href=\"" . $config{'master_path'} . "invalid.html\">invalid\n" .
+    "e-mail addresses</a> page.\n</p>\n\n";
 }
 
 sub common_link_table {
