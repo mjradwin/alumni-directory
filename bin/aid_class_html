@@ -33,12 +33,12 @@ while(<MVHSPRE>) {
 	    $first_fac_staff = 1;
 	} else {
 	    $hashYear = 'grad' . $year;
-	    print FMTOUT "<a href=\"#$hashYear\">$lastYear</a> ";
+	    print FMTOUT "<a href=\"#$hashYear\">$lastYear</a>\n";
 	}
     }
 }
 close(MVHSPRE);
-print FMTOUT "</tt>\n";
+print FMTOUT "</tt></p>\n\n";
 print FMTOUT "<pre>Name                                      Email
 ---------------------------------------------------------------------------";
 

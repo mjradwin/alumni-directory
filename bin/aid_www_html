@@ -51,6 +51,7 @@ while(<MVHS>) {
     $affil_len = length($affil_tmp);
 
     print FMTOUT "<a name=\"$alias\"";
+    print FMTOUT ' ' x (8 - (length($alias)));
     print FMTOUT " href=\"$homepage\"";
     print FMTOUT ">";
     print FMTOUT $fullname;
