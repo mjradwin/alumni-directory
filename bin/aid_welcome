@@ -2,15 +2,15 @@
 
 #
 # mails a welcome or update note to everyone in targets.adr
-# $Id: aid_welcome,v 3.23 1999/02/03 19:06:02 mradwin Exp mradwin $
+# $Id: aid_welcome,v 3.24 1999/02/05 18:49:28 mradwin Exp mradwin $
 #
 
 require 'aid_util.pl';
 require 'getopts.pl';
 require 'ctime.pl';
 
-$pname = 'aid_welcome';
-$usage = "usage: $pname [options] targets.adr
+$0 =~ s,.*/,,;  # basename
+$usage = "usage: $0 [options] targets.adr
     -h            Display usage information.
     -d <secs>     Sleep for <secs> seconds between sending e-mail
                   (default 10 for -m, 0 for all others).
@@ -120,10 +120,10 @@ listed below is forbidden.
 &Getopts('hd:r:ucm:l:') || die "$usage\n";
 $opt_h && die "$usage\n";
 $opt_h = $opt_h;                # avoid warning
-die "$pname: Too many mutually-exclusive options\n$usage\n"
+die "$0: Too many mutually-exclusive options\n$usage\n"
     if (($opt_c ? 1 : 0) + ($opt_u ? 1 : 0) + ($opt_m ? 1 : 0)) > 1;
-die "$pname: No target file specified\n$usage\n" unless $ARGV[0];
-die "$pname: Option -m requires -r\n$usage\n" 
+die "$0: No target file specified\n$usage\n" unless $ARGV[0];
+die "$0: Option -m requires -r\n$usage\n" 
     if defined($opt_m) && !defined($opt_r);
 
 %params = $opt_c ? %confirm_parameters : 
@@ -135,22 +135,22 @@ $logfile = $opt_l ? $opt_l :
     &aid_config('aiddir') . "logs/" . $params{'log'} . '.log';
 
 if ($opt_m) {
-    open(TEXTFILE,$opt_m) || die "$pname: Can't open $opt_m: $!\n";
+    open(TEXTFILE,$opt_m) || die "$0: Can't open $opt_m: $!\n";
     while(<TEXTFILE>) { $params{'textfile'} .= $_; }
     close(TEXTFILE);
 }
 
 $params{'sleep'} = $opt_d if defined $opt_d;
 
-open(LOG,">>$logfile") || die "$pname: Can't open $logfile: $!\n";
-open(TARGET,$ARGV[0]) || die "$pname: Can't open $ARGV[0]: $!\n";
+open(LOG,">>$logfile") || die "$0: Can't open $logfile: $!\n";
+open(TARGET,$ARGV[0]) || die "$0: Can't open $ARGV[0]: $!\n";
 
 select(LOG); $| = 1; select(STDOUT);
 
 $today = &ctime(time);
 chop $today;
 
-print LOG "# [$today] - $pname ", join(' ', @args), "\n";
+print LOG "# [$today] - $0 ", join(' ', @args), "\n";
 
 while(<TARGET>) {
     chop;

@@ -1,11 +1,12 @@
 #!/usr/bin/perl -w
 
-# $Id: aid_bounce,v 3.16 1998/11/03 22:26:28 mradwin Exp mradwin $
+# $Id: aid_bounce,v 3.17 1999/02/03 19:06:02 mradwin Exp mradwin $
 
 require 'getopts.pl';
 require 'aid_util.pl';
 
-$usage = 'usage: aid_bounce [-hv] [-f <log>] [ids...]
+$0 =~ s,.*/,,;  # basename
+$usage = "usage: $0 [-hv] [-f <log>] [ids...]
     -h        Display usage information.
     -v        Invalidate ids (clear valid bit).
     -u        Revalidate ids (zero bounce field and set valid bit).
@@ -16,7 +17,7 @@ $usage = 'usage: aid_bounce [-hv] [-f <log>] [ids...]
 
 Bumps up the bounce field for every id or e-mail address listed on the
 command line.
-';
+";
 
 &Getopts('hvf:du') || die "$usage\n";
 $opt_h && die "$usage\n";
