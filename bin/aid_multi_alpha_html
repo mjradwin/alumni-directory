@@ -2,7 +2,7 @@
 
 #
 # does the html verbose pages
-# $Id: aid_multi_alpha_html,v 3.27 1999/03/02 01:26:34 mradwin Exp mradwin $
+# $Id: aid_multi_alpha_html,v 3.28 1999/03/02 03:24:17 mradwin Exp mradwin $
 #
 
 require 'aid_util.pl';
@@ -64,6 +64,7 @@ dbmclose(DB);
 print FMTOUT "</pre>\n";
 print FMTOUT &common_html_ftr(1);
 close(FMTOUT);
+utime $time, $time, $outFile;
 
 # touch timestamp
 $now = time;
