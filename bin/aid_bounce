@@ -1,6 +1,6 @@
 #!/usr/local/bin/perl -w
 
-# $Id: aid_bounce,v 5.10 2001/09/16 16:57:51 mradwin Exp mradwin $
+# $Id: aid_bounce,v 5.11 2001/11/01 19:56:37 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -66,7 +66,7 @@ if ($opt_d)
     my($db) = tie(%DB, 'DB_File', $dbmfile, O_RDONLY, 0444, $DB_File::DB_HASH)
 	or die "$dbmfile: $!\n";
     my($fd) = $db->fd;
-    open(DB_FH, +<&=$fd") || die "dup $!";
+    open(DB_FH, "<&=$fd") || die "dup $!";
     unless (flock (DB_FH, LOCK_SH)) { die "flock: $!" }
 
     while (($key,$val) = each %DB)
