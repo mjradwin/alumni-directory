@@ -2,11 +2,11 @@
 #     FILE: aid_util.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: perl library routines for the Alumni Internet Directory
-#      $Id: aid_util.pl,v 2.21 1998/05/16 02:20:00 mradwin Exp mradwin $
+#      $Id: aid_util.pl,v 2.22 1998/05/16 02:56:58 mradwin Exp mradwin $
 #
 
 $aid_util'rcsid =
- '$Id: aid_util.pl,v 2.21 1998/05/16 02:20:00 mradwin Exp mradwin $';
+ '$Id: aid_util.pl,v 2.22 1998/05/16 02:56:58 mradwin Exp mradwin $';
 
 # ----------------------------------------------------------------------
 # CONFIGURATION
@@ -107,7 +107,7 @@ $aid_util'rcsid =
 
 @aid_util'second_idx = #'#
     (
-     "Add&nbsp;Your&nbsp;Entry!,"  . $aid_util'config{'master_path'} . "add.html",    #'#
+     "Add&nbsp;Your&nbsp;Entry!,"  . $aid_util'config{'master_path'} . "add.html", #'#
      "Reunions,"            . $aid_util'config{'master_path'} . "reunions.html", #'#
      "Links,"               . $aid_util'config{'master_path'} . "links.html",    #'#
      "Nicknames,"           . $aid_util'config{'master_path'} . "books/",        #'#
@@ -155,20 +155,24 @@ $aid_util'FIELD_SEP   = ";";   #'# character that separates fields in DB
 $aid_util'ID_INDEX    = 1;     #'# position that the ID key is in datafile
 @aid_util'field_names = #'# order is important!
     (
-     'time',
-     'id',
-     'request',
-     'last',
-     'first',
-     'married',
-     'school',
-     'year',
-     'email',
-     'homepage',
-     'location',
-     'created',
-     'inethost',
-     );
+    'id',			# numerical userid
+    'valid',			# bit describing status
+    'last',			# last name
+    'married',			# married name
+    'first',			# first name
+    'request',			# type of periodic emailing
+    'reunion',			# bit for reunion email request
+    'bounces',			# number of bounces since last verif.
+    'created',			# date of record creation
+    'time',			# date of last update
+    'fresh',			# date of last successful verification
+    'school',			# high school (MVHS or Awalt)
+    'year',			# 4-digit grad year or affiliation
+    'email',			# email address
+    'homepage',			# personal web page
+    'location',			# city, company, or college
+    'inethost',			# REMOTE_HOST of last update
+    );
 
 %aid_util'blank_entry =        #'# a prototypical blank entry to clone
     ();
@@ -178,7 +182,10 @@ for ($i = 0; $i <= $#aid_util'field_names; $i++) { #'#
 }
 
 $aid_util'blank_entry{'id'}      = -1;      #'#
+$aid_util'blank_entry{'valid'}   = 1;       #'#
 $aid_util'blank_entry{'request'} = 2;       #'#
+$aid_util'blank_entry{'reunion'} = 1;       #'#
+$aid_util'blank_entry{'bounces'} = 0;       #'#
 $aid_util'blank_entry{'message'} = '';      #'#
 $aid_util'blank_entry{'school'}  = $aid_util'config{'short_school'};
 
@@ -510,13 +517,14 @@ sub submit_body {
     local(*rec,$blankp) = @_;
     local(%newrec) = &main'rec_html_entify(*rec); #'#
     local($mvhs_checked,$awalt_checked,$other_checked) = ('', '', '');
-    local(@reqchk,$i);
+    local(@reqchk,$i,$reunion_chk);
 
     $newrec{'homepage'} = 'http://' if $newrec{'homepage'} eq '';
 
     for ($i = 0; $i < 3; $i++) {
 	$reqchk[$i] = ($newrec{'request'} == $i) ? ' checked' : '';
     }
+    $reunion_chk = ($newrec{'reunion'} == 1) ? ' checked' : '';
 
     if ($newrec{'school'} eq $config{'short_school'} || 
 	$newrec{'school'} eq '') {
@@ -610,7 +618,7 @@ are required.  All other fields are optional.</p>\n\n";
   value=\"$newrec{'email'}\"></td>
 </tr>
 <tr>
-  <td colspan=2 valign=top><font color=\"#$cell_fg\">Web Page</font></td>
+  <td colspan=2 valign=top><font color=\"#$cell_fg\">Personal Web Page</font></td>
   <td valign=top><input type=text name=\"homepage\" size=35
   value=\"$newrec{'homepage'}\"></td>
 </tr>
@@ -629,7 +637,9 @@ are required.  All other fields are optional.</p>\n\n";
   </td>
 </tr>
 <tr>
-  <td colspan=3><font color=\"#$cell_fg\"><br>Please 
+  <td colspan=3><font color=\"#$cell_fg\"><input type=checkbox
+  name=\"reunion\"$reunion_chk>&nbsp;&nbsp;My class officers may notify me of
+  reunion information via email.<br><br>Please 
   <a href=\"" . $config{'master_path'} . "tech.html#mailings\">send 
   an updated copy</a> of the Directory to my email address every 3 
   months:<br>
@@ -649,6 +659,7 @@ are required.  All other fields are optional.</p>\n\n";
 <input type=\"reset\" value=\"Start Over\">
 <input type=\"hidden\" name=\"id\" value=\"$newrec{'id'}\">
 <input type=\"hidden\" name=\"created\" value=\"$newrec{'created'}\">
+<input type=\"hidden\" name=\"valid\" value=\"1\">
 </td></tr></table>
 </form>
 
@@ -757,7 +768,7 @@ sub aid_write_verbose_entry {
     }
 
     print FMTOUT "<dt>Email: <code><strong><a href=\"mailto:$rec{'email'}\">$rec{'email'}</a></strong></code></dt>\n";
-    print FMTOUT "<dt>Web Page: <code><strong><a href=\"$rec{'homepage'}\">$rec{'homepage'}</a></strong></code></dt>\n"
+    print FMTOUT "<dt>Personal Web Page: <code><strong><a href=\"$rec{'homepage'}\">$rec{'homepage'}</a></strong></code></dt>\n"
 	if $rec{'homepage'} ne '';
     print FMTOUT "<dt>Location: <strong>$rec{'location'}</strong></dt>\n"
 	if $rec{'location'} ne '';
@@ -841,7 +852,7 @@ sub about_text {
     $retval .= "</a></strong>" if $do_html_p;
     $retval .= "\n";
 
-    $retval .= "Web Page           : ";
+    $retval .= "Personal Web Page  : ";
     $retval .= ($newrec{'homepage'} eq '') ? "(none)\n" :
 	((($do_html_p) ? "<strong><a href=\"$newrec{'homepage'}\">" : "") .
 	 $newrec{'homepage'} . 
@@ -864,10 +875,14 @@ sub about_text {
 
     if ($show_req_p) {
 	$retval .= "\n";
+	$retval .= "Reunion Info Okay  : ";
+	$retval .= ($newrec{'reunion'} == 1) ?
+	    "yes\n" : "no\n";
 	$retval .= "Send Email Updates : ";
 	$retval .= ($newrec{'request'} == 2) ?
 	    "yes (sorted by graduating class)\n" :
-	    ($newrec{'request'} == 1) ? "yes (sorted by name)\n" : "no\n";
+	    ($newrec{'request'} == 1) ? "yes (sorted by name)\n" : 
+		"only address verification\n";
     } 
 
     if ($newrec{'time'} ne '' && $newrec{'time'} != 0 &&
