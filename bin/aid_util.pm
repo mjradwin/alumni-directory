@@ -2,11 +2,11 @@
 #     FILE: aid_util.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: perl library routines for the Alumni Internet Directory
-#      $Id: aid_util.pl,v 3.68 1998/10/27 19:09:19 mradwin Exp mradwin $
+#      $Id: aid_util.pl,v 3.69 1998/10/28 19:48:44 mradwin Exp mradwin $
 #
 
 $aid_util'rcsid =
- '$Id: aid_util.pl,v 3.68 1998/10/27 19:09:19 mradwin Exp mradwin $';
+ '$Id: aid_util.pl,v 3.69 1998/10/28 19:48:44 mradwin Exp mradwin $';
 
 # ----------------------------------------------------------------------
 # CONFIGURATION
@@ -1080,14 +1080,17 @@ sub common_html_hdr {
     package aid_util;
 
     local($page,$title,$norobots) = @_;
-    local($hdr,$result,$timestamp,$titletag);
+    local($hdr,$tablehdr,$timestamp,$titletag);
     local($date) = &main'ctime(time);  #'#
 
     chop $date;
     $timestamp = (($page == 0) ? 'Last update to Directory: ' :
 		  'Last update to this page: ') . $date;
 
-    $result = &main'tableheader_internal($title,1,$header_fg); #'#
+    $tablehdr = $title eq '' ? '' :
+	"    <!-- \"$title\" -->\n    <strong>" .
+	&main'tableheader_internal($title,1,$header_fg) . #'#
+	    "</strong>\n\n";
 
     $titletag = ($page == 0) ?
 	($config{'school'} . " Alumni Internet Directory") :
@@ -1109,7 +1112,7 @@ sub common_html_hdr {
     
     $hdr .= "
 <center>
-<table cellspacing=0 cellpadding=6 border=1 width=\"100%\">
+<table cellspacing=0 cellpadding=6 border=0 width=\"100%\">
   <tr>
     <td bgcolor=\"#$header_bg\" valign=middle><p align=left><font size=\"+2\"
     color=\"#$header_fg\"><strong><code>$config{'school'} Alumni
@@ -1120,8 +1123,7 @@ sub common_html_hdr {
   </tr>
   <tr>
     <td bgcolor=\"#$cell_bg\" align=center valign=middle>
-    <strong>$result</strong>
-";
+$tablehdr";
     $hdr .= &main'common_link_table($page); #'#
     $hdr .= "    </td>
   </tr>
