@@ -2,7 +2,7 @@
 
 #
 # does the html multi_class pages
-# $Id: aid_multi_class_html,v 5.18 2000/07/13 21:01:16 mradwin Exp mradwin $
+# $Id: aid_multi_class_html,v 5.19 2000/12/06 19:55:53 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -182,7 +182,13 @@ foreach $year (@years)
 		$title = $key;
 	    }
 
-	    print FMTOUT "<li><a href=\"",  &main::aid_config('master_path'),
+	    my($t) = &Time::Local::timelocal(59,59,23,$mday,$mon-1,$yr-1900,
+					     0,0,0);
+	    my($prefix) = 'Past';
+	    $prefix = 'Upcoming' if ($t > time);
+
+	    print FMTOUT "<li>$prefix:\n",
+	    "<a href=\"",  &main::aid_config('master_path'),
 	    "etc/reunions.html#$refname\">$title</a>\n($long_date)</li>\n";
 	}
 	print FMTOUT "</ul>\n<hr noshade=\"noshade\" size=\"1\">\n\n";
