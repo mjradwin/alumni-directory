@@ -4,7 +4,7 @@
 #     FILE: msg.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: Alumni Internet Directory update redirector
-#      $Id: msg,v 6.5 2003/08/27 20:23:31 mradwin Exp mradwin $
+#      $Id: msg,v 6.6 2003/08/27 20:44:42 mradwin Exp mradwin $
 #
 #   Copyright (c) 2003  Michael John Radwin
 #
@@ -137,6 +137,10 @@ _EOHTML_
 	'local_tests_only' => 1,
 	'rules_filename' => '/pub/m/r/mradwin/private/share/spamassassin',
     });
+
+    # avoid waring "Failed to create default user preference file
+    #               /var/www/.spamassassin/user_prefs"
+    $spam_test->compile_now(0);
 
     my $spam_status = $spam_test->check_message_text($spam_headers . $message);
     if ($spam_status->is_spam()) {
