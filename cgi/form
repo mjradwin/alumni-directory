@@ -4,7 +4,7 @@
 #     FILE: form.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: Alumni Internet Directory CGI form-submission interface
-#      $Id: form,v 5.28 2000/05/31 05:21:52 mradwin Exp mradwin $
+#      $Id: form,v 5.29 2000/05/31 16:25:46 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -36,7 +36,7 @@ use CGI::Carp qw(fatalsToBrowser);
 # configuration
 $dbmfile = &aid_config('dbmfile');
 
-$rcsid = '$Id: form,v 5.28 2000/05/31 05:21:52 mradwin Exp mradwin $'; #'fnt
+$rcsid = '$Id: form,v 5.29 2000/05/31 16:25:46 mradwin Exp mradwin $'; #'fnt
 
 $listing_upd_title = 'Modify Your Directory Listing';
 $listing_upl_title = 'Select a Listing to Modify';
@@ -411,7 +411,7 @@ verification code, please enter this code:
 
 $randkey
 
-3. Then click on the \"Verify my e-mail address\" button.
+3. Then click on the \"Submit verification code\" button.
 
 
 WAS THIS EMAIL SENT TO THE WRONG ADDRESS?
@@ -467,7 +467,7 @@ Alumni Robot and enter it below.</p>
 &nbsp;
 <input id=\"k\" type=\"text\" size=\"8\" maxlength=\"8\" name=\"k\" value=\"\">
 &nbsp;
-<input type=\"submit\" value=\"Verify my e-mail address\">
+<input type=\"submit\" value=\"Submit verification code\">
 </form>
 ";
 

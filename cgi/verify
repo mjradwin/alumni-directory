@@ -4,7 +4,7 @@
 #     FILE: verify.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: CGI for verifcation of e-mail address
-#      $Id: verify,v 1.2 2000/05/30 23:57:58 mradwin Exp mradwin $
+#      $Id: verify,v 1.3 2000/05/31 00:24:53 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-2000  Michael John Radwin
 #
@@ -131,7 +131,7 @@ Alumni Robot and enter it below.</p>
 &nbsp;
 <input id=\"k\" type=\"text\" size=\"8\" maxlength=\"8\" name=\"k\" value=\"\">
 &nbsp;
-<input type=\"submit\" value=\"Verify my e-mail address\">
+<input type=\"submit\" value=\"Submit verification code\">
 </form>
 ";
 
