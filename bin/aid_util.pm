@@ -2,7 +2,7 @@
 #     FILE: aid_util.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: perl library routines for the Alumni Internet Directory
-#      $Id: aid_util.pl,v 5.107 2003/02/20 01:20:54 mradwin Exp mradwin $
+#      $Id: aid_util.pl,v 5.108 2003/02/20 01:30:51 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -575,8 +575,8 @@ sub aid_verbose_entry {
     }
 
     $retval .= "<dt>E-mail: <tt><b>";
-    $retval .= ("<a\nhref=\"" . $config{'message_cgi'} . 
-		"?to=" . $rec{'id'} . "\">")
+    $retval .= ("<a\ntitle=\"Send a message to $fullname\"\nhref=\"" .
+		$config{'message_cgi'} .  "?to=" . $rec{'id'} . "\">")
 	if $rec{'v'};
     $retval .= &main::aid_protect_email($rec{'e'});
     $retval .= "</a>" if $rec{'v'};
