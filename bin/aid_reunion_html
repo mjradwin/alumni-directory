@@ -3,7 +3,7 @@
 #
 # generates reunion info page
 #
-# $Id: aid_reunion_html,v 1.19 2003/05/15 00:30:45 mradwin Exp $
+# $Id: aid_reunion_html,v 6.1 2003/08/25 04:10:32 mradwin Exp mradwin $
 #
 #   Copyright (c) 2003  Michael J. Radwin
 #
@@ -22,16 +22,14 @@
 #   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #
 
-$dirname = $0;
-$dirname =~ s,/[^/]+$,,;
-unshift(@INC, $dirname);
-
+use FindBin;
+use lib $FindBin::Bin;
 use lib "/pub/m/r/mradwin/private/lib/perl5/site_perl";
+
 use DB_File::Lock;
 use Time::Local;
-
-use aid_util;
 use Getopt::Std;
+use aid_util;
 
 $0 =~ s,.*/,,;  # basename
 my $usage = "usage: $0 [-h] reunions.db outfile
@@ -49,18 +47,18 @@ tie(%DB, 'DB_File::Lock', $dbmfile, O_RDONLY, 0444, $DB_HASH, 'read')
     or die "$dbmfile: $!\n";
 
 $outfile = shift;
-open(FMTOUT,">$outfile") || die "Can't open $outfile: $!\n";
+open($FH,">$outfile") || die "Can't open $outfile: $!\n";
 
 die "corrupt/missing _t key!" unless defined $DB{'_t'} && $DB{'_t'} ne '';
 $time = unpack("N",$DB{'_t'});
 
-print FMTOUT aid_util::common_html_hdr(11,'Reunion Information',0,$time);
+print $FH aid_util::common_html_hdr(11,'Reunion Information',0,$time);
 
-$admin = aid_config('admin_email');
+$admin = aid_util::config('admin_email');
 $admin =~ s/@/\&#64;/g;
 $admin =~ s/\./\&#46;/g;
 
-print FMTOUT <<END_OF_HTML;
+print $FH <<END_OF_HTML;
 <h2>Alumni: help keep this page up-to-date!</h2>
 
 <p>If your class reunion isn't listed here, first try to contact your
@@ -106,15 +104,15 @@ while (my($key,$val) = each(%DB))
 }
 untie(%DB);
 
-print FMTOUT "<h2>Upcoming reunions</h2>\n";
-aid_util::write_reunion_hash(*FMTOUT, \%upcoming);
+print $FH "<h2>Upcoming reunions</h2>\n";
+aid_util::write_reunion_hash($FH, \%upcoming);
 
-print FMTOUT "<h2>Past reunions</h2>\n";
-aid_util::write_reunion_hash(*FMTOUT, \%past);
+print $FH "<h2>Past reunions</h2>\n";
+aid_util::write_reunion_hash($FH, \%past);
 
-print FMTOUT aid_util::common_html_ftr(11,$time);
+print $FH aid_util::common_html_ftr(11,$time);
 
-close(FMTOUT);
+close($FH);
 utime $time, $time, $outfile;
 
 # touch timestamp

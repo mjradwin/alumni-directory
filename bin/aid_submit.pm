@@ -2,7 +2,7 @@
 #     FILE: aid_submit.pm
 #   AUTHOR: Michael J. Radwin
 #    DESCR: submission form for Alumni Internet Directory
-#      $Id: aid_submit.pl,v 5.17 2002/07/08 01:14:59 mradwin Exp $
+#      $Id: aid_submit.pm,v 6.1 2003/08/25 04:10:32 mradwin Exp mradwin $
 #
 #   Copyright (c) 2003  Michael J. Radwin
 #
@@ -26,13 +26,13 @@ use strict;
 
 package aid_submit;
 
-sub aid_submit_body
+sub submit_body
 {
-    my($rec_arg,$empty_fields,$star_fg,$field_descr) = @_;
+    my($rec_arg,$empty_fields) = @_;
     my($body,$instr);
     my(@reqradio,$i,$reunion_chk,@empty_fields,$prev_email);
 
-    my %rec = aid_util::aid_html_entify_rec($rec_arg);
+    my %rec = aid_util::html_entify_rec($rec_arg);
 
     $prev_email = defined $rec{'pe'} ? 
 	$rec{'pe'} : $rec{'e'};
@@ -45,7 +45,7 @@ sub aid_submit_body
 	$rec{'r'} = $aid_util::blank_entry{'r'};
     }
 
-    for ($i = 0; $i <= @aid_util::req_descr_long; $i++) 
+    for ($i = 0; $i < @aid_util::req_descr_long; $i++) 
     {
 	$reqradio[$i] = "
   &nbsp;&nbsp;&nbsp;&nbsp;<input type=\"radio\" name=\"q\" id=\"q$i\"
@@ -57,13 +57,13 @@ sub aid_submit_body
 
     $body = '';
 
-    if ($rec{'yr'} =~ /^\d+$/ && $rec{'yr'} > aid_config('max_gradyear'))
+    if ($rec{'yr'} =~ /^\d+$/ && $rec{'yr'} > aid_util::config('max_gradyear'))
     {
 	$body .= "<p><strong><font color=\"red\">Your graduating class\n" .
 		 "(<code>" . $rec{'yr'} . "</code>)\n" .
 		 "appears to be invalid.</font>\n" .
 		 "<br>It must be no later than " .
-		 aid_config('max_gradyear') .
+		 aid_util::config('max_gradyear') .
 		 ".</strong></p>\n\n";
 
 	$empty_fields =~ s/\byr\b//g;
@@ -107,13 +107,13 @@ sub aid_submit_body
 
 	    foreach my $ef (@empty_fields)
 	    {
-		$body .= "<li>" . $field_descr->{$ef} . "</li>\n";
+		$body .= "<li>" . $aid_util::field_descr->{$ef} . "</li>\n";
 	    }
 	    $body .= "</ul>\n\n";
 	}
     }
 
-    my $star = "<font color=\"#$star_fg\">*</font>";
+    my $star = "<font color=\"#$aid_util::star_fg\">*</font>";
 
     $instr = "<p>Please " . (($rec{'id'} != -1) ? "update" : "enter") .
     " the following information about yourself.<br>
@@ -127,20 +127,20 @@ School?</font>
 Please add your listing  to the<br>
 <a href=\"/awalt/\">Awalt High School Alumni Internet Directory</a>
 instead.</p>
-" if $rec{'id'} == -1 && aid_config('school') eq 'Mountain View High School';
+" if $rec{'id'} == -1 && aid_util::config('school') eq 'Mountain View High School';
 
-    $body .= "\n<form method=\"post\" action=\"" . aid_config('submit_cgi');
+    $body .= "\n<form method=\"post\" action=\"" . aid_util::config('submit_cgi');
     $body .= "/$rec{'id'}" if $rec{'id'} != -1;
     $body .= "/new" if $rec{'id'} == -1;
     $body .= "\">\n\n" . $instr . "\n\n";
     
-    my $ss = aid_config('short_school');
-    my $mp = aid_config('master_path');
+    my $ss = aid_util::config('short_school');
+    my $mp = aid_util::config('master_path');
 
     $body .= "<table border=\"0\" cellspacing=\"7\">
 
-<tr><td colspan=\"3\" bgcolor=\"#$header_bg\">
-<font color=\"#$header_fg\"><big><strong class=\"hl\">1.
+<tr><td colspan=\"3\" bgcolor=\"#$aid_util::header_bg\">
+<font color=\"#$aid_util::header_fg\"><big><strong class=\"hl\">1.
 Full Name</strong></big></font>
 </td></tr>
 <tr>
@@ -174,8 +174,8 @@ Full Name</strong></big></font>
   value=\"$rec{'mn'}\" id=\"mn\"><br><br></td>
 </tr>
 
-<tr><td colspan=\"3\" bgcolor=\"#$header_bg\">
-<font color=\"#$header_fg\"><big><strong class=\"hl\">2.
+<tr><td colspan=\"3\" bgcolor=\"#$aid_util::header_bg\">
+<font color=\"#$aid_util::header_fg\"><big><strong class=\"hl\">2.
 Graduating Class while at $ss</strong></big></font>
 </td></tr>
 <tr>
@@ -187,8 +187,8 @@ Graduating Class while at $ss</strong></big></font>
   value=\"$rec{'yr'}\" id=\"yr\"><br><br></td>
 </tr>
 
-<tr><td colspan=\"3\" bgcolor=\"#$header_bg\">
-<font color=\"#$header_fg\"><big><strong class=\"hl\">3.
+<tr><td colspan=\"3\" bgcolor=\"#$aid_util::header_bg\">
+<font color=\"#$aid_util::header_fg\"><big><strong class=\"hl\">3.
 Contact Info</strong></big></font>
 </td></tr>
 <tr>
@@ -215,8 +215,8 @@ Contact Info</strong></big></font>
   value=\"$rec{'l'}\" id=\"l\"><br><br></td>
 </tr>
 
-<tr><td colspan=\"3\" bgcolor=\"#$header_bg\">
-<font color=\"#$header_fg\"><big><strong class=\"hl\">4.
+<tr><td colspan=\"3\" bgcolor=\"#$aid_util::header_bg\">
+<font color=\"#$aid_util::header_fg\"><big><strong class=\"hl\">4.
 What's New?</strong></big></font>
 </td></tr>
 <tr>
@@ -230,8 +230,8 @@ What's New?</strong></big></font>
   </td>
 </tr>
 
-<tr><td colspan=\"3\" bgcolor=\"#$header_bg\">
-<font color=\"#$header_fg\"><big><strong class=\"hl\">5.
+<tr><td colspan=\"3\" bgcolor=\"#$aid_util::header_bg\">
+<font color=\"#$aid_util::header_fg\"><big><strong class=\"hl\">5.
 E-mail Preferences</strong></big></font>
 </td></tr>
 <tr>
@@ -264,8 +264,8 @@ E-mail Preferences</strong></big></font>
   </td>
 </tr>
 
-<tr><td colspan=\"3\" bgcolor=\"#$header_bg\">
-<font color=\"#$header_fg\"><big><strong class=\"hl\">6.
+<tr><td colspan=\"3\" bgcolor=\"#$aid_util::header_bg\">
+<font color=\"#$aid_util::header_fg\"><big><strong class=\"hl\">6.
 Preview Listing</strong></big></font>
 </td></tr>
 

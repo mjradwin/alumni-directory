@@ -1,6 +1,6 @@
 #!/usr/local/bin/perl -w
 
-# $Id: aid_grep_bounce,v 5.11 2003/05/15 00:30:45 mradwin Exp $
+# $Id: aid_grep_bounce,v 6.1 2003/08/25 04:10:32 mradwin Exp mradwin $
 #
 #   Copyright (c) 2003  Michael J. Radwin
 #
@@ -19,6 +19,8 @@
 #   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #
 
+use FindBin;
+use lib $FindBin::Bin;
 $dirname = $0;
 $dirname =~ s,/[^/]+$,,;
 unshift(@INC, $dirname);

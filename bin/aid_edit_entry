@@ -1,6 +1,6 @@
 #!/usr/local/bin/perl -w
 
-# $Id: aid_edit_entry,v 5.21 2003/05/15 00:30:45 mradwin Exp $
+# $Id: aid_edit_entry,v 6.1 2003/08/25 04:10:32 mradwin Exp mradwin $
 #
 #   Copyright (c) 2003  Michael J. Radwin
 #
@@ -19,15 +19,13 @@
 #   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #
 
-$dirname = $0;
-$dirname =~ s,/[^/]+$,,;
-unshift(@INC, $dirname);
-
+use FindBin;
+use lib $FindBin::Bin;
 use lib "/pub/m/r/mradwin/private/lib/perl5/site_perl";
-use DB_File::Lock;
 
-use aid_util;
+use DB_File::Lock;
 use Getopt::Std;
+use aid_util;
 
 $0 =~ s,.*/,,;  # basename
 my $usage = "usage: $0 [-hduf] infile.db userid
@@ -104,7 +102,7 @@ $note_end_str = '_AID_END_NOTE_';
 $tmpfile = '/tmp/aid_edit_entry.' . $$;
 
 open(TMPFILE,">$tmpfile") || die "$tmpfile: $!\n";
-print TMPFILE '# $Id: aid_edit_entry,v 5.21 2003/05/15 00:30:45 mradwin Exp $', "\n";
+print TMPFILE '# $Id: aid_edit_entry,v 6.1 2003/08/25 04:10:32 mradwin Exp mradwin $', "\n";
 print TMPFILE "# record last touched: ",
  (($rec{'f'} > $rec{'b'}) ?
   scalar(localtime($rec{'f'})) :
@@ -162,7 +160,7 @@ close(TMPFILE);
 # note and id are special cases
 $newrec{'n'} = $note if defined $note;
 $newrec{'id'} = $id unless defined $newrec{'id'};
-$newrec{'a'} = aid_util::generate_alias(*newrec)
+$newrec{'a'} = aid_util::generate_alias(\%newrec)
     unless (defined $newrec{'a'} && $newrec{'a'} ne '');
 
 if ($id != $newrec{'id'})
@@ -202,7 +200,7 @@ elsif ($changed == 1)
 
     $newrec{'u'} = $newrec{'f'} = time
 	if (!$opt_u && $newrec{'u'} == $rec{'u'} && $newrec{'f'} == $rec{'f'});
-    $DB{$newrec{'id'}} = aid_util::db_pack_rec(*newrec);
+    $DB{$newrec{'id'}} = aid_util::db_pack_rec(\%newrec);
 
     # if the id or email has changed, we need to redo the mapping
     if ($id != $newrec{'id'} || $rec{'e'} ne $newrec{'e'})

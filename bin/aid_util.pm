@@ -2,7 +2,7 @@
 #     FILE: aid_util.pm
 #   AUTHOR: Michael J. Radwin
 #    DESCR: perl library routines for the Alumni Internet Directory
-#      $Id: aid_util.pl,v 5.113 2003/08/25 01:38:10 mradwin Exp mradwin $
+#      $Id: aid_util.pm,v 6.1 2003/08/25 04:10:32 mradwin Exp mradwin $
 #
 #   Copyright (c) 2003  Michael J. Radwin
 #
@@ -28,7 +28,10 @@ use Net::SMTP;
 use Time::Local;
 use POSIX qw(strftime);
 
+use FindBin;
+use lib $FindBin::Bin;
 require 'school_config.pl';
+
 use strict;
 
 package aid_util;
@@ -160,15 +163,13 @@ my %image_tag =
      "<b>&nbsp;&nbsp;&nbsp;</b>",
      );
 
-my %config = ();
-
 # give 'em back the configuration variable they need
 sub config
 {
     my($i) = @_;
 
-    die "NO CONFIG $i!" if !defined($config{$i});
-    $config{$i};
+    die "NO CONFIG $i!" if !defined($aid_util::config{$i});
+    $aid_util::config{$i};
 }
 
 # give 'em back the image_tag they need
@@ -220,9 +221,9 @@ sub is_new_html
 {
     my($rec) = @_;
 
-    if (aid_is_new($rec->{'u'}))
+    if (is_new($rec->{'u'}))
     {
-	if (aid_is_new($rec->{'c'}))
+	if (is_new($rec->{'c'}))
         {
 	    "\n&nbsp;" . $image_tag{'new'};
 	}
@@ -309,7 +310,7 @@ sub affiliate
 	$affil .= "<a href=\"" .
 	    about_path($rec,1) . "\">" 
 	    if $do_html_p;
-	$tmp    = '[' . $config{'short_school'} . ' ' . $rec->{'yr'} . ']';
+	$tmp    = '[' . $aid_util::config{'short_school'} . ' ' . $rec->{'yr'} . ']';
 	$affil .= $tmp;
 	$len   += length($tmp);
 	$affil .= "</a>" if $do_html_p;
@@ -383,8 +384,8 @@ sub vcard_path
 {
     my($rec) = @_;
 
-    $config{'vcard_cgi'} . '/' . $rec->{'id'} . '/' . 
-	aid_mangle($rec->{'gn'}) . mangle($rec->{'sn'}) . 
+    $aid_util::config{'vcard_cgi'} . '/' . $rec->{'id'} . '/' . 
+	mangle($rec->{'gn'}) . mangle($rec->{'sn'}) . 
 	    mangle($rec->{'mn'}) . '.vcf';
 }
 
@@ -408,7 +409,7 @@ sub yahoo_abook_path
     $url .= '&amp;nn=' . url_escape($rec->{'a'}); 
     $url .= '&amp;e='  . url_escape($rec->{'e'}); 
     $url .= '&amp;pp=0';
-    $url .= '&amp;co=' . $config{'short_school'};
+    $url .= '&amp;co=' . $aid_util::config{'short_school'};
     if ($rec->{'yr'} =~ /^\d+$/) {
 	$url .= '+Class+of+' . $rec->{'yr'};
     } else {
@@ -435,8 +436,8 @@ sub yahoo_abook_path
     }
 
     $url .= '&amp;.done=' .
-	aid_url_escape('http://' . $config{'master_srv'} . 
-	    $config{'master_path'});
+	url_escape('http://' . $aid_util::config{'master_srv'} . 
+	    $aid_util::config{'master_path'});
 
     $url;
 }
@@ -449,7 +450,7 @@ sub about_path
     my($page) = ($rec->{'yr'} =~ /^\d+$/) ? $rec->{'yr'} : 'other';
     my($anchor) = ($suppress_anchor_p) ? '' : "#id-$rec->{'id'}";
 
-    "$config{'master_path'}class/${page}.html${anchor}";
+    "$aid_util::config{'master_path'}class/${page}.html${anchor}";
 }
 
 sub html_entify_str
@@ -499,7 +500,7 @@ sub verification_message
     $body = inorder_fullname($rec) . ",
 
 You recently were asked to verify your e-mail address
-with the " . $config{'short_school'} . " Alumni Internet Directory.
+with the " . $aid_util::config{'short_school'} . " Alumni Internet Directory.
 
 Please follow the instructions below to complete the
 verification process.
@@ -510,7 +511,7 @@ TO VERIFY YOUR ADDRESS:
 links, click the following link.  If not, enter the URL
 into your browser:
 
-http://" . $config{'master_srv'} . $config{'verify_cgi'} . "?$randkey
+http://" . $aid_util::config{'master_srv'} . $aid_util::config{'verify_cgi'} . "?$randkey
 
 2. If the page asks you to enter your 8-letter
 verification code, please enter this code:
@@ -526,7 +527,7 @@ If you did not request this confirmation, you can
 remove your e-mail address from our database by
 clicking on the following link:
 
-http://" . $config{'master_srv'} . $config{'remove_cgi'} . "?$randkey
+http://" . $aid_util::config{'master_srv'} . $aid_util::config{'remove_cgi'} . "?$randkey
 
 If this link does not work for you, please reply to
 this message with the word REMOVE in the subject line
@@ -535,14 +536,14 @@ your reply).
 
 Regards,
 
-" . $config{'short_school'} . " Alumni Internet Directory
-http://" . $config{'master_srv'} . $config{'master_path'} . "\n";
+" . $aid_util::config{'short_school'} . " Alumni Internet Directory
+http://" . $aid_util::config{'master_srv'} . $aid_util::config{'master_path'} . "\n";
 
-    $return_path = $config{'devnull_email'};
-    $from = $config{'short_school'} . ' Alumni Robot';
-    $subject = $config{'short_school'} .
+    $return_path = $aid_util::config{'devnull_email'};
+    $from = $aid_util::config{'short_school'} . ' Alumni Robot';
+    $subject = $aid_util::config{'short_school'} .
 	" Alumni Internet Directory Verification [$randkey]";
-    $xtrahead = "Reply-To: " . $config{'admin_email'};
+    $xtrahead = "Reply-To: " . $aid_util::config{'admin_email'};
 
     ($return_path,$from,$subject,$xtrahead,$body,$name,$rec->{'e'});
 }
@@ -560,7 +561,7 @@ sub sendmail_v2
     my($return_path,$from,$subject,$xtrahead,$body,@recip) = @_;
     my($message,$i,$to,$cc,@targets);
 
-    my($smtp) = Net::SMTP->new($config{'smtp_svr'}, Timeout => 30);
+    my($smtp) = Net::SMTP->new($aid_util::config{'smtp_svr'}, Timeout => 30);
     unless ($smtp) {
 	return 0;
     }
@@ -584,7 +585,7 @@ sub sendmail_v2
     $message =
 "From: $from <$return_path>
 To: $to
-${cc}Organization: $config{'school'} Alumni Internet Directory
+${cc}Organization: $aid_util::config{'school'} Alumni Internet Directory
 ${xtrahead}MIME-Version: 1.0
 Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: QUOTED-PRINTABLE
@@ -657,9 +658,9 @@ sub verbose_entry
 	    "<a\nhref=\"" .
 	    vcard_path($rec_arg) . "\">" . 
 	    "vCard</a> | " .
-	    "<a\nhref=\"" . $config{'about_cgi'} .
+	    "<a\nhref=\"" . $aid_util::config{'about_cgi'} .
 	    "/$rec{'id'}\">modify</a> | <a\n" .
-	    "href=\"" .  $config{'yab_cgi'} . "/$rec{'id'}\">" .
+	    "href=\"" .  $aid_util::config{'yab_cgi'} . "/$rec{'id'}\">" .
 	    "add to Y! address book</a></small>";
 #	$retval .= "</dt>";
 	$retval .= "\n";
@@ -686,7 +687,7 @@ sub verbose_entry
 
     $retval .= "<dt>E-mail: <tt><b>";
     $retval .= ("<a\ntitle=\"Send a message to $fullname\"\nhref=\"" .
-		$config{'message_cgi'} .  "?to=" . $rec{'id'} . "\">")
+		$aid_util::config{'message_cgi'} .  "?to=" . $rec{'id'} . "\">")
 	if $rec{'v'} && $rec{'id'} > 0;
     $retval .= protect_email($rec{'e'});
     $retval .= "</a>" if $rec{'v'};
@@ -736,7 +737,7 @@ sub vcard_text
     $retval  = "Begin:vCard\015\012";
     $retval .= $v_n;
     $retval .= $v_fn;
-    $retval .= "ORG:" . $config{'short_school'} . ";";
+    $retval .= "ORG:" . $aid_util::config{'short_school'} . ";";
     if ($rec->{'yr'} =~ /^\d+$/) {
 	$retval .= "Class of $rec->{'yr'}\015\012";
     } else {	
@@ -774,7 +775,7 @@ sub about_text
     $retval .= inorder_fullname($rec) . "\n";
 
     if ($rec->{'yr'} =~ /^\d+$/) {
-	$retval .= $config{'short_school'} . " Class of " . $rec->{'yr'} . "\n";
+	$retval .= $aid_util::config{'short_school'} . " Class of " . $rec->{'yr'} . "\n";
     } else {
 	$retval .= "Affiliation: " . $rec->{'yr'} . "\n\n";
     }
@@ -821,7 +822,7 @@ sub common_intro_para
     "<small>Were you previously listed but now your name isn't here?  If\n" .
     "e-mail to you has failed to reach you for more than 6 months, your\n" .
     "listing has been moved to the\n" .
-    "<a href=\"" . $config{'master_path'} . "invalid.html\">invalid\n" .
+    "<a href=\"" . $aid_util::config{'master_path'} . "invalid.html\">invalid\n" .
     "e-mail addresses</a> page.\n</small>\n\n";
 }
 
@@ -839,11 +840,11 @@ sub common_html_ftr
     $ftr .= scalar(localtime($time));
     $ftr .= "<!-- hhmts end -->\n<br>\n";
     $ftr .= "<a href=\"" . $aid_util::copyright_path . "\">" .
-	"Copyright</a>\n&copy; $year " . $config{'admin_name'} . 
+	"Copyright</a>\n&copy; $year " . $aid_util::config{'admin_name'} . 
 	".  All rights reserved.\n" .
 	"<br><br>\n";
     $ftr .= $aid_util::disclaimer . "\n" .
-	"<a\nhref=\"" . $config{'master_path'} .
+	"<a\nhref=\"" . $aid_util::config{'master_path'} .
 	"etc/privacy.html\">More info on privacy</a>." .
 	"</small>\n</body>\n</html>\n";
 
@@ -856,15 +857,15 @@ sub common_html_hdr
     my($page,$title,$norobots,$time,$subtitle,$extra_meta) = @_;
     my($hdr,$titletag,$srv_nowww,$descr);
     my($timestamp) =
-	aid_caldate((defined $time && $time ne '') ? $time : time); 
+	caldate((defined $time && $time ne '') ? $time : time); 
 
     $title = html_entify_str($title);
     $subtitle = html_entify_str($subtitle)
 	if defined $subtitle;
 
     $titletag = ($page == 0) ?
-	($config{'school'} . " Alumni Internet Directory") :
-	($config{'short_school'} . " Alumni: " . $title);
+	($aid_util::config{'school'} . " Alumni Internet Directory") :
+	($aid_util::config{'short_school'} . " Alumni: " . $title);
 
     $hdr  = 
 	"<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\"\n" .
@@ -876,12 +877,12 @@ sub common_html_hdr
     # do stylesheet before the rest of the meta tags on the theory that
     # early evaluation is good
     $hdr .= "<link rel=\"stylesheet\" type=\"text/css\" href=\"http://";
-    $hdr .= $config{'master_srv'} . $config{'master_path'};
+    $hdr .= $aid_util::config{'master_srv'} . $aid_util::config{'master_path'};
     $hdr .= "default.css\">\n";
 
     # Rich Site Summary
     $hdr .= "<link rel=\"alternate\" type=\"application/rss+xml\" title=\"RSS\" href=\"http://";
-    $hdr .= $config{'master_srv'} . $config{'master_path'};
+    $hdr .= $aid_util::config{'master_srv'} . $aid_util::config{'master_path'};
     $hdr .= "summary.rdf\">\n";
 
     $hdr .= $aid_util::pics_label .
@@ -900,15 +901,15 @@ sub common_html_hdr
     
     $hdr .= "<body>\n";
 
-    $srv_nowww =  $config{'master_srv'};
+    $srv_nowww =  $aid_util::config{'master_srv'};
     $srv_nowww =~ s/^www\.//i;
 
     $hdr .=
-	"<form method=\"get\" action=\"$config{'search_cgi'}\">
+	"<form method=\"get\" action=\"$aid_util::config{'search_cgi'}\">
 <table width=\"100%\" class=\"navbar\">
 <tr><td><small>\n<b><a href=\"/\">$srv_nowww</a></b> <tt>-&gt;</tt>\n";
-    $hdr .= "<a href=\"$config{'master_path'}\">" unless $page == 0;
-    $hdr .= $config{'short_school'} . ' Alumni';
+    $hdr .= "<a href=\"$aid_util::config{'master_path'}\">" unless $page == 0;
+    $hdr .= $aid_util::config{'short_school'} . ' Alumni';
     if ($page == 0)
     {
 	$hdr .= "\n";
@@ -933,12 +934,12 @@ type="text" name="q" size="20">
 
     if ($page == 0)
     {
-	$hdr .= "<h1>$config{'school'}\n";
+	$hdr .= "<h1>$aid_util::config{'school'}\n";
 	$hdr .= "Alumni Internet Directory</h1>";
     }
     else
     {
-	$hdr .= "<p class=\"overline\"><b>$config{'short_school'}\n";
+	$hdr .= "<p class=\"overline\"><b>$aid_util::config{'short_school'}\n";
 	$hdr .= "Alumni Internet Directory:</b></p>\n";
 	$hdr .= "<h1>$title";
 	$hdr .= "\n- <small>$subtitle</small>"
@@ -962,7 +963,7 @@ sub build_yearlist
     }
     else
     {
-	my $count = scalar(@{$years});
+	my $count = scalar(@{$years}) - 1;
 	if ($years->[$count] ne $year && $years->[$count] ne 'other')
 	{
 	    push(@{$years}, ($year =~ /^\d+$/) ? $year : 'other');
@@ -993,10 +994,10 @@ sub class_jump_bar
 	    sprintf("%02d", $years->[0] % 100);
 	$retval .= "</a>";
 
-	foreach $i (1 .. scalar(@{$years}))
+	foreach $i (1 .. (scalar(@{$years}) - 1))
 	{
 	    $retval .= " |\n";
-	    $retval .= "<a href=\"${href_begin}$years->[$i]${href_end}\">"
+	    $retval .= "<a href=\"${href_begin}" . $years->[$i] . "${href_end}\">"
 		unless defined $hilite && $years->[$i] eq $hilite;
 	    $retval .= ($years->[$i] eq 'other') ? "Faculty/Staff" :
 		sprintf("%02d", $years->[$i] % 100);
@@ -1017,7 +1018,7 @@ sub class_jump_bar
 sub book_write_prefix
 {
     my($BOOKfh,$option) = @_;
-    my($school) = $config{'school'};
+    my($school) = $aid_util::config{'school'};
 
     # special case for netscape
     if ($option eq 'n') {
@@ -1052,17 +1053,17 @@ sub book_write_entry
     $gn =~ s/\"/\'/g;
     $gn =~ s/[,;\t]/ /g;
 
-    $option eq 'p' && print $BOOKfh "$rec->{'a'}\t$long_last, $gn$mi_spc\t$rec->{'e'}\t\t$config{'short_school'} $rec->{'yr'}\n";
-    $option eq 'e' && print $BOOKfh "$rec->{'a'} = $long_last; $gn, $config{'short_school'} $rec->{'yr'} = $rec->{'e'}\n";
+    $option eq 'p' && print $BOOKfh "$rec->{'a'}\t$long_last, $gn$mi_spc\t$rec->{'e'}\t\t$aid_util::config{'short_school'} $rec->{'yr'}\n";
+    $option eq 'e' && print $BOOKfh "$rec->{'a'} = $long_last; $gn, $aid_util::config{'short_school'} $rec->{'yr'} = $rec->{'e'}\n";
     $option eq 'b' && print $BOOKfh "alias $rec->{'a'}\t$rec->{'e'}\n";
-    $option eq 'w' && print $BOOKfh "<$rec->{'a'}>\015\012>$gn$mi_spc $long_last <$rec->{'e'}>\015\012<$rec->{'a'}>\015\012>$config{'short_school'} $rec->{'yr'}\015\012";
-    $option eq 'm' && print $BOOKfh "alias $rec->{'a'} $rec->{'e'}\015\012note $rec->{'a'} <name:$gn$mi_spc $long_last>$config{'short_school'} $rec->{'yr'}\015\012";
+    $option eq 'w' && print $BOOKfh "<$rec->{'a'}>\015\012>$gn$mi_spc $long_last <$rec->{'e'}>\015\012<$rec->{'a'}>\015\012>$aid_util::config{'short_school'} $rec->{'yr'}\015\012";
+    $option eq 'm' && print $BOOKfh "alias $rec->{'a'} $rec->{'e'}\015\012note $rec->{'a'} <name:$gn$mi_spc $long_last>$aid_util::config{'short_school'} $rec->{'yr'}\015\012";
 
     # netscape is a bigger sucker
     if ($option eq 'n') {
 	print $BOOKfh "    <DT><A HREF=\"mailto:$rec->{'e'}\" ";
 	print $BOOKfh "NICKNAME=\"$rec->{'a'}\">$gn$mi_spc $long_last</A>\n";
-	print $BOOKfh "<DD>$config{'short_school'} $rec->{'yr'}\n";
+	print $BOOKfh "<DD>$aid_util::config{'short_school'} $rec->{'yr'}\n";
     }
 
     elsif ($option eq 'l') {
@@ -1086,7 +1087,7 @@ sub book_write_entry
 	} else {
 	    print $BOOKfh "locality: $rec->{'l'}\015\012" if $rec->{'l'} ne '';
 	}
-        print $BOOKfh "o: $config{'short_school'}\015\012";
+        print $BOOKfh "o: $aid_util::config{'short_school'}\015\012";
 	if ($rec->{'yr'} =~ /^\d+$/) {
 	    print $BOOKfh "ou: Class of $rec->{'yr'}\015\012";
 	} else {
@@ -1116,7 +1117,7 @@ sub book_write_entry
 	    print $BOOKfh "\"$mi\",\"$rec_copy{'sn'}\",";
 	}
 
-	print $BOOKfh "\"\",\"$config{'short_school'} $rec->{'yr'}\",\"\",";
+	print $BOOKfh "\"\",\"$aid_util::config{'short_school'} $rec->{'yr'}\",\"\",";
 	print $BOOKfh "\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",";
 
 	if ($rec->{'l'} =~ /^(.*),\s+(\w\w)$/) {
@@ -1125,7 +1126,7 @@ sub book_write_entry
 	    print $BOOKfh "\"$rec->{'l'}\",\"\",";
 	}
 
-	print $BOOKfh "\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"$config{'short_school'} Alumni\",\"\",\"$rec->{'e'}\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"$rec->{'w'}\"\015\012";
+	print $BOOKfh "\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"$aid_util::config{'short_school'} Alumni\",\"\",\"$rec->{'e'}\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"$rec->{'w'}\"\015\012";
     }
 }
 
@@ -1519,7 +1520,7 @@ sub write_reunion_hash
 	{
 	    print $FH "<dd><a\n",
 	    "href=\"http://calendar.yahoo.com/?v=60&amp;TITLE=",
-	    url_escape(aid_config('school'));
+	    url_escape(aid_util::config('school'));
 
 	    print $FH url_escape(" Class of")
 		if ($key =~ /^\d+$/);

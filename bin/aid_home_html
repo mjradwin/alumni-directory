@@ -2,7 +2,7 @@
 
 #
 # does the html version of just home pages
-# $Id: aid_home_html,v 5.23 2003/05/15 00:30:45 mradwin Exp $
+# $Id: aid_home_html,v 6.1 2003/08/25 04:10:32 mradwin Exp mradwin $
 #
 #   Copyright (c) 2003  Michael J. Radwin
 #
@@ -21,16 +21,14 @@
 #   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #
 
-$dirname = $0;
-$dirname =~ s,/[^/]+$,,;
-unshift(@INC, $dirname);
-
+use FindBin;
+use lib $FindBin::Bin;
 use lib "/pub/m/r/mradwin/private/lib/perl5/site_perl";
-use DB_File::Lock;
 
+use DB_File::Lock;
+use Getopt::Std;
 use aid_util;
 use aid_submit;
-use Getopt::Std;
 
 $0 =~ s,.*/,,;  # basename
 my $usage = "usage: $0 [-hq] {-s,-d,-f <file>} [-i <keys>] -p <pg> -t <txt> out.html
@@ -51,7 +49,6 @@ getopts('hst:f:p:di:q') || die "$usage\n";
 $opt_h && die "$usage\n";
 $opt_h = $opt_h;		# avoid warning
 $opt_q = $opt_q;		# avoid warning
-%blank_entry = %aid_util::blank_entry = %aid_util::blank_entry;
 
 die "$usage\n" unless $ARGV[0];
 die "$usage\n"
@@ -82,7 +79,7 @@ if ($opt_f)
 }
 elsif ($opt_s)
 {
-    $time = (stat(aid_util::config('aiddir') . 'bin/aid_submit.pl'))[9];
+    $time = (stat(aid_util::config('aiddir') . 'bin/aid_submit.pm'))[9];
 }
 else
 {
@@ -115,7 +112,7 @@ open(OUTFILE,">$outfile") || die "Can't open $outfile: $!\n";
 print OUTFILE aid_util::common_html_hdr($opt_p,$opt_t,0,$time);
 
 if ($opt_s) {
-    print OUTFILE aid_util::submit_body(*blank_entry,'');
+    print OUTFILE aid_submit::submit_body(\%aid_util::blank_entry,'');
 
 } elsif ($opt_d) {
     die "corrupt/missing _years key!"
@@ -197,7 +194,7 @@ years after mine.</label>
 
     if ($opt_p == 0) {
 	print OUTFILE "<p>Classes:\n",
-	aid_util::class_jump_bar('class/', '.html', *years, 0), "</p>\n";
+	aid_util::class_jump_bar('class/', '.html', \@years, 0), "</p>\n";
     }
 
     print OUTFILE @lines;
