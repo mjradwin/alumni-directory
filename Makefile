@@ -2,7 +2,7 @@
 #     FILE: Makefile
 #   AUTHOR: Michael J. Radwin
 #    DESCR: Makefile for building the Alumni Internet Directory
-#      $Id: Makefile,v 1.49 1998/01/03 11:37:47 mjr Exp mjr $
+#      $Id: Makefile,v 1.50 1998/01/03 11:58:27 mjr Exp mjr $
 #
 
 HOMEDIR=/home/divcom/mjr
@@ -68,28 +68,28 @@ $(HOME):	data/index.include bin/aid_home_html aid_util.pl data/master.adr
 
 LISTINGS=$(WWWDIR)/listings.html
 listings:	$(LISTINGS)
-$(LISTINGS):	data/listings.include bin/aid_home_html aid_util.pl
+$(LISTINGS):	data/listings.include bin/aid_home_html
 	bin/aid_home_html -p10 -i data/listings.include \
 		-t 'Listings: email addresses and web pages' \
 		$(LISTINGS)
 
 REUNIONS=$(WWWDIR)/reunions.html
 reunions:	$(REUNIONS)
-$(REUNIONS):	data/reunions.include bin/aid_home_html aid_util.pl
+$(REUNIONS):	data/reunions.include bin/aid_home_html
 	bin/aid_home_html -p11 -i data/reunions.include \
 		-t 'Reunions: when, where, who to contact' \
 		$(REUNIONS)
 
 LINKS=$(WWWDIR)/links.html
 links:	$(LINKS)
-$(LINKS):	data/links.include bin/aid_home_html aid_util.pl
+$(LINKS):	data/links.include bin/aid_home_html
 	bin/aid_home_html -p12 -i data/links.include \
 		-t 'Links: other MVHS and Awalt websites' \
 		$(LINKS)
 
 NICKNAMES=$(WWWDIR)/books/index.html
 nicknames:	$(NICKNAMES)
-$(NICKNAMES):	data/nicknames.include bin/aid_home_html aid_util.pl
+$(NICKNAMES):	data/nicknames.include bin/aid_home_html
 	mkdir -p $(WWWDIR)/books
 	bin/aid_home_html -p13 -i data/nicknames.include \
 		-t 'Nicknames: address books for your e-mail program' \
@@ -97,7 +97,7 @@ $(NICKNAMES):	data/nicknames.include bin/aid_home_html aid_util.pl
 
 TECH=$(WWWDIR)/tech.html
 tech:	$(TECH)
-$(TECH):	data/tech.include bin/aid_home_html aid_util.pl
+$(TECH):	data/tech.include bin/aid_home_html
 	bin/aid_home_html -p14 -i data/tech.include \
 		-t 'Tech Notes: info about the Directory' \
 		$(TECH)
