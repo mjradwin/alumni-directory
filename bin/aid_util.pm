@@ -2,11 +2,11 @@
 #     FILE: aid_util.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: perl library routines for the Alumni Internet Directory
-#      $Id: aid_util.pl,v 3.49 1998/09/18 23:41:37 mradwin Exp mradwin $
+#      $Id: aid_util.pl,v 3.50 1998/09/19 00:07:23 mradwin Exp mradwin $
 #
 
 $aid_util'rcsid =
- '$Id: aid_util.pl,v 3.49 1998/09/18 23:41:37 mradwin Exp mradwin $';
+ '$Id: aid_util.pl,v 3.50 1998/09/19 00:07:23 mradwin Exp mradwin $';
 
 # ----------------------------------------------------------------------
 # CONFIGURATION
@@ -776,6 +776,34 @@ sub aid_write_verbose_entry {
 	print FMTOUT "<dd>$rec{'message'}</dd>\n";
     }
     print FMTOUT "</dl>\n\n";
+}
+
+
+sub aid_vcard_text {
+    package aid_util;
+
+    local(*rec) = @_;
+    local($long_last,$retval);
+
+    $long_last  = $rec{'last'};
+    $long_last .= " $rec{'married'}" if $rec{'married'} ne '';
+
+    $retval  = "Begin:vCard\r\n";
+    $retval .= "N:$rec{'last'};$rec{'first'};$rec{'married'}\r\n";
+    $retval .= "FN:$rec{'first'} $long_last\r\n";
+    $retval .= "ORG:$rec{'school'};";
+    if ($rec{'year'} =~ /^\d+$/) {
+	$retval .= "Class of $rec{'year'}\r\n";
+    } else {
+	$retval .= "$rec{'year'}\r\n";
+    }
+    $retval .= "EMAIL;PREF;INTERNET:$rec{'email'}\r\n";
+    $retval .= "ADR:$rec{'location'}\r\n" if $rec{'location'} ne '';
+    $retval .= "URL:$rec{'homepage'}\r\n" if $rec{'homepage'} ne '';
+    $retval .= "REV:" . &main'aid_vdate($rec{'time'}) . "\r\n"; #'#
+    $retval .= "End:vCard\r\n";
+
+    $retval;
 }
 
 
