@@ -2,11 +2,11 @@
 #     FILE: aid_util.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: perl library routines for the Alumni Internet Directory
-#      $Id: aid_util.pl,v 4.21 1999/02/11 17:01:15 mradwin Exp mradwin $
+#      $Id: aid_util.pl,v 4.22 1999/02/11 17:21:55 mradwin Exp mradwin $
 #
 
 $aid_util'rcsid =
- '$Id: aid_util.pl,v 4.21 1999/02/11 17:01:15 mradwin Exp mradwin $';
+ '$Id: aid_util.pl,v 4.22 1999/02/11 17:21:55 mradwin Exp mradwin $';
 $aid_util'caldate = &aid_caldate(time); #'#
 
 # ----------------------------------------------------------------------
@@ -967,10 +967,17 @@ sub about_text {
     $retval .= "E-mail             : ";
     $retval .= "<strong>" if $do_html_p;
     $retval .= "<a href=\"mailto:$rec{'email'}\">"
-	if $do_html_p && !$show_req_p;
+	if $do_html_p && !$show_req_p && $rec{'valid'};
     $retval .= $rec{'email'};
-    $retval .= "</a>" if $do_html_p && !$show_req_p;
+    $retval .= "</a>" if $do_html_p && !$show_req_p && $rec{'valid'};
     $retval .= "</strong>" if $do_html_p;
+    if ($rec{'valid'} == 0)
+    {
+	$retval .= " ";
+	$retval .= "<em>" if $do_html_p;
+	$retval .= "(invalid address)";
+	$retval .= "</em>" if $do_html_p;
+    }
     $retval .= "\n";
 
     $retval .= "Personal Web Page  : ";
