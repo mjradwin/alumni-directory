@@ -1,6 +1,6 @@
-#!/usr/local/bin/perl5 -w
+#!/usr/local/bin/perl -w
 
-# $Id: aid_multi_class_welcome,v 5.12 2001/02/01 20:34:43 mradwin Exp mradwin $
+# $Id: aid_multi_class_welcome,v 5.13 2001/02/01 21:20:44 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #

@@ -1,6 +1,6 @@
-#!/usr/local/bin/perl5 -w
+#!/usr/local/bin/perl -w
 
-# $Id: aid_bounce,v 5.8 2000/04/25 01:31:38 mradwin Exp mradwin $
+# $Id: aid_bounce,v 5.9 2000/04/25 18:22:58 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #

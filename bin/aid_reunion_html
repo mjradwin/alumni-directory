@@ -1,9 +1,9 @@
-#!/usr/local/bin/perl5 -w
+#!/usr/local/bin/perl -w
 
 #
 # generates reunion info page
 #
-# $Id: aid_reunion_html,v 1.10 2000/07/13 20:31:32 mradwin Exp mradwin $
+# $Id: aid_reunion_html,v 1.11 2001/05/15 05:35:30 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #

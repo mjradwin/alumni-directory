@@ -1,6 +1,6 @@
-#!/usr/local/bin/perl5 -w
+#!/usr/local/bin/perl -w
 
-# $Id: aid_addname,v 5.29 2001/01/08 17:27:27 mradwin Exp mradwin $
+# $Id: aid_addname,v 5.30 2001/01/09 21:22:28 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #

@@ -1,8 +1,8 @@
-#!/usr/local/bin/perl5 -w
+#!/usr/local/bin/perl -w
 
 #
 # does the html version of the invalid address list
-# $Id: aid_goners_html,v 5.8 2000/02/29 21:55:00 mradwin Exp mradwin $
+# $Id: aid_goners_html,v 5.9 2000/06/01 23:34:10 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #

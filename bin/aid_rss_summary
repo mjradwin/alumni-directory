@@ -1,10 +1,10 @@
-#!/usr/local/bin/perl5 -w
+#!/usr/local/bin/perl -w
 
 #
 #     FILE: aid_rss_summary.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: creates an RDF Site Summary for the Directory
-#      $Id: aid_rss_summary,v 1.8 2000/02/29 21:55:00 mradwin Exp mradwin $
+#      $Id: aid_rss_summary,v 1.9 2000/12/18 04:03:50 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #

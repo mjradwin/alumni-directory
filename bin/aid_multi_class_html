@@ -1,8 +1,8 @@
-#!/usr/local/bin/perl5 -w
+#!/usr/local/bin/perl -w
 
 #
 # does the html multi_class pages
-# $Id: aid_multi_class_html,v 5.21 2001/05/15 05:31:24 mradwin Exp mradwin $
+# $Id: aid_multi_class_html,v 5.22 2001/05/15 05:35:30 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
