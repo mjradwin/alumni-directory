@@ -2,18 +2,13 @@
 #     FILE: Makefile
 #   AUTHOR: Michael J. Radwin
 #    DESCR: Makefile for building the MVHS Alumni Internet Directory
-#      $Id: Makefile,v 1.24 1997/08/22 17:17:02 mjr Exp mjr $
+#      $Id: Makefile,v 1.25 1997/08/22 17:21:50 mjr Exp mjr $
 #
 
 WWWDIR=/home/divcom/mjr/public_html/mvhs
-CGIDIR=/home/divcom/mjr/public_html/cgi-bin
-BINDIR=/home/divcom/mjr/bin
 RM=/bin/rm -f
 
-TARFILES=Makefile *.pl index.include bin \
-	-C data      mvhs.adr \
-	-C $(BINDIR) mv_make \
-	-C $(CGIDIR) cgi-lib.pl
+TARFILES=Makefile *.pl index.include bin data
 
 all:	adrfile home submit new alpha class goners pages books
 
