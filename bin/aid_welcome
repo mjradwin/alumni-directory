@@ -2,7 +2,7 @@
 
 #
 # mails a welcome, update, confirm, or massmail message to members
-# $Id: aid_welcome,v 3.48 1999/05/19 01:36:09 mradwin Exp mradwin $
+# $Id: aid_welcome,v 5.1 1999/05/31 21:20:48 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -121,9 +121,9 @@ You also may change your quarterly digest preference
 by visiting the above URL.
 
 The following information is provided solely for the
-Mountain View High School and Awalt High School
-communities.  Any redistribution outside of this
-community, or solicitation of business or contributions
+information of the " . &aid_config('school') . " community.
+Any redistribution outside of this community, or
+solicitation of business or contributions
 from individuals listed below is forbidden.
 
 ",
@@ -286,12 +286,8 @@ address verification messages.
     local($srv_prefix) = "http://" . &aid_config('master_srv');
     local($about) = &aid_about_text(*rec,1,0,0);
 
-    return "Dear $rec{'gn'},
-
-This e-mail was sent to you by the Mountain View High
-School/Awalt High School Alumni Internet Directory:
-
-  " . $srv_prefix . &aid_config('master_path') . "
+    return "Dear $rec{'gn'},\n\n" . &aid_config('mail_intro') . "\n\n" .
+	'  ' . $srv_prefix . &aid_config('master_path') . "
 $params{'intro'}
 You are listed in the Directory as follows:
 -------------------------------------------------------
