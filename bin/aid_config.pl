@@ -2,7 +2,7 @@
 #     FILE: aid_config.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: configuration variables for Alumni Internet Directory
-#      $Id: aid_config.pl,v 5.11 1999/06/29 01:08:09 mradwin Exp mradwin $
+#      $Id: aid_config.pl,v 5.12 1999/08/11 01:16:20 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -134,8 +134,8 @@ $aid_util'EPOCH       = 815130000; #'# Tue Oct 31 09:00:00 GMT 1995
      'h',
     );
 
-$aid_util'pack_format = 'C3N5'; #'#
-$aid_util'pack_len    = 23;     #'#
+$aid_util'pack_format = 'C3N6'; #'#
+$aid_util'pack_len    = 27;     #'#
 
 # ------------------------------------------------------------
 # %aid_util'blank_entry -- a prototypical blank entry to clone
