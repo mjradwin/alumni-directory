@@ -1,12 +1,18 @@
 #!/usr/bin/perl -w
 
-# $Id: aid_dbm_write,v 1.2 1999/02/05 00:13:27 mradwin Exp mradwin $
+# $Id: aid_dbm_write,v 1.3 1999/02/05 01:20:19 mradwin Exp mradwin $
 
 require 'aid_util.pl';
 
 $dbFile = &aid_config('aiddir') . "data/master.adr";
-@db = &aid_create_db($dbFile);
+%class_members = ();
+@alpha_ids = ();
 
+print STDERR "reading text db...";
+@db = &aid_alpha_db($dbFile);
+print STDERR "\n";
+
+print STDERR "making binary db...";
 dbmopen(DB, 'master', 0666);
 for (@db)
 {
@@ -36,34 +42,42 @@ for (@db)
 	     );
 
     $DB{$rec{'email'}} = $rec{'id'};
-}
 
-# an alphabetically sorted list
-@alpha_ids = ();
-@db = &aid_alpha_db($dbFile);
-for (@db)
-{
-    next unless defined($_) && $_ ne '';
-    %rec = &aid_split($_);
-
+    # make a list of alpha years
+    $ykey = ($rec{'year'} =~ /^\d+$/) ? $rec{'year'} : 'other';
+    if (defined $class_members{$ykey})
+    {
+	$class_members{$ykey} .= ' ' . $rec{'id'};
+    }
+    else
+    {
+	$class_members{$ykey}  =       $rec{'id'};
+    }
+    
+    # also make the alpha list
     push(@alpha_ids, $rec{'id'});
+    print STDERR ".";
 }
+print STDERR "\n";
 
-$DB{'__alpha__'} = pack("n$#alpha_ids", @alpha_ids);
+print STDERR "finishing...";
 
+$DB{'__alpha__'} = pack("n*", @alpha_ids);
+print STDERR ".";
 
-# an class sorted list
 @class_ids = ();
-@db = &aid_class_db($dbFile);
-for (@db)
+foreach $ykey (sort keys %class_members)
 {
-    next unless defined($_) && $_ ne '';
-    %rec = &aid_split($_);
-
-    push(@class_ids, $rec{'id'});
+    @alpha_ids = split(/ /, $class_members{$ykey});
+    $DB{"__${ykey}__"} = pack("n*", @alpha_ids);
+    push(@class_ids, @alpha_ids);
 }
+print STDERR ".";
 
-$DB{'__class__'} = pack("n$#class_ids", @class_ids);
-
+$DB{'__class__'} = pack("n*", @class_ids);
 
 dbmclose(DB);
+
+print STDERR ".";
+print STDERR "\n";
+

@@ -1,6 +1,6 @@
 #!/usr/bin/perl -w
 
-# $Id: aid_dbm_read,v 1.1 1999/01/21 16:40:17 mradwin Exp mradwin $
+# $Id: aid_dbm_read,v 1.1 1999/02/05 00:13:38 mradwin Exp $
 
 dbmopen(DB2, 'master', 0444);
 
@@ -15,17 +15,44 @@ while (($key,$val) = each %DB2)
 {
     undef %rec;
 
-    next unless $key =~ /^\d+$/;
-    $packed = substr($val, 0, 19);
-    @rest = split(/\0/, substr($val, 19));
+    if ($key =~ /^\d+$/)
+    {
+	$packed = substr($val, 0, 19);
+	@rest = split(/\0/, substr($val, 19));
 
-    ($rec{'valid'}, $rec{'request'}, $rec{'reunion'},
-     $rec{'bounce'}, $rec{'created'}, $rec{'time'}, $rec{'fresh'}) =
-	 unpack("C3N4", $packed);
+	($rec{'valid'}, $rec{'request'}, $rec{'reunion'},
+	 $rec{'bounce'}, $rec{'created'}, $rec{'time'}, $rec{'fresh'}) =
+	     unpack("C3N4", $packed);
 
-    print $key, ' = ', join(';', $rec{'valid'}, $rec{'request'}, 
-			    $rec{'reunion'},  $rec{'bounce'}, $rec{'created'},
-			    $rec{'time'}, $rec{'fresh'}),
-           ';', join(';', @rest),  "\n";
+	print $key, ' = ', join(';', $rec{'valid'}, $rec{'request'}, 
+				$rec{'reunion'},  $rec{'bounce'}, $rec{'created'},
+				$rec{'time'}, $rec{'fresh'}),
+	';', join(';', @rest),  "\n";
+    }
+
+    elsif ($key =~ /^__(\d\d\d\d)__$/)
+    {
+	print "year $1 = ", join(',', unpack("n*", $val)), "\n";
+    }
+
+    elsif ($key =~ /^__other__$/)
+    {
+	print "year other = ", join(',', unpack("n*", $val)), "\n";
+    }
+
+    elsif ($key =~ /^__class__$/)
+    {
+	print "class = ", join(',', unpack("n*", $val)), "\n";
+    }
+
+    elsif ($key =~ /^__alpha__$/)
+    {
+	print "alpha = ", join(',', unpack("n*", $val)), "\n";
+    }
+
+    else
+    {
+	print "unknown key $key!\n";
+    }
 }
 dbmclose(DB2);
