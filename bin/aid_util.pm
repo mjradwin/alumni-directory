@@ -2,11 +2,11 @@
 #     FILE: aid_util.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: perl library routines for the Alumni Internet Directory
-#      $Id: aid_util.pl,v 3.60 1998/10/17 21:01:55 mradwin Exp mradwin $
+#      $Id: aid_util.pl,v 3.61 1998/10/17 21:31:16 mradwin Exp mradwin $
 #
 
 $aid_util'rcsid =
- '$Id: aid_util.pl,v 3.60 1998/10/17 21:01:55 mradwin Exp mradwin $';
+ '$Id: aid_util.pl,v 3.61 1998/10/17 21:31:16 mradwin Exp mradwin $';
 
 # ----------------------------------------------------------------------
 # CONFIGURATION
@@ -647,17 +647,17 @@ are required.  All other fields are optional.</p>\n\n";
   months:<br>
   &nbsp;&nbsp;&nbsp;&nbsp;<input type=radio name=\"request\" id=\"request3\"
   value=\"3\"$reqchk[3]><label
-  for=\"request3\">&nbsp;Only new and changed alumni entries.</label><br>
+  for=\"request3\">&nbsp;Only new and changed alumni entries. [~ 10 kbytes]</label><br>
   &nbsp;&nbsp;&nbsp;&nbsp;<input type=radio name=\"request\" id=\"request2\"
   value=\"2\"$reqchk[2]><label
-  for=\"request2\">&nbsp;All alumni, sorted by graduating class.</label><br>
+  for=\"request2\">&nbsp;All alumni, sorted by graduating class. [~ 50 kbytes]</label><br>
   &nbsp;&nbsp;&nbsp;&nbsp;<input type=radio name=\"request\" id=\"request1\"
   value=\"1\"$reqchk[1]><label
-  for=\"request1\">&nbsp;All alumni, sorted by name.</label><br>
+  for=\"request1\">&nbsp;All alumni, sorted by name. [~ 50 kbytes]</label><br>
   &nbsp;&nbsp;&nbsp;&nbsp;<input type=radio name=\"request\" id=\"request0\"
   value=\"0\"$reqchk[0]><label
-  for=\"request0\">&nbsp;No e-mail except for address
-  verification (once per year).</label></font>
+  for=\"request0\">&nbsp;No e-mail except for yearly address
+  verification.</label></font>
   <input type=\"hidden\" name=\"id\" value=\"$rec{'id'}\">
   <input type=\"hidden\" name=\"created\" value=\"$rec{'created'}\">
   <input type=\"hidden\" name=\"valid\" value=\"1\">
