@@ -2,7 +2,7 @@
 
 #
 # does the html version of just home pages
-# $Id: aid_home_html,v 3.17 1999/02/03 19:06:02 mradwin Exp mradwin $
+# $Id: aid_home_html,v 3.18 1999/02/03 19:17:00 mradwin Exp mradwin $
 #
 
 require 'aid_util.pl';
@@ -74,7 +74,7 @@ such as John Smith and Jane Smith, then the first one will be
 <code><strong>jsmith2</strong></code>.</p>\n\n";
 
     print OUTFILE "<p><form method=\"get\" action=\"";
-    print OUTFILE &aid_config('cgi_path') . "/mvhs.txt\">\n";
+    print OUTFILE &aid_config('download_cgi') . "\">\n";
     print OUTFILE "<input type=\"hidden\" name=\"download\" value=\"1\">\n\n";
 
     print OUTFILE "<label for=\"email\">Your e-mail address:&nbsp;</label>\n";
