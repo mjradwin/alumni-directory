@@ -2,7 +2,7 @@
 
 #
 # does the html multi_class pages
-# $Id: aid_multi_class_html,v 3.24 1999/02/27 01:09:48 mradwin Exp mradwin $
+# $Id: aid_multi_class_html,v 3.25 1999/02/27 02:00:14 mradwin Exp mradwin $
 #
 
 require 'aid_util.pl';
@@ -85,7 +85,7 @@ utime $time, $time, $outFile;
 # touch timestamp
 $now = time;
 $ts = $outFile;
-$ts =~ s,/([^/]+)$,/\.$1,;
+$ts =~ s,([^/]+)$,\.$1,;
 open(TS,">$ts") && close(TS);
 utime $now, $now, $ts;
 

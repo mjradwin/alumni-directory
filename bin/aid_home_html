@@ -2,7 +2,7 @@
 
 #
 # does the html version of just home pages
-# $Id: aid_home_html,v 3.26 1999/02/27 01:09:48 mradwin Exp mradwin $
+# $Id: aid_home_html,v 3.27 1999/02/27 02:00:14 mradwin Exp mradwin $
 #
 
 require 'aid_util.pl';
@@ -143,7 +143,7 @@ utime $time, $time, $outfile;
 # touch timestamp
 $now = time;
 $ts = $outfile;
-$ts =~ s,/([^/]+)$,/\.$1,;
+$ts =~ s,([^/]+)$,\.$1,;
 open(TS,">$ts") && close(TS);
 utime $now, $now, $ts;
 
