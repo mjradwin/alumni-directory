@@ -2,7 +2,7 @@
 
 #
 # does the html multi_class pages
-# $Id: aid_multi_class_html,v 3.26 1999/03/02 01:26:34 mradwin Exp mradwin $
+# $Id: aid_multi_class_html,v 3.27 1999/03/09 20:50:23 mradwin Exp mradwin $
 #
 
 require 'aid_util.pl';
@@ -38,8 +38,18 @@ foreach $year (@years)
     $title = ($year =~ /^\d+$/) ? "Class of $year" : "Faculty and Staff";
     $time = unpack("N",
 	(($year =~ /^\d+$/) ? $DB{"__t_${year}__"} : $DB{'__t_other__'}));
+
+    if ($#ids + 1 == 1)
+    {
+	$subtitle = '1 alumnus';
+    }
+    else
+    {
+	$subtitle = sprintf("%d alumni", $#ids + 1);
+    }
+    $subtitle = "<strong><font color=\"#000000\">$subtitle</font></strong>";
     
-    print FMTOUT &common_html_hdr(-1,$title,1,$time);
+    print FMTOUT &common_html_hdr(-1,$title,1,$time,$subtitle);
     print FMTOUT &common_intro_para(0);
     print FMTOUT &aid_class_jump_bar('', '.html', *years, 1, $year);
     print FMTOUT "<hr noshade size=1>\n\n";
