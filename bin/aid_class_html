@@ -9,7 +9,6 @@ require 'mv_util.pl';
 require 'tableheader.pl';
 
 $htmlname = "class.html";
-$today = localtime;
 
 die "Usage: mv_grad_html infile.adr outfile.html\n" if !$ARGV[0] || !$ARGV[1];
 open(FMTOUT,">$ARGV[1]") || die "Can't open $ARGV[1]: $!\n";

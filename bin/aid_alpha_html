@@ -10,7 +10,6 @@ require 'tableheader.pl';
 require 'getopts.pl';
 
 $htmlname = "all.html";
-$today = localtime;
 
 $usage = 'usage: mv_alpha_html [-t] infile.adr outfile
     -h        Display usage information.

@@ -7,6 +7,7 @@
 push(@INC, '/home/divcom/mjr/lib');  # divcom
 require 'mv_util.pl';
 require 'getopts.pl';
+require 'ctime.pl';
 
 $usage = 'usage: mv_welcome [-h] [-u | -c] targets.adr
     -h        Display usage information.
@@ -19,7 +20,9 @@ $opt_h && die "$usage\n";
 ($opt_c && $opt_u) && die "$usage\n";
 $ARGV[0] || die "$usage\n";
 
-$today = localtime;
+$today = &ctime(time);
+chop $today;
+
 $logfile = 'welcome.log';
 $subject = ($opt_c) ? 'Confirming your MVHS Alumni Internet Directory entry' :
     ($opt_u) ? 'Your MVHS Alumni Internet Directory entry is updated' : 
@@ -49,7 +52,7 @@ exit(0);
 
 sub message_body {
     local($id,$req,$last,$first,$school,$year,$email,$homepage) = @_;
-    local($fullname) = &fullname($first,$last,$married);
+    local($fullname) = &inorder_fullname($first,$last,$married);
     local($denied) = ($req) ? '' :
 	"\nSince you asked not to receive the Alumni Internet Directory via email,\nthis is the only notice you will receive.\n";
 
