@@ -2,7 +2,7 @@
 
 #
 # does the html multi_class pages
-# $Id: aid_multi_class_html,v 6.7 2004/05/12 22:33:12 mradwin Exp mradwin $
+# $Id: aid_multi_class_html,v 6.8 2004/10/25 19:41:07 mradwin Exp mradwin $
 #
 # Copyright (c) 2003  Michael J. Radwin.
 # All rights reserved.
@@ -52,6 +52,7 @@ use DB_File::Lock;
 use Time::Local;
 use POSIX qw(strftime);
 use Getopt::Std;
+use Digest::MD5  qw(md5_hex);
 use aid_util;
 
 $0 =~ s,.*/,,;  # basename
@@ -267,6 +268,39 @@ foreach $year (@years)
 
 	print FMTOUT2 aid_util::common_html_hdr(-2, $name . $affil, 1, $rec{'u'});
 	print FMTOUT2 aid_util::verbose_entry(\%rec,1,0,0,1);
+
+	my $action = aid_util::config('message_cgi');
+	my $hash = md5_hex($rec{'e'});
+	my $e = email_name(\%rec);
+	$e .= " &lt;" . aid_util::protect_email($rec{'e'}) . "&gt;";
+	my $subject = aid_util::config('short_school') . " Alumni";
+
+	print FMTOUT2 <<_EOHTML_;
+<p>&nbsp;</p>
+<hr>
+<a name="msg"></a>
+<h2>Send a message to $name$affil</h2>
+<p>
+<form method="post" action="$action/post">
+<input type="hidden" name="id" value="$id">
+<input type="hidden" name="hash" value="$hash">
+<table border="0" cellspacing="1" cellpadding="2" >
+<tr><td align="right"><b>From:</b></td>
+<td><input type="text" name="from" size="60" 
+maxlength="128" value=""></td></tr>
+<tr><td align="right"><b>To:</b></td>
+<td>$e</td></tr>
+<tr><td align="right"><b>Subject:</b></td>
+<td><input type="text" name="subject" size="60" 
+maxlength="80" value="$subject"></td></tr>
+</table>
+<textarea name="message" rows="20" cols="70"
+wrap="hard"></textarea>
+<br><input type="submit" name="send" value="Send">
+</form>
+_EOHTML_
+;
+
 	print FMTOUT2 aid_util::common_html_ftr(-2,$rec{'u'});
 	close(FMTOUT2);
 	utime $rec{'u'}, $rec{'u'}, $out2;
@@ -338,3 +372,17 @@ utime $now, $now, $ts;
 
 untie(%RDB) if defined $r_dbmfile;
 exit(0);
+
+sub email_name
+{
+    my($recp) = @_;
+    my $name = $recp->{'gn'};
+    $name .= " $recp->{'mi'}."
+	if defined $recp->{'mi'} && $recp->{'mi'} ne '';
+    $name .= " $recp->{'sn'}";
+    $name .= " $recp->{'mn'}"
+	if defined $recp->{'mn'} && $recp->{'mn'} ne '';
+    $name =~ s/\"/\'/g;
+
+    $name;
+}

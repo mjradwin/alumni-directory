@@ -2,7 +2,7 @@
 #     FILE: aid_util.pm
 #   AUTHOR: Michael J. Radwin
 #    DESCR: perl library routines for the Alumni Internet Directory
-#      $Id: aid_util.pm,v 6.13 2004/05/12 22:33:12 mradwin Exp mradwin $
+#      $Id: aid_util.pm,v 6.14 2004/09/29 21:59:58 mradwin Exp mradwin $
 #
 # Copyright (c) 2003  Michael J. Radwin.
 # All rights reserved.
@@ -60,7 +60,7 @@ use strict;
 
 package aid_util;
 
-my($VERSION) = '$Revision: 6.13 $$';
+my($VERSION) = '$Revision: 6.14 $$';
 if ($VERSION =~ /(\d+)\.(\d+)/) {
     $VERSION = "$1.$2";
 }
@@ -724,7 +724,8 @@ sub verbose_entry
 
     $retval .= "<dt>E-mail: <tt><b>";
     $retval .= ("<a\ntitle=\"Send a message to $fullname\"\nhref=\"" .
-		$aid_util::config{'message_cgi'} .  "?to=" . $rec{'id'} . "\">")
+		about_path(\%rec, 0) . "#msg" .
+		"\">")
 	if $rec{'v'} && $rec{'id'} > 0;
     $retval .= protect_email($rec{'e'});
     $retval .= "</a>" if $rec{'v'};
