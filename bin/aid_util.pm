@@ -2,11 +2,11 @@
 #     FILE: aid_util.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: perl library routines for the Alumni Internet Directory
-#      $Id: aid_util.pl,v 4.16 1999/02/09 00:52:14 mradwin Exp mradwin $
+#      $Id: aid_util.pl,v 4.17 1999/02/09 00:54:05 mradwin Exp mradwin $
 #
 
 $aid_util'rcsid =
- '$Id: aid_util.pl,v 4.16 1999/02/09 00:52:14 mradwin Exp mradwin $';
+ '$Id: aid_util.pl,v 4.17 1999/02/09 00:54:05 mradwin Exp mradwin $';
 $aid_util'caldate = &aid_caldate(time); #'#
 
 # ----------------------------------------------------------------------
@@ -770,6 +770,7 @@ sub sendmail {
 "From: $from <$return_path>\
 To: \"$name\" <$toline>\
 X-Sender: $ENV{'USER'}\@$ENV{'HOST'}\
+Disposition-Notification-To: $from <$return_path>\ 
 Organization: $config{'school'} Alumni Internet Directory\
 Content-Type: text/plain; charset=ISO-8859-1\
 Content-Transfer-Encoding: 8bit\
