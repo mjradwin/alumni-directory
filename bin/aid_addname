@@ -1,6 +1,6 @@
 #!/usr/bin/perl -w
 
-# $Id: aid_addname,v 5.2 1999/06/01 04:06:47 mradwin Exp mradwin $
+# $Id: aid_addname,v 5.3 1999/06/01 05:42:12 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -51,6 +51,7 @@ $make = &aid_config('make');
 
 @new_ids = ();
 @upd_ids = ();
+@mod_keys = ();
 
 &readspool(($ARGV[0]) ? $ARGV[0] : &aid_config('spoolfile'));
 &rebuild() unless $opt_m;
@@ -145,7 +146,7 @@ sub readspool
 	    unless -r "${dbmfile}.db" && -w "${dbmfile}.db";
 
 	dbmopen(%DB,$dbmfile,0644);
-	&aid_rebuild_secondary_keys(*DB,0);
+	@mod_keys = &aid_rebuild_secondary_keys(*DB,0);
 	dbmclose(%DB);
     }
 
@@ -159,7 +160,8 @@ sub rebuild
 
     chdir &aid_config('aiddir') || die "$0: can't chdir: $!\n";
 
-    $cmd = $make . ' MOD_IDS="' . join(' ', @new_ids, @upd_ids) . '"';
+    $cmd = $make . ' MOD_IDS="' . join(' ', @new_ids, @upd_ids) . '"' .
+	' MOD_KEYS="' . join(' ', @mod_keys) . '"';
     print STDOUT "cd ", &aid_config('aiddir'), "; $cmd\n";
 
     system $cmd || die "$0: failed to run $cmd: $!\n";
