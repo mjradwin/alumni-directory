@@ -2,7 +2,7 @@
 #     FILE: Makefile
 #   AUTHOR: Michael J. Radwin
 #    DESCR: Makefile for building the Alumni Internet Directory
-#      $Id: Makefile,v 1.53 1998/04/02 20:51:08 mjr Exp mjr $
+#      $Id: Makefile,v 1.54 1998/05/07 16:45:16 mjr Exp mjr $
 #
 
 HOMEDIR=/home/divcom/mjr
@@ -66,13 +66,6 @@ $(HOME):	data/index.include bin/aid_home_html aid_util.pl data/master.adr
 		-t 'Welcome to the MVHS Alumni Internet Directory!' \
 		$(HOME)
 
-LISTINGS=$(WWWDIR)/listings.html
-listings:	$(LISTINGS)
-$(LISTINGS):	data/listings.include bin/aid_home_html
-	bin/aid_home_html -p10 -i data/listings.include \
-		-t 'Listings: email addresses and web pages' \
-		$(LISTINGS)
-
 REUNIONS=$(WWWDIR)/reunions.html
 reunions:	$(REUNIONS)
 $(REUNIONS):	data/reunions.include bin/aid_home_html
@@ -106,7 +99,7 @@ SUBMIT=$(WWWDIR)/add.html
 submit:	$(SUBMIT)
 $(SUBMIT):	bin/aid_home_html aid_util.pl
 	bin/aid_home_html -s -p10 \
-		-t 'Add a Listing to the Directory' \
+		-t 'Add an Entry to the Directory' \
 		$(SUBMIT)
 
 BOOKS=$(WWWDIR)/books/mvhs.vcf
