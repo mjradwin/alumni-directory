@@ -2,7 +2,7 @@
 #     FILE: aid_util.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: perl library routines for the Alumni Internet Directory
-#      $Id: aid_util.pl,v 5.18 1999/06/14 17:43:16 mradwin Exp mradwin $
+#      $Id: aid_util.pl,v 5.19 1999/06/14 22:55:04 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -292,6 +292,10 @@ sub aid_yahoo_abook_path {
 	$url .= '&amp;hc=' . &main'aid_url_escape($rec{'l'}); #'#
     }
 
+    $url .= '&amp;.done=' .
+	&main'aid_url_escape('http://' . $config{'master_srv'} . #'#
+	    $config{'master_path'});
+
     $url;
 }
 
@@ -402,7 +406,7 @@ sub aid_verbose_entry {
 	$retval .= "<a href=\"" . &main'aid_vcard_path(*rec_arg) . "\">"; #'#
 	$retval .= "vCard</a>";
 	$retval .= "&nbsp;|&nbsp;";
-	$retval .= "<a\ntarget=\"_address\" href=\"" .
+	$retval .= "<a\nhref=\"" .
 	    $config{'yab_cgi'} . "/$rec{'id'}\">"; #'#
 	$retval .= 'add to Y! address book';
 	$retval .= "</a>";
@@ -604,7 +608,7 @@ sub aid_about_text
 	$retval .= "</a>\n";
 
 	$retval .= "Yahoo! Address Book: ";
-	$retval .= "<a target=\"_address\" href=\"" .
+	$retval .= "<a href=\"" .
 	    $config{'yab_cgi'} . "/$rec{'id'}\">"; #'#
 	$retval .= 'Add to My Personal Address Book';
 	$retval .= "</a>\n";
