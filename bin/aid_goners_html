@@ -16,8 +16,7 @@ print FMTOUT &tableheader("Alumni with Invalid Addresses", 1, 'ffff99',
 print FMTOUT "
 <p>The following addresses are invalid because either email to them
 bounces, or the address is being used by a new owner.  If you know a
-current email address for anyone on this list, please <a
-href=\"add.html\">submit it</a>!</p>
+current email address for anyone on this list, please submit it!</p>
 ";
 print FMTOUT "<pre>";
 print FMTOUT "Name and Graduation Year                  Last known whereabouts\n";
