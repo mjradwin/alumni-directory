@@ -2,7 +2,7 @@
 #     FILE: generic_config.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: configuration variables for Alumni Internet Directory
-#      $Id: generic_config.pl,v 5.17 2000/05/31 01:15:16 mradwin Exp mradwin $
+#      $Id: generic_config.pl,v 5.18 2003/10/30 17:20:59 mradwin Exp mradwin $
 #
 # Copyright (c) 2003  Michael J. Radwin.
 # All rights reserved.
@@ -40,7 +40,7 @@
 # SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 $aid_util::rcsid =
- '$Id: generic_config.pl,v 5.17 2000/05/31 01:15:16 mradwin Exp mradwin $';
+ '$Id: generic_config.pl,v 5.18 2003/10/30 17:20:59 mradwin Exp mradwin $';
 
 # Generic HS on example.com (FreeBSD 2.2.2) configuration
 %aid_util::config =  
@@ -68,12 +68,12 @@ $aid_util::rcsid =
      'yab_cgi',      '/~jsmith/generic/bin/yab',
      'message_cgi',  '/~jsmith/generic/bin/msg',
      'index_page',   'index.html',
-     'wwwdir',       '/home/jsmith/public_html/generic/',
-     'dbmfile',      '/home/jsmith/public_html/generic/master.db',
-     'staging',      '/home/jsmith/public_html/generic/staging.db',
-     'reunions',     '/home/jsmith/public_html/generic/reunions.db',
-     'limit',        '/home/jsmith/public_html/generit/limit.db',
-     'aiddir',       '/home/jsmith/generic/',
+     'wwwdir',       $ENV{'HOME'} . '/public_html/generic/',
+     'dbmfile',      $ENV{'HOME'} . '/public_html/generic/master.db',
+     'staging',      $ENV{'HOME'} . '/public_html/generic/staging.db',
+     'reunions',     $ENV{'HOME'} . '/public_html/generic/reunions.db',
+     'limit',        $ENV{'HOME'} . '/public_html/generit/limit.db',
+     'aiddir',       $ENV{'HOME'} . '/alumni/generic/',
      'smtp_svr',     'smtp.example.com',
      'make',         '/usr/bin/make',
      'mailto',       "generic-submissions\@example.com",
