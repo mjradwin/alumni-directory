@@ -2,7 +2,7 @@
 #     FILE: aid_util.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: perl library routines for the Alumni Internet Directory
-#      $Id: aid_util.pl,v 4.89 1999/04/09 02:25:27 mradwin Exp mradwin $
+#      $Id: aid_util.pl,v 4.90 1999/04/09 02:35:06 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -775,7 +775,7 @@ sub aid_common_link_table
         } else {
             $html .= "<a\n      href=\"$url\">$name</a>";
         }
-	$html .= " || " unless $idx == $#page_idx;
+	$html .= ' - ' unless $idx == $#page_idx;
     }
     $html .= "\n      <br>";
     foreach $idx (0 .. $#second_idx) {
@@ -785,7 +785,7 @@ sub aid_common_link_table
         } else {
             $html .= "<a\n      href=\"$url\">$name</a>";
         }
-	$html .= " || " unless $idx == $#second_idx;
+	$html .= ' - ' unless $idx == $#second_idx;
     }
     $html .= "\n    </small></p>\n";
     $html .= "    <!-- nav end -->\n";
@@ -916,7 +916,7 @@ sub aid_class_jump_bar {
 
     foreach $year (@years) {
 	if ($first) {
-	    $retval .= "<a name=\"top\"";
+	    $retval .= "[ <a name=\"top\"";
 	    $retval .= ">" if defined $hilite && $year eq $hilite;
 	} else {
 	    $retval .= " |\n";
@@ -933,6 +933,7 @@ sub aid_class_jump_bar {
 	$first = 0;
     }
 
+    $retval .= ' ]';
     $retval .= '</p>' if $do_paragraph;
     $retval .= "\n\n";
 
