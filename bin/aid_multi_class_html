@@ -2,7 +2,7 @@
 
 #
 # does the html multi_class pages
-# $Id: aid_multi_class_html,v 3.21 1999/02/27 00:16:47 mradwin Exp mradwin $
+# $Id: aid_multi_class_html,v 3.22 1999/02/27 00:32:28 mradwin Exp mradwin $
 #
 
 require 'aid_util.pl';
@@ -56,6 +56,7 @@ foreach $year (@years)
     close(FMTOUT);
 }
 
+$time = unpack("N",$DB{'__t__'});
 dbmclose(DB);
 print STDERR "\n";
 
@@ -63,7 +64,6 @@ print STDERR "\n";
 $outFile = &aid_config('wwwdir') . "class/index.html";
 open(FMTOUT,">$outFile") || die "Can't open $outFile: $!\n";
 
-$time = unpack("N",$DB{'__t__'});
 print FMTOUT &common_html_hdr(2,'Listed by Graduating Class',0,$time);
 
 print FMTOUT "<p align=center><big>By&nbsp;Class:<br>\n";
