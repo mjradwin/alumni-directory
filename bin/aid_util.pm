@@ -2,11 +2,11 @@
 #     FILE: aid_util.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: perl library routines for the Alumni Internet Directory
-#      $Id: aid_util.pl,v 4.56 1999/03/12 21:34:19 mradwin Exp mradwin $
+#      $Id: aid_util.pl,v 4.57 1999/03/12 21:36:38 mradwin Exp mradwin $
 #
 
 $aid_util'rcsid =
- '$Id: aid_util.pl,v 4.56 1999/03/12 21:34:19 mradwin Exp mradwin $';
+ '$Id: aid_util.pl,v 4.57 1999/03/12 21:36:38 mradwin Exp mradwin $';
 
 # ----------------------------------------------------------------------
 # CONFIGURATION
@@ -958,8 +958,9 @@ sub aid_vcard_text {
     local($mid) = ($rec{'middle'} ne '') ? "$rec{'middle'}. " : '';
     local($v_mid) = ($rec{'middle'} ne '') ? ";$rec{'middle'}" : '';
 
+    # "N:Public;John;Quinlan;Mr.;Esq." ==> "FN:Mr. John Q. Public, Esq."
     if ($rec{'married'} ne '') {
-	$v_n  = "N:$rec{'married'};$rec{'first'}${v_mid};$rec{'last'}\015\012";
+	$v_n  = "N:$rec{'married'};$rec{'first'};$rec{'last'}\015\012";
 	$v_fn = "FN:$rec{'first'} ${mid}$rec{'last'} $rec{'married'}\015\012";
     } else {
 	$v_n  = "N:$rec{'last'};$rec{'first'}${v_mid}\015\012";
