@@ -2,7 +2,7 @@
 
 #
 # does the html verbose pages
-# $Id: aid_multi_alpha_html,v 3.19 1998/10/17 20:57:33 mradwin Exp mradwin $
+# $Id: aid_multi_alpha_html,v 3.20 1998/10/26 19:34:15 mradwin Exp mradwin $
 #
 
 require 'aid_util.pl';
@@ -20,7 +20,7 @@ $opt_h = $opt_h;		# avoid warning
 open(DATA,$ARGV[0]) || die "Can't open $ARGV[0]: $!\n";
 
 $initial = "Z";
-$alpha_header = &common_html_hdr(1,'Alumni Listed by Last Name',1) .
+$alpha_header = &common_html_hdr(1,'Listed by Last Name',1) .
     &common_intro_para(1);
 
 while(<DATA>) {

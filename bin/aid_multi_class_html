@@ -2,7 +2,7 @@
 
 #
 # does the html multi_class pages
-# $Id: aid_multi_class_html,v 3.14 1998/10/17 21:30:31 mradwin Exp mradwin $
+# $Id: aid_multi_class_html,v 3.15 1998/10/20 18:56:48 mradwin Exp mradwin $
 #
 
 require 'aid_util.pl';
@@ -64,7 +64,7 @@ close(FMTOUT);
 $outFile = &aid_config('wwwdir') . "class/index.html";
 open(FMTOUT,">$outFile") || die "Can't open $outFile: $!\n";
 
-print FMTOUT &common_html_hdr(2,'Alumni Listed by Graduating Class',0);
+print FMTOUT &common_html_hdr(2,'Listed by Graduating Class',0);
 
 print FMTOUT "<p align=center><font size=\"+1\">By&nbsp;Class:<br>\n";
 print FMTOUT &aid_class_jump_bar('', '.html', *years, 0);

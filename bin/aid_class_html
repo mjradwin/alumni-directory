@@ -2,7 +2,7 @@
 
 #
 # does the html version of the grad-date address list
-# $Id: aid_class_html,v 3.16 1998/10/09 20:51:02 mradwin Exp mradwin $
+# $Id: aid_class_html,v 3.17 1998/10/17 20:57:33 mradwin Exp mradwin $
 #
 
 require 'aid_util.pl';
@@ -39,8 +39,7 @@ while(<DATA>) {
 }
 
 if (!$opt_t) {
-    $title  = $opt_a ? 'Awalt ' : '';
-    $title .= "Alumni Listed by Graduating Class";
+    $title  = $opt_a ? 'Awalt Alumni' : 'Listed by Graduating Class';
     print FMTOUT &common_html_hdr(($opt_a ? 3 : -1),$title,1);
     print FMTOUT &common_intro_para(1);
     print FMTOUT &aid_class_jump_bar('#grad','',*years,0);
