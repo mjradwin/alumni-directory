@@ -4,25 +4,26 @@
 # does a short list, either compact or verbose, sorted by graduating
 # class with a jump bar
 #
-# $Id: aid_shortlist_html,v 1.9 1999/02/27 01:09:48 mradwin Exp mradwin $
+# $Id: aid_shortlist_html,v 1.10 1999/02/27 02:00:14 mradwin Exp mradwin $
 #
 
 require 'aid_util.pl';
 require 'getopts.pl';
 
 $0 =~ s,.*/,,;  # basename
-$usage = "usage: $0 [-htc] {-w,-m <mos>} infile.db outfile
+$usage = "usage: $0 [-htc] {-w,-m <mos>} [-M <mos_descr>] infile.db outfile
     -h        Display usage information.
     -t        Output text only.
     -v        Output verbose HTML.
 
     -w        Alumni with web pages only.
-    -m <mos>  Define 'recent' to mean <mos> months (default 1).
+    -m <mos>  Define 'recent' to mean <mos> months.
+    -M <desc> Describe <mos> as 'within the last <desc>.'
 
 Either -w or -m must be supplied.  They are mutually exclusive.
 ";
 
-&Getopts('htvwm:') || die "$usage\n";
+&Getopts('htvwm:M:') || die "$usage\n";
 $opt_h && die "$usage\n";
 $opt_h = $opt_h;		# avoid warning
 $opt_v = $opt_v;		# avoid warning
@@ -63,11 +64,12 @@ if (!$opt_t) {
 	print FMTOUT &common_intro_para(1);
 
     } elsif ($opt_m) {
+	$opt_M = 'month' unless defined $opt_M;
 	$time = unpack("N",$DB{'__t__'});
 	print FMTOUT &common_html_hdr(5,'Recent Additions',1,$time);
 	print FMTOUT
 "<p>All entries on this page have been added to the Directory within the
-last month.</p>\n\n";
+last $opt_M.</p>\n\n";
     }
 
     print FMTOUT &aid_class_jump_bar('#grad','',*years,1);
