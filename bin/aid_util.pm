@@ -2,7 +2,7 @@
 #     FILE: mv_util.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: perl library routines for the MVHS Alumni Internet Directory
-#      $Id: mv_util.pl,v 1.33 1997/09/22 17:31:47 mjr Exp mjr $
+#      $Id: mv_util.pl,v 1.34 1997/09/22 17:45:02 mjr Exp mjr $
 #
 
 CONFIG: {
@@ -587,6 +587,7 @@ sub common_html_hdr {
 </tr>
 </table>
 <hr noshade size=1>
+<!-- discourage www.roverbot.com --><!--BAD-DOG-->
 
 ";
 
