@@ -4,7 +4,7 @@
 #     FILE: msg.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: Alumni Internet Directory update redirector
-#      $Id: msg,v 6.13 2003/09/16 20:22:52 mradwin Exp mradwin $
+#      $Id: msg,v 6.14 2003/10/30 07:28:07 mradwin Exp mradwin $
 #
 #   Copyright (c) 2003  Michael John Radwin
 #
@@ -38,12 +38,8 @@ use Email::Valid;
 use CGI qw(-no_xhtml);
 use CGI::Carp qw(fatalsToBrowser);
 use Mail::SpamAssassin;
-use BSD::Resource;
 use aid_util;
 use strict;
-
-# needed for netspace.org -- raise 16mb soft limit to 32mb hard limit
-setrlimit(RLIMIT_VMEM, 33554432, 33554432);
 
 my %in;
 my($q) = new CGI;
@@ -189,7 +185,7 @@ _EOHTML_
     my $count = $LIMIT{$key};
     untie(%LIMIT);
 
-    if (defined $count && $count >= 4) {
+    if (defined $count && $count >= 5) {
 	print "Content-Type: text/html\015\012\015\012";
 	print aid_util::common_html_hdr(9, 'Too many messages today', 1);
 
