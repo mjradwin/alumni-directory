@@ -1,0 +1,31 @@
+#!/usr/bin/perl -w
+
+# $Id: aid_dbm_read,v 1.1 1999/01/21 16:40:17 mradwin Exp mradwin $
+
+dbmopen(DB2, 'master', 0444);
+
+if ($ARGV[0])
+{
+    print $DB2{$ARGV[0]}, "\n";
+    dbmclose(DB2);
+    exit 0;
+}
+
+while (($key,$val) = each %DB2)
+{
+    undef %rec;
+
+    next unless $key =~ /^\d+$/;
+    $packed = substr($val, 0, 19);
+    @rest = split(/\0/, substr($val, 19));
+
+    ($rec{'valid'}, $rec{'request'}, $rec{'reunion'},
+     $rec{'bounce'}, $rec{'created'}, $rec{'time'}, $rec{'fresh'}) =
+	 unpack("C3N4", $packed);
+
+    print $key, ' = ', join(';', $rec{'valid'}, $rec{'request'}, 
+			    $rec{'reunion'},  $rec{'bounce'}, $rec{'created'},
+			    $rec{'time'}, $rec{'fresh'}),
+           ';', join(';', @rest),  "\n";
+}
+dbmclose(DB2);
