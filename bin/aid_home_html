@@ -2,7 +2,7 @@
 
 #
 # does the html version of just home pages
-# $Id: aid_home_html,v 5.4 1999/06/07 18:32:25 mradwin Exp mradwin $
+# $Id: aid_home_html,v 5.5 1999/06/08 19:29:01 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -116,7 +116,7 @@ such as John Smith and Jane Smith, then the first one will be
 
     print OUTFILE "<form method=\"get\" action=\"";
     print OUTFILE &aid_config('download_cgi') . "\">\n";
-    print OUTFILE "<input type=\"hidden\" name=\"download\" value=\"1\" />\n\n";
+    print OUTFILE "<input type=\"hidden\" name=\"download\" value=\"1\"${ht_empty_close_tag}\n\n";
 
     print OUTFILE "<label for=\"year\">Year to download:&nbsp;</label>\n";
     print OUTFILE "<select name=\"year\" id=\"year\">\n";
@@ -131,13 +131,13 @@ such as John Smith and Jane Smith, then the first one will be
     print OUTFILE "</select>\n";
 
     print OUTFILE "
-<br />
+<br${ht_empty_close_tag}
 
-<input type=\"checkbox\" name=\"plusminus\" id=\"plusminus\" /><label
+<input type=\"checkbox\" name=\"plusminus\" id=\"plusminus\"${ht_empty_close_tag}<label
 for=\"plusminus\">&nbsp;Also download graduating classes 3 years before and 3
 years after mine.</label>
 
-<br />
+<br${ht_empty_close_tag}
 
 <label for=\"format\">Format:&nbsp;</label>
 <select name=\"format\" id=\"format\">
@@ -153,15 +153,15 @@ years after mine.</label>
 <option value=\"b\">Berkeley Mail (Unix)</option>
 </select>
 
-<br />
+<br${ht_empty_close_tag}
 
 <label for=\"email\">Your e-mail address:&nbsp;</label>
-<input type=\"text\" name=\"email\" size=\"25\" value=\"\" id=\"email\" />
+<input type=\"text\" name=\"email\" size=\"25\" value=\"\" id=\"email\"${ht_empty_close_tag}
 (for logging purposes only)
 
-<br />
+<br${ht_empty_close_tag}
 
-<input type=\"submit\" value=\"Download\" />
+<input type=\"submit\" value=\"Download\"${ht_empty_close_tag}
 </form>\n\n";
 
 } else { # implicit opt_i

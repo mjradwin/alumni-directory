@@ -2,7 +2,7 @@
 #     FILE: aid_util.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: perl library routines for the Alumni Internet Directory
-#      $Id: aid_util.pl,v 5.10 1999/06/08 20:10:48 mradwin Exp mradwin $
+#      $Id: aid_util.pl,v 5.11 1999/06/08 20:52:08 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -427,7 +427,7 @@ sub aid_verbose_entry {
 
     if ($rec{'n'} ne '') {
 	$retval .= "<dt>What's New?</dt>\n";
-	$rec{'n'} =~ s/\n/<br \/>\n/g;
+	$rec{'n'} =~ s/\n/<br${main'ht_empty_close_tag}\n/g;
 	$retval .= "<dd>$rec{'n'}</dd>\n";
     }
     $retval .= "</dl>\n\n";
@@ -617,7 +617,7 @@ sub aid_about_text
 	$retval .= "What's New?        :\n";
 	$retval .= "</pre>\n" if $do_html_p;
 	$retval .= $do_html_p ? "<blockquote class=\"about\">\n" : "";
-	$rec{'n'} =~ s/\n/<br \/>\n/g if $do_html_p;
+	$rec{'n'} =~ s/\n/<br${main'ht_empty_close_tag}\n/g if $do_html_p;
 	$retval .= $rec{'n'};
 	$retval .= $do_html_p ? "</blockquote>\n" : "";
     } else {
@@ -673,7 +673,7 @@ sub aid_common_link_table
         }
 	$html .= ' - ' unless $idx == $#page_idx;
     }
-    $html .= "\n<br />";
+    $html .= "\n<br${main'ht_empty_close_tag}";
     foreach $idx (0 .. $#second_idx) {
 	($name, $url) = split(/,/, $second_idx[$idx]);
         if ($idx == ($page - 10)) {
@@ -704,14 +704,14 @@ sub aid_common_html_ftr
 
     $time = time unless (defined $time && $time ne '0');
 
-    $ftr  = "\n<hr noshade=\"noshade\" size=\"1\" />\n";
+    $ftr  = "\n<hr noshade=\"noshade\" size=\"1\"${main'ht_empty_close_tag}\n";
 
     $ftr .= "<small>\n<!-- hhmts start -->\nLast modified: ";
     $ftr .= &main'ctime($time); #'#
-    $ftr .= "<!-- hhmts end -->\n<br />\n";
+    $ftr .= "<!-- hhmts end -->\n<br${main'ht_empty_close_tag}\n";
     $ftr .= "<a href=\"" . $copyright_path . "\">" .
 	"Copyright\n&copy; $year " . $config{'admin_name'} . 
-	    "</a><br /><br />\n";
+	    "</a><br${main'ht_empty_close_tag}<br${main'ht_empty_close_tag}\n";
     $ftr .= $disclaimer . "\n</small>\n</body>\n</html>\n";
 
     $ftr;
@@ -745,7 +745,7 @@ sub aid_common_html_hdr
 
     $hdr .= "<link rel=\"stylesheet\" type=\"text/css\" href=\"http://";
     $hdr .= $config{'master_srv'} . $config{'master_path'};;
-    $hdr .= "default.css\" />\n";
+    $hdr .= "default.css\"${main'main'ht_empty_close_tag}\n";
 
     if ($norobots)
     {
@@ -778,7 +778,7 @@ sub aid_common_html_hdr
 
 	$hdr .= " -&gt;\n$title\n";
     }
-    $hdr .= "</strong> ($timestamp)<br /><br />\n\n";
+    $hdr .= "</strong> ($timestamp)<br${main'ht_empty_close_tag}<br${main'ht_empty_close_tag}\n\n";
     
     $hdr .=
 "<table cellspacing=\"0\" cellpadding=\"6\" border=\"0\" width=\"100%\">

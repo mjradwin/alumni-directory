@@ -2,7 +2,7 @@
 #     FILE: aid_config.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: configuration variables for Alumni Internet Directory
-#      $Id: aid_config.pl,v 5.4 1999/06/01 17:00:37 mradwin Exp mradwin $
+#      $Id: aid_config.pl,v 5.5 1999/06/08 19:29:01 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -20,6 +20,9 @@
 #   along with this program; if not, write to the Free Software
 #   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #
+
+# $ht_empty_close_tag = ' />';
+$ht_empty_close_tag = '>';
 
 @aid_util'MoY = #'#
     ('Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec');
@@ -92,9 +95,9 @@ $aid_util'copyright_path = $aid_util'config{'master_path'} .
 $aid_util'pics_label = #'#
 "<meta http-equiv=\"PICS-Label\" content='(PICS-1.1 " . 
 "\"http://www.rsac.org/ratingsv01.html\" l gen true " . 
-"on \"1998.03.10T11:49-0800\" r (n 0 s 0 v 0 l 0))' />"; #"#
+"on \"1998.03.10T11:49-0800\" r (n 0 s 0 v 0 l 0))'${ht_empty_close_tag}"; #"#
 
-$aid_util'noindex = "<meta name=\"robots\" content=\"noindex\" />"; #'#
+$aid_util'noindex = "<meta name=\"robots\" content=\"noindex\"${ht_empty_close_tag}"; #'#
 %aid_util'aid_aliases = ();   #'# global alias hash repository 
 
 $aid_util'EPOCH       = 815130000; #'# Tue Oct 31 09:00:00 GMT 1995
@@ -230,6 +233,7 @@ if ($^W && 0)
     %aid_util'field_descr = (); #'#
     %aid_util'parent_page_name = (); #'#
     %aid_util'parent_page_path = (); #'#
+    $ht_empty_close_tag = '';
 }
 
 1;
