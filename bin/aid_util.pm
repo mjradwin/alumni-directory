@@ -2,7 +2,7 @@
 #     FILE: aid_util.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: perl library routines for the Alumni Internet Directory
-#      $Id: aid_util.pl,v 4.88 1999/04/09 02:11:34 mradwin Exp mradwin $
+#      $Id: aid_util.pl,v 4.89 1999/04/09 02:25:27 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -1203,7 +1203,6 @@ sub aid_rebuild_secondary_keys
     print STDERR "." unless $quiet;
 
     # second pass - timestamps and lists
-    $DB{'_created'} = pack("N", time);
     foreach $id (@alpha_ids)
     {
 	%rec = &main'aid_db_unpack_rec($id,$DB{$id}); #'#;
@@ -1333,7 +1332,7 @@ sub aid_rebuild_secondary_keys
     print STDERR ".\n" unless $quiet;
 
     # static keys (always present)
-    $new_db{'_created'} = $new_db{'_alpha'} =  $new_db{'_years'} =
+    $new_db{'_alpha'} =  $new_db{'_years'} =
 	$new_db{'_class'} = $new_db{'_www_years'} = $new_db{'_awalt_years'} =
 	    $new_db{'_t'} = $new_db{'_t_www'} = $new_db{'_t_awalt'} =
 		$new_db{'_t_goner'} = 1;
