@@ -4,7 +4,7 @@
 #     FILE: mvhsaid.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: MVHS Alumni Internet Directory CGI interface
-#      $Id: mvhsaid,v 3.44 1999/01/07 23:02:17 mradwin Exp mradwin $
+#      $Id: mvhsaid,v 3.45 1999/01/07 23:26:46 mradwin Exp mradwin $
 #
 
 require 'aid_util.pl';
@@ -28,7 +28,7 @@ if (defined($ENV{'PATH_INFO'}) && $ENV{'PATH_INFO'} =~ m,^/vcard/,) {
     $in{'vcard'} =~ s,^/vcard/(\d+).*$,$1,;
 }
 
-$rcsid = '$Id: mvhsaid,v 3.44 1999/01/07 23:02:17 mradwin Exp mradwin $'; #'fnt
+$rcsid = '$Id: mvhsaid,v 3.45 1999/01/07 23:26:46 mradwin Exp mradwin $'; #'fnt
 
 # look for special flags: version, update, vcard, about, download
 #
@@ -37,7 +37,8 @@ $rcsid = '$Id: mvhsaid,v 3.44 1999/01/07 23:02:17 mradwin Exp mradwin $'; #'fnt
 if (defined($in{'version'})) {
     select(STDOUT);  $| = 1;
     print "Content-type: text/plain\r\n\r\n$rcsid\r\n";
-    print &aid_config('rcsid'), "\r\n";
+    print &aid_config('rcsid'), "\r\n",
+	"cgi-lib.pl version ", $cgi_lib'version, "\r\n"; #'#
     exit(0);
 
 } elsif (defined($in{'update'})) {
