@@ -1,0 +1,144 @@
+#!/usr/bin/perl -w
+
+#
+#     FILE: alumni.txt.pl
+#   AUTHOR: Michael J. Radwin
+#    DESCR: Address Book/Nicknames Downloading module
+#      $Id: form,v 3.109 1999/05/31 17:29:07 mradwin Exp $
+#
+#   Copyright (c) 1995-1999  Michael John Radwin
+#
+#   This program is free software; you can redistribute it and/or modify
+#   it under the terms of the GNU General Public License as published by
+#   the Free Software Foundation; either version 2 of the License, or
+#   (at your option) any later version.
+#
+#   This program is distributed in the hope that it will be useful,
+#   but WITHOUT ANY WARRANTY; without even the implied warranty of
+#   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#   GNU General Public License for more details.
+#
+#   You should have received a copy of the GNU General Public License
+#   along with this program; if not, write to the Free Software
+#   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+#
+
+require 'aid_util.pl';
+require 'cgi-lib.pl';
+
+$dbmfile = &aid_config('dbmfile');
+$dbmfile =~ s/\.db$//;
+
+&CgiDie(&aid_config('short_school') . " Alumni: Script Error",
+	"The database is unreadable.\n" .
+	"Please <a href=\"mailto:" . &aid_config('admin_email') .
+	"\">e-mail " . &aid_config('admin_name') . "</a>.")
+    unless -r "${dbmfile}.db";
+
+if (!&ReadParse())
+{
+    &send_upd_real(*aid_util'blank_entry,'');  #')#
+    close(STDOUT);
+    exit(0);
+}
+
+$in{'plusminus'} = defined $in{'plusminus'} && 
+    ($in{'plusminus'} eq 'on' || $in{'plusminus'} == 1) ? 1 : 0;
+
+if (! &is_email_okay($in{'email'}))
+{
+    print "Content-Type: text/html\015\012\015\012";
+    print &aid_common_html_hdr(-1, (($in{'email'} =~ /^\s*$/) ? 'Blank' :
+				    'Invalid') . ' E-mail Address',1);
+    print "\n";
+    print "<p>You must submit a valid, non-blank e-mail address to ";
+    print "download address books.\n";
+    print "<p>Please <a href=\"" . &aid_config('master_path') .
+	"download/\">try again</a>.</p>\n";
+    print &aid_common_html_ftr(-1);
+}
+elsif (defined $in{'format'} && defined $in{'year'})
+{
+    &send_address_book($in{'format'},$in{'year'},$in{'plusminus'});
+}
+else
+{
+    print "Status: 404 Not Found\015\012";
+    &CgiError(&aid_config('short_school') . " Alumni: Bad Download Request",
+	      "The download request could not be processed.\n" .
+	      "Please <a href=\"" . &aid_config('master_path') .
+	      "download/\">try again</a>.");
+}
+
+close(STDOUT);
+exit(0);
+
+
+sub send_address_book {
+    local($format,$year,$plusminus_p) = @_;
+    local(@class_ids,%DB);
+    local($_,%rec,$minyr,$maxyr);
+    local($subtype) = 'plain';
+
+    if ($format eq 'o') {
+	$subtype = 'x-csv';
+    } elsif ($format eq 'v') {
+	$subtype = 'directory';
+    } elsif ($format eq 'l') {
+	$subtype = 'ldif';
+    } elsif ($format eq 'n') {
+	$subtype = 'html;charset=ISO-8859-1';
+    }
+
+    if ($plusminus_p) {
+	$minyr = $year - 3;
+	$maxyr = $year + 3;
+    } else {
+	$minyr = $maxyr = $year;
+    }
+
+    dbmopen(%DB,$dbmfile,0444);
+    if (defined $DB{'_class'})
+    {
+	@class_ids = unpack("n*",$DB{'_class'});
+    }
+    else
+    {
+	dbmclose(%DB);
+	&CgiDie(&aid_config('short_school') . " Alumni: Script Error",
+		"The class database is unavailable.\n" .
+		"Please <a href=\"mailto:" . &aid_config('admin_email') .
+		"\">e-mail " . &aid_config('admin_name') . "</a>.");
+    }
+    
+    print "Content-Type: text/$subtype\015\012\015\012";
+    &aid_book_write_prefix(*STDOUT,$format);
+    foreach (@class_ids)
+    {
+	%rec = &aid_db_unpack_rec($_,$DB{$_});
+
+	next unless $rec{'v'};
+	next unless ($rec{'yr'} <= $maxyr && $rec{'yr'} >= $minyr);
+
+	&aid_book_write_entry(*STDOUT,$format,*rec);
+    }
+    dbmclose(%DB);
+
+    &aid_book_write_suffix(*STDOUT,$format);
+}
+
+sub is_email_okay
+{
+    local($_) = @_;
+
+    if (/^\s*[^\@\s\(\)\"]+\@([^\.\s\(\)\"]+\.)+\w\w\w?\s*$/)
+    {
+	1;
+    }
+    else
+    {
+	0;
+    }
+}
+
+1;
