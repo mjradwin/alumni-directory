@@ -2,11 +2,11 @@
 #     FILE: aid_util.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: perl library routines for the Alumni Internet Directory
-#      $Id: aid_util.pl,v 3.29 1998/06/03 20:25:03 mradwin Exp mradwin $
+#      $Id: aid_util.pl,v 3.30 1998/06/03 21:20:27 mradwin Exp mradwin $
 #
 
 $aid_util'rcsid =
- '$Id: aid_util.pl,v 3.29 1998/06/03 20:25:03 mradwin Exp mradwin $';
+ '$Id: aid_util.pl,v 3.30 1998/06/03 21:20:27 mradwin Exp mradwin $';
 
 # ----------------------------------------------------------------------
 # CONFIGURATION
@@ -661,8 +661,11 @@ sub sendmail {
 
     local($to,$return_path,$from,$subject,$body) = @_;
     local(*F);
-    local($toline) = join(', ', split(/[ \t]+/, $to));
-    local($header) =
+    local($toline,$header);
+
+    $to =~ s/\s*\([^\)]*\)\s*//;
+    $toline = join(', ', split(/[ \t]+/, $to));
+    $header =
 "From: $return_path ($from)\
 Return-Path: $return_path\
 Subject: $subject\
