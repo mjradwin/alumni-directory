@@ -1,26 +1,6 @@
 CONFIG: {
     package mv_util;
 
-    %wdays = ('Sun', 0,
-	      'Mon', 1,
-	      'Tue', 2,
-	      'Wed', 3,
-	      'Thu', 4,
-	      'Fri', 5,
-	      'Sat', 6);
-    %months = ('Jan', 0,
-	       'Feb', 1,
-	       'Mar', 2,
-	       'Apr', 3,
-	       'May', 4,
-	       'Jun', 5,
-	       'Jul', 6,
-	       'Aug', 7,
-	       'Sep', 8,
-	       'Oct', 9,
-	       'Nov', 10,
-	       'Dec', 11);
-
     @page_idx = ('Home,./',
 		 'Alphabetically,all.html',
 		 'Grad.&nbsp;Class,class.html',
@@ -99,6 +79,8 @@ sub mv_old_parse {
 
 sub bydatakeys { $datakeys[$a] cmp $datakeys[$b] }
 sub mv_alpha_db {
+    package mv_util;
+
     local(@db) = &mv_create_db($_[0]);
     local(@alpha, @fields);
     @datakeys = ();
@@ -132,32 +114,9 @@ sub mv_create_db {
     return @db;
 }
 
-
-# Wed Mar 13 17:28:32 EST 1996 broccoli@uclink4.berkeley.edu
-# Thu Mar 28  1:07:43 US/Eastern 1996 mjr@cs.brown.edu
-# Sun Apr 28 22:06:20 1996 bartholomew@wsu.edu
-sub parse_ctime {
-    package mv_util;
-    require 'timelocal.pl';
-
-    local($_) = @_;
-    local($[) = 0;
-    local($sec, $min, $hour, $mday, $mon, $year, $wday, @rdate);
-
-    @rdate = /^(\w+)\s+(\w+)\s+(\d+)\s+(\d+):(\d+):(\d+)\s+\S*\s*19(\d+)/;
-    $wday = $wdays{$rdate[0]};
-    $mon = $months{$rdate[1]};
-    $mday = $rdate[2];
-    $hour = $rdate[3];
-    $min = $rdate[4];
-    $sec = $rdate[5];
-    $year = $rdate[6];
-
-    return &timegm($sec,$min,$hour,$mday,$mon,$year,$wday,0,0);
-}
-
-
 sub submit_body {
+    package mv_util;
+
     local($[) = 0;
     local($_);
     local($time,$id,$req,$last,$first,$school,$year,$email,$alias,$homepage) 
