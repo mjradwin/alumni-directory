@@ -2,7 +2,7 @@
 
 #
 # does the html verbose pages
-# $Id: aid_multi_alpha_html,v 5.5 1999/06/08 21:54:43 mradwin Exp mradwin $
+# $Id: aid_multi_alpha_html,v 5.6 1999/06/08 21:56:56 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -29,81 +29,72 @@ require 'aid_util.pl';
 require 'getopts.pl';
 
 $0 =~ s,.*/,,;  # basename
-$usage = "usage: $0 [-h] infile.db
+$usage = "usage: $0 [-h] [-i <keys>] infile.db
     -h        Display usage information.
+    -i <keys> Incremental update only for list of keys.
 ";
 
-&Getopts('h') || die "$usage\n";
+&Getopts('hi:') || die "$usage\n";
 $opt_h && die "$usage\n";
 $ARGV[0] || die "$usage\n";
 $opt_h = $opt_h;		# avoid warning
+
+@incremental = ($opt_i ? split(/[,\s]+/, $opt_i) : ());
 
 $ARGV[0] =~ s/\.db$//;
 die "can't open $ARGV[0].db\n" unless -r "$ARGV[0].db";
 dbmopen(%DB,$ARGV[0],0444);
 
-die "no _alpha key!\n" unless defined $DB{'_alpha'};
-
 @initials = ();
 for ($initial = 'a'; $initial ne 'aa'; $initial++)
 {
-    push(@initials, $initial) if defined $DB{"_t_${initial}"};
+    push(@initials, $initial) if defined $DB{"_a_${initial}"};
 }
-
-$opened = 0;
-$initial = "Z";
 
 select(STDOUT); $| = 1;
-@alpha_ids = unpack("n*",$DB{'_alpha'});
-foreach $id (@alpha_ids)
+foreach $initial (@initials)
 {
-    %rec = &aid_db_unpack_rec($id,$DB{$id});
-    next unless $rec{'v'};
-
-    $cur_initial = substr($rec{'sn'}, 0, 1);
-    $cur_initial = "\U${cur_initial}\E";
-    if ("\U${initial}\E" ne $cur_initial) {
-	print STDOUT ".";
-        $initial = $cur_initial;
-
-	if ($opened)
-	{
-	    print FMTOUT "</pre>\n";
-	    print FMTOUT &aid_common_html_ftr(1,$time);
-	    close(FMTOUT);
-	    utime $time, $time, $outFile;
-	}
-
-	$outFile = &aid_config('wwwdir') . "alpha/\L${initial}\E-index.html";
-	open(FMTOUT,">$outFile") || die "Can't open $outFile: $!\n";
-	$opened = 1;
-
-	die "no alpha time key!\n" unless defined $DB{"\L_t_${initial}\E"};
-	$time = unpack("N",$DB{"\L_t_${initial}\E"});
-
-	print FMTOUT &aid_common_html_hdr(1,"`$initial' Alumni",1,$time),
-	    &aid_common_intro_para(1),
-	    "<p>\n", &alpha_jump_bar($initial), "</p>\n",
-	    "<hr noshade=\"noshade\" size=\"1\"${ht_empty_close_tag}\n\n";
-
-	print FMTOUT "<pre>";
+    $key = "_a_${initial}";
+    if (@incremental)
+    {
+	next unless grep(/$key/, @incremental);
     }
 
-    print FMTOUT &html_pre_entry(*rec,'',1);
-}
-print STDOUT "\n";
+    print STDOUT "$initial ";
 
-if ($opened)
-{
+    die "no $key key!\n" unless defined $DB{$key};
+    @alpha_ids = unpack("n*",$DB{$key});
+
+    die "no alpha time key!\n" unless defined $DB{"_t_${initial}"};
+    $time = unpack("N",$DB{"_t_${initial}"});
+
+    $outFile = &aid_config('wwwdir') . "alpha/${initial}-index.html";
+    open(FMTOUT,">$outFile") || die "Can't open $outFile: $!\n";
+
+    print FMTOUT &aid_common_html_hdr(1,"`\u$initial' Alumni",1,$time),
+      &aid_common_intro_para(1),
+      "<p>\n", &alpha_jump_bar($initial), "</p>\n",
+      "<hr noshade=\"noshade\" size=\"1\"${ht_empty_close_tag}\n\n<pre>";
+
+    foreach $id (@alpha_ids)
+    {
+	%rec = &aid_db_unpack_rec($id,$DB{$id});
+	next unless $rec{'v'};
+
+	print FMTOUT &html_pre_entry(*rec,'',1);
+    }
+
     print FMTOUT "</pre>\n";
     print FMTOUT &aid_common_html_ftr(1,$time);
     close(FMTOUT);
     utime $time, $time, $outFile;
 }
 
-# index page
-die "no _t key!\n" unless defined $DB{'_t'};
 $time = unpack("N",$DB{'_t'});
+dbmclose(%DB);
+print STDOUT "\n";
+
+# index page
 $outFile = &aid_config('wwwdir') . "alpha/index.html";
 open(FMTOUT,">$outFile") || die "Can't open $outFile: $!\n";
 
@@ -116,7 +107,6 @@ print FMTOUT "</big></p>\n\n";
 print FMTOUT &aid_common_html_ftr(-1,$time);
 close(FMTOUT);
 utime $time, $time, $outFile;
-dbmclose(%DB);
 
 # touch timestamp
 $now = time;
@@ -165,7 +155,6 @@ sub alpha_jump_bar {
 
     $retval = '';
     $initial = 'a';
-    $regular = "\L${regular}\E";
 
     foreach $initial (@initials)
     {

@@ -2,7 +2,7 @@
 
 #
 # does the html multi_class pages
-# $Id: aid_multi_class_html,v 5.3 1999/06/08 19:29:01 mradwin Exp mradwin $
+# $Id: aid_multi_class_html,v 5.4 1999/06/08 21:54:43 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -29,14 +29,17 @@ require 'aid_util.pl';
 require 'getopts.pl';
 
 $0 =~ s,.*/,,;  # basename
-$usage = "usage: $0 [-h] infile.db
+$usage = "usage: $0 [-h] [-i <keys>] infile.db
     -h        Display usage information.
+    -i <keys> Incremental update only for list of keys.
 ";
 
-&Getopts('h') || die "$usage\n";
+&Getopts('hi:') || die "$usage\n";
 $opt_h && die "$usage\n";
 $ARGV[0] || die "$usage\n";
 $opt_h = $opt_h;		# avoid warning
+
+@incremental = ($opt_i ? split(/[,\s]+/, $opt_i) : ());
 
 $ARGV[0] =~ s/\.db$//;
 die "can't open $ARGV[0].db\n" unless -r "$ARGV[0].db";
@@ -50,8 +53,19 @@ push(@years, 'other');
 select(STDOUT); $| = 1;
 foreach $year (@years)
 {
-    print STDOUT ".";
-    @ids = unpack("n*",$DB{"_${year}"});
+    $key = "_${year}";
+    if (@incremental)
+    {
+	next unless grep(/$key/, @incremental);
+	print STDOUT "$year ";
+    }
+    else
+    {
+	print STDOUT ".";
+    }
+
+    die "no $key key!\n" unless defined $DB{$key};
+    @ids = unpack("n*",$DB{$key});
 
     $outFile = &aid_config('wwwdir') . "class/${year}.html";
     open(FMTOUT,">$outFile") || die "Can't open $outFile: $!\n";
@@ -68,7 +82,6 @@ foreach $year (@years)
     {
 	$subtitle = sprintf("%d alumni", $#ids + 1);
     }
-#    $subtitle = "<strong><font color=\"#000000\">$subtitle</font></strong>";
     
     print FMTOUT &aid_common_html_hdr(2,$title,1,$time,$subtitle);
     print FMTOUT &aid_common_intro_para(0);
