@@ -4,7 +4,7 @@
 #     FILE: verify.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: CGI for verifcation of e-mail address
-#      $Id: verify,v 1.8 2001/01/08 17:53:26 mradwin Exp mradwin $
+#      $Id: verify,v 1.9 2001/02/01 19:42:58 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-2000  Michael John Radwin
 #
@@ -118,15 +118,16 @@ sub check_key8 {
 	$fullname = &aid_inorder_fullname(*rec);
 
 	print "Content-Type: text/html\015\012\015\012";
-	print &aid_common_html_hdr(20,'E-mail address verified!',1);
+	print &aid_common_html_hdr(20,'E-mail address verified',1);
 
 	$fullname = &aid_html_entify_str($fullname);
 	print "
 
-<h3>Hello, $fullname.  Your e-mail address has been verified!</h3>
-
-<p>The listing for <strong>$fullname</strong> has been added to the
-submission queue, and it will be processed within 5 minutes.</p>
+<p>The listing for <strong>$fullname</strong> has been
+accepted into the submission queue, and it will be processed
+within 5 minutes. E-mail will be sent to
+<b>$rec{'e'}</b>
+confirming receipt of this submission when it it processed.</p>
 
 Here is what your listing will look like:
 <br><br>
@@ -135,12 +136,7 @@ Here is what your listing will look like:
 
     print &aid_verbose_entry(*rec,1,1,1);
 
-    print "</td></tr></table>
-
-<p>E-mail will be sent to
-<b>$rec{'e'}</b>
-confirming receipt of this submission when it it processed.</p>
-";
+	print "</td></tr></table>\n";
 	print &aid_config('html_ad');
 	print &aid_common_html_ftr(20);
 

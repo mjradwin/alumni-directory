@@ -4,7 +4,7 @@
 #     FILE: form.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: Alumni Internet Directory CGI form-submission interface
-#      $Id: form,v 5.40 2001/01/09 21:27:01 mradwin Exp mradwin $
+#      $Id: form,v 5.41 2001/01/26 18:19:01 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -36,7 +36,7 @@ use CGI::Carp qw(fatalsToBrowser);
 # configuration
 $dbmfile = &aid_config('dbmfile');
 
-$rcsid = '$Id: form,v 5.40 2001/01/09 21:27:01 mradwin Exp mradwin $'; #'fnt
+$rcsid = '$Id: form,v 5.41 2001/01/26 18:19:01 mradwin Exp mradwin $'; #'fnt
 
 $listing_upd_title = 'Modify Your Directory Listing';
 $listing_add_title = 'Join the Directory';
@@ -399,15 +399,16 @@ sub queue_submission {
 	$fullname = &aid_inorder_fullname(*cgi);
 
 	print "Content-Type: text/html\015\012\015\012";
-	print &aid_common_html_hdr(20,'E-mail address verified!',1);
+	print &aid_common_html_hdr(20,'Submission Queued',1);
 
 	$fullname = &aid_html_entify_str($fullname);
 	print "
 
-<h3>Hello, $fullname.  Your submission has been queued!</h3>
-
-<p>The listing for <strong>$fullname</strong> has been added to the
-submission queue, and it will be processed within 5 minutes.</p>
+<p>The listing for <strong>$fullname</strong> has been
+accepted into the submission queue, and it will be processed
+within 5 minutes. E-mail will be sent to
+<b>$rec{'e'}</b>
+confirming receipt of this submission when it it processed.</p>
 
 Here is what your listing will look like:
 <br><br>
@@ -416,10 +417,7 @@ Here is what your listing will look like:
 
 	print &aid_verbose_entry(*cgi,1,1,1);
 
-	print "</td></tr></table>\n\n<p>E-mail will be sent to\n<b>",
-	&aid_html_entify_str($cgi{'e'}), "</b>\n",
-	"confirming receipt of this submission when it it processed.</p>\n";
-
+	print "</td></tr></table>\n";
 	print &aid_config('html_ad');
 	print &aid_common_html_ftr(20);
     }
