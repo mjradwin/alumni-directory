@@ -1,14 +1,14 @@
 #!/usr/local/bin/perl -w
 
-# $Id: aid_addname,v 1.13 1998/01/07 18:59:23 mjr Exp mjr $
+# $Id: aid_addname,v 1.14 1998/01/12 17:32:35 mjr Exp mjr $
 
 require 'getopts.pl';
 require 'aid_util.pl';
 
-$usage = 'usage: aid_addname [-hmw] [mailspoolfile]
+$usage = 'usage: aid_addname [-hwm] [mailspoolfile]
     -h        Display usage information.
-    -m        Manual operation (don\'t rebuild).
     -w        Don\'t mail welcome messages.
+    -m        Manual operation (don\'t rebuild or mail welcome messages).
 ';
 
 &Getopts('hmw') || die "$usage\n";
@@ -29,7 +29,7 @@ $make = &aid_config('make');
 
 &readspool(($ARGV[0]) ? $ARGV[0] : &aid_config('spoolfile'));
 &rebuild() unless $opt_m;
-&mail_welcome() unless $opt_w;
+&mail_welcome() unless $opt_m || $opt_w;
 
 print "done!\n";
 exit(0);
@@ -50,6 +50,7 @@ sub readspool {
     local($[) = 0;
     local($_);
     local($id,$logFile,$newsFile,*SPOOL);
+    local($newsp);
 
     open(SPOOL, $spoolFile) || die "can't open $spoolFile: $!\n";
     print "reading spool...\n";
@@ -61,6 +62,7 @@ sub readspool {
 	chop;
 
 	$id = &addname($_);
+	$newsp = 0;
 
 	while(<SPOOL>) {
 	    last if /^The kind soul who submitted it/;
@@ -85,8 +87,19 @@ sub readspool {
 		    || die "failed to $echo 'MESSAGE $newsFile' >> $logFile: $!\n";
 		system "$cat $newsFile >> $logFile"
 		    || die "failed to $cat $newsFile >> $logFile: $!\n";
+
+		$newsp = 1;	# they had a What's New? message
 	    }
 	}
+
+	if (!$newsp) {
+	    $newsFile = &aid_config('newsdir') . "${id}.txt";
+	    if (-e $newsFile) {
+		print "No news, but newsFile exists.\nREMOVING $newsFile\n";
+		unlink($newsFile);
+	    }
+	}
+
     }
     close(SPOOL);
 
