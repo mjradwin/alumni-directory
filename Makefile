@@ -2,7 +2,7 @@
 #     FILE: Makefile
 #   AUTHOR: Michael J. Radwin
 #    DESCR: Makefile for building the Alumni Internet Directory
-#      $Id: Makefile,v 3.13 1998/05/18 22:18:38 mradwin Exp mradwin $
+#      $Id: Makefile,v 3.14 1998/06/01 16:30:51 mradwin Exp mradwin $
 #
 
 WWWDIR=/home/web/radwin.org/docs/mvhs-alumni
@@ -23,6 +23,9 @@ BIN_HOME=./bin/aid_home_html
 BIN_RECENT=./bin/aid_recent_html
 BIN_VERBOSE=./bin/aid_verbose_html
 BIN_WWW=./bin/aid_www_html
+
+AID_UTIL_PL=/home/web/radwin.org/cgi-bin/aid_util.pl
+TABLEHEADER_PL=/home/web/radwin.org/cgi-bin/tableheader.pl
 
 TARFILES=README Makefile cgi-bin/*.pl cgi-bin/mvhsaid bin/aid_* data/*.include
 SNAPSHOTFILES=bin/aid_make mvhs web/mvhs-alumni/*.gif \
@@ -80,7 +83,7 @@ $(VERBOSE):	$(ADR_CLASS) $(BIN_VERBOSE)
 
 INDEX=$(WWWDIR)/index.html
 index:	$(INDEX)
-$(INDEX):	data/index.include $(BIN_HOME) aid_util.pl $(ADR_MASTER)
+$(INDEX):	data/index.include $(BIN_HOME) $(AID_UTIL_PL) $(ADR_MASTER)
 	$(BIN_HOME) -p0 -i data/index.include \
 		-t 'Welcome to the MVHS Alumni Internet Directory!' \
 		$(INDEX)
@@ -123,7 +126,7 @@ $(COPYRIGHT):	data/copyright.include $(BIN_HOME)
 
 SUBMIT=$(WWWDIR)/add.html
 submit:	$(SUBMIT)
-$(SUBMIT):	$(BIN_HOME) aid_util.pl
+$(SUBMIT):	$(BIN_HOME) $(AID_UTIL_PL)
 	$(BIN_HOME) -s -p10 \
 		-t 'Add an Entry to the Directory' \
 		$(SUBMIT)
