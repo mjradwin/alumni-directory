@@ -2,36 +2,64 @@
 
 #
 # does the html version of the recent address list
-# $Id: aid_recent_html,v 2.4 1998/05/17 01:02:30 mradwin Exp mradwin $
+# $Id: aid_recent_html,v 3.10 1998/05/17 05:18:53 mradwin Exp mradwin $
 #
 
 require 'aid_util.pl';
+require 'getopts.pl';
 
-die "Usage: aid_recent_html infile.adr outfile.html\n" if !$ARGV[0] || !$ARGV[1];
+$usage = 'usage: aid_recent_html [-ht] [-m <mos>] infile.adr outfile
+    -h        Display usage information.
+    -t        Output text only.
+    -m <mos>  Define "recent" to mean <mos> months (default 1).
+';
+
+&Getopts('htm:') || die "$usage\n";
+$opt_h && die "$usage\n";
+$ARGV[0] || die "$usage\n";
+$ARGV[1] || die "$usage\n";
+$opt_h = $opt_h;		# avoid warning
 
 open(DATA,$ARGV[0]) || die "Can't open $ARGV[0]: $!\n";
 open(FMTOUT,">$ARGV[1]") || die "Can't open $ARGV[1]: $!\n";
 
+if (!$opt_t) {
 print FMTOUT &common_html_hdr(4,'Recent Additions to the Directory',1);
 print FMTOUT
 "<p>All entries on this page have been added to the Directory within the
 last month.  The most recent additions or updates are at the top of the
 page.</p>\n\n";
+}
+
+$opt_m = 1 unless $opt_m;
 
 @newbies = ();
 while(<DATA>) {
     chop;
     %rec = &aid_split($_);
     next unless $rec{'valid'};
-    next unless &is_new($rec{'time'});
+    next unless &is_new($rec{'time'}, $opt_m);
     push(@newbies,$_);
 }
 
-while (defined($_ = pop(@newbies))) {
-    %rec = &aid_parse($_);
-    &aid_write_verbose_entry(*FMTOUT,*rec,1,1);
+if ($opt_t) {
+    while (defined($_ = shift(@newbies))) {
+	%rec = &aid_parse($_);
+
+	$fullname = &fullname(*rec);
+	($affil,$len) = &affiliate(*rec,0);
+
+	print FMTOUT $fullname, $affil, ' ';
+	print FMTOUT ' ' x (40 - (length($fullname) + $len));
+	print FMTOUT $rec{'email'}, "\n";
+    }
+} else {
+    while (defined($_ = pop(@newbies))) {
+	%rec = &aid_parse($_);
+	&aid_write_verbose_entry(*FMTOUT,*rec,1,1);
+    }
 }
 
-print FMTOUT &common_html_ftr(4);
+$opt_t || print FMTOUT &common_html_ftr(4);
 
 exit(0);
