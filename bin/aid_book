@@ -2,7 +2,7 @@
 
 #
 # generates address books in several formats
-# $Id: aid_book,v 3.16 1998/10/27 18:56:16 mradwin Exp mradwin $
+# $Id: aid_book,v 3.17 1998/11/11 19:09:44 mradwin Exp mradwin $
 #
 
 require 'aid_util.pl';
@@ -182,7 +182,7 @@ sub write_entry {
 	    print BOOK "\"\",\"$rec{'last'}\",";
 	}
 
-	print BOOK "\"\",\"$rec{'school'} $rec{'year'}\",\"\"";
+	print BOOK "\"\",\"$rec{'school'} $rec{'year'}\",\"\",";
 #	print BOOK "\"\",\"$rec{'school'}\",";
 #	if ($rec{'year'} =~ /^\d+$/) {
 #	    print BOOK "\"Class of $rec{'year'}\",";
