@@ -4,7 +4,7 @@
 #     FILE: mvhsaid.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: Alumni Internet Directory CGI interface
-#      $Id: mvhsaid,v 3.77 1999/03/05 00:07:09 mradwin Exp mradwin $
+#      $Id: mvhsaid,v 3.78 1999/03/05 00:17:27 mradwin Exp mradwin $
 #
 
 require 'aid_util.pl';
@@ -22,7 +22,7 @@ if ($ENV{'SCRIPT_NAME'} =~ m,/nph-,)
 # configuration
 $mailprog = &aid_config('mailprog');
 $dbmfile = &aid_config('wwwdir') . 'master';
-$rcsid = '$Id: mvhsaid,v 3.77 1999/03/05 00:07:09 mradwin Exp mradwin $'; #'fnt
+$rcsid = '$Id: mvhsaid,v 3.78 1999/03/05 00:17:27 mradwin Exp mradwin $'; #'fnt
 
 $listing_upd_title = 'Update Your Directory Listing';
 $listing_upl_title = 'Select a Listing to Update';
@@ -211,8 +211,6 @@ if ($in{'year'} =~ /^\d\d$/) {
 
 $in{'reunion'} = (defined $in{'reunion'} && 
 		  ($in{'reunion'} eq 'on' || $in{'reunion'} == 1)) ? 1 : 0;
-$in{'school'} = ($in{'school'} eq 'Other' && $in{'sch_other'} ne '') ? 
-    $in{'sch_other'} : $in{'school'};
 
 # lowercase the hostname portion of the email address
 if ($in{'email'} =~ /\@/)
@@ -259,11 +257,9 @@ $in{'married'} = '' if defined $in{'married'} &&
      $in{'married'} eq $in{'last'});
 
 # did they have non-blank entries for all the required fields?
-# did they check the "other" box for school, but not fill in any text?
 @blank_fields = ();
 foreach (@required_headers) {
     if (($in{$_} =~ /^\s*$/) ||
-	($_ eq 'school' && $in{'school'} eq 'Other') ||
 	($_ eq 'email' && $in{'email'} !~ /\@/))
     {
 	push(@blank_fields, $_);
