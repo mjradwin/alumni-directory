@@ -2,7 +2,7 @@
 #     FILE: mv_util.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: perl library routines for the MVHS Alumni Internet Directory
-#      $Id: mv_util.pl,v 1.19 1997/03/29 17:21:21 mjr Exp mjr $
+#      $Id: mv_util.pl,v 1.20 1997/03/29 17:41:56 mjr Exp mjr $
 #
 
 CONFIG: {
@@ -40,7 +40,7 @@ CONFIG: {
 		 'Recent&nbsp;Additions,recent.html',
 		 'Web&nbsp;Pages,pages.html',
 		 'Get&nbsp;Listed!,add.html',
-		 'Acceptible&nbsp;Use,#disclaimer');
+		 'Acceptable&nbsp;Use,#disclaimer');
 
     $pics_label = "<meta http-equiv=\"PICS-Label\" content='(PICS-1.0 \"http://www.rsac.org/ratingsv01.html\" l gen true comment \"RSACi North America Server\" by \"" . $config{'admin_email'} . "\" for \"" . $config{'master_url'} . "\" on \"1996.04.04T08:15-0500\" exp \"1997.07.01T08:15-0500\" r (n 0 s 0 v 0 l 0))'>";
 

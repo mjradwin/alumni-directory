@@ -57,6 +57,8 @@ while(<MVHS>) {
 	$aliases{$alias} = 1;
     }
 
+    $last = "$last $married" if $married ne '';
+
     $opt_p && print BOOK "$alias\t$last, $first\t$email\t\t$school $year\n";
     $opt_e && print BOOK "$alias = $last; $first, $school $year = $email\n";
     $opt_b && print BOOK "alias $alias\t$email\n";

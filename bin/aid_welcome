@@ -67,12 +67,12 @@ information about you:
 $about$denied
 If you feel as if you have received this email in error or do not want
 to be listed in the directory, please let me know and I will remove your
-name from the directory.  Or, if any of the above information is
-incorrect or out of date you can update your entry online at:\n\n" .
+entry.  If any of the above information is incorrect or out of date, you
+can update your entry online at:\n\n" .
 
 &mv_config('cgi_url') . "?update=$id
 
-or email me corrections, and I'll be happy to fix your entry. If 
-everything you see above is correct, you're all set.\n";
+If you don't have web access, just email me corrections and I'll be happy
+to fix your entry.  If everything you see above is correct, you're all set.\n";
 
 }
