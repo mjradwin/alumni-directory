@@ -2,7 +2,7 @@
 #     FILE: aid_util.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: perl library routines for the Alumni Internet Directory
-#      $Id: aid_util.pl,v 4.97 1999/05/04 17:00:08 mradwin Exp mradwin $
+#      $Id: aid_util.pl,v 4.98 1999/05/04 17:11:41 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -801,7 +801,7 @@ sub aid_common_html_ftr
     local($year) = (localtime(time))[5] + 1900;
 
     $ftr  = "\n<!-- ftr begin -->\n";
-    $ftr .= "<hr noshade size=\"1\">\n";
+    $ftr .= "<hr noshade=\"noshade\" size=\"1\" />\n";
 
     $ftr .= "\n<div class=\"about\">\n";
     $ftr .= &main'aid_common_link_table($page); #'#
@@ -854,7 +854,7 @@ sub aid_common_html_hdr
 
     $hdr .= "  <link rel=\"stylesheet\" type=\"text/css\" href=\"http://";
     $hdr .= $config{'master_srv'} . $config{'master_path'};;
-    $hdr .= "default.css\">\n";
+    $hdr .= "default.css\" />\n";
 
     $hdr .= "$noindex\n" if $norobots;
 
