@@ -4,7 +4,7 @@
 #     FILE: form.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: Alumni Internet Directory CGI form-submission interface
-#      $Id: form,v 5.37 2000/11/06 02:58:17 mradwin Exp mradwin $
+#      $Id: form,v 5.38 2000/11/16 18:26:46 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -36,7 +36,7 @@ use CGI::Carp qw(fatalsToBrowser);
 # configuration
 $dbmfile = &aid_config('dbmfile');
 
-$rcsid = '$Id: form,v 5.37 2000/11/06 02:58:17 mradwin Exp mradwin $'; #'fnt
+$rcsid = '$Id: form,v 5.38 2000/11/16 18:26:46 mradwin Exp mradwin $'; #'fnt
 
 $listing_upd_title = 'Modify Your Directory Listing';
 $listing_add_title = 'Join the Directory';
@@ -359,19 +359,86 @@ sub queue_submission {
 
     my($randkey);
 
-    for (;;) {
-	$randkey = &encode_key(int(rand(0x7FFFFFFF)));
-	unless (defined $DBW{$randkey}) {
-	    $DBW{$randkey} = $cgi{'id'} . "\0" . &aid_db_pack_rec(*cgi);
-	    last;
+    if (($cgi{'id'} != -1) && defined $DBW{$cgi{'id'}}) {
+	$randkey = $DBW{$cgi{'id'}};
+    } elsif (($cgi{'id'} == -1) && defined $DBW{"\L$cgi{'e'}\E"}) {
+	$randkey = $DBW{"\L$cgi{'e'}\E"};
+    } else {
+	for (;;) {
+	    $randkey = &encode_key(int(rand(0x7FFFFFFF)));
+	    unless (defined $DBW{$randkey}) {
+		$DBW{$randkey} = $cgi{'id'} . "\0" . &aid_db_pack_rec(*cgi);
+		if ($cgi{'id'} != -1) {
+		    $DBW{$cgi{'id'}} = $randkey;
+		} else {
+		    $DBW{"\L$cgi{'e'}\E"} = $randkey;
+		}
+		last;
+	    }
 	}
     }
 
-    $dbw->sync;
-    flock(DB_FHW, LOCK_UN);
-    undef $dbw;
-    untie(%DBW);
-    close(DB_FHW);
+    if (($cgi{'id'} != -1) && ("\L$cgi{'pe'}\E" eq "\L$cgi{'e'}\E"))
+    {
+	if (defined $DBW{'_verified'})
+	{
+	    $DBW{'_verified'} .= "\0" . $randkey
+		unless $DBW{'_verified'} =~ /\b$randkey\b/;
+	}
+	else
+	{
+	    $DBW{'_verified'} = $randkey;
+	}
+
+	$dbw->sync;
+	flock(DB_FHW, LOCK_UN);
+	undef $dbw;
+	untie(%DBW);
+	close(DB_FHW);
+
+	$fullname = &aid_inorder_fullname(*cgi);
+
+	print "Content-Type: text/html\015\012\015\012";
+	print &aid_common_html_hdr(20,'E-mail address verified!',1);
+
+	$fullname = &aid_html_entify_str($fullname);
+	print "
+
+<h3>Hello, $fullname.  Your submission has been queued!</h3>
+
+<p>The listing for <strong>$fullname</strong> has been added to the
+submission queue, and it will be processed within 5 minutes.</p>
+
+Here is what your listing will look like:
+<br><br>
+
+<table border=\"1\" cellpadding=\"6\"><tr><td>";
+
+	print &aid_verbose_entry(*cgi,1,1,1);
+
+	print "</td></tr></table>\n\n<p>E-mail will be sent to\n<b>",
+	&aid_html_entify_str($cgi{'e'}), "</b>\n",
+	"confirming receipt of this submission when it it processed.</p>\n";
+
+	print &aid_config('html_ad');
+	print &aid_common_html_ftr(20);
+    }
+    else
+    {
+	$dbw->sync;
+	flock(DB_FHW, LOCK_UN);
+	undef $dbw;
+	untie(%DBW);
+	close(DB_FHW);
+
+	&send_verify_email($randkey);
+    }
+
+    1;
+}
+
+sub send_verify_email {
+    my($randkey) = @_;
 
     my($name) = $cgi{'gn'};
     $name .= " $cgi{'mi'}."
@@ -450,6 +517,9 @@ http://" . &aid_config('master_srv') . &aid_config('master_path') . "\n";
 	if $status == 0;
 
     # success sending email; update last-mail timestamp
+    my($dbmfilew) = &aid_config('staging');
+
+    my(%DBW,$dbw,$fdw);
     $dbw = tie(%DBW, 'DB_File', $dbmfilew, O_CREAT|O_RDWR, 0644,
 		   $DB_File::DB_HASH)
 	or die "$dbmfilew: $!\n";
@@ -485,15 +555,16 @@ Alumni Robot and enter it below.</p>
 <form method=\"get\" action=\"" . &aid_config('verify_cgi') . "\">
 <label for=\"k\">Enter 8-letter code:</label>
 &nbsp;
-<input id=\"k\" type=\"text\" size=\"8\" maxlength=\"8\" name=\"k\" value=\"\">
+<input id=\"k\" type=\"text\" size=\"8\" maxlength=\"8\" name=\"k\">
 &nbsp;
+<input id=\"e\" type=\"hidden\" name=\"e\" value=\"$cgi{'e'}\">
+<input id=\"id\" type=\"hidden\" name=\"id\" value=\"$cgi{'id'}\">
 <input type=\"submit\" value=\"Submit verification code\">
 </form>
 ";
 
     print &aid_common_html_ftr(20);
 }
-
 
 sub send_upd_real {
     local(*rec,$empty_fields) = @_;
@@ -587,7 +658,8 @@ sub is_email_okay
 
 sub remote_host
 {
-    local($ip) = $ENV{'REMOTE_HOST'};
+    my($ip) = defined($ENV{'REMOTE_HOST'}) ? $ENV{'REMOTE_HOST'} :
+	defined($ENV{'REMOTE_ADDR'}) ? $ENV{'REMOTE_ADDR'} : '[unknown]';
 
     if ($ip =~ /^\d+\.\d+\.\d+\.\d+$/)
     {
