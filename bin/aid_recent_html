@@ -18,7 +18,8 @@ print FMTOUT "<br>";
 print FMTOUT &tableheader("Recent Additions to the Directory", 1, 'ffff99', 1);
 print FMTOUT '
 <p>All entries on this page have been added to the Directory within the
-last month.  The <img src="info.gif" height=12 width=12 hspace=4
+last month.  The most recent additions or updates are at the bottom of the
+list.  The <img src="info.gif" height=12 width=12 hspace=4
 border=0 alt="[i]"> icon lets you get more detailed information about an
 alumnus.</p>
 ';
