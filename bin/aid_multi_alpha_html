@@ -2,7 +2,7 @@
 
 #
 # does the html verbose pages
-# $Id: aid_multi_alpha_html,v 5.17 2000/04/25 01:31:38 mradwin Exp mradwin $
+# $Id: aid_multi_alpha_html,v 5.18 2000/04/25 18:22:58 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -31,12 +31,13 @@ require 'aid_util.pl';
 require 'getopts.pl';
 
 $0 =~ s,.*/,,;  # basename
-$usage = "usage: $0 [-h] [-i <keys>] infile.db
+$usage = "usage: $0 [-hq] [-i <keys>] infile.db
     -h        Display usage information.
+    -q        Quiet.
     -i <keys> Incremental update only for list of keys.
 ";
 
-&Getopts('hi:') || die "$usage\n";
+&Getopts('hi:q') || die "$usage\n";
 $opt_h && die "$usage\n";
 $ARGV[0] || die "$usage\n";
 $opt_h = $opt_h;		# avoid warning
@@ -79,7 +80,8 @@ foreach $initial (@initials)
 	unless defined $DB{$key} && $DB{$key} ne '';
     $time = unpack("N",$DB{$key});
 
-    print STDOUT "$initial ";
+    print STDOUT "$initial "
+	unless $opt_q;
 
     $key = "_a_${initial}";
     die "corrupt/missing $key key!"
@@ -118,7 +120,8 @@ foreach $initial (@initials)
 die "corrupt/missing _t key!" unless defined $DB{'_t'} && $DB{'_t'} ne '';
 $time = unpack("N",$DB{'_t'});
 untie(%DB);
-print STDOUT "\n";
+print STDOUT "\n"
+    unless $opt_q;
 
 # index page
 $outFile = &aid_config('wwwdir') . "alpha/index.html";

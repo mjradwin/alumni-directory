@@ -2,7 +2,7 @@
 
 #
 # does the html version of just home pages
-# $Id: aid_home_html,v 5.13 2000/02/29 21:55:00 mradwin Exp mradwin $
+# $Id: aid_home_html,v 5.14 2000/04/25 01:31:38 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -31,8 +31,9 @@ require 'aid_util.pl';
 require 'getopts.pl';
 
 $0 =~ s,.*/,,;  # basename
-$usage = "usage: $0 [-h] {-s,-d,-f <file>} [-i <keys>] -p <pg> -t <txt> out.html
+$usage = "usage: $0 [-hq] {-s,-d,-f <file>} [-i <keys>] -p <pg> -t <txt> out.html
     -h        Display usage information.
+    -q        Quiet.
     -i <keys> Incremental update only for list of keys.
     -p <pg>   Page number is <pg>.   REQUIRED.
     -t <txt>  Page title  is <txt>.  REQUIRED.
@@ -44,9 +45,10 @@ $usage = "usage: $0 [-h] {-s,-d,-f <file>} [-i <keys>] -p <pg> -t <txt> out.html
 Either -s, -d or -f must be supplied.  They are mutuallly exclusive.
 ";
 
-&Getopts('hst:f:p:di:') || die "$usage\n";
+&Getopts('hst:f:p:di:q') || die "$usage\n";
 $opt_h && die "$usage\n";
 $opt_h = $opt_h;		# avoid warning
+$opt_q = $opt_q;		# avoid warning
 %blank_entry = %aid_util::blank_entry = %aid_util::blank_entry;
 
 die "$usage\n" unless $ARGV[0];
@@ -59,7 +61,8 @@ die "$usage\n" unless defined($opt_t);
 
 if (@incremental && $opt_d && (! grep(/_years/, @incremental)))
 {
-    print STDOUT "incremental download page avoided; no _years key.\n";
+    print STDOUT "incremental download page avoided; no _years key.\n"
+	unless $opt_q;
     exit(0);
 }
 

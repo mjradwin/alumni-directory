@@ -2,7 +2,7 @@
 
 #
 # does the html version of the grad-date address list
-# $Id: aid_class_html,v 5.14 2000/02/29 21:55:00 mradwin Exp mradwin $
+# $Id: aid_class_html,v 5.15 2000/04/25 18:22:58 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -50,7 +50,8 @@ $opt_h = $opt_h;		# avoid warning
 
 if (@incremental && $opt_w && (! grep(/_t_www/, @incremental)))
 {
-    print STDOUT "incremental www avoided; no _t_www key.\n";
+    print STDOUT "incremental www avoided; no _t_www key.\n"
+	unless $opt_q;
     exit(0);
 }
 

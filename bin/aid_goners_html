@@ -2,7 +2,7 @@
 
 #
 # does the html version of the invalid address list
-# $Id: aid_goners_html,v 5.7 1999/12/22 23:36:47 mradwin Exp mradwin $
+# $Id: aid_goners_html,v 5.8 2000/02/29 21:55:00 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -31,22 +31,25 @@ require 'aid_util.pl';
 require 'getopts.pl';
 
 $0 =~ s,.*/,,;  # basename
-$usage = "usage: $0 [-h] [-i <keys>] infile.db outfile.html
+$usage = "usage: $0 [-hq] [-i <keys>] infile.db outfile.html
     -h        Display usage information.
+    -q        Quiet.
     -i <keys> Incremental update only for list of keys.
 ";
 
-&Getopts('hi:') || die "$usage\n";
+&Getopts('hi:q') || die "$usage\n";
 $opt_h && die "$usage\n";
 $ARGV[0] || die "$usage\n";
 $ARGV[1] || die "$usage\n";
 $opt_h = $opt_h;		# avoid warning
+$opt_q = $opt_q;		# avoid warning
 
 @incremental = ($opt_i ? split(/[,\s]+/, $opt_i) : ());
 
 if (@incremental && (! grep(/_t_goner/, @incremental)))
 {
-    print STDOUT "incremental goners avoided; no _t_goner key.\n";
+    print STDOUT "incremental goners avoided; no _t_goner key.\n"
+	unless $opt_q;
     exit(0);
 }
 

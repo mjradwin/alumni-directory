@@ -2,7 +2,7 @@
 
 #
 # does the html multi_class pages
-# $Id: aid_multi_class_html,v 5.15 2000/04/25 01:31:38 mradwin Exp mradwin $
+# $Id: aid_multi_class_html,v 5.16 2000/05/25 00:29:05 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -32,12 +32,13 @@ require 'aid_util.pl';
 require 'getopts.pl';
 
 $0 =~ s,.*/,,;  # basename
-$usage = "usage: $0 [-h] [-i <keys>] infile.db [reunions.db]
+$usage = "usage: $0 [-hq] [-i <keys>] infile.db [reunions.db]
     -h        Display usage information.
+    -q        Quiet.
     -i <keys> Incremental update only for list of keys.
 ";
 
-&Getopts('hi:') || die "$usage\n";
+&Getopts('hi:q') || die "$usage\n";
 $opt_h && die "$usage\n";
 $ARGV[0] || die "$usage\n";
 $opt_h = $opt_h;		# avoid warning
@@ -82,11 +83,13 @@ foreach $year (@years)
     if (@incremental)
     {
 	next unless grep(/$key/, @incremental);
-	print STDOUT "$year ";
+	print STDOUT "$year "
+	    unless $opt_q;
     }
     else
     {
-	print STDOUT ".";
+	print STDOUT "."
+	    unless $opt_q;
     }
 
     die "corrupt/missing $key key!"
@@ -176,7 +179,8 @@ foreach $year (@years)
 die "corrupt/missing _t key!" unless defined $DB{'_t'} && $DB{'_t'} ne '';
 $time = unpack("N",$DB{'_t'});
 untie(%DB);
-print STDOUT "\n";
+print STDOUT "\n"
+    unless $opt_q;
 
 # index page
 $outFile = &aid_config('wwwdir') . "class/index.html";
