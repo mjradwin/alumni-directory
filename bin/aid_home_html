@@ -2,24 +2,25 @@
 
 #
 # does the html version of just home pages
-# $Id: aid_home_html,v 3.21 1999/02/10 20:28:51 mradwin Exp mradwin $
+# $Id: aid_home_html,v 3.22 1999/02/16 18:06:07 mradwin Exp mradwin $
 #
 
 require 'aid_util.pl';
 require 'getopts.pl';
 
-$usage = 'usage: aid_home_html [-hs] [-i <infile>] -p <pg> -t <text> <outfile>
+$0 =~ s,.*/,,;  # basename
+$usage = "usage: $0 [-hs] [-i <infile>] -p <pg> -t <text> <outfile>
  -h            Display usage information.
  -s            Create the submit page.
  -d            Create the download page.
- -i <infile>   Create an "other" page from html code in <infile>.
+ -i <infile>   Create an 'other' page from html code in <infile>.
  -p <pg>       Use page number <pg> for generating content.  REQUIRED.
- -t <text>     Put a tableheader with "text".  REQUIRED.
+ -t <text>     Put a tableheader with 'text'.  REQUIRED.
 
  <outfile>     Write results to <outfile>.
 
 Either -s, -d or -i must be supplied.  They are mutuallly exclusive.
-';
+";
 
 &Getopts('hst:i:p:d') || die "$usage\n";
 $opt_h && die "$usage\n";

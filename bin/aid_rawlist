@@ -2,14 +2,16 @@
 
 #
 # makes a list of e-mail addresses, comma separated.
+# $Id$
 #
 
 require 'aid_util.pl';
 require 'getopts.pl';
 
-$usage = 'usage: aid_rawlist [-h] infile.db outfile
+$0 =~ s,.*/,,;  # basename
+$usage = "usage: $0 [-h] infile.db outfile
     -h        Display usage information.
-';
+";
 
 &Getopts('h') || die "$usage\n";
 $opt_h && die "$usage\n";

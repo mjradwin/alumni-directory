@@ -2,15 +2,16 @@
 
 #
 # does the html verbose pages
-# $Id: aid_multi_alpha_html,v 3.21 1998/11/02 21:43:49 mradwin Exp mradwin $
+# $Id: aid_multi_alpha_html,v 3.22 1999/02/16 18:17:12 mradwin Exp mradwin $
 #
 
 require 'aid_util.pl';
 require 'getopts.pl';
 
-$usage = 'usage: aid_multi_alpha_html [-h] infile.db
+$0 =~ s,.*/,,;  # basename
+$usage = "usage: $0 [-h] infile.db
     -h        Display usage information.
-';
+";
 
 &Getopts('h') || die "$usage\n";
 $opt_h && die "$usage\n";

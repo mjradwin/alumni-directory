@@ -2,15 +2,16 @@
 
 #
 # does the html multi_class pages
-# $Id: aid_multi_class_html,v 3.18 1999/02/16 17:57:52 mradwin Exp mradwin $
+# $Id: aid_multi_class_html,v 3.19 1999/02/16 19:10:33 mradwin Exp mradwin $
 #
 
 require 'aid_util.pl';
 require 'getopts.pl';
 
-$usage = 'usage: aid_multi_class_html [-h] infile.db
+$0 =~ s,.*/,,;  # basename
+$usage = "usage: $0 [-h] infile.db
     -h        Display usage information.
-';
+";
 
 &Getopts('h') || die "$usage\n";
 $opt_h && die "$usage\n";

@@ -2,18 +2,19 @@
 
 #
 # does the html version of the grad-date address list
-# $Id: aid_class_html,v 3.20 1999/02/03 21:57:02 mradwin Exp mradwin $
+# $Id: aid_class_html,v 3.21 1999/02/16 19:14:55 mradwin Exp mradwin $
 #
 
 require 'aid_util.pl';
 require 'getopts.pl';
 
-$usage = 'usage: aid_class_html [-hta] [-c class] infile.db outfile
+$0 =~ s,.*/,,;  # basename
+$usage = "usage: $0 [-hta] [-c class] infile.db outfile
     -h        Display usage information.
     -t        Output text only.
     -a        Awalt mode.
     -c class  Only people from <class>.
-';
+";
 
 &Getopts('htac:') || die "$usage\n";
 $opt_h && die "$usage\n";
