@@ -5,10 +5,12 @@
 require 'mv_util.pl';
 require 'getopts.pl';
 
-$usage = 'usage: mv_home_html [-h] {-i | -s}
+$usage = 'usage: mv_home_html [-h] {-i | -s} index.include
     -h        Display usage information.
     -i        Create the index page
     -s        Create the submit page
+
+index.include Required html code for index page
 ';
 
 &Getopts('his') || die "$usage\n";
@@ -18,18 +20,23 @@ $opt_i && $opt_s && die "$usage\n";
 $pageno = 0;
 $pageno = 5 if $opt_s;
 
-$home = &mv_config('wwwdir') . ".home.include";
+die "$usage\n" if $opt_i && !$ARGV[0];
+$home = $ARGV[0];
+
 $fmtout = ($opt_i) ? &mv_config('wwwdir') . &mv_config('index_page')
     : &mv_config('wwwdir') . "add.html";
+
+if ($opt_i) {
+    open(HOME,$home) || die "Can't open $home: $!\n";
+    @lines = <HOME>;
+    close(HOME);
+}
 
 open(FMTOUT,">$fmtout") || die "Can't open $fmtout: $!\n";
 
 print FMTOUT &common_html_hdr($pageno);
 if ($opt_i) {
-    open(HOME,$home) || die "Can't open $home: $!\n";
-    @lines = <HOME>;
     print FMTOUT @lines;
-    close(HOME);
 } else {
     print FMTOUT &submit_body(";-1;2;;;;MVHS;;;",0,0);
 }
