@@ -2,13 +2,13 @@
 
 #
 # does the html verbose pages
-# $Id: aid_multi_alpha_html,v 3.20 1998/10/26 19:34:15 mradwin Exp mradwin $
+# $Id: aid_multi_alpha_html,v 3.21 1998/11/02 21:43:49 mradwin Exp mradwin $
 #
 
 require 'aid_util.pl';
 require 'getopts.pl';
 
-$usage = 'usage: aid_alpha2_html [-h] infile.adr
+$usage = 'usage: aid_multi_alpha_html [-h] infile.db
     -h        Display usage information.
 ';
 
@@ -17,20 +17,26 @@ $opt_h && die "$usage\n";
 $ARGV[0] || die "$usage\n";
 $opt_h = $opt_h;		# avoid warning
 
-open(DATA,$ARGV[0]) || die "Can't open $ARGV[0]: $!\n";
+$ARGV[0] =~ s/\.db$//;
+die "can't open $ARGV[0].db\n" unless -r "$ARGV[0].db";
+dbmopen(DB,$ARGV[0],0444);
+
+die "no __alpha__ key!\n" unless defined $DB{'__alpha__'};
 
 $initial = "Z";
 $alpha_header = &common_html_hdr(1,'Listed by Last Name',1) .
     &common_intro_para(1);
 
-while(<DATA>) {
-    chop;
-    %rec = &aid_parse($_);
+@alpha_ids = unpack("n*",$DB{'__alpha__'});
+foreach $id (@alpha_ids)
+{
+    %rec = &aid_db_unpack_rec($id,$DB{$id});
     next unless $rec{'valid'};
 
     $cur_initial = substr($rec{'last'}, 0, 1);
     $cur_initial = "\U${cur_initial}\E";
     if ("\U${initial}\E" ne $cur_initial) {
+	print STDERR ".";
         $initial = $cur_initial;
 	if ($initial ne 'A') {
 	    print FMTOUT "</pre>\n";
@@ -49,6 +55,8 @@ while(<DATA>) {
 
     print FMTOUT &html_pre_entry(*rec,'',1);
 }
+print STDERR "\n";
+dbmclose(DB);
 
 print FMTOUT "</pre>\n";
 print FMTOUT &common_html_ftr(1);

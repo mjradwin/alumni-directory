@@ -2,13 +2,13 @@
 
 #
 # generates address books in several formats
-# $Id: aid_book,v 3.18 1998/11/11 19:17:29 mradwin Exp mradwin $
+# $Id: aid_book,v 3.19 1998/11/26 00:51:51 mradwin Exp mradwin $
 #
 
 require 'aid_util.pl';
 require 'getopts.pl';
 
-$usage = 'usage: aid_book [-h] infile.adr -{p,e,b,w,m,n,l,v,o} outfile
+$usage = 'usage: aid_book [-h] infile.db -{p,e,b,w,m,n,l,v,o} outfile
     -h        Display usage information.
 
     -p        Pine address book
@@ -34,7 +34,11 @@ die "$usage\n" unless
     $opt_p || $opt_e || $opt_b || $opt_w || 
     $opt_m || $opt_n || $opt_l || $opt_v || $opt_o;
 
-open(DATA,$ARGV[0]) || die "Can't open $ARGV[0]: $!\n";
+$ARGV[0] =~ s/\.db$//;
+die "can't open $ARGV[0].db\n" unless -r "$ARGV[0].db";
+dbmopen(DB,$ARGV[0],0444);
+
+die "no __alpha__ key!\n" unless defined $DB{'__alpha__'};
 
 if ($opt_p) { open(BOOKp,">$opt_p") || die "Can't open $opt_p: $!\n"; }
 if ($opt_e) { open(BOOKe,">$opt_e") || die "Can't open $opt_e: $!\n"; }
@@ -56,9 +60,10 @@ $opt_l && &aid_book_write_prefix(*BOOKl,'l');
 $opt_v && &aid_book_write_prefix(*BOOKv,'v');
 $opt_o && &aid_book_write_prefix(*BOOKo,'o');
 
-while(<DATA>) {
-    chop;
-    %rec = &aid_parse($_);
+@alpha_ids = unpack("n*",$DB{'__alpha__'});
+foreach $id (@alpha_ids)
+{
+    %rec = &aid_db_unpack_rec($id,$DB{$id});
     next unless $rec{'valid'};
     
     $opt_p && &aid_book_write_entry(*BOOKp,'p',*rec);
@@ -73,7 +78,7 @@ while(<DATA>) {
 
 }
 
-close(DATA);
+dbmclose(DB);
 
 $opt_p && &aid_book_write_suffix(*BOOKp,'p');
 $opt_e && &aid_book_write_suffix(*BOOKe,'e');
