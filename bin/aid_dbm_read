@@ -1,6 +1,6 @@
 #!/usr/bin/perl -w
 
-# $Id: aid_dbm_read,v 1.5 1999/02/09 22:24:13 mradwin Exp mradwin $
+# $Id: aid_dbm_read,v 1.6 1999/02/10 20:45:40 mradwin Exp mradwin $
 
 require 'aid_util.pl';
 require 'getopts.pl';
@@ -27,7 +27,7 @@ dbmopen(DB, $ARGV[0], 0444);
 
 if ($opt_t)
 {
-    open(ADR,">$opt_t") || die "can't open $opt_t: $!\n";
+    open(DATA,">$opt_t") || die "can't open $opt_t: $!\n";
     while (($key,$val) = each %DB)
     {
 	next unless $key =~ /^\d+$/;
@@ -37,9 +37,9 @@ if ($opt_t)
     foreach (sort keys %ids)
     {
 	%rec = &aid_db_unpack_rec(int($_),$ids{$_});
-	print ADR &aid_join(*rec), "\n";
+	print DATA &aid_join(*rec), "\n";
     } 
-    close(ADR);
+    close(DATA);
     undef %ids;
 }
 elsif ($ARGV[1])
