@@ -2,7 +2,7 @@
 #     FILE: aid_util.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: perl library routines for the Alumni Internet Directory
-#      $Id: aid_util.pl,v 5.44 1999/08/11 17:49:08 mradwin Exp mradwin $
+#      $Id: aid_util.pl,v 5.45 1999/08/11 18:04:06 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -356,20 +356,26 @@ sub aid_sendmail
     local($header);
 
     $header =
-"From: $from <$return_path>\
-To: $to\
-X-Sender: $ENV{'USER'}\@$ENV{'HOST'}\
-Organization: $config{'school'} Alumni Internet Directory\
-Content-Type: text/plain; charset=ISO-8859-1\
-Content-Transfer-Encoding: 8bit\
-Subject: $subject\
+"From: $from <$return_path>
+To: $to
+X-Sender: $ENV{'USER'}\@$ENV{'HOST'}
+Organization: $config{'school'} Alumni Internet Directory
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: QUOTED-PRINTABLE
+Subject: $subject
+
 ";
 
     if (open(F, "| $config{'sendmail'} -t -R hdrs")) {
 	print F $header;
-	print F $body;
+	print F &main'aid_qp_encode($body); #'#;
 	close(F);
 
+	if (open(F, ">$ENV{'HOME'}/.aid_sendmail")) {
+	    print F $header;
+	    print F &main'aid_qp_encode($body); #'#;
+	    close(F);
+	}
     } else {
 	warn "cannot send mail: $!\n";
     }
@@ -1321,24 +1327,30 @@ sub aid_url_escape
     package aid_util;
 
     local($_) = @_;
-    local($res) = '';
 
-    foreach (split(//))
-    {
-	if (/ /)
-	{
-	    $res .= '+';
-	}
-	elsif (/[^\w\$.-]/)
-	{
-	    $res .= sprintf("%%%02X", ord($_));
-	}
-	else
-	{
-	    $res .= $_;
-	}
-    }
+    s/([^\w\$.-])/sprintf("%%%02X", ord($1))/eg;
+    s/%20/+/g;
 
+    $_;
+}
+
+
+# not quite up-to-spec, since we should trim lines to 76 chars.
+sub aid_qp_encode
+{
+    package aid_util;
+
+    local($res) = @_;
+    local($multi_default);
+
+    $multi_default = (defined $*) ? $* : 0;
+    $* = 1;			# enable multi-line
+
+    $res =~ s/([^ \t\n!-<>-~])/sprintf("=%02X", ord($1))/eg;  # rule #2,#3
+    $res =~ s/([ \t])$/sprintf("=%02X", ord($1))/eg; # bogus rule #3
+
+    $* = $multi_default;	# restore default
+    
     $res;
 }
 
