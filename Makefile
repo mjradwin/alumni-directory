@@ -2,7 +2,7 @@
 #     FILE: Makefile
 #   AUTHOR: Michael J. Radwin
 #    DESCR: Makefile for building the Alumni Internet Directory
-#      $Id: Makefile,v 3.61 1999/02/27 08:11:46 mradwin Exp mradwin $
+#      $Id: Makefile,v 3.62 1999/03/04 00:11:42 mradwin Exp mradwin $
 #
 
 WWWROOT=/home/web/radwin.org
@@ -25,7 +25,7 @@ BIN_GONERS=$(MVHSDIR)/bin/aid_goners_html
 BIN_HOME=$(MVHSDIR)/bin/aid_home_html
 BIN_RECENT=$(MVHSDIR)/bin/aid_shortlist_html
 BIN_MULTI_CLASS=$(MVHSDIR)/bin/aid_multi_class_html
-BIN_PAGES=$(MVHSDIR)/bin/aid_shortlist_html
+BIN_PAGES=$(MVHSDIR)/bin/aid_class_html
 BIN_STATS=$(MVHSDIR)/bin/aid_stats
 BIN_DBM_WRITE=$(MVHSDIR)/bin/aid_dbm_write
 
