@@ -2,7 +2,7 @@
 #     FILE: mv_util.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: perl library routines for the MVHS Alumni Internet Directory
-#      $Id: mv_util.pl,v 1.75 1997/12/31 19:29:31 mjr Exp mjr $
+#      $Id: mv_util.pl,v 1.76 1997/12/31 20:18:46 mjr Exp mjr $
 #
 
 # divcom.umop-ap.com configuration
@@ -82,7 +82,6 @@ sub mv_config {
     die "NO CONFIG $_[0]!\n" if !defined($config{$_[0]});
     return $config{$_[0]};
 }
-
 
 # is the GMT less than one month ago?
 # 2678400 = 31 days * 24 hrs * 60 mins * 60 secs
@@ -264,8 +263,8 @@ sub mv_get_usertext {
 
 
 sub submit_body {
-    package mv_util;
     require 'tableheader.pl';
+    package mv_util;
 
     local($[) = 0;
     local($_);
@@ -296,7 +295,8 @@ sub submit_body {
 
     if ($id != -1) {
 	$tableh = 
-	    &tableheader("Update Your Directory Listing", 1, "ffff99", "000000", 1);
+	    &main'tableheader("Update Your Directory Listing", 
+                              1, "ffff99", "000000", 1);
 	$tableh .= "\n<p>Please update the following information";
 	$tableh .= " and hit the <strong>Next&nbsp;&gt;</strong> button.</p>\n\n";
 	$tableh .= "<p>Fields marked with a <font color=\"#ff0000\">*</font>";
@@ -304,7 +304,8 @@ sub submit_body {
 
     } else {
 	$tableh =
-	    &tableheader("Add a Listing to the Directory", 1, "ffff99", "000000", 1);
+	    &main'tableheader("Add a Listing to the Directory",
+                              1, "ffff99", "000000", 1);
 
 	$tableh .= "
 <p>If you'd like to update your existing entry, please see the 
@@ -459,19 +460,9 @@ sub message_footer {
 	"Phone     : " . $config{'admin_phone'};
 }
 
-# uhhh... looks like I don't truly get perl4's packaging.
-sub today {
-    package mv_util;
-    require 'ctime.pl';
-
-    local($today) = &ctime($_[0] ? $_[0] : time);
-    chop $today;
-    return $today;
-}
-
 sub about_text {
-    package mv_util;
     require 'ctime.pl';
+    package mv_util;
 
     local($retval) = '';
     local($rawdata,$message,$show_req_p,$do_html_p,$do_vcard_p) = @_;
@@ -553,7 +544,7 @@ sub about_text {
     if ($time ne '') {
 	$retval .= "\n";
 	$retval .= "Last Updated       : ";
-	$retval .= &ctime($time);
+	$retval .= &main'ctime($time);
     }
 
     $message = &main'mv_get_usertext($id) if $message eq '';  #' fnt
@@ -606,7 +597,7 @@ sub common_html_ftr {
     package mv_util;
 
     local($page) = @_;
-    local($rcsid) = '<!-- $Id: mv_util.pl,v 1.75 1997/12/31 19:29:31 mjr Exp mjr $ -->';
+    local($rcsid) = '<!-- $Id: mv_util.pl,v 1.76 1997/12/31 20:18:46 mjr Exp mjr $ -->';
     local($ftr);
 
     $ftr = "
@@ -662,14 +653,14 @@ href=\"mailto:" . $config{'admin_email'} .
 
 
 sub common_html_hdr {
-    package mv_util;
     require 'ctime.pl';
+    package mv_util;
 
     local($page,$norobots) = @_;
     local($h1, $h2, $h3, $h4, $html_head);
     local($name, $url);
     local($timestamp);
-    local($rcsid) = '<!-- $Id: mv_util.pl,v 1.75 1997/12/31 19:29:31 mjr Exp mjr $ -->';
+    local($rcsid) = '<!-- $Id: mv_util.pl,v 1.76 1997/12/31 20:18:46 mjr Exp mjr $ -->';
 
     $timestamp = ($page == 0) ? 'Last update to Directory: ' :
 	'Last update to this page: ';
@@ -712,7 +703,7 @@ sub common_html_hdr {
 </tr>
 <tr>
   <td align=right valign=bottom bgcolor=\"#ffffcc\"><font size=\"-1\"
-  color=\"#000000\"><i>$timestamp" . &ctime(time) . "</i></font>
+  color=\"#000000\"><i>$timestamp" . &main'ctime(time) . "</i></font>
   </td>
 </tr>
 </table>
@@ -734,4 +725,3 @@ sub common_html_hdr {
 }
 
 1;
-
