@@ -4,7 +4,7 @@
 # does a short list, either compact or verbose, sorted by graduating
 # class with a jump bar
 #
-# $Id: aid_shortlist_html,v 1.18 1999/03/26 19:41:22 mradwin Exp mradwin $
+# $Id: aid_shortlist_html,v 1.19 1999/03/27 04:25:18 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -56,21 +56,21 @@ $ARGV[0] =~ s/\.db$//;
 die "can't open $ARGV[0].db\n" unless -r "$ARGV[0].db";
 dbmopen(%DB,$ARGV[0],0444);
 
-die "no __class__ key!\n" unless defined $DB{'__class__'};
+die "no _class key!\n" unless defined $DB{'_class'};
 
 open(FMTOUT,">$ARGV[1]") || die "Can't open $ARGV[1]: $!\n";
 
 @ids = ();
-@class = unpack("n*", $DB{'__class__'});
+@class = unpack("n*", $DB{'_class'});
 for (@class)
 {
     %rec = &aid_db_unpack_rec($_,$DB{$_});
-    next unless $rec{'valid'};
-    $opt_m && next unless &aid_is_new($rec{'time'}, $opt_m);
-    $opt_w && next unless $rec{'www'} ne '';
+    next unless $rec{'v'};
+    $opt_m && next unless &aid_is_new($rec{'u'}, $opt_m);
+    $opt_w && next unless $rec{'w'} ne '';
 
     push(@ids,$_);
-    &aid_build_yearlist(*years, $rec{'year'});
+    &aid_build_yearlist(*years, $rec{'yr'});
 }
 
 if ($#ids + 1 == 1)
@@ -85,13 +85,13 @@ $subtitle = "<strong><font color=\"#000000\">$subtitle</font></strong>";
 
 if (!$opt_t) {
     if ($opt_w) {
-	$time = unpack("N",$DB{'__t_www__'});
+	$time = unpack("N",$DB{'_t_www'});
 	print FMTOUT &aid_common_html_hdr(4,'Alumni with Web Pages',1,$time,$subtitle);
 	print FMTOUT &aid_common_intro_para(1);
 
     } elsif ($opt_m) {
 	$opt_M = 'month' unless defined $opt_M;
-	$time = unpack("N",$DB{'__t__'});
+	$time = unpack("N",$DB{'_t'});
 	print FMTOUT &aid_common_html_hdr(5,'Recent Additions and Updates',1,$time,$subtitle);
 	print FMTOUT
 "<p>All alumni on this page have been added to the Directory
@@ -116,18 +116,18 @@ if (!$opt_v) {
 
 	$opt_t || print FMTOUT "<a href=\"" . &aid_about_path(*rec) . "\">$info_gif</a>";
 	$opt_t || print FMTOUT "<a";
-	if (!$opt_t && $prev ne $rec{'year'} && $prev ne 'other') {
-	    $prev = ($rec{'year'} =~ /^\d+$/) ? $rec{'year'} : 'other';
+	if (!$opt_t && $prev ne $rec{'yr'} && $prev ne 'other') {
+	    $prev = ($rec{'yr'} =~ /^\d+$/) ? $rec{'yr'} : 'other';
 	    print FMTOUT " name=\"grad${prev}\"";
 	}
-	$opt_t || print FMTOUT " href=\"$rec{'www'}\"" if $rec{'www'} ne '';
+	$opt_t || print FMTOUT " href=\"$rec{'w'}\"" if $rec{'w'} ne '';
 	$opt_t || print FMTOUT ">";
 	print FMTOUT $fullname;
 	$opt_t || print FMTOUT "</a>";
 	print FMTOUT $affil;
 	print FMTOUT ' ', ' ' x (41 - (length($fullname) + $len));
-	$opt_t || print FMTOUT "<a href=\"mailto:", $rec{'email'}, "\">";
-	print FMTOUT $rec{'email'};
+	$opt_t || print FMTOUT "<a href=\"mailto:", $rec{'e'}, "\">";
+	print FMTOUT $rec{'e'};
 	$opt_t || print FMTOUT "</a>";
 	$opt_t || $opt_m || print FMTOUT &aid_is_new_html(*rec);
 	print FMTOUT "\n";
@@ -142,8 +142,8 @@ if (!$opt_v) {
     {
 	%rec = &aid_db_unpack_rec($_,$DB{$_});
 
-	if ($prev ne $rec{'year'} && $prev ne 'other') {
-	    $prev = ($rec{'year'} =~ /^\d+$/) ? $rec{'year'} : 'other';
+	if ($prev ne $rec{'yr'} && $prev ne 'other') {
+	    $prev = ($rec{'yr'} =~ /^\d+$/) ? $rec{'yr'} : 'other';
 	    print FMTOUT "<a name=\"grad${prev}\">&nbsp;</a>\n";
 	}
 

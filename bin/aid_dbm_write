@@ -1,6 +1,6 @@
 #!/usr/bin/perl -w
 
-# $Id: aid_dbm_write,v 1.18 1999/03/23 17:59:05 mradwin Exp mradwin $
+# $Id: aid_dbm_write,v 1.19 1999/03/26 19:41:22 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -49,7 +49,7 @@ $ARGV[1] =~ s/\.db$//;
 print STDERR "making binary db...";
 dbmopen(%DB, $ARGV[1], 0666);
 
-$DB{'__created__'} = pack("N", time);
+$DB{'_created'} = pack("N", time);
 
 $latest = 0;
 $latest_www = 0;
@@ -60,37 +60,37 @@ for (@db)
 {
     next unless defined($_) && $_ ne '';
     %rec = &aid_parse($_);
-    $rec{'message'} = &aid_get_usertext($rec{'id'});
+    $rec{'n'} = &aid_get_usertext($rec{'id'});
 
     $DB{$rec{'id'}} = &aid_db_pack_rec(*rec);
-    $DB{"\L$rec{'email'}\E"} = pack("n", $rec{'id'});
+    $DB{"\L$rec{'e'}\E"} = pack("n", $rec{'id'});
 
     # make a list of alpha years
-    if ($rec{'valid'})
+    if ($rec{'v'})
     {
-	$latest = $rec{'time'} if $rec{'time'} > $latest;
+	$latest = $rec{'u'} if $rec{'u'} > $latest;
 
-	$ln_key = substr($rec{'last'},0,1);
+	$ln_key = substr($rec{'sn'},0,1);
 	$ln_key = "\L$ln_key\E";
-	$alpha_latest{$ln_key} = $rec{'time'} if
-	    $rec{'time'} > $alpha_latest{$ln_key};
+	$alpha_latest{$ln_key} = $rec{'u'} if
+	    $rec{'u'} > $alpha_latest{$ln_key};
 
-	$ykey = ($rec{'year'} =~ /^\d+$/) ? $rec{'year'} : 'other';
+	$ykey = ($rec{'yr'} =~ /^\d+$/) ? $rec{'yr'} : 'other';
 	if (defined $class_members{$ykey})
 	{
 	    $class_members{$ykey} .= ' ' . $rec{'id'};
-	    $class_latest{$ykey}   =       $rec{'time'} if
-		$rec{'time'} > $class_latest{$ykey};
+	    $class_latest{$ykey}   =       $rec{'u'} if
+		$rec{'u'} > $class_latest{$ykey};
 	}
 	else
 	{
 	    $class_members{$ykey}  =       $rec{'id'};
-	    $class_latest{$ykey}   =       $rec{'time'};
+	    $class_latest{$ykey}   =       $rec{'u'};
 	}
 
-	if ($rec{'www'} ne '')
+	if ($rec{'w'} ne '')
 	{
-	    $latest_www = $rec{'time'} if $rec{'time'} > $latest_www;
+	    $latest_www = $rec{'u'} if $rec{'u'} > $latest_www;
 	    if (defined $www_class_members{$ykey})
 	    {
 		$www_class_members{$ykey} .= ' ' . $rec{'id'};
@@ -101,10 +101,10 @@ for (@db)
 	    }
 	}
 
-	if ($rec{'sch_id'} == $aid_util'school_awalt ||
-            $rec{'sch_id'} == $aid_util'school_both)
+	if ($rec{'s'} == $aid_util'school_awalt ||
+            $rec{'s'} == $aid_util'school_both)
 	{
-	    $latest_awalt = $rec{'time'} if $rec{'time'} > $latest_awalt;
+	    $latest_awalt = $rec{'u'} if $rec{'u'} > $latest_awalt;
 
 	    if (defined $awalt{$ykey})
 	    {
@@ -118,8 +118,8 @@ for (@db)
     }
     else
     {
-	$latest_goner = $rec{'bounce'} if $rec{'bounce'} > $latest_goner;
-	$latest_goner = $rec{'fresh'} if $rec{'fresh'} > $latest_goner;
+	$latest_goner = $rec{'b'} if $rec{'b'} > $latest_goner;
+	$latest_goner = $rec{'f'} if $rec{'f'} > $latest_goner;
     }
     
     # also make the alpha list
@@ -129,59 +129,59 @@ for (@db)
 print STDERR "\n";
 
 print STDERR "secondary keys...";
-$DB{'__alpha__'} = pack("n*", @alpha_ids);
+$DB{'_alpha'} = pack("n*", @alpha_ids);
 print STDERR ".";
 
 @class_ids = ();
 @years = sort keys %class_members;
-$DB{'__years__'} = pack("n*",grep(/\d+/,@years));
+$DB{'_years'} = pack("n*",grep(/\d+/,@years));
 print STDERR ".";
 
 foreach $ykey (@years)
 {
     @alpha_ids = split(/ /, $class_members{$ykey});
-    $DB{"__${ykey}__"} = pack("n*", @alpha_ids);
-    $DB{"__t_${ykey}__"} = pack("N", $class_latest{$ykey});
+    $DB{"_${ykey}"} = pack("n*", @alpha_ids);
+    $DB{"_t_${ykey}"} = pack("N", $class_latest{$ykey});
     push(@class_ids, @alpha_ids);
     print STDERR ".";
 }
 
-$DB{'__class__'} = pack("n*", @class_ids);
+$DB{'_class'} = pack("n*", @class_ids);
 print STDERR ".";
 
 # now do years, but only for www
 @years = sort keys %www_class_members;
-$DB{'__www_years__'} = pack("n*",grep(/\d+/,@years));
+$DB{'_www_years'} = pack("n*",grep(/\d+/,@years));
 foreach $ykey (@years)
 {
-    $DB{"__www_${ykey}__"} = pack("n*", split(/ /, $www_class_members{$ykey}));
+    $DB{"_www_${ykey}"} = pack("n*", split(/ /, $www_class_members{$ykey}));
     print STDERR ".";
 }
 
 # now do years, but only for awalt
 @years = sort keys %awalt;
-$DB{'__awalt_years__'} = pack("n*",grep(/\d+/,@years));
+$DB{'_awalt_years'} = pack("n*",grep(/\d+/,@years));
 foreach $ykey (@years)
 {
-    $DB{"__awalt_${ykey}__"} = pack("n*", split(/ /, $awalt{$ykey}));
+    $DB{"_awalt_${ykey}"} = pack("n*", split(/ /, $awalt{$ykey}));
     print STDERR ".";
 }
 print STDERR "\n";
 
 print STDERR "finishing...";
 
-$DB{'__t__'} = pack("N", $latest);
+$DB{'_t'} = pack("N", $latest);
 print STDERR ".";
-$DB{'__t_www__'} = pack("N", $latest_www);
+$DB{'_t_www'} = pack("N", $latest_www);
 print STDERR ".";
-$DB{'__t_awalt__'} = pack("N", $latest_awalt);
+$DB{'_t_awalt'} = pack("N", $latest_awalt);
 print STDERR ".";
-$DB{'__t_goner__'} = pack("N", $latest_goner);
+$DB{'_t_goner'} = pack("N", $latest_goner);
 print STDERR ".";
 
 while (($key,$val) = each(%alpha_latest))
 {
-    $DB{"__t_${key}__"} = pack("N", $val);
+    $DB{"_t_${key}"} = pack("N", $val);
 }
 
 dbmclose(%DB);

@@ -2,7 +2,7 @@
 
 #
 # does the html version of the alphabetical address list
-# $Id: aid_alpha_html,v 3.25 1999/03/26 19:41:22 mradwin Exp mradwin $
+# $Id: aid_alpha_html,v 3.26 1999/03/27 04:25:18 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -43,13 +43,13 @@ $ARGV[0] =~ s/\.db$//;
 die "can't open $ARGV[0].db\n" unless -r "$ARGV[0].db";
 dbmopen(%DB,$ARGV[0],0444);
 
-die "no __alpha__ key!\n" unless defined $DB{'__alpha__'};
+die "no _alpha key!\n" unless defined $DB{'_alpha'};
 
 open(FMTOUT,">$ARGV[1]") || die "Can't open $ARGV[1]: $!\n";
 
 if (!$opt_t) {
     print FMTOUT &aid_common_html_hdr(1,'Alumni Listed by Last Name',1,
-				  unpack("N",$DB{'__t__'}));
+				  unpack("N",$DB{'_t'}));
     print FMTOUT &aid_common_intro_para(1);
     print FMTOUT "<p><a name=\"top\">Index</a>: <code>";
     # do the funky quick-jump bar
@@ -65,15 +65,15 @@ if (!$opt_t) {
 print FMTOUT "Name and Graduation Year$blank_gif                 E-Mail\n";
 print FMTOUT "---------------------------------------------------------------------------";
 
-@alpha_ids = unpack("n*",$DB{'__alpha__'});
+@alpha_ids = unpack("n*",$DB{'_alpha'});
 $initial = "Z";
 
 foreach $id (@alpha_ids)
 {
     %rec = &aid_db_unpack_rec($id,$DB{$id});
-    next unless $rec{'valid'};
+    next unless $rec{'v'};
 
-    $cur_initial = substr($rec{'last'}, 0, 1);
+    $cur_initial = substr($rec{'sn'}, 0, 1);
     $cur_initial = "\U${cur_initial}\E";
     if ("\U${initial}\E" ne $cur_initial) {
 	print STDERR ".";
@@ -90,15 +90,15 @@ foreach $id (@alpha_ids)
 
     print FMTOUT ' ';
     $opt_t || print FMTOUT "<a href=\"" . &aid_about_path(*rec) . "\">$info_gif</a>"; #'#
-    $opt_t || print FMTOUT "<a name=\"$rec{'alias'}\"";
-    $opt_t || print FMTOUT " href=\"$rec{'www'}\"" if $rec{'www'} ne '';
+    $opt_t || print FMTOUT "<a name=\"$rec{'a'}\"";
+    $opt_t || print FMTOUT " href=\"$rec{'w'}\"" if $rec{'w'} ne '';
     $opt_t || print FMTOUT ">";
     print FMTOUT $fullname;
     $opt_t || print FMTOUT "</a>";
     print FMTOUT $affil;
     print FMTOUT ' ', ' ' x (39 - (length($fullname) + $len));
-    $opt_t || print FMTOUT "<a href=\"mailto:", $rec{'email'}, "\">";
-    print FMTOUT $rec{'email'};
+    $opt_t || print FMTOUT "<a href=\"mailto:", $rec{'e'}, "\">";
+    print FMTOUT $rec{'e'};
     $opt_t || print FMTOUT "</a>";
     $opt_t || print FMTOUT &aid_is_new_html(*rec);
     print FMTOUT "\n";

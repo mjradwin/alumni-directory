@@ -2,7 +2,7 @@
 
 #
 # makes a list of e-mail addresses, comma separated.
-# $Id: aid_rawlist,v 1.6 1999/03/09 20:50:23 mradwin Exp mradwin $
+# $Id: aid_rawlist,v 1.7 1999/03/26 19:41:22 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -48,9 +48,9 @@ while (($key,$val) = each %DB)
     if ($key =~ /^\d+$/)
     {
 	%rec = &aid_db_unpack_rec($key,$val);
-	next unless $rec{'valid'};
+	next unless $rec{'v'};
 
-	$output .= $rec{'email'} . ', ';
+	$output .= $rec{'e'} . ', ';
     }
 }
 

@@ -1,6 +1,6 @@
 #!/usr/bin/perl -w
 
-# $Id: aid_history_graph,v 1.2 1999/03/26 19:41:22 mradwin Exp mradwin $
+# $Id: aid_history_graph,v 1.3 1999/03/30 17:40:21 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -38,7 +38,7 @@ $ARGV[0] =~ s/\.db$//;
 die "can't open $ARGV[0].db\n" unless -r "$ARGV[0].db";
 dbmopen(%DB,$ARGV[0],0444);
 
-die "no __class__ key!\n" unless defined $DB{'__class__'};
+die "no _class key!\n" unless defined $DB{'_class'};
 
 open(FMTOUT,">$ARGV[1]") || die "Can't open $ARGV[1]: $!\n";
 
@@ -50,7 +50,7 @@ while (($key,$val) = each %DB)
 
     %rec = &aid_db_unpack_rec($key,$val);
 
-    ($i,$i,$i,$i,$i,$year,$i,$yday,$i) = localtime($rec{'created'});
+    ($i,$i,$i,$i,$i,$year,$i,$yday,$i) = localtime($rec{'c'});
 
     # time began on October 31, 1995 (day 303, year 95)
     $yday += (($year - 95) * 365) - 303;

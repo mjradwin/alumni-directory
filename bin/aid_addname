@@ -1,6 +1,6 @@
 #!/usr/bin/perl -w
 
-# $Id: aid_addname,v 3.32 1999/03/27 03:43:14 mradwin Exp mradwin $
+# $Id: aid_addname,v 3.33 1999/03/27 04:56:30 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -53,12 +53,12 @@ exit(0);
 # make the "what's new" text fit in 55 columns.
 format NEWSOUT =
 ^<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<~~
-$message
+$note
 .
 
 format STDOUT =
 ^<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<~~
-$message
+$note
 .
 
 sub readspool {
@@ -82,15 +82,15 @@ sub readspool {
 
 	    if (/^_AID_BEGIN_MESSAGE_/)
 	    {
-		$message = '';
+		$note = '';
 		$maxlen = 0;
 		while(<SPOOL>)
 		{
 		    last if /^_AID_END_MESSAGE_/;
 		    $maxlen = length($_) if (length($_) > $maxlen);
-		    $message .= $_;
+		    $note .= $_;
 		}
-		$newsp = 1;	# they had a What's New? message
+		$newsp = 1;	# they had a What's New? note
 	    }
 	    else
 	    {
@@ -100,25 +100,25 @@ sub readspool {
 	    }
 	}
 	
-	&addname(*rec) || die "$0: can't add $rec{'id'} $rec{'email'}!\n";
+	&addname(*rec) || die "$0: can't add $rec{'id'} $rec{'e'}!\n";
 
 	$newsFile = &aid_newsfile($rec{'id'});
 	if ($newsp)
 	{
 	    open(NEWSOUT, ">$newsFile") ||
 		die "$0: can't open $newsFile: $!\n";
-	    print "MESSAGE $newsFile\n";
+	    print "NOTE $newsFile\n";
 
 	    if ($maxlen <= 60)
 	    {
-		print STDOUT  $message;
-		print NEWSOUT $message;
+		print STDOUT  $note;
+		print NEWSOUT $note;
 	    }
 	    else
 	    {
-		$message_bak = $message;
-		write(NEWSOUT);	# destructively modifies message
-		$message = $message_bak;
+		$note_bak = $note;
+		write(NEWSOUT);	# destructively modifies note
+		$note = $note_bak;
 		print "(reformatted)\n";
 		write(STDOUT);
 	    }
@@ -194,11 +194,11 @@ sub addname
 	next unless defined($_) && $_ ne '';
 	%oldrec = &aid_split($_);
 
-	$key_email = "\L$oldrec{'email'}\E" .
-	    &aid_mangle("\L$oldrec{'last'}\E") .
-	    &aid_mangle("\L$oldrec{'first'}\E");
-	$key_name = &aid_mangle("\L$oldrec{'last'}\E") .
-	    &aid_mangle("\L$oldrec{'first'}\E") . $oldrec{'year'};
+	$key_email = "\L$oldrec{'e'}\E" .
+	    &aid_mangle("\L$oldrec{'sn'}\E") .
+	    &aid_mangle("\L$oldrec{'gn'}\E");
+	$key_name = &aid_mangle("\L$oldrec{'sn'}\E") .
+	    &aid_mangle("\L$oldrec{'gn'}\E") . $oldrec{'yr'};
 	$id_by_email{$key_email} = $oldrec{'id'};
 	$id_by_name{$key_name} = $oldrec{'id'};
     }
@@ -211,28 +211,28 @@ sub addname
     # email address before
     if ($rec{'id'} == -1)
     {
-	$key_email = "\L$rec{'email'}\E" .
-	    &aid_mangle("\L$rec{'last'}\E") . &aid_mangle("\L$rec{'first'}\E");
-	$key_name = &aid_mangle("\L$rec{'last'}\E") .
-	    &aid_mangle("\L$rec{'first'}\E") . $rec{'year'};
+	$key_email = "\L$rec{'e'}\E" .
+	    &aid_mangle("\L$rec{'sn'}\E") . &aid_mangle("\L$rec{'gn'}\E");
+	$key_name = &aid_mangle("\L$rec{'sn'}\E") .
+	    &aid_mangle("\L$rec{'gn'}\E") . $rec{'yr'};
 
 	if (defined $id_by_email{$key_email})
 	{
 	    $rec{'id'} = $id_by_email{$key_email};
 	    %oldrec = &aid_split($db[$rec{'id'}]);
 
-	    $rec{'created'} = $oldrec{'created'};
+	    $rec{'c'} = $oldrec{'c'};
 	}
 	elsif (defined $id_by_name{$key_name})
 	{
 	    $rec{'id'} = $id_by_name{$key_name};
 	    %oldrec = &aid_split($db[$rec{'id'}]);
 
-	    $rec{'created'} = $oldrec{'created'};
-	    $rec{'email_upd'} = $rec{'time'} if
-		$oldrec{'email'} ne $rec{'email'};
-	    $rec{'email_old'} = $oldrec{'email'} if
-		$oldrec{'email'} ne $rec{'email'};
+	    $rec{'c'} = $oldrec{'c'};
+	    $rec{'eu'} = $rec{'u'} if
+		$oldrec{'e'} ne $rec{'e'};
+	    $rec{'eo'} = $oldrec{'e'} if
+		$oldrec{'e'} ne $rec{'e'};
 	}
 	undef(%oldrec);
     }
@@ -253,8 +253,8 @@ sub addname
 	     unless ((grep(/$rec{'id'}/, @new_ids)) ||
 		     (grep(/$rec{'id'}/, @upd_ids)));
 
-	print     "upd ", $oldrec{'email'}, " ";
-	print LOG "upd ", $oldrec{'email'}, " ";
+	print     "upd ", $oldrec{'e'}, " ";
+	print LOG "upd ", $oldrec{'e'}, " ";
 	undef(%oldrec);
     }
 

@@ -2,7 +2,7 @@
 
 #
 # does the html version of just home pages
-# $Id: aid_home_html,v 3.33 1999/03/26 20:23:37 mradwin Exp mradwin $
+# $Id: aid_home_html,v 3.34 1999/03/27 04:25:18 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -67,16 +67,16 @@ else
     die "can't open ${dbmfile}.db\n" unless -r "${dbmfile}.db";
     dbmopen(%DB,$dbmfile,0444);
 
-    die "no __t__ key!\n" unless defined $DB{'__t__'};
-    $time = unpack("N",$DB{'__t__'});
+    die "no _t key!\n" unless defined $DB{'_t'};
+    $time = unpack("N",$DB{'_t'});
 }
 
 if ($opt_i && $opt_p == 0)
 {
     die "can't open ${dbmfile}.db\n" unless -r "${dbmfile}.db";
     dbmopen(%DB,$dbmfile,0444);
-    die "no __t__ key!\n" unless defined $DB{'__t__'};
-    $time = unpack("N",$DB{'__t__'});
+    die "no _t key!\n" unless defined $DB{'_t'};
+    $time = unpack("N",$DB{'_t'});
     dbmclose(%DB);
 }
 
@@ -87,8 +87,8 @@ if ($opt_s) {
     print OUTFILE &aid_submit_body(*blank_entry,'');
 
 } elsif ($opt_d) {
-    die "no __years__ key!\n" unless defined $DB{'__years__'};
-    @years = unpack("n*",$DB{'__years__'});
+    die "no _years key!\n" unless defined $DB{'_years'};
+    @years = unpack("n*",$DB{'_years'});
     push(@years, 'other');
 
     print OUTFILE "<p>Before downloading nickname and address book files

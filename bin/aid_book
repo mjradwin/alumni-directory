@@ -2,7 +2,7 @@
 
 #
 # generates address books in several formats
-# $Id: aid_book,v 3.22 1999/03/09 20:50:23 mradwin Exp mradwin $
+# $Id: aid_book,v 3.23 1999/03/26 19:41:22 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -55,7 +55,7 @@ $ARGV[0] =~ s/\.db$//;
 die "can't open $ARGV[0].db\n" unless -r "$ARGV[0].db";
 dbmopen(%DB,$ARGV[0],0444);
 
-die "no __alpha__ key!\n" unless defined $DB{'__alpha__'};
+die "no _alpha key!\n" unless defined $DB{'_alpha'};
 
 if ($opt_p) { open(BOOKp,">$opt_p") || die "Can't open $opt_p: $!\n"; }
 if ($opt_e) { open(BOOKe,">$opt_e") || die "Can't open $opt_e: $!\n"; }
@@ -77,11 +77,11 @@ $opt_l && &aid_book_write_prefix(*BOOKl,'l');
 $opt_v && &aid_book_write_prefix(*BOOKv,'v');
 $opt_o && &aid_book_write_prefix(*BOOKo,'o');
 
-@alpha_ids = unpack("n*",$DB{'__alpha__'});
+@alpha_ids = unpack("n*",$DB{'_alpha'});
 foreach $id (@alpha_ids)
 {
     %rec = &aid_db_unpack_rec($id,$DB{$id});
-    next unless $rec{'valid'};
+    next unless $rec{'v'};
     
     $opt_p && &aid_book_write_entry(*BOOKp,'p',*rec);
     $opt_e && &aid_book_write_entry(*BOOKe,'e',*rec);

@@ -2,7 +2,7 @@
 
 #
 # does the html multi_class pages
-# $Id: aid_multi_class_html,v 3.29 1999/03/26 19:41:22 mradwin Exp mradwin $
+# $Id: aid_multi_class_html,v 3.30 1999/03/27 04:25:18 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -38,22 +38,22 @@ $ARGV[0] =~ s/\.db$//;
 die "can't open $ARGV[0].db\n" unless -r "$ARGV[0].db";
 dbmopen(%DB,$ARGV[0],0444);
 
-die "no __years__ key!\n" unless defined $DB{'__years__'};
+die "no _years key!\n" unless defined $DB{'_years'};
 
-@years = unpack("n*",$DB{'__years__'});
+@years = unpack("n*",$DB{'_years'});
 push(@years, 'other');
 
 foreach $year (@years)
 {
     print STDERR ".";
-    @ids = unpack("n*",$DB{"__${year}__"});
+    @ids = unpack("n*",$DB{"_${year}"});
 
     $outFile = &aid_config('wwwdir') . "class/${year}.html";
     open(FMTOUT,">$outFile") || die "Can't open $outFile: $!\n";
 
     $title = ($year =~ /^\d+$/) ? "Class of $year" : "Faculty and Staff";
     $time = unpack("N",
-	(($year =~ /^\d+$/) ? $DB{"__t_${year}__"} : $DB{'__t_other__'}));
+	(($year =~ /^\d+$/) ? $DB{"_t_${year}"} : $DB{'_t_other'}));
 
     if ($#ids + 1 == 1)
     {
@@ -73,7 +73,7 @@ foreach $year (@years)
     foreach $id (@ids)
     {
 	%rec = &aid_db_unpack_rec($id,$DB{$id});
-	next unless $rec{'valid'};
+	next unless $rec{'v'};
 
 	print FMTOUT &aid_verbose_entry(*rec);
     }
@@ -83,7 +83,7 @@ foreach $year (@years)
     utime $time, $time, $outFile;
 }
 
-$time = unpack("N",$DB{'__t__'});
+$time = unpack("N",$DB{'_t'});
 dbmclose(%DB);
 print STDERR "\n";
 

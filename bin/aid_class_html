@@ -2,7 +2,7 @@
 
 #
 # does the html version of the grad-date address list
-# $Id: aid_class_html,v 3.33 1999/03/27 02:52:51 mradwin Exp mradwin $
+# $Id: aid_class_html,v 3.34 1999/03/27 04:25:18 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -55,22 +55,22 @@ $pageno = $opt_a ? 3 : ($opt_w ? 4 : -1);
 
 if ($opt_c)
 {
-    die "no __${prefix}${opt_c}__ key!\n"
-	unless defined $DB{"__${prefix}${opt_c}__"};
+    die "no _${prefix}${opt_c} key!\n"
+	unless defined $DB{"_${prefix}${opt_c}"};
     @years = ($opt_c);
 }
 else
 {
-    die "no __${prefix}years__ key!\n"
-	unless defined $DB{"__${prefix}years__"};
-    @years = unpack("n*",$DB{"__${prefix}years__"});
+    die "no _${prefix}years key!\n"
+	unless defined $DB{"_${prefix}years"};
+    @years = unpack("n*",$DB{"_${prefix}years"});
     push(@years, 'other');
 }
 
 open(FMTOUT,">$ARGV[1]") || die "Can't open $ARGV[1]: $!\n";
 
 if (!$opt_t) {
-    $time = unpack("N",$DB{"__t${affix}__"});
+    $time = unpack("N",$DB{"_t${affix}"});
 
     print FMTOUT &aid_common_html_hdr($pageno,$title,1,$time);
     print FMTOUT &aid_common_intro_para(1);
@@ -85,7 +85,7 @@ $prev = '1900';
 foreach $year (@years)
 {
     print STDERR "." unless $opt_q;
-    @ids = unpack("n*",$DB{"__${prefix}${year}__"});
+    @ids = unpack("n*",$DB{"_${prefix}${year}"});
 
     print FMTOUT "\n";
     if ($year =~ /^\d+$/)
@@ -113,15 +113,15 @@ foreach $year (@years)
     foreach $id (@ids)
     {
 	%rec = &aid_db_unpack_rec($id,$DB{$id});
-	next unless $rec{'valid'};
+	next unless $rec{'v'};
 
 	$fullname = &aid_fullname(*rec);
 	$regschool = ($opt_a) ? $aid_util'school_awalt :
 	    $aid_util'school_default;
 
-	if ($rec{'sch_id'} != $regschool)
+	if ($rec{'s'} != $regschool)
 	{
-	    $affil     = "  [$aid_util'school_affil[$rec{'sch_id'}]]";
+	    $affil     = "  [$aid_util'school_affil[$rec{'s'}]]";
 	}
 	else
 	{
@@ -130,15 +130,15 @@ foreach $year (@years)
 
 	print FMTOUT ' ';
 	$opt_t || print FMTOUT "<a href=\"" . &aid_about_path(*rec) . "\">$info_gif</a>"; #'#
-	$opt_t || print FMTOUT "<a name=\"$rec{'alias'}\"";
-	$opt_t || print FMTOUT " href=\"$rec{'www'}\"" if $rec{'www'} ne '';
+	$opt_t || print FMTOUT "<a name=\"$rec{'a'}\"";
+	$opt_t || print FMTOUT " href=\"$rec{'w'}\"" if $rec{'w'} ne '';
 	$opt_t || print FMTOUT ">";
 	print FMTOUT $fullname;
 	$opt_t || print FMTOUT "</a>";
 	print FMTOUT $affil;
 	print FMTOUT ' ', ' ' x (39 - (length($fullname) + length($affil)));
-	$opt_t || print FMTOUT "<a href=\"mailto:", $rec{'email'}, "\">";
-	print FMTOUT $rec{'email'};
+	$opt_t || print FMTOUT "<a href=\"mailto:", $rec{'e'}, "\">";
+	print FMTOUT $rec{'e'};
 	$opt_t || print FMTOUT "</a>";
 	$opt_t || print FMTOUT &aid_is_new_html(*rec);
 	print FMTOUT "\n";

@@ -1,6 +1,6 @@
 #!/usr/bin/perl -w
 
-# $Id: aid_bounce,v 3.18 1999/02/24 20:40:07 mradwin Exp mradwin $
+# $Id: aid_bounce,v 3.19 1999/03/26 19:41:22 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -56,12 +56,12 @@ if ($opt_d)
     {
 	next unless defined($_) && $_ ne '';
 	%rec = &aid_split($_);
-	next unless $rec{'valid'};
-	next if $rec{'bounce'} eq '0';
+	next unless $rec{'v'};
+	next if $rec{'b'} eq '0';
 
-	print "$rec{'id'} - $rec{'email'} - bounce ", &aid_caldate($rec{'bounce'});
-	print " - fresh ", &aid_caldate($rec{'fresh'})
-	    if $rec{'fresh'} > $rec{'bounce'};
+	print "$rec{'id'} - $rec{'e'} - bounce ", &aid_caldate($rec{'b'});
+	print " - fresh ", &aid_caldate($rec{'f'})
+	    if $rec{'f'} > $rec{'b'};
 	print "\n";
     }
 
@@ -79,7 +79,7 @@ else
     {
 	next unless defined($_) && $_ ne '';
 	%rec = &aid_split($_);
-	$addrs{"\L$rec{'email'}\E"} = $rec{'id'};
+	$addrs{"\L$rec{'e'}\E"} = $rec{'id'};
     }
 
     &bounce_argv();
@@ -130,10 +130,10 @@ sub freshen {
     for (@db) {
 	next unless defined($_) && $_ ne '';
 	%rec = &aid_split($_);
-	next unless $rec{'valid'} == 1 && defined $freshness[$rec{'id'}] &&
-	    $rec{'bounce'} == 0 && $rec{'fresh'} < $freshness[$rec{'id'}];
+	next unless $rec{'v'} == 1 && defined $freshness[$rec{'id'}] &&
+	    $rec{'b'} == 0 && $rec{'f'} < $freshness[$rec{'id'}];
 
-	$rec{'fresh'} = $freshness[$rec{'id'}];
+	$rec{'f'} = $freshness[$rec{'id'}];
 	$db[$rec{'id'}] = &aid_join(*rec);
     }
 
@@ -164,34 +164,34 @@ sub bounce_argv
 	    }
 	}
 
-	print "$rec{'id'} - $rec{'email'} - bounce ";
-	if ($rec{'bounce'} == 0) {
+	print "$rec{'id'} - $rec{'e'} - bounce ";
+	if ($rec{'b'} == 0) {
 	    print "(none)";
 	} else {
-	    print &aid_caldate($rec{'bounce'});
+	    print &aid_caldate($rec{'b'});
 	}
 
 	if ($opt_u)
 	{
-	    $rec{'bounce'} = 0;
-	    $rec{'valid'} = 1;
+	    $rec{'b'} = 0;
+	    $rec{'v'} = 1;
 	    print " - clear";
 	}
 	else
 	{
-	    if ($rec{'bounce'} != 0)
+	    if ($rec{'b'} != 0)
 	    {
-		$rec{'fresh'} = $time;
+		$rec{'f'} = $time;
 	    }
 	    else
 	    {
-		$rec{'bounce'} = $time;
+		$rec{'b'} = $time;
 	    }
 
 	    if ($opt_v)
 	    {
-		$rec{'valid'} = 0;
-		$rec{'request'} = $aid_util'blank_entry{'request'}; #'#
+		$rec{'v'} = 0;
+		$rec{'q'} = $aid_util'blank_entry{'q'}; #'#
 	    }
 	}
 	print "\n";

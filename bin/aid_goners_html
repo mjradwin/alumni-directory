@@ -2,7 +2,7 @@
 
 #
 # does the html version of the invalid address list
-# $Id: aid_goners_html,v 3.23 1999/03/26 19:41:22 mradwin Exp mradwin $
+# $Id: aid_goners_html,v 3.24 1999/03/27 04:25:18 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -30,11 +30,11 @@ $ARGV[0] =~ s/\.db$//;
 die "can't open $ARGV[0].db\n" unless -r "$ARGV[0].db";
 dbmopen(%DB,$ARGV[0],0444);
 
-die "no __alpha__ key!\n" unless defined $DB{'__alpha__'};
+die "no _alpha key!\n" unless defined $DB{'_alpha'};
 
 open(FMTOUT,">$ARGV[1]") || die "Can't open $ARGV[1]: $!\n";
 
-$time = unpack("N",$DB{'__t_goner__'});
+$time = unpack("N",$DB{'_t_goner'});
 print FMTOUT &aid_common_html_hdr(-1,'Alumni with Invalid Addresses',1,$time);
 print FMTOUT "
 <p>The following addresses are invalid because either e-mail to them
@@ -45,13 +45,13 @@ print FMTOUT "<pre>";
 print FMTOUT "Name and Graduation Year                  Last known whereabouts\n";
 print FMTOUT "---------------------------------------------------------------------------\n";
 
-@alpha_ids = unpack("n*",$DB{'__alpha__'});
+@alpha_ids = unpack("n*",$DB{'_alpha'});
 foreach $id (@alpha_ids)
 {
     %rec = &aid_db_unpack_rec($id,$DB{$id});
-    next unless $rec{'valid'} == 0;
+    next unless $rec{'v'} == 0;
 
-    $rec{'email'} =~ s/^[^\@]+\@/\@/;
+    $rec{'e'} =~ s/^[^\@]+\@/\@/;
 
     $fullname = &aid_fullname(*rec);
     ($affil,$len) = &aid_affiliate(*rec,0);
@@ -61,7 +61,7 @@ foreach $id (@alpha_ids)
     print FMTOUT "</a>";
     print FMTOUT $affil;
     print FMTOUT ' ', ' ' x (41 - (length($fullname) + $len));
-    print FMTOUT $rec{'email'};
+    print FMTOUT $rec{'e'};
     print FMTOUT "\n";
 }
 

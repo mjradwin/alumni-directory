@@ -2,7 +2,7 @@
 
 #
 # mails a welcome, update, confirm, or massmail message to members
-# $Id: aid_welcome,v 3.40 1999/03/29 21:49:02 mradwin Exp mradwin $
+# $Id: aid_welcome,v 3.41 1999/03/30 01:25:19 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -181,7 +181,7 @@ $dbmfile =~ s/\.db$//;
 die "can't open ${dbmfile}.db\n" unless -r "${dbmfile}.db";
 
 dbmopen(%DB,$dbmfile,0444);
-die "invalid DB: ${dbmfile}.db\n" unless defined $DB{'__class__'};
+die "invalid DB: ${dbmfile}.db\n" unless defined $DB{'_class'};
 
 open(LOG,">>$logfile") || die "$0: Can't open $logfile: $!\n";
 select(LOG); $| = 1; select(STDOUT);
@@ -199,13 +199,13 @@ if ($opt_a)
 	{
 	    %rec = &aid_db_unpack_rec($key,$val);
 
-	    next unless $rec{'valid'};
-	    next if $opt_m && $rec{'request'} != $opt_r;
+	    next unless $rec{'v'};
+	    next if $opt_m && $rec{'q'} != $opt_r;
 
 	    if ($opt_c)
 	    {
-		next unless $rec{'request'} == 0;
-		next unless &aid_is_old($rec{'fresh'});
+		next unless $rec{'q'} == 0;
+		next unless &aid_is_old($rec{'f'});
 	    }
 
 	    &mail_user(*rec);
@@ -243,13 +243,13 @@ sub mail_user
     local(*rec) = @_;
     local($message,$name);
 
-    if ($rec{'valid'} == 0)
+    if ($rec{'v'} == 0)
     {
 	warn "$0: skipping target `$rec{'id'}' (valid bit is off)\n";
 	return 0;
     }
 
-    unless (defined $rec{'email'} && $rec{'email'} ne '')
+    unless (defined $rec{'e'} && $rec{'e'} ne '')
     {
 	warn "$0: skipping target `$rec{'id'}' (has no email address)\n";
 	return 0;
@@ -259,27 +259,27 @@ sub mail_user
 	"\n-- \n" . &aid_config('admin_name') . "\n" . 
 	    &aid_config('admin_school');
 
-    $name  = $rec{'first'};
-    $name .= " $rec{'middle'}."
-	if defined $rec{'middle'} && $rec{'middle'} ne '';
-    $name .= " $rec{'last'}";
-    $name .= " $rec{'married'}"
-	if defined $rec{'married'} && $rec{'married'} ne '';
+    $name  = $rec{'gn'};
+    $name .= " $rec{'mi'}."
+	if defined $rec{'mi'} && $rec{'mi'} ne '';
+    $name .= " $rec{'sn'}";
+    $name .= " $rec{'mn'}"
+	if defined $rec{'mn'} && $rec{'mn'} ne '';
     
-    &aid_sendmail($rec{'email'}, $name,
+    &aid_sendmail($rec{'e'}, $name,
 		  &aid_config('admin_email'), &aid_config('admin_name'),
 		  $params{'subject'} . " [AID-$rec{'id'}]",
 		  $message);
-    print LOG time, " - $rec{'id'} - $rec{'email'}\n";
+    print LOG time, " - $rec{'id'} - $rec{'e'}\n";
 
-    if (defined $rec{'email_old'} &&
-	$rec{'email_old'} ne '' && $rec{'email_old'} ne $rec{'email'})
+    if (defined $rec{'eo'} &&
+	$rec{'eo'} ne '' && $rec{'eo'} ne $rec{'e'})
     {
-	&aid_sendmail($rec{'email_old'}, $name,
+	&aid_sendmail($rec{'eo'}, $name,
 		      &aid_config('admin_email'), &aid_config('admin_name'),
 		      $params{'subject'} . " [AID-$rec{'id'}]",
 		      $message);
-	print LOG time, " - $rec{'id'} - $rec{'email_old'} - OLD\n";
+	print LOG time, " - $rec{'id'} - $rec{'eo'} - OLD\n";
     }
 
     1;
@@ -289,7 +289,7 @@ sub message_body
 {
     local($[) = 0;
     local(*rec) = @_;
-    local($denied) = $rec{'request'} == 0 ?
+    local($denied) = $rec{'q'} == 0 ?
 	"
 Since you asked not to receive quarterly Directory
 digests via e-mail, you will only receive bi-yearly
@@ -298,7 +298,7 @@ address verification messages.
     local($srv_prefix) = "http://" . &aid_config('master_srv');
     local($about) = &aid_about_text(*rec,1,0,0);
 
-    return "Dear $rec{'first'},
+    return "Dear $rec{'gn'},
 
 This e-mail was sent to you by the Mountain View High
 School/Awalt High School Alumni Internet Directory:

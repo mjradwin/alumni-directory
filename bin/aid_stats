@@ -1,6 +1,6 @@
 #!/usr/bin/perl -w
 
-# $Id: aid_stats,v 1.15 1999/03/26 22:09:20 mradwin Exp mradwin $
+# $Id: aid_stats,v 1.16 1999/03/26 22:17:36 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -38,7 +38,7 @@ $ARGV[0] =~ s/\.db$//;
 die "can't open $ARGV[0].db\n" unless -r "$ARGV[0].db";
 dbmopen(%DB,$ARGV[0],0444);
 
-die "no __class__ key!\n" unless defined $DB{'__class__'};
+die "no _class key!\n" unless defined $DB{'_class'};
 
 open(FMTOUT,">$ARGV[1]") || die "Can't open $ARGV[1]: $!\n";
 
@@ -67,9 +67,9 @@ while (($key,$val) = each %DB)
 
     $ntotal++;
 
-    next unless $rec{'valid'};
+    next unless $rec{'v'};
 
-    if ($rec{'bounce'} ne '0')
+    if ($rec{'b'} ne '0')
     {
 	$ndubious++;
     }
@@ -78,20 +78,20 @@ while (($key,$val) = each %DB)
 	$nvalid++;
     }
 
-    $nreq[$rec{'request'}]++;
+    $nreq[$rec{'q'}]++;
 
-    $nreunion++ if $rec{'reunion'};
-    $nlocation++ if $rec{'location'} ne '';
-    $nweb++ if $rec{'www'} ne '';
+    $nreunion++ if $rec{'r'};
+    $nlocation++ if $rec{'l'} ne '';
+    $nweb++ if $rec{'w'} ne '';
     $nnews++ if -f &aid_newsfile($rec{'id'});
 
-    $update_time_sum += $rec{'time'};
-    push(@update_times, $rec{'time'});
+    $update_time_sum += $rec{'u'};
+    push(@update_times, $rec{'u'});
 
-    $join_time_sum += $rec{'created'};
-    push(@join_times, $rec{'created'});
+    $join_time_sum += $rec{'c'};
+    push(@join_times, $rec{'c'});
 
-    $num_never_updated++ if $rec{'time'} == $rec{'created'};
+    $num_never_updated++ if $rec{'u'} == $rec{'c'};
 }
 
 $nlegit = $nvalid + $ndubious;

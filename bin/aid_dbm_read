@@ -1,6 +1,6 @@
 #!/usr/bin/perl -w
 
-# $Id: aid_dbm_read,v 1.15 1999/03/26 19:41:22 mradwin Exp mradwin $
+# $Id: aid_dbm_read,v 1.16 1999/03/27 04:25:18 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -64,8 +64,8 @@ if ($opt_t)
     {
 	%rec = &aid_db_unpack_rec($_,$DB{$_});
 	print DATA &aid_join(*rec);
-	print DATA ';', &old_encode_base64($rec{'message'},'')
-	    if ($rec{'message'} ne '');
+	print DATA ';', &old_encode_base64($rec{'n'},'')
+	    if ($rec{'n'} ne '');
 	print DATA "\n";
     } 
     close(DATA);
@@ -76,67 +76,67 @@ elsif (defined $ARGV[1])
 }
 elsif ($opt_o)
 {
-    die "no __class__ key in $ARGV[0].db\n" unless defined $DB{'__class__'};
-    @ids = unpack("n*", $DB{'__class__'});
+    die "no _class key in $ARGV[0].db\n" unless defined $DB{'_class'};
+    @ids = unpack("n*", $DB{'_class'});
     for (@ids)
     {
 	%rec = &aid_db_unpack_rec($_,$DB{$_});
-	next unless $rec{'valid'};
-	next unless $rec{'request'} == 0;
-	next unless &aid_is_old($rec{'fresh'});
+	next unless $rec{'v'};
+	next unless $rec{'q'} == 0;
+	next unless &aid_is_old($rec{'f'});
 	($affil,$i) = &aid_affiliate(*rec,0);
-	print $rec{'last'}, ", ", $rec{'first'}, $affil, "\n";
+	print $rec{'sn'}, ", ", $rec{'gn'}, $affil, "\n";
     }
 }
 elsif ($opt_u)
 {
-    die "no __class__ key in $ARGV[0].db\n" unless defined $DB{'__class__'};
-    @ids = unpack("n*", $DB{'__class__'});
+    die "no _class key in $ARGV[0].db\n" unless defined $DB{'_class'};
+    @ids = unpack("n*", $DB{'_class'});
     for (@ids)
     {
 	%rec = &aid_db_unpack_rec($_,$DB{$_});
-	next unless $rec{'valid'};
-	next unless $rec{'time'} == $rec{'created'};
+	next unless $rec{'v'};
+	next unless $rec{'u'} == $rec{'c'};
 	($affil,$i) = &aid_affiliate(*rec,0);
-	print $rec{'last'}, ", ", $rec{'first'}, $affil, "\n";
+	print $rec{'sn'}, ", ", $rec{'gn'}, $affil, "\n";
     }
 }
 elsif ($opt_f)
 {
-    die "no __class__ key in $ARGV[0].db\n" unless defined $DB{'__class__'};
-    @ids = unpack("n*", $DB{'__class__'});
+    die "no _class key in $ARGV[0].db\n" unless defined $DB{'_class'};
+    @ids = unpack("n*", $DB{'_class'});
     for (@ids)
     {
 	%rec = &aid_db_unpack_rec($_,$DB{$_});
-	next unless $rec{'valid'};
-	next if $rec{'time'} == $rec{'created'};
-	next unless &aid_is_new($rec{'time'}) && &aid_is_new($rec{'created'});
+	next unless $rec{'v'};
+	next if $rec{'u'} == $rec{'c'};
+	next unless &aid_is_new($rec{'u'}) && &aid_is_new($rec{'c'});
 	($affil,$i) = &aid_affiliate(*rec,0);
-	print $rec{'last'}, ", ", $rec{'first'}, $affil, "\n";
+	print $rec{'sn'}, ", ", $rec{'gn'}, $affil, "\n";
     }
 }
 elsif ($opt_a)
 {
-    die "no __alpha__ key in $ARGV[0].db\n" unless defined $DB{'__alpha__'};
-    @ids = unpack("n*", $DB{'__alpha__'});
+    die "no _alpha key in $ARGV[0].db\n" unless defined $DB{'_alpha'};
+    @ids = unpack("n*", $DB{'_alpha'});
     for (@ids)
     {
 	%rec = &aid_db_unpack_rec($_,$DB{$_});
-	next unless $rec{'valid'};
+	next unless $rec{'v'};
 	($affil,$i) = &aid_affiliate(*rec,0);
-	print $rec{'last'}, ", ", $rec{'first'}, $affil, "\n";
+	print $rec{'sn'}, ", ", $rec{'gn'}, $affil, "\n";
     }
 }
 elsif ($opt_c)
 {
-    die "no __class__ key in $ARGV[0].db\n" unless defined $DB{'__class__'};
-    @ids = unpack("n*", $DB{'__class__'});
+    die "no _class key in $ARGV[0].db\n" unless defined $DB{'_class'};
+    @ids = unpack("n*", $DB{'_class'});
     for (@ids)
     {
 	%rec = &aid_db_unpack_rec($_,$DB{$_});
-	next unless $rec{'valid'};
+	next unless $rec{'v'};
 	($affil,$i) = &aid_affiliate(*rec,0);
-	print $rec{'last'}, ", ", $rec{'first'}, $affil, "\n";
+	print $rec{'sn'}, ", ", $rec{'gn'}, $affil, "\n";
     }
 }
 else
@@ -170,40 +170,40 @@ sub display_key_val
 	print "record $key = ", &aid_join(*rec), "\n";
     }
 
-    elsif ($key =~ /^__(awalt_|www_)?(\d\d\d\d)__$/)
+    elsif ($key =~ /^_(awalt_|www_)?(\d\d\d\d)$/)
     {
 	print "year ", (defined $1 ? $1 : ''), $2,
 	      " = ", join(',', unpack("n*", $val)), "\n";
     }
 
-    elsif ($key =~ /^__(awalt_|www_)?other__$/)
+    elsif ($key =~ /^_(awalt_|www_)?other$/)
     {
 	print "year ", (defined $1 ? $1 : ''), 'other',
 	      " = ", join(',', unpack("n*", $val)), "\n";
     }
 
-    elsif ($key =~ /^__(awalt_|www_)?years__$/)
+    elsif ($key =~ /^_(awalt_|www_)?years$/)
     {
 	print "list ", (defined $1 ? $1 : ''), 'years',
 	      " = ", join(',', unpack("n*", $val)), "\n";
     }
 
-    elsif ($key =~ /^__class__$/)
+    elsif ($key =~ /^_class$/)
     {
 	print "list class = ", join(',', unpack("n*", $val)), "\n";
     }
 
-    elsif ($key =~ /^__alpha__$/)
+    elsif ($key =~ /^_alpha$/)
     {
 	print "list alpha = ", join(',', unpack("n*", $val)), "\n";
     }
 
-    elsif ($key =~ /^__created__$/)
+    elsif ($key =~ /^_created$/)
     {
 	print "created = ", &ctime(unpack("N", $val));
     }
 
-    elsif ($key =~ /^__t(_[^_]+)?__$/)
+    elsif ($key =~ /^_t(_[^_]+)?$/)
     {
 	print "time", (defined $1 ? $1 : ''), 
 	  " = ", &ctime(unpack("N", $val));

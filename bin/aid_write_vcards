@@ -1,6 +1,6 @@
 #!/usr/bin/perl -w
 
-# $Id: aid_write_vcards,v 1.3 1999/03/09 20:50:23 mradwin Exp mradwin $
+# $Id: aid_write_vcards,v 1.4 1999/03/26 19:41:22 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -43,14 +43,14 @@ while (($key,$val) = each %DB)
 {
     next unless $key =~ /^\d+$/;
     %rec = &aid_db_unpack_rec($key,$val);
-    next unless $rec{'valid'};
+    next unless $rec{'v'};
     $filename = "$ARGV[1]/$rec{'id'}.vcf";
 
     open(VCARD,">$filename") || die "can't open $filename: $!\n";
     print VCARD &aid_vcard_text(*rec);
     close(VCARD);
 
-    utime $rec{'time'}, $rec{'time'}, $filename;
+    utime $rec{'u'}, $rec{'u'}, $filename;
     print STDERR ".";
 }
 print STDERR "\n";

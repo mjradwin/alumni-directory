@@ -1,6 +1,6 @@
 #!/usr/bin/perl -w
 
-# $Id$
+# $Id: aid_edit_entry,v 1.1 1999/03/26 23:38:39 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -79,8 +79,8 @@ sub display_entry
     {
 	print $_, '=', $rec{$_}, "\n";
     }
-    print 'alias=', $rec{'alias'}, "\n";
-#   print 'message=', $rec{'message'}, "\n";
+    print 'a=', $rec{'a'}, "\n";
+#   print 'n=', $rec{'n'}, "\n";
 
     1;
 }

@@ -2,7 +2,7 @@
 
 #
 # does the html verbose pages
-# $Id: aid_multi_alpha_html,v 3.32 1999/03/26 19:41:22 mradwin Exp mradwin $
+# $Id: aid_multi_alpha_html,v 3.33 1999/03/27 04:25:18 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -38,17 +38,17 @@ $ARGV[0] =~ s/\.db$//;
 die "can't open $ARGV[0].db\n" unless -r "$ARGV[0].db";
 dbmopen(%DB,$ARGV[0],0444);
 
-die "no __alpha__ key!\n" unless defined $DB{'__alpha__'};
+die "no _alpha key!\n" unless defined $DB{'_alpha'};
 
 $initial = "Z";
 
-@alpha_ids = unpack("n*",$DB{'__alpha__'});
+@alpha_ids = unpack("n*",$DB{'_alpha'});
 foreach $id (@alpha_ids)
 {
     %rec = &aid_db_unpack_rec($id,$DB{$id});
-    next unless $rec{'valid'};
+    next unless $rec{'v'};
 
-    $cur_initial = substr($rec{'last'}, 0, 1);
+    $cur_initial = substr($rec{'sn'}, 0, 1);
     $cur_initial = "\U${cur_initial}\E";
     if ("\U${initial}\E" ne $cur_initial) {
 	print STDERR ".";
@@ -63,8 +63,8 @@ foreach $id (@alpha_ids)
 	$outFile = &aid_config('wwwdir') . "alpha/\L${initial}\E-index.html";
 	open(FMTOUT,">$outFile") || die "Can't open $outFile: $!\n";
 	
-	die "no alpha time key!\n" unless defined $DB{"\L__t_${initial}__\E"};
-	$time = unpack("N",$DB{"\L__t_${initial}__\E"});
+	die "no alpha time key!\n" unless defined $DB{"\L_t_${initial}\E"};
+	$time = unpack("N",$DB{"\L_t_${initial}\E"});
 
 	print FMTOUT &aid_common_html_hdr(1,'Listed by Last Name',1,$time),
 	    &aid_common_intro_para(1),
@@ -102,20 +102,20 @@ sub html_pre_entry {
     $fullname = &aid_fullname(*rec);
     ($affil,$len) = &aid_affiliate(*rec,1);
     $needsanchor = ($do_html_p && (($a_name ne '') ||
-				   ($rec{'www'} ne ''))) ? 1 : 0;
+				   ($rec{'w'} ne ''))) ? 1 : 0;
     $retval = '';
     $retval .= "<a href=\"" . &aid_about_path(*rec) . "\">$info_gif</a>" #'#
 	if $do_html_p;
     $retval .= "<a" if $needsanchor;
     $retval .= " name=\"$a_name\"" if ($do_html_p && $a_name ne '');
-    $retval .= " href=\"$rec{'www'}\"" if ($do_html_p && $rec{'www'} ne '');
+    $retval .= " href=\"$rec{'w'}\"" if ($do_html_p && $rec{'w'} ne '');
     $retval .= ">" if $needsanchor;
     $retval .= $fullname;
     $retval .= "</a>" if $needsanchor;
     $retval .= $affil;
     $retval .= ' ' . ' ' x (41 - (length($fullname) + $len));
-    $retval .= "<a href=\"mailto:" . $rec{'email'} . "\">" if $do_html_p;
-    $retval .= $rec{'email'};
+    $retval .= "<a href=\"mailto:" . $rec{'e'} . "\">" if $do_html_p;
+    $retval .= $rec{'e'};
     $retval .= "</a>" if $do_html_p;
     $retval .= &aid_is_new_html(*rec) if $do_html_p;
     $retval .= "\n";
