@@ -1,6 +1,6 @@
 #!/usr/bin/perl -w
 
-# $Id: aid_addname,v 3.35 1999/04/06 16:05:21 mradwin Exp mradwin $
+# $Id: aid_addname,v 3.36 1999/04/26 22:21:34 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -18,6 +18,10 @@
 #   along with this program; if not, write to the Free Software
 #   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #
+
+$dirname = $0;
+$dirname =~ s,/[^/]+$,,;
+push(@INC, $dirname);
 
 require 'getopts.pl';
 require 'aid_util.pl';

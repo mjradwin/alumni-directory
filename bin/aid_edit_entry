@@ -1,6 +1,6 @@
 #!/usr/bin/perl -w
 
-# $Id: aid_edit_entry,v 1.5 1999/04/09 01:51:11 mradwin Exp mradwin $
+# $Id: aid_edit_entry,v 1.6 1999/05/03 23:35:42 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -18,6 +18,10 @@
 #   along with this program; if not, write to the Free Software
 #   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #
+
+$dirname = $0;
+$dirname =~ s,/[^/]+$,,;
+push(@INC, $dirname);
 
 require 'aid_util.pl';
 require 'getopts.pl';
@@ -71,7 +75,7 @@ $note_end_str = &aid_config('note_end_str');
 $tmpfile = '/tmp/aid_edit_entry.' . $$;
 
 open(TMPFILE,">$tmpfile") || die "$tmpfile: $!\n";
-print TMPFILE '# $Id: aid_edit_entry,v 1.5 1999/04/09 01:51:11 mradwin Exp mradwin $', "\n";
+print TMPFILE '# $Id: aid_edit_entry,v 1.6 1999/05/03 23:35:42 mradwin Exp mradwin $', "\n";
 print TMPFILE "# record last touched: ",
  (($rec{'f'} > $rec{'b'}) ? &ctime($rec{'f'}) : &ctime($rec{'b'}));
 

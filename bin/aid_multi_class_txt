@@ -1,6 +1,6 @@
 #!/usr/bin/perl -w
 
-# $Id: aid_multi_class_txt,v 1.2 1999/04/05 16:26:17 mradwin Exp mradwin $
+# $Id: aid_multi_class_txt,v 1.3 1999/04/26 22:21:21 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -18,6 +18,10 @@
 #   along with this program; if not, write to the Free Software
 #   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #
+
+$dirname = $0;
+$dirname =~ s,/[^/]+$,,;
+push(@INC, $dirname);
 
 require 'aid_util.pl';
 require 'getopts.pl';
