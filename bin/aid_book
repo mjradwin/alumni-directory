@@ -2,13 +2,13 @@
 
 #
 # generates address books in several formats
-# $Id$
+# $Id: aid_book,v 1.18 1997/12/22 22:31:42 mjr Exp mjr $
 #
 
-require 'mv_util.pl';
+require 'aid_util.pl';
 require 'getopts.pl';
 
-$usage = 'usage: mv_book [-h] infile.adr -{p,e,b,w,m,n,l,v} outfile
+$usage = 'usage: aid_book [-h] infile.adr -{p,e,b,w,m,n,l,v} outfile
     -h        Display usage information.
 
     -p        Pine address book
@@ -55,7 +55,7 @@ $opt_v && &write_prefix(*BOOKv,'v');
 while(<DATA>) {
     chop;
     ($time,$id,$req,$last,$first,$married,
-     $school,$year,$email,$alias,$homepage,$location) = &mv_parse($_);
+     $school,$year,$email,$alias,$homepage,$location) = &aid_parse($_);
     
     if ($aliases{$alias} > 0) {
 	$aliases{$alias} = $aliases{$alias} + 1;

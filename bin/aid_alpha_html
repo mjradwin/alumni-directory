@@ -2,16 +2,16 @@
 
 #
 # does the html version of the alphabetical address list
-# $Id$
+# $Id: aid_alpha_html,v 1.27 1997/12/22 22:31:42 mjr Exp mjr $
 #
 
-require 'mv_util.pl';
+require 'aid_util.pl';
 require 'tableheader.pl';
 require 'getopts.pl';
 
 $htmlname = "all.html";
 
-$usage = 'usage: mv_alpha_html [-ht] infile.adr outfile
+$usage = 'usage: aid_alpha_html [-ht] infile.adr outfile
     -h        Display usage information.
     -t        Output text only
 ';
@@ -21,7 +21,7 @@ $opt_h && die "$usage\n";
 $ARGV[0] || die "$usage\n";
 $ARGV[1] || die "$usage\n";
 
-$info_gif = "<img src=\"" . &mv_config('master_path') . "info.gif\" " .
+$info_gif = "<img src=\"" . &aid_config('master_path') . "info.gif\" " .
     "height=12 width=12 hspace=4 border=0 alt=\"[i]\">";
 
 open(DATA,$ARGV[0]) || die "Can't open $ARGV[0]: $!\n";
@@ -49,7 +49,7 @@ icon lets you get more detailed information about an alumnus.</p>\n\n";
 
 $blank_gif = ($opt_t) ? "" : 
 	"<img src=\"blank.gif\" height=12 width=12 hspace=4 border=0 alt=\"\">";
-$cgi = &mv_config('cgi_path');
+$cgi = &aid_config('cgi_path');
 
 print FMTOUT "Name and Graduation Year$blank_gif                 Email\n";
 print FMTOUT "---------------------------------------------------------------------------";
@@ -58,7 +58,7 @@ $lastInitial = "Z";
 while(<DATA>) {
     chop;
     ($time,$id,$req,$last,$first,$married,
-     $school,$year,$email,$alias,$homepage,$location) = &mv_parse($_);
+     $school,$year,$email,$alias,$homepage,$location) = &aid_parse($_);
 
     if ($lastInitial ne substr($last, 0, 1)) {
 	$lastInitial = substr($last, 0, 1);

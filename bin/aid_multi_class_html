@@ -2,15 +2,15 @@
 
 #
 # does the html verbose pages
-# $Id: mv_verbose_html,v 1.9 1997/12/31 20:37:35 mjr Exp mjr $
+# $Id: aid_verbose_html,v 1.10 1998/01/01 00:21:47 mjr Exp mjr $
 #
 
-require 'mv_util.pl';
+require 'aid_util.pl';
 require 'tableheader.pl';
 require 'getopts.pl';
 require 'ctime.pl';
 
-$usage = 'usage: mv_verbose_html [-h] infile.adr
+$usage = 'usage: aid_verbose_html [-h] infile.adr
     -h        Display usage information.
 ';
 
@@ -24,7 +24,7 @@ open(DATA,$ARGV[0]) || die "Can't open $ARGV[0]: $!\n";
 $_ = <DATA>;
 chop;
 ($time,$id,$req,$last,$first,$married,
- $school,$year,$email,$alias,$homepage,$location) = &mv_parse($_);
+ $school,$year,$email,$alias,$homepage,$location) = &aid_parse($_);
 
 @years = ();
 
@@ -32,7 +32,7 @@ chop;
 for(;;) {
     $currentYear = $year;
     push(@years, (($year =~ /^\d+$/) ? $year : "other"));
-    $outFile = &mv_config('wwwdir') . "class/" .
+    $outFile = &aid_config('wwwdir') . "class/" .
 	(($year =~ /^\d+$/) ? $year : "other") . ".html";
     open(FMTOUT,">$outFile") || die "Can't open $outFile: $!\n";
 
@@ -48,7 +48,7 @@ for(;;) {
     while(<DATA>) {
 	chop;
 	($time,$id,$req,$last,$first,$married,
-	 $school,$year,$email,$alias,$homepage,$location) = &mv_parse($_);
+	 $school,$year,$email,$alias,$homepage,$location) = &aid_parse($_);
 	
 	last if (($year ne $currentYear) && ($currentYear =~ /^\d+$/));
 	&write_entry(*FMTOUT,$_);
@@ -59,7 +59,7 @@ for(;;) {
     last if eof(DATA);
 }
 
-$outFile = &mv_config('wwwdir') . "class/index.html";
+$outFile = &aid_config('wwwdir') . "class/index.html";
 open(FMTOUT,">$outFile") || die "Can't open $outFile: $!\n";
 
 print FMTOUT &common_html_hdr(2,0);
@@ -68,14 +68,14 @@ print FMTOUT &tableheader('Alumni Listed by Graduating Class',
 			  1, 'ffff99', '000000', 1);
 print FMTOUT "<p><center><font size=\"+1\">";
 print FMTOUT "Compact&nbsp;Form:<br>\n";
-print FMTOUT "<a href=\"" . &mv_config('master_path') . "class.html\">";
+print FMTOUT "<a href=\"" . &aid_config('master_path') . "class.html\">";
 print FMTOUT "All&nbsp;Alumni</a> |\n";
-print FMTOUT "<a href=\"" . &mv_config('master_path') . "awalt.html\">";
+print FMTOUT "<a href=\"" . &aid_config('master_path') . "awalt.html\">";
 print FMTOUT "Awalt&nbsp;Alumni</a>\n";
 print FMTOUT "<p>Expanded&nbsp;Form</a>:<br>\n";
 
 foreach $year (@years) {
-    print FMTOUT "<a href=\"" . &mv_config('master_path');
+    print FMTOUT "<a href=\"" . &aid_config('master_path');
     print FMTOUT "class/${year}.html\">";
     print FMTOUT ($year eq 'other') ? "Faculty/Staff" : $year % 100;
     print FMTOUT "</a>";
@@ -95,7 +95,7 @@ sub write_entry {
     local($_);
     local($fullname,$message);
     local($time,$id,$req,$last,$first,$married,$school,
-	  $year,$email,$alias,$homepage,$location) = &mv_parse($record);
+	  $year,$email,$alias,$homepage,$location) = &aid_parse($record);
 
     $fullname = &inorder_fullname($first,$last,$married);
 
@@ -106,10 +106,10 @@ sub write_entry {
     print FMTOUT "</font>\n";
 
     print FMTOUT "&nbsp;<font size=\"-1\">[";
-    print FMTOUT "<a href=\"" . &mv_config('cgi_path') . "?about=$id\">";
+    print FMTOUT "<a href=\"" . &aid_config('cgi_path') . "?about=$id\">";
     print FMTOUT "details</a>";
     print FMTOUT "&nbsp;|&nbsp;";
-    print FMTOUT "<a href=\"" . &mv_config('cgi_path') . "/vcard/${id}.vcf\">";
+    print FMTOUT "<a href=\"" . &aid_config('cgi_path') . "/vcard/${id}.vcf\">";
     print FMTOUT "vCard</a>";
     print FMTOUT "]</font>\n";
 
@@ -128,7 +128,7 @@ sub write_entry {
     $date = &ctime($time); chop $date;
     print FMTOUT "<strong>$date</strong>\n";
 
-    $message = &mv_get_usertext($id);
+    $message = &aid_get_usertext($id);
     if ($message ne '') {
 	print FMTOUT "<dt>What's New? (beta):\n";
 	print FMTOUT "<dd>$message\n";

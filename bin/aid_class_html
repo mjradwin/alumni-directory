@@ -2,14 +2,14 @@
 
 #
 # does the html version of the grad-date address list
-# $Id: mv_class_html,v 1.31 1997/12/22 22:31:42 mjr Exp mjr $
+# $Id: aid_class_html,v 1.32 1997/12/22 22:41:57 mjr Exp mjr $
 #
 
-require 'mv_util.pl';
+require 'aid_util.pl';
 require 'tableheader.pl';
 require 'getopts.pl';
 
-$usage = 'usage: mv_class_html [-hta] infile.adr outfile
+$usage = 'usage: aid_class_html [-hta] infile.adr outfile
     -h        Display usage information.
     -t        Output text only
     -a        Awalt mode.
@@ -20,7 +20,7 @@ $opt_h && die "$usage\n";
 $ARGV[0] || die "$usage\n";
 $ARGV[1] || die "$usage\n";
 
-$info_gif = "<img src=\"" . &mv_config('master_path') . "info.gif\" " .
+$info_gif = "<img src=\"" . &aid_config('master_path') . "info.gif\" " .
     "height=12 width=12 hspace=4 border=0 alt=\"[i]\">";
 
 open(DATAPRE,$ARGV[0]) || die "Can't open $ARGV[0]: $!\n";
@@ -44,7 +44,7 @@ icon lets you get more detailed information about an alumnus.</p>\n\n";
 	chop;
 
 	($time,$id,$req,$last,$first,$married,
-	 $school,$year,$email,$alias,$homepage,$location) = &mv_parse($_);
+	 $school,$year,$email,$alias,$homepage,$location) = &aid_parse($_);
 
 	if ($lastYear ne $year) {
 	    $lastYear = $year;
@@ -65,7 +65,7 @@ icon lets you get more detailed information about an alumnus.</p>\n\n";
 
 $blank_gif = ($opt_t) ? "" :
     "<img src=\"blank.gif\" height=12 width=12 hspace=4 border=0 alt=\"\">";
-$cgi = &mv_config('cgi_path');
+$cgi = &aid_config('cgi_path');
 
 print FMTOUT "Name$blank_gif                                     Email\n";
 print FMTOUT "---------------------------------------------------------------------------";
@@ -76,7 +76,7 @@ $first_fac_staff = 0;
 while(<DATA>) {
     chop;
     ($time,$id,$req,$last,$first,$married,
-     $school,$year,$email,$alias,$homepage,$location) = &mv_parse($_);
+     $school,$year,$email,$alias,$homepage,$location) = &aid_parse($_);
 
     if ($lastYear ne $year) {
 	$lastYear = $year;
@@ -94,7 +94,7 @@ while(<DATA>) {
 	    $hashYear = 'grad' . $year;
 	    print FMTOUT "\n";
 	    $opt_t || print FMTOUT "<a name=\"$hashYear\" " .
-		"href=\"" . &mv_config('master_path') .
+		"href=\"" . &aid_config('master_path') .
 		"class/${year}.html\">";
 	    print FMTOUT "Class of $lastYear";
 	    $opt_t || print FMTOUT "</a>  (<a href=\"#top\">top</a>)";

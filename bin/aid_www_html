@@ -3,10 +3,10 @@
 # does the html version of just home pages
 
 require 'getopts.pl';
-require 'mv_util.pl';
+require 'aid_util.pl';
 require 'tableheader.pl';
 
-$usage = 'usage: mv_www_html [-h] infile.adr outfile
+$usage = 'usage: aid_www_html [-h] infile.adr outfile
     -h        Display usage information.
 ';
 
@@ -20,7 +20,7 @@ open(FMTOUT,">$ARGV[1]") || die "Can't open $ARGV[1]: $!\n";
 
 $info_gif = "<img src=\"info.gif\" height=12 width=12 hspace=4 border=0 alt=\"[i]\">";
 $blank_gif = "<img src=\"blank.gif\" height=12 width=12 hspace=4 border=0 alt=\"\">";
-$cgi = &mv_config('cgi_path');
+$cgi = &aid_config('cgi_path');
 
 print FMTOUT &common_html_hdr(5,1);
 print FMTOUT "<br>";
@@ -37,7 +37,7 @@ print FMTOUT "------------------------------------------------------------------
 while(<DATA>) {
     chop;
     ($time,$id,$req,$last,$first,$married,
-     $school,$year,$email,$alias,$homepage,$location) = &mv_parse($_);
+     $school,$year,$email,$alias,$homepage,$location) = &aid_parse($_);
     next if $homepage eq '';
 
     $fullname = &fullname($first,$last,$married);

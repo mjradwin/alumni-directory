@@ -2,13 +2,13 @@
 
 #
 # does the html version of the invalid address list
-# $Id: mv_goners_html,v 1.23 1997/12/22 22:31:42 mjr Exp mjr $
+# $Id: aid_goners_html,v 1.24 1997/12/23 18:04:06 mjr Exp mjr $
 #
 
-require 'mv_util.pl';
+require 'aid_util.pl';
 require 'tableheader.pl';
 
-die "Usage: mv_goners_html infile.adr outfile.html\n" if !$ARGV[0] || !$ARGV[1];
+die "Usage: aid_goners_html infile.adr outfile.html\n" if !$ARGV[0] || !$ARGV[1];
 open(DATA,$ARGV[0]) || die "Can't open $ARGV[0]: $!\n";
 open(FMTOUT,">$ARGV[1]") || die "Can't open $ARGV[1]: $!\n";
 
@@ -28,7 +28,7 @@ print FMTOUT "------------------------------------------------------------------
 while(<DATA>) {
     chop;
     ($time,$id,$req,$last,$first,$married,
-     $school,$year,$email,$alias,$homepage,$location) = &mv_parse($_);
+     $school,$year,$email,$alias,$homepage,$location) = &aid_parse($_);
 
     $fullname = &fullname($first,$last,$married);
     ($affil,$len) = &affiliate($year,$school,0);
@@ -40,7 +40,7 @@ while(<DATA>) {
     $last =~ s/[ \t]/+/g;
     $married =~ s/[ \t]/+/g;
 
-    print FMTOUT "<a href=\"", &mv_config('cgi_path'), "?revise&";
+    print FMTOUT "<a href=\"", &aid_config('cgi_path'), "?revise&";
     print FMTOUT "id=$id&request=$req&first=$first&last=$last&";
     print FMTOUT "married=$married&school=$school&grad=$year&";
     print FMTOUT "mail=$email&homepage=$homepage&location=$location\">";

@@ -2,13 +2,13 @@
 
 #
 # does the html version of just home pages
-# $Id$
+# $Id: aid_home_html,v 1.14 1997/12/22 22:31:42 mjr Exp mjr $
 #
 
-require 'mv_util.pl';
+require 'aid_util.pl';
 require 'getopts.pl';
 
-$usage = 'usage: mv_home_html [-hs] [-p <pg>] [-t <text>] [-i <infile>] <outfile>
+$usage = 'usage: aid_home_html [-hs] [-p <pg>] [-t <text>] [-i <infile>] <outfile>
  -h            Display usage information.
  -p <pg>       Use page number <pg> for generating content.  REQUIRED.
  -s            Create the submit page.

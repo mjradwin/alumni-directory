@@ -2,14 +2,14 @@
 
 #
 # mails a welcome or update note to everyone in targets.adr
-# $Id: mv_welcome,v 1.22 1997/12/22 22:31:42 mjr Exp mjr $
+# $Id: aid_welcome,v 1.23 1997/12/31 20:37:35 mjr Exp mjr $
 #
 
-require 'mv_util.pl';
+require 'aid_util.pl';
 require 'getopts.pl';
 require 'ctime.pl';
 
-$usage = 'usage: mv_welcome [-h] [-u | -c] targets.adr
+$usage = 'usage: aid_welcome [-h] [-u | -c] targets.adr
     -h        Display usage information.
     -u        Send "update" email, not "welcome" email.
     -c        Send "confirmation" email, not "welcome" email.
@@ -20,7 +20,7 @@ $opt_h && die "$usage\n";
 ($opt_c && $opt_u) && die "$usage\n";
 $ARGV[0] || die "$usage\n";
 
-$logfile = &mv_config('mvhsdir') . "logs/welcome.log";
+$logfile = &aid_config('mvhsdir') . "logs/welcome.log";
 $subject = ($opt_c) ? 'Confirming your MVHS Alumni Internet Directory entry' :
     ($opt_u) ? 'Your MVHS Alumni Internet Directory entry is updated' : 
     'Welcome to the MVHS Alumni Internet Directory';
@@ -40,7 +40,7 @@ while(<TARGET>) {
 
     $message = &message_body($_) . &message_footer;
 
-    &sendmail($email, &mv_config('admin_email'), &mv_config('admin_name'),
+    &sendmail($email, &aid_config('admin_email'), &aid_config('admin_name'),
 	      $subject, $message);
     print LOG "$today $email\n";
 }
@@ -65,7 +65,7 @@ below is still current.\n" : '';
 Your email address is listed in the Mountain View High School/Awalt High
 School Alumni Internet Directory, located on the World Wide Web at:\n\n" .
 
-"http://" . &mv_config('master_srv') . &mv_config('master_path') . "
+"http://" . &aid_config('master_srv') . &aid_config('master_path') . "
 $confirming
 The directory (which produced this form letter) shows the following
 information about you:
@@ -76,7 +76,7 @@ to be listed in the directory, please let me know and I will remove your
 entry.  If any of the above information is incorrect or out of date, you
 can update your entry online at:\n\n" .
 
-"http://" . &mv_config('master_srv') . &mv_config('cgi_path') . "?update=$id
+"http://" . &aid_config('master_srv') . &aid_config('cgi_path') . "?update=$id
 
 If you don't have web access, just email me corrections and I'll be happy
 to fix your entry.  If everything you see above is correct, you're all set.\n";

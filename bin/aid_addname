@@ -1,11 +1,11 @@
 #!/usr/local/bin/perl
 
-# $Id: mv_addname,v 1.6 1997/12/22 22:31:42 mjr Exp mjr $
+# $Id: aid_addname,v 1.7 1997/12/31 18:11:36 mjr Exp mjr $
 
 require 'getopts.pl';
-require 'mv_util.pl';
+require 'aid_util.pl';
 
-$usage = 'usage: mv_addname [-hmw] [mailspoolfile]
+$usage = 'usage: aid_addname [-hmw] [mailspoolfile]
     -h        Display usage information.
     -m        Manual operation (don\'t rebuild).
     -w        Don\'t mail welcome messages.
@@ -14,7 +14,7 @@ $usage = 'usage: mv_addname [-hmw] [mailspoolfile]
 &Getopts('hmw') || die "$usage\n";
 $opt_h && die "$usage\n";
 
-&readspool(($ARGV[0]) ? $ARGV[0] : '/var/spool/mail/mjr');
+&readspool(($ARGV[0]) ? $ARGV[0] : &aid_config('spoolfile'));
 &rebuild() unless $opt_m;
 &mail_welcome() unless $opt_w;
 
@@ -52,7 +52,7 @@ sub readspool {
 	while(<SPOOL>) {
 	    last if /^The kind soul who submitted it/;
 	    if (/^_MVHSAID_BEGIN_MESSAGE_/) {
-		$newsFile = &mv_config('newsdir') . "${id}.txt";
+		$newsFile = &aid_config('newsdir') . "${id}.txt";
 		open(NEWSOUT, ">$newsFile") ||
 		    die "Can't open $newsFile: $!\n";
 		print "MESSAGE $newsFile\n";
@@ -76,25 +76,25 @@ sub readspool {
 
 
 sub rebuild {
-    chdir &mv_config('mvhsdir') || die "can't chdir: $!\n";
+    chdir &aid_config('mvhsdir') || die "can't chdir: $!\n";
 
     print "rebuilding...\n";
     system 'make';
 }
 
 sub mail_welcome {
-    chdir &mv_config('mvhsdir') || die "can't chdir: $!\n";
+    chdir &aid_config('mvhsdir') || die "can't chdir: $!\n";
 
     print "mailing...";
     if (-e 'data/newmail.adr') {
 	print ' new';
-	system 'bin/mv_welcome data/newmail.adr';
+	system 'bin/aid_welcome data/newmail.adr';
 	unlink('data/newmail.adr');
     }
 
     if (-e 'data/update.adr') {
 	print ' update';
-	system 'bin/mv_welcome -u data/update.adr';
+	system 'bin/aid_welcome -u data/update.adr';
 	unlink('data/update.adr');
     }
 
@@ -111,11 +111,11 @@ sub addname {
 	  $school,$year,$email,$homepage,$location);
     local($addme,$tmpFile,*LOG,*TMP);
 
-    $dbFile = &mv_config('mvhsdir') . "data/mvhs.adr";
-    $newmailFile = &mv_config('mvhsdir') . "data/newmail.adr";
-    $updFile = &mv_config('mvhsdir') . "data/update.adr";
-    $logFile = &mv_config('mvhsdir') . "logs/additions.log";
-    @db = &mv_create_db($dbFile);
+    $dbFile = &aid_config('mvhsdir') . "data/mvhs.adr";
+    $newmailFile = &aid_config('mvhsdir') . "data/newmail.adr";
+    $updFile = &aid_config('mvhsdir') . "data/update.adr";
+    $logFile = &aid_config('mvhsdir') . "logs/additions.log";
+    @db = &aid_create_db($dbFile);
 
     ($time,$id,$req,$last,$first,$married,
      $school,$year,$email,$homepage,$location)  = split(/;/, $rawdata);
@@ -140,7 +140,7 @@ sub addname {
     print LOG $addme, "\n";
     close(LOG);
 
-    $tmpFile = "/tmp/mv_add.$$";
+    $tmpFile = "/tmp/aid_add.$$";
     open(TMP, ">$tmpFile") || die "Can't open $tmpFile: $!\n";
     for (@db) {
 	next if $_ eq '';

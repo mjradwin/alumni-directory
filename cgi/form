@@ -4,15 +4,15 @@
 #     FILE: mvhsaid.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: MVHS Alumni Internet Directory CGI interface
-#      $Id: mvhsaid,v 1.53 1997/12/31 20:37:35 mjr Exp mjr $
+#      $Id: mvhsaid,v 1.54 1998/01/01 00:21:47 mjr Exp mjr $
 #
 
-require 'mv_util.pl';
+require 'aid_util.pl';
 require 'cgi-lib.pl';
 
 # configuration
-$mailprog = &mv_config('mailprog');
-$dbfile = &mv_config('wwwdir') . "mvhs.adr";
+$mailprog = &aid_config('mailprog');
+$dbfile = &aid_config('wwwdir') . "mvhs.adr";
 
 @required_headers = ('id', 'last', 'first', 'school', 'grad', 'mail');
 
@@ -22,17 +22,17 @@ $dbfile = &mv_config('wwwdir') . "mvhs.adr";
 if (defined($in{'version'})) {
     select(STDOUT);  $| = 1;
     print "Content-type: text/plain\n\n";
-    print '$Id: mvhsaid,v 1.53 1997/12/31 20:37:35 mjr Exp mjr $', "\n"; #'fnt
+    print '$Id: mvhsaid,v 1.54 1998/01/01 00:21:47 mjr Exp mjr $', "\n"; #'fnt
     exit(0);
 }
 
 # dynamic form here if they set the update flag
 if (defined($in{'update'})) {
     if ($in{'update'} =~ /^\d+$/) {
-	@db = &mv_create_db($dbfile);
+	@db = &aid_create_db($dbfile);
 	if (defined($db[$in{'update'}])) {
 	    &send_upd_real($db[$in{'update'}],
-			   &mv_get_usertext($in{'update'}),1,0);
+			   &aid_get_usertext($in{'update'}),1,0);
 	} else {
 	    &send_blank_submit;
 	}
@@ -49,7 +49,7 @@ if ($ENV{'PATH_INFO'} =~ m,^/vcard/,) { #' font-lock
 
 # the now-documented "vcard" feature
 if ($in{'vcard'} =~ /^\d+$/) {
-    @db = &mv_create_db($dbfile);
+    @db = &aid_create_db($dbfile);
     if (defined($db[$in{'vcard'}])) {
 	&send_vcard($db[$in{'vcard'}]);
     } else {
@@ -61,7 +61,7 @@ if ($in{'vcard'} =~ /^\d+$/) {
 
 # the documented "about" feature
 if ($in{'about'} =~ /^\d+$/) {
-    @db = &mv_create_db($dbfile);
+    @db = &aid_create_db($dbfile);
     if (defined($db[$in{'about'}])) {
 	&send_about($db[$in{'about'}]);
     } else {
@@ -175,7 +175,7 @@ exit(0);
 
 sub confirm_submission {
     require 'tableheader.pl';
-    local($cgi_path) = &mv_config('cgi_path');
+    local($cgi_path) = &aid_config('cgi_path');
 
     # a little more cleanup and then update the db.
     $in{'homepage'} = '' if $in{'homepage'} eq 'http://';
@@ -219,9 +219,9 @@ sub queue_submission {
     $in{'homepage'} = '' if $in{'homepage'} eq 'http://';
     $time = time;
     $date = &ctime($time);
-    $mailto = &mv_config('mailto');
-    $mailsubj = &mv_config('mailsubj');
-    $mailname = &mv_config('admin_name');
+    $mailto = &aid_config('mailto');
+    $mailsubj = &aid_config('mailsubj');
+    $mailname = &aid_config('admin_name');
 
     $message_top = 
 "Dear $mailname,
@@ -264,7 +264,7 @@ EOM
     print "receipt of this submission when it it processed.</p>\n";
 
     print "<p>Processing your sumbission might take a day or two.\n";
-    print "See <a href=\"" . &mv_config('master_path') . "tech.html#submit\">";
+    print "See <a href=\"" . &aid_config('master_path') . "tech.html#submit\">";
     print "tech notes</a> for behind-the-scenes details.</p>\n";
 
     print &common_html_ftr(-1);
@@ -272,8 +272,8 @@ EOM
 
 
 sub bydatakeys { $datakeys[$a] cmp $datakeys[$b] }
-sub mv_alpha_db {
-    local(@db) = &mv_create_db($_[0]);
+sub aid_alpha_db {
+    local(@db) = &aid_create_db($_[0]);
     local(@alpha, @fields);
     local($_);
 
@@ -319,7 +319,7 @@ sub send_about {
     print "<br>\n";
     print &tableheader($fullname, 1, "ffff99", '000000', 1);
     print "<p>Here is more detailed information about $fullname.  To see\n";
-    print "<a href=\"" . &mv_config('cgi_path') . "/vcard/${id}.vcf\">";
+    print "<a href=\"" . &aid_config('cgi_path') . "/vcard/${id}.vcf\">";
     print "${first}'s vCard</a>,\n";
     print "you must be using Netscape 4 or have the \n";
     print "<a href=\"http://www.nowsoft.com/plugins/about_people.html\">";
@@ -363,16 +363,16 @@ sub send_upd_list {
      
     local($[) = 0;
     local($_);
-    local(@db) = &mv_alpha_db($dbfile);
+    local(@db) = &aid_alpha_db($dbfile);
     local($fullname,$affil,$len);
     local($time,$req,$id,$last,$first,$married,
 	  $school,$year,$email,$homepage,$location);
 
     local($info_gif) =
-	"<img src=\"" . &mv_config('master_path') . "info.gif\" height=12 width=12 hspace=4 border=0 alt=\"[i]\">";
+	"<img src=\"" . &aid_config('master_path') . "info.gif\" height=12 width=12 hspace=4 border=0 alt=\"[i]\">";
     local($blank_gif) =
-	"<img src=\"" . &mv_config('master_path') . "blank.gif\" height=12 width=12 hspace=4 border=0 alt=\"\">";
-    local($cgi) = &mv_config('cgi_path');
+	"<img src=\"" . &aid_config('master_path') . "blank.gif\" height=12 width=12 hspace=4 border=0 alt=\"\">";
+    local($cgi) = &aid_config('cgi_path');
 
     select(STDOUT);  $| = 1;
     print "Content-type: text/html\n\n";
@@ -395,7 +395,7 @@ sub send_upd_list {
 	($affil,$len) = &affiliate($year,$school,0);
 
 	print "<a href=\"$cgi?about=$id\">$info_gif</a>";
-	print "<a href=\"", &mv_config('cgi_path'), "?update=$id\">";
+	print "<a href=\"", &aid_config('cgi_path'), "?update=$id\">";
 	print $fullname;
 	print "</a>";
 	print $affil;

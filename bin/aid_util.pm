@@ -1,12 +1,12 @@
 #
-#     FILE: mv_util.pl
+#     FILE: aid_util.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: perl library routines for the MVHS Alumni Internet Directory
-#      $Id: mv_util.pl,v 1.77 1997/12/31 20:43:20 mjr Exp mjr $
+#      $Id: aid_util.pl,v 1.78 1997/12/31 21:31:39 mjr Exp mjr $
 #
 
 # divcom.umop-ap.com configuration
-%mv_util'config =  #'font-lock
+%aid_util'config =  #'font-lock
     ('admin_name',   'Michael John Radwin',
      'admin_email',  "mjr\@acm.org",
      'admin_school', "Mountain View High School, Class of '93",
@@ -24,11 +24,11 @@
      'mailto',       "mjr\@divcom",
      'mailsubj',     'MVHSAID',
      'spoolfile',    '/var/spool/mail/mjr',
-     'rcsid',        '$Id$',
+     'rcsid',        '$Id: aid_util.pl,v 1.78 1997/12/31 21:31:39 mjr Exp mjr $',
      );
 
 # foo.metamorphosis.net configuration
-#%mv_util'config =   #'font-lock
+#%aid_util'config =   #'font-lock
 #    ('admin_name',   "Michael John Radwin",
 #     'admin_email',  "mjr\@acm.org",
 #     'admin_school', "Mountain View High School, Class of '93",
@@ -46,40 +46,40 @@
 #     'mailsubj',     "MVHSAID",
 #     );
 
-@mv_util'page_idx = #'font-lock
-    ("Home,"                  . $mv_util'config{'master_path'},
-     "Alphabetically,"        . $mv_util'config{'master_path'} . "all.html",
-     "Grad.&nbsp;Class,"      . $mv_util'config{'master_path'} . "class/",
-     "Awalt&nbsp;Alumni,"     . $mv_util'config{'master_path'} . "awalt.html",
-     "Recent&nbsp;Additions," . $mv_util'config{'master_path'} . "recent.html",
-     "Web&nbsp;Pages,"        . $mv_util'config{'master_path'} . "pages.html",
-     "Get&nbsp;Listed!,"      . $mv_util'config{'master_path'} . "add.html",
+@aid_util'page_idx = #'font-lock
+    ("Home,"                  . $aid_util'config{'master_path'},
+     "Alphabetically,"        . $aid_util'config{'master_path'} . "all.html",
+     "Grad.&nbsp;Class,"      . $aid_util'config{'master_path'} . "class/",
+     "Awalt&nbsp;Alumni,"     . $aid_util'config{'master_path'} . "awalt.html",
+     "Recent&nbsp;Additions," . $aid_util'config{'master_path'} . "recent.html",
+     "Web&nbsp;Pages,"        . $aid_util'config{'master_path'} . "pages.html",
+     "Get&nbsp;Listed!,"      . $aid_util'config{'master_path'} . "add.html",
      );
 
-@mv_util'second_idx =  #'font-lock
-    ("Listings,"            . $mv_util'config{'master_path'} . "listings.html",
-     "Reunions,"            . $mv_util'config{'master_path'} . "reunions.html",
-     "Links,"               . $mv_util'config{'master_path'} . "links.html",
-     "Nicknames,"           . $mv_util'config{'master_path'} . "books/",
-     "Tech&nbsp;Notes,"     . $mv_util'config{'master_path'} . "tech.html",
+@aid_util'second_idx =  #'font-lock
+    ("Listings,"            . $aid_util'config{'master_path'} . "listings.html",
+     "Reunions,"            . $aid_util'config{'master_path'} . "reunions.html",
+     "Links,"               . $aid_util'config{'master_path'} . "links.html",
+     "Nicknames,"           . $aid_util'config{'master_path'} . "books/",
+     "Tech&nbsp;Notes,"     . $aid_util'config{'master_path'} . "tech.html",
      "Acceptable&nbsp;Use," . "#disclaimer",
      );
 
-$mv_util'pics_label =
+$aid_util'pics_label =
 "<meta http-equiv=\"PICS-Label\" content='(PICS-1.1 \"http://www.rsac.org/ratingsv01.html\" l gen true comment \"RSACi North America Server\" by \"" . 
-$mv_util'config{'admin_email'} . "\" for \"http://" .
-$mv_util'config{'master_srv'} . $mv_util'config{'master_path'} . 
+$aid_util'config{'admin_email'} . "\" for \"http://" .
+$aid_util'config{'master_srv'} . $aid_util'config{'master_path'} . 
 "\" on \"1996.04.04T08:15-0500\" r (n 0 s 0 v 0 l 0))'>"; #"font-lock;
 
-$mv_util'site_tags = #'font-lock
+$aid_util'site_tags = #'font-lock
 "<meta name=\"keywords\" content=\"Mountain View High School, Alumni, MVHS, Awalt High School, Mountain View, Los Altos, California, reunion, Radwin\">\n<meta name=\"description\" content=\"email/web page listing of alumni, students, faculty and staff from Mountain View High School in Mountain View, California.  Also catalogues alumni from Chester F. Awalt High School, which was merged with MVHS in the early 80's.\">";
 
-$mv_util'noindex = "<meta name=\"robots\" content=\"noindex\">"; #'font-lock
-%mv_util'mv_aliases = ();   #' global alias hash repository 
+$aid_util'noindex = "<meta name=\"robots\" content=\"noindex\">"; #'font-lock
+%aid_util'aid_aliases = ();   #' global alias hash repository 
 
 # give 'em back the configuration variable they need
-sub mv_config {
-    package mv_util;
+sub aid_config {
+    package aid_util;
 
     die "NO CONFIG $_[0]!\n" if !defined($config{$_[0]});
     return $config{$_[0]};
@@ -88,7 +88,7 @@ sub mv_config {
 # is the GMT less than one month ago?
 # 2678400 = 31 days * 24 hrs * 60 mins * 60 secs
 sub is_new {
-    package mv_util;
+    package aid_util;
 
     return ((time - $_[0]) < 2678400) ? 1 : 0;
 }
@@ -96,7 +96,7 @@ sub is_new {
 
 # &new_gif(1) for anchored, &new_gif(0) for just plain img
 sub new_gif {
-    package mv_util;
+    package aid_util;
 
     local($tag) = "<img src=\"" . $config{'master_path'} . 
 	"new.gif\" border=0 width=28 height=11 alt=\"[new]\">";
@@ -108,7 +108,7 @@ sub new_gif {
 
 
 sub fullname {
-    package mv_util;
+    package aid_util;
 
     local($first,$last,$married) = @_;
 
@@ -125,7 +125,7 @@ sub fullname {
 
 
 sub inorder_fullname {
-    package mv_util;
+    package aid_util;
 
     local($first,$last,$married) = @_;
 
@@ -142,7 +142,7 @@ sub inorder_fullname {
 
 
 sub affiliate {
-    package mv_util;
+    package aid_util;
 
     local($year, $school,$do_html_p) = @_;
     local($affil,$len);
@@ -182,7 +182,7 @@ sub affiliate {
 
 # remove punctuation, hyphens, parentheses, and quotes.
 sub mangle {
-    package mv_util;
+    package aid_util;
 
     local($name) = @_;
 
@@ -197,8 +197,8 @@ sub mangle {
 }
 
 
-sub mv_parse {
-    package mv_util;
+sub aid_parse {
+    package aid_util;
 
     local($[) = 0;
     local($_) = @_;
@@ -212,11 +212,11 @@ sub mv_parse {
     $alias = substr($mangledFirst, 0, 1) . substr($mangledLast, 0, 7);
     $alias = "\L$alias\E";
 
-    if ($mv_aliases{$alias} > 0) {
-        $mv_aliases{$alias}++;
-        $alias = substr($alias, 0, 7) . $mv_aliases{$alias};
+    if ($aid_aliases{$alias} > 0) {
+        $aid_aliases{$alias}++;
+        $alias = substr($alias, 0, 7) . $aid_aliases{$alias};
     } else {
-        $mv_aliases{$alias} = 1;
+        $aid_aliases{$alias} = 1;
     }
 
     return ($time,$id,$req,$last,$first,$married,
@@ -224,8 +224,8 @@ sub mv_parse {
 }
 
 
-sub mv_create_db {
-    package mv_util;
+sub aid_create_db {
+    package aid_util;
 
     local($filename) = @_;
     local($[) = 0;
@@ -243,8 +243,8 @@ sub mv_create_db {
 }
 
 
-sub mv_get_usertext {
-    package mv_util;
+sub aid_get_usertext {
+    package aid_util;
 
     local($id) = @_;
     local($[) = 0;
@@ -266,7 +266,7 @@ sub mv_get_usertext {
 
 sub submit_body {
     require 'tableheader.pl';
-    package mv_util;
+    package aid_util;
 
     local($[) = 0;
     local($_);
@@ -428,7 +428,7 @@ are required.  All other fields are optional.</p>\n\n";
 
 
 sub sendmail {
-    package mv_util;
+    package aid_util;
 
     local($to,$return_path,$from,$subject,$body) = @_;
     local(*F);
@@ -452,7 +452,7 @@ To: $toline\
 
 
 sub message_footer {
-    package mv_util;
+    package aid_util;
 
     return "\n--\n" . 
 	$config{'admin_name'} . "\n" .
@@ -464,7 +464,7 @@ sub message_footer {
 
 sub about_text {
     require 'ctime.pl';
-    package mv_util;
+    package aid_util;
 
     local($retval) = '';
     local($rawdata,$message,$show_req_p,$do_html_p,$do_vcard_p) = @_;
@@ -549,7 +549,7 @@ sub about_text {
 	$retval .= &main'ctime($time);
     }
 
-    $message = &main'mv_get_usertext($id) if $message eq '';  #' fnt
+    $message = &main'aid_get_usertext($id) if $message eq '';  #' fnt
     if ($message ne '') {
 	$retval .= "\n";
 	$retval .= "What's New? (beta) :\n";
@@ -572,7 +572,7 @@ sub about_text {
 }
 
 sub modify_button {
-    package mv_util;
+    package aid_util;
 
     local($id,$name) = @_;
     local($cgi) = $config{'cgi_path'};
@@ -596,7 +596,7 @@ don't abuse it and force us to install a password door.<p>
 
 
 sub common_html_ftr {
-    package mv_util;
+    package aid_util;
 
     local($page) = @_;
     local($rcsid) = "<!-- " . $config{'rcsid'} . " -->";
@@ -656,7 +656,7 @@ href=\"mailto:" . $config{'admin_email'} .
 
 sub common_html_hdr {
     require 'ctime.pl';
-    package mv_util;
+    package aid_util;
 
     local($page,$norobots) = @_;
     local($h1, $h2, $h3, $h4, $html_head);
