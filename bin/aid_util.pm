@@ -2,7 +2,7 @@
 #     FILE: mv_util.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: perl library routines for the MVHS Alumni Internet Directory
-#      $Id: mv_util.pl,v 1.53 1997/10/29 00:51:17 mjr Exp mjr $
+#      $Id: mv_util.pl,v 1.54 1997/10/29 16:33:49 mjr Exp mjr $
 #
 
 CONFIG: {
@@ -238,7 +238,7 @@ sub submit_body {
 	$tableh = 
 	    &tableheader("Update Your Directory Listing", 1, "ffff99", "000000", 1);
 	$tableh .= "\n<p>Please update the following information";
-	$tableh .= " and hit the <strong>Submit</strong> button.</p>\n\n";
+	$tableh .= " and hit the <strong>Next &gt;</strong> button.</p>\n\n";
 	$tableh .= "<p>Fields marked with a <font color=\"#ff0000\">*</font>";
 	$tableh .= " are required.  All other fields are optional.";
 
@@ -252,7 +252,7 @@ you'd like to update your existing entry, please see the
 <a href=\"" . $config{'cgi_path'} . "?update\">update page</a>.
 
 To add a new entry, please enter the following information and hit the
-<strong>Submit</strong> button.</p>
+<strong>Next &gt;</strong> button.</p>
 
 <p>Fields marked with a $star are required.
 All other fields are optional.";
@@ -270,6 +270,8 @@ All other fields are optional.";
     return "<br>\n" . $tableh . "
 <form method=post action=\"" . $config{'cgi_path'} . "\"> 
 <table border=0>
+<tr><td>
+<table border=0 width=\"100%\">
 <tr><td bgcolor=\"#ffffcc\"><table border=0 cellspacing=7>
 <tr>
   <td valign=top><font color=\"#000000\">First Name</font></td>
@@ -342,10 +344,12 @@ All other fields are optional.";
   </td>
 </tr>
 </table>
-</td></tr></table>
-<input type=\"submit\" value=\"Submit entry\">
-<input type=\"reset\" value=\"Reset form\">
+</td></tr></table></td></tr>
+<tr><td align=right><input type=\"submit\" value=\"Next &gt;\">
+&nbsp;
+<input type=\"reset\" value=\"Start Over\">
 <input type=\"hidden\" name=\"id\" value=\"$id\">
+</td></tr></table>
 </form>
 
 ";
@@ -409,7 +413,7 @@ sub about_text {
 
     $do_vcard_p = 0 unless defined($do_vcard_p);
 
-    $retval .= "<center><table border=0 cellpadding=6><tr><td bgcolor=\"#ffffcc\"><font color=\"#000000\"><pre>\n\n" if $do_html_p;
+    $retval .= "<table border=0 cellpadding=6><tr><td bgcolor=\"#ffffcc\"><font color=\"#000000\"><pre>\n\n" if $do_html_p;
     $retval .= "First Name         : ";
     $retval .= ($first eq '') ? "\n" : 
 	((($do_html_p) ? "<strong>" : "") .
@@ -486,7 +490,7 @@ sub about_text {
     }
 
 
-    $retval .= "</pre></font></td></tr></table></center>\n" if $do_html_p;
+    $retval .= "</pre></font></td></tr></table>\n" if $do_html_p;
 
     if ($do_html_p && $time ne '') {
 	$retval .= &'modify_html($id,&'inorder_fullname($first,$last,$married));
