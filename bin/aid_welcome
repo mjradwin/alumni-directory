@@ -2,7 +2,7 @@
 
 #
 # mails a welcome, update, confirm, or massmail message to members
-# $Id: aid_welcome,v 6.4 2003/10/30 07:28:18 mradwin Exp mradwin $
+# $Id: aid_welcome,v 6.5 2003/10/30 17:56:04 mradwin Exp mradwin $
 #
 # Copyright (c) 2003  Michael J. Radwin.
 # All rights reserved.
@@ -62,6 +62,7 @@ $0 =~ s,.*/,,;  # basename
 my $usage = "usage: $0 [options] infile.db [target ids...]
     -h            Display usage information.
     -a            Mail all users in <infile.db> matching -r <reqtype>.
+    -y <year>     Mail all users in <infile.db> from year <year>.
     -d <secs>     Sleep for <secs> seconds between sending e-mail
                   (default $default_massmail_sleep for -m, $default_sleep for all others).
     -r <reqtype>  Request type [0-4] (only valid with -m and -a).
@@ -77,14 +78,15 @@ Mutually exclusive optional message types (instead of 'welcome' e-mail):
 my @args = @ARGV;
 
 my(%opts);
-getopts('hd:r:ucm:l:as:', \%opts) || die "$usage\n";
+getopts('hd:r:ucm:l:as:y:', \%opts) || die "$usage\n";
 $opts{'h'} && die "$usage\n";
 $a = $b = 0;                    # avoid warning
 die "$0: Too many mutually-exclusive options\n$usage\n"
     if (($opts{'c'} ? 1 : 0) + ($opts{'u'} ? 1 : 0) + ($opts{'m'} ? 1 : 0) +
 	($opts{'s'} ? 1 : 0)) > 1;
 die "$0: No database file specified\n$usage\n" unless $ARGV[0];
-die "$0: No target ids specified\n$usage\n" unless ($ARGV[1] || $opts{'a'});
+die "$0: No target ids specified\n$usage\n" unless ($ARGV[1] || $opts{'a'} ||
+						    $opts{'y'});
 die "$0: Option -m requires -r\n$usage\n" 
     if defined($opts{'m'}) && !defined($opts{'r'});
 die "$0: Option -a requires -r\n$usage\n" 
@@ -166,7 +168,9 @@ by visiting the above URL.
 
 my %special_parameters = 
     (
-     'subject'	=>	$directory_name,
+     'subject'	=>	'Memorial Services for Benji Cantwell Thursday 8/26',
+     'from_addr' => 'joe@hulanetworks.com',
+     'from_name' => 'Joe Commendatore',
      'log'	=>	'special',
      'sleep'	=>	$default_massmail_sleep,
      'listing'	=>	0,
@@ -224,6 +228,30 @@ if ($opts{'a'})
 		next unless $rec{'q'} == 0;
 		next unless aid_util::is_old($rec{'f'});
 	    }
+
+	    push(@ARGV, $rec{'id'});
+	}
+    }
+
+    @ARGV = sort { $a <=> $b } @ARGV;
+}
+
+if ($opts{'y'})
+{
+    @ARGV = ();
+
+    my(%DB);
+    tie(%DB, 'DB_File::Lock', $dbmfile, O_RDONLY, 0444, $DB_HASH, 'read')
+	or die "$dbmfile: $!\n";
+    while (my($key,$val) = each(%DB))
+    {
+	if ($key =~ /^\d+$/)
+	{
+	    my %rec = aid_util::db_unpack_rec($key,$val);
+
+	    next unless $rec{'v'};
+	    next unless $rec{'r'};
+	    next unless $rec{'yr'} eq $opts{'y'};
 
 	    push(@ARGV, $rec{'id'});
 	}
@@ -334,10 +362,15 @@ sub mail_user
 
     for ($i = 0; $status == 0 && $i < 3; $i++)
     {
+	my $from_addr = $params{'from_addr'} ? $params{'from_addr'} :
+	    aid_util::config('admin_email');
+	my $from_name = $params{'from_name'} ? $params{'from_name'} :
+	    aid_util::config('short_school') . ' Alumni Robot';
+
 	my $time = time;
 	$status = aid_util::sendmail(
-	    aid_util::config('admin_email'),
-	    aid_util::config('short_school') . ' Alumni Robot',
+	    $from_addr,
+	    $from_name,
 	    $params{'subject'} .
 		' [' . aid_util::config('short_school') . '-' . $recp->{'id'} . ']',
 		$message,@mailto);
