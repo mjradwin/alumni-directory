@@ -2,7 +2,7 @@
 
 #
 # does the html version of the grad-date address list
-# $Id: aid_class_html,v 3.28 1999/03/03 20:19:06 mradwin Exp mradwin $
+# $Id: aid_class_html,v 3.29 1999/03/04 17:34:06 mradwin Exp mradwin $
 #
 
 require 'aid_util.pl';
@@ -99,11 +99,15 @@ foreach $year (@years)
 	next unless $rec{'valid'};
 
 	$fullname = &fullname(*rec);
-	$regschool = ($opt_a) ? 'Awalt' : 'MVHS';
+	$regschool = ($opt_a) ? $aid_util'school_awalt :
+	    $aid_util'school_default;
 
-	if ($rec{'school'} ne $regschool && $rec{'school'} ne '') {
-	    $affil     = "  [$rec{'school'}]";
-	} else {
+	if ($rec{'sch_id'} != $regschool)
+	{
+	    $affil     = "  [$aid_util'school_affil[$rec{'sch_id'}]]";
+	}
+	else
+	{
 	    $affil     = "";
 	}
 

@@ -1,6 +1,6 @@
 #!/usr/bin/perl -w
 
-# $Id: aid_dbm_write,v 1.14 1999/03/02 17:23:24 mradwin Exp mradwin $
+# $Id: aid_dbm_write,v 1.15 1999/03/03 20:33:12 mradwin Exp mradwin $
 
 require 'aid_util.pl';
 require 'getopts.pl';
@@ -78,7 +78,8 @@ for (@db)
 	    }
 	}
 
-	if ($rec{'school'} =~ /awalt/i)
+	if ($rec{'sch_id'} == $aid_util'school_awalt ||
+            $rec{'sch_id'} == $aid_util'school_both)
 	{
 	    $latest_awalt = $rec{'time'} if $rec{'time'} > $latest_awalt;
 
