@@ -2,7 +2,7 @@
 #     FILE: Makefile
 #   AUTHOR: Michael J. Radwin
 #    DESCR: Makefile for building the MVHS Alumni Internet Directory
-#      $Id: Makefile,v 1.44 1997/12/31 19:29:34 mjr Exp mjr $
+#      $Id: Makefile,v 1.45 1997/12/31 21:15:04 mjr Exp mjr $
 #
 
 HOMEDIR=/home/divcom/mjr
@@ -25,93 +25,93 @@ $(ADRFILE):	data/mvhs.adr
 
 ALPHA=$(WWWDIR)/all.html
 alpha:	$(ALPHA)
-$(ALPHA):	data/alpha.adr bin/mv_alpha_html
-	bin/mv_alpha_html data/alpha.adr $(ALPHA)
+$(ALPHA):	data/alpha.adr bin/aid_alpha_html
+	bin/aid_alpha_html data/alpha.adr $(ALPHA)
 
 CLASS=$(WWWDIR)/class.html
 class:	$(CLASS)
-$(CLASS):	data/class.adr bin/mv_class_html
-	bin/mv_class_html data/class.adr $(CLASS)
+$(CLASS):	data/class.adr bin/aid_class_html
+	bin/aid_class_html data/class.adr $(CLASS)
 
 AWALT=$(WWWDIR)/awalt.html
 awalt:	$(AWALT)
-$(AWALT):	data/awalt.adr bin/mv_class_html
-	bin/mv_class_html -a data/awalt.adr $(AWALT)
+$(AWALT):	data/awalt.adr bin/aid_class_html
+	bin/aid_class_html -a data/awalt.adr $(AWALT)
 
 RECENT=$(WWWDIR)/recent.html
 recent:	$(RECENT)
-$(RECENT):	data/date.adr bin/mv_recent_html
-	bin/mv_recent_html data/date.adr $(RECENT)
+$(RECENT):	data/date.adr bin/aid_recent_html
+	bin/aid_recent_html data/date.adr $(RECENT)
 
 GONERS=$(WWWDIR)/invalid.html
 goners:	$(GONERS)
-$(GONERS):	data/gsort.adr bin/mv_goners_html
-	bin/mv_goners_html data/gsort.adr $(GONERS)
+$(GONERS):	data/gsort.adr bin/aid_goners_html
+	bin/aid_goners_html data/gsort.adr $(GONERS)
 
 PAGES=$(WWWDIR)/pages.html
 pages:	$(PAGES)
-$(PAGES):	data/alpha.adr bin/mv_www_html
-	bin/mv_www_html data/alpha.adr $(PAGES)
+$(PAGES):	data/alpha.adr bin/aid_www_html
+	bin/aid_www_html data/alpha.adr $(PAGES)
 
 VERBOSE=$(WWWDIR)/class/index.html
 verbose:	$(VERBOSE)
-$(VERBOSE):	data/class.adr bin/mv_verbose_html
+$(VERBOSE):	data/class.adr bin/aid_verbose_html
 	mkdir -p $(WWWDIR)/class
-	bin/mv_verbose_html data/class.adr
+	bin/aid_verbose_html data/class.adr
 
 HOME=$(WWWDIR)/index.html
 home:	$(HOME)
-$(HOME):	data/index.include bin/mv_home_html mv_util.pl data/mvhs.adr
-	bin/mv_home_html -p0 -i data/index.include \
+$(HOME):	data/index.include bin/aid_home_html aid_util.pl data/mvhs.adr
+	bin/aid_home_html -p0 -i data/index.include \
 		-t 'Welcome to the MVHS Alumni Internet Directory!' \
 		$(HOME)
 
 LISTINGS=$(WWWDIR)/listings.html
 listings:	$(LISTINGS)
-$(LISTINGS):	data/listings.include bin/mv_home_html mv_util.pl
-	bin/mv_home_html -p10 -i data/listings.include \
+$(LISTINGS):	data/listings.include bin/aid_home_html aid_util.pl
+	bin/aid_home_html -p10 -i data/listings.include \
 		-t 'Listings: email addresses and web pages' \
 		$(LISTINGS)
 
 REUNIONS=$(WWWDIR)/reunions.html
 reunions:	$(REUNIONS)
-$(REUNIONS):	data/reunions.include bin/mv_home_html mv_util.pl
-	bin/mv_home_html -p11 -i data/reunions.include \
+$(REUNIONS):	data/reunions.include bin/aid_home_html aid_util.pl
+	bin/aid_home_html -p11 -i data/reunions.include \
 		-t 'Reunions: when, where, who to contact' \
 		$(REUNIONS)
 
 LINKS=$(WWWDIR)/links.html
 links:	$(LINKS)
-$(LINKS):	data/links.include bin/mv_home_html mv_util.pl
-	bin/mv_home_html -p12 -i data/links.include \
+$(LINKS):	data/links.include bin/aid_home_html aid_util.pl
+	bin/aid_home_html -p12 -i data/links.include \
 		-t 'Links: other MVHS and Awalt websites' \
 		$(LINKS)
 
 NICKNAMES=$(WWWDIR)/books/index.html
 nicknames:	$(NICKNAMES)
-$(NICKNAMES):	data/nicknames.include bin/mv_home_html mv_util.pl
+$(NICKNAMES):	data/nicknames.include bin/aid_home_html aid_util.pl
 	mkdir -p $(WWWDIR)/books
-	bin/mv_home_html -p13 -i data/nicknames.include \
+	bin/aid_home_html -p13 -i data/nicknames.include \
 		-t 'Nicknames: address books for your e-mail program' \
 		$(NICKNAMES)
 
 TECH=$(WWWDIR)/tech.html
 tech:	$(TECH)
-$(TECH):	data/tech.include bin/mv_home_html mv_util.pl
-	bin/mv_home_html -p14 -i data/tech.include \
+$(TECH):	data/tech.include bin/aid_home_html aid_util.pl
+	bin/aid_home_html -p14 -i data/tech.include \
 		-t 'Tech Notes: info about the Directory' \
 		$(TECH)
 
 SUBMIT=$(WWWDIR)/add.html
 submit:	$(SUBMIT)
-$(SUBMIT):	bin/mv_home_html mv_util.pl
-	bin/mv_home_html -s -p6 $(SUBMIT)
+$(SUBMIT):	bin/aid_home_html aid_util.pl
+	bin/aid_home_html -s -p6 $(SUBMIT)
 
 BOOKS=$(WWWDIR)/books/mvhs.vcf
 books:	$(BOOKS)
-$(BOOKS):	data/alpha.adr bin/mv_book
+$(BOOKS):	data/alpha.adr bin/aid_book
 	mkdir -p $(WWWDIR)/books
-	bin/mv_book \
+	bin/aid_book \
 		-p $(WWWDIR)/books/pine.txt \
 		-e $(WWWDIR)/books/elm.txt \
 		-b $(WWWDIR)/books/berkeley.txt \
@@ -137,11 +137,11 @@ data/awalt.adr:	data/class.adr
 data/date.adr:	data/mvhs.adr
 	sort data/mvhs.adr > data/date.adr
 
-mvhs.txt:	data/alpha.adr bin/mv_alpha_html
-	bin/mv_alpha_html -t data/alpha.adr mvhs.txt
+mvhs.txt:	data/alpha.adr bin/aid_alpha_html
+	bin/aid_alpha_html -t data/alpha.adr mvhs.txt
 
-class.txt:	data/class.adr bin/mv_class_html
-	bin/mv_class_html -t data/class.adr class.txt
+class.txt:	data/class.adr bin/aid_class_html
+	bin/aid_class_html -t data/class.adr class.txt
 
 tar:
 	tar cf $(WWWDIR)/mvhsaid.tar $(TARFILES)
