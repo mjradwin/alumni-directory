@@ -4,7 +4,7 @@
 #     FILE: mvhsaid.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: MVHS Alumni Internet Directory CGI interface
-#      $Id: mvhsaid,v 1.37 1997/10/31 18:56:24 mjr Exp mjr $
+#      $Id: mvhsaid,v 1.38 1997/11/03 18:28:59 mjr Exp mjr $
 #
 
 require 'mv_util.pl';
@@ -22,7 +22,7 @@ $dbfile = &mv_config('wwwdir') . "mvhs.adr";
 if (defined($in{'version'})) {
     select(STDOUT);  $| = 1;
     print "Content-type: text/plain\n\n";
-    print '$Id: mvhsaid,v 1.37 1997/10/31 18:56:24 mjr Exp mjr $', "\n";
+    print '$Id: mvhsaid,v 1.38 1997/11/03 18:28:59 mjr Exp mjr $', "\n";
     exit(0);
 }
 
@@ -41,7 +41,12 @@ if (defined($in{'update'})) {
     exit(0);
 }
 
-# the undocumented "vcard" feature
+if ($ENV{'PATH_INFO'} =~ m,^/vcard/,) { #' font-lock
+    $in{'vcard'} = $ENV{'PATH_INFO'};
+    $in{'vcard'} =~ s,^/vcard/(\d+).*$,$1,;
+}
+
+# the now-documented "vcard" feature
 if ($in{'vcard'} =~ /^\d+$/) {
     @db = &mv_create_db($dbfile);
     if (defined($db[$in{'vcard'}])) {
@@ -272,7 +277,7 @@ sub send_about {
     print "<br>\n";
     print &tableheader($fullname, 1, "ffff99", '000000', 1);
     print "<p>Here is more detailed information about $fullname.  To see\n";
-    print "<a href=\"" . &mv_config('cgi_path') . "?vcard=$id\">";
+    print "<a href=\"" . &mv_config('cgi_path') . "/vcard/${id}.vcf\">";
     print "${first}'s vCard</a>,\n";
     print "you must be using Netscape 4 or have the \n";
     print "<a href=\"http://www.nowsoft.com/plugins/about_people.html\">";
