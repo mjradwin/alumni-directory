@@ -2,7 +2,7 @@
 
 #
 # does the html verbose pages
-# $Id: aid_multi_alpha_html,v 3.34 1999/04/05 16:26:17 mradwin Exp mradwin $
+# $Id: aid_multi_alpha_html,v 3.35 1999/04/30 18:25:07 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -100,7 +100,7 @@ sub html_pre_entry {
     local($retval);
 
     $fullname = &aid_fullname(*rec);
-    ($affil,$len) = &aid_affiliate(*rec,1);
+    ($affil,$len) = &aid_affiliate(*rec,0);
     $needsanchor = ($do_html_p && (($a_name ne '') ||
 				   ($rec{'w'} ne ''))) ? 1 : 0;
     $retval = '';
