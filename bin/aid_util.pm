@@ -2,11 +2,11 @@
 #     FILE: aid_util.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: perl library routines for the Alumni Internet Directory
-#      $Id: aid_util.pl,v 4.42 1999/03/05 00:07:09 mradwin Exp mradwin $
+#      $Id: aid_util.pl,v 4.43 1999/03/05 00:17:27 mradwin Exp mradwin $
 #
 
 $aid_util'rcsid =
- '$Id: aid_util.pl,v 4.42 1999/03/05 00:07:09 mradwin Exp mradwin $';
+ '$Id: aid_util.pl,v 4.43 1999/03/05 00:17:27 mradwin Exp mradwin $';
 
 # ----------------------------------------------------------------------
 # CONFIGURATION
@@ -114,6 +114,7 @@ $aid_util'ID_INDEX    = 0;     #'# position that the ID key is in datafile
     'inethost',			# REMOTE_HOST of last update
     'middle',			# middle initial
     'email_upd',		# date of last update to email
+    'awalt',			# bit if they attended awalt
     );
 
 %aid_util'field_descr = #'#
@@ -137,6 +138,7 @@ $aid_util'ID_INDEX    = 0;     #'# position that the ID key is in datafile
     'inethost',	'',
     'middle',	'Middle Initial',
     'email_upd','',
+    'awalt',    '',
     );
 
 $aid_util'pack_format = 'C2N5'; #'#
@@ -155,6 +157,7 @@ $aid_util'blank_entry{'request'} = 4;       #'#
 $aid_util'blank_entry{'reunion'} = 1;       #'#
 $aid_util'blank_entry{'bounce'} = 0;        #'#
 $aid_util'blank_entry{'email_upd'} = 0;     #'#
+$aid_util'blank_entry{'awalt'}   = '';      #'#
 $aid_util'blank_entry{'message'} = '';      #'#
 $aid_util'blank_entry{'school'}  = $aid_util'config{'short_school'};
 
@@ -588,7 +591,7 @@ sub submit_body {
     local($star) = "<font color=\"#$star_fg\">*</font>";
     local(*rec_arg,$blank_entries) = @_;
     local(%rec) = &main'rec_html_entify(*rec_arg); #'#
-    local($primary_checked,$awalt_checked,$other_checked) = ('', '', '');
+    local($primary_checked,$awalt_checked,$both_checked) = ('', '', '');
     local(@reqchk,$i,$reunion_chk,@blankies,$prev_email);
 
     $prev_email = defined $rec{'prev_email'} ? 
@@ -607,9 +610,9 @@ sub submit_body {
     } elsif ($rec{'school'} eq 'Awalt') {
 	$awalt_checked = ' checked';
 	$rec{'school'} = '';
-    } else {
-	$other_checked = ' checked';
-	$rec{'school'} = '' if $rec{'school'} eq 'Other';
+    } elsif ($rec{'school'} eq 'MVHS+Awalt') {
+	$both_checked = ' checked';
+	$rec{'school'} = '';
     }
 
     $body = '';
@@ -696,21 +699,21 @@ $instr
 <font size=\"+1\"><strong>2. Graduating Class while at $config{'short_school'}/Awalt</font>
 </td></tr>
 <tr>
-  <td valign=top align=right><strong>High School:</strong></td>
+  <td valign=top align=right><strong>High School Attended:</strong></td>
   <td>$star</td>
   <td valign=top><input type=radio name=\"school\" id=\"school_$config{'short_school'}\"
   value=\"$config{'short_school'}\"$primary_checked><label
-  for=\"school_$config{'short_school'}\">&nbsp;$config{'short_school'}</label>&nbsp;&nbsp;&nbsp;&nbsp;<input id=\"school_Awalt\"
-  type=radio name=\"school\" value=\"Awalt\"$awalt_checked><label
-  for=\"school_Awalt\">&nbsp;Awalt</label></td>
-</tr>
-<tr>
-  <td valign=top>&nbsp;</td>
-  <td valign=top>&nbsp;</td>
-  <td valign=top><input type=radio name=\"school\" id=\"school_Other\"
-  value=\"Other\"$other_checked><label
-  for=\"school_Other\">&nbsp;Other:&nbsp;</label><input type=text
-  name=\"sch_other\" size=27 value=\"$rec{'school'}\"></td>
+  for=\"school_$config{'short_school'}\">&nbsp;$config{'short_school'}</label>
+  &nbsp;&nbsp;&nbsp;&nbsp;<input type=radio name=\"school\" id=\"school_Awalt\"
+  value=\"Awalt\"$awalt_checked><label
+  for=\"school_Awalt\">&nbsp;Awalt</label>
+  &nbsp;&nbsp;&nbsp;&nbsp;<input type=radio name=\"school\" id=\"school_both\"
+  value=\"MVHS+Awalt\"$both_checked><label
+  for=\"school_both\">&nbsp;Both&nbsp;MVHS&nbsp;&amp;&nbsp;Awalt</label>
+  <br>
+  <small>(Did you attend/graduate from another school such as
+  Shoreline or Los Altos HS?  Write about it below in the <strong>What's
+  New?</strong> section.)</small></td>
 </tr>
 <tr>
   <td valign=top align=right><label
@@ -897,10 +900,11 @@ sub aid_verbose_entry {
     $retval .= &main'aid_is_new_html(*rec) unless $suppress_new; #'#
 
     $retval .= "</dt>\n";
-    $retval .= "<dt>School: <strong>$rec{'school'}</strong></dt>\n" 
-	if $rec{'school'} ne $config{'short_school'};
 
     if ($rec{'year'} =~ /^\d+$/) {
+	# Last Awalt student graduated in 1983
+	$retval .= "<dt>School: <strong>$rec{'school'}</strong></dt>\n" 
+	    if $rec{'year'} <= 1983;
 	if ($display_year) {
 	    $retval .= "<dt>Year:  <strong>";
 	    $retval .= 
@@ -909,6 +913,7 @@ sub aid_verbose_entry {
 	    $retval .= "</a></strong></dt>\n";
 	}
     } else {
+	$retval .= "<dt>School: <strong>$rec{'school'}</strong></dt>\n";
 	$retval .= "<dt>Affiliation:  <strong>";
 	$retval .= "<a href=\"" . &main'aid_about_path(*rec,1) . "\">"; #'#
 	$retval .= $rec{'year'};
@@ -941,7 +946,7 @@ sub aid_vcard_text {
     package aid_util;
 
     local(*rec) = @_;
-    local($v_fn,$v_n,$retval);
+    local($v_fn,$v_n,$retval,$message);
     local($mid) = ($rec{'middle'} ne '') ? "$rec{'middle'}. " : '';
     local($v_mid) = ($rec{'middle'} ne '') ? ";$rec{'middle'}" : '';
 
@@ -971,6 +976,15 @@ sub aid_vcard_text {
     $retval .= "URL:$rec{'www'}\015\012" if $rec{'www'} ne '';
     $retval .= "REV:" . &main'aid_vdate($rec{'time'}) . "\015\012"; #'#
     $retval .= "VERSION:2.1\015\012";
+
+    if ($rec{'message'} ne '')
+    {
+	$retval .= "NOTE;BASE64:\015\012";
+	$retval .= "  ";
+	$message = &main'old_encode_base64($rec{'message'}, "\015\012  "); #'#;
+	substr($message,-4) = '';
+	$retval .= $message . "\015\012\015\012";
+    }
     $retval .= "End:vCard\015\012";
 
     $retval;
@@ -1470,7 +1484,9 @@ sub aid_db_pack_rec
     local(*rec) = @_;
 
     pack($pack_format,
-	 (($rec{'valid'} ? 1 : 0) | (($rec{'reunion'} ? 1 : 0) << 1)),
+	 (($rec{'valid'} ? 1 : 0) |
+	  (($rec{'reunion'} ? 1 : 0) << 1) |
+	  ((($rec{'school'} =~ /awalt/i) ? 1 : 0) << 2)),
 	 $rec{'request'},
 	 $rec{'bounce'},
 	 $rec{'created'},
@@ -1517,6 +1533,7 @@ sub aid_db_unpack_rec
 
     $rec{'valid'}   = ( $masked       & 1) ? 1 : 0;
     $rec{'reunion'} = (($masked >> 1) & 1) ? 1 : 0;
+    $rec{'awalt'}   = (($masked >> 2) & 1) ? 1 : 0;
 
     (
      $rec{'last'},
@@ -1536,6 +1553,33 @@ sub aid_db_unpack_rec
     %rec;
 };
 
+sub old_encode_base64
+{
+    package hacked_MIME;
+
+    local($res) = "";
+    local($eol) = $_[1];
+    local($*) = 1;
+    $eol = "\n" unless defined $eol;
+    while ($_[0] =~ /((.|\n){1,45})/g) {
+	$res .= substr(pack('u', $1), 1);
+	chop($res);
+    }
+    $res =~ tr|` -_|AA-Za-z0-9+/|;               # `# help emacs
+    # fix padding at the end
+    local($padding) = (3 - length($_[0]) % 3) % 3;
+    if ($padding)
+    {
+	$res =~ s/.{$padding}$//;
+	$res .= '=' x $padding;
+    }
+    # break encoded string into lines of no more than 76 characters each
+    if (length $eol) {
+	$res =~ s/(.{1,76})/$1$eol/g;
+    }
+    $res;
+}
+
 # We get a whole bunch of warnings about "possible typo" when running
 # with the -w switch.  Touch them all once to get rid of the warnings.
 # This is ugly and I hate it.
@@ -1543,6 +1587,7 @@ if ($^W)
 {
     if (0)
     {
+	&old_encode_base64();
 	&aid_http_date();
 	&aid_book_write_suffix();
 	&aid_book_write_entry();
