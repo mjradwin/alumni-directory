@@ -2,7 +2,7 @@
 #     FILE: Makefile
 #   AUTHOR: Michael J. Radwin
 #    DESCR: Makefile for building the Alumni Internet Directory
-#      $Id: Makefile,v 5.22 2000/05/24 23:27:23 mradwin Exp mradwin $
+#      $Id: Makefile,v 5.27 2000/06/01 23:38:26 mradwin Exp $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -106,7 +106,7 @@ MULTI_ALPHA_TS=$(WWWDIR)/alpha/.index.html
 multi_alpha:	$(MULTI_ALPHA_TS)
 $(MULTI_ALPHA_TS):	$(DBFILE) $(BINDIR)/aid_multi_alpha_html
 	$(MKDIR) $(WWWDIR)/alpha
-	$(BINDIR)/aid_multi_alpha_html -i "$(MOD_KEYS)" $(DBFILE)
+	$(BINDIR)/aid_multi_alpha_html $(QUIET) -i "$(MOD_KEYS)" $(DBFILE)
 
 RECENT=$(WWWDIR)/recent.html
 RECENT_TS=$(WWWDIR)/.recent.html
@@ -118,19 +118,19 @@ GONERS=$(WWWDIR)/invalid.html
 GONERS_TS=$(WWWDIR)/.invalid.html
 goners:	$(GONERS_TS)
 $(GONERS_TS):	$(DBFILE) $(BINDIR)/aid_goners_html
-	$(BINDIR)/aid_goners_html -i "$(MOD_KEYS)" $(DBFILE) $(GONERS)
+	$(BINDIR)/aid_goners_html $(QUIET) -i "$(MOD_KEYS)" $(DBFILE) $(GONERS)
 
 PAGES=$(WWWDIR)/pages.html
 PAGES_TS=$(WWWDIR)/.pages.html
 pages:	$(PAGES_TS)
 $(PAGES_TS):	$(DBFILE) $(BINDIR)/aid_class_html
-	$(BINDIR)/aid_class_html -w -i "$(MOD_KEYS)" $(DBFILE) $(PAGES)
+	$(BINDIR)/aid_class_html $(QUIET) -w -i "$(MOD_KEYS)" $(DBFILE) $(PAGES)
 
 MULTI_CLASS=$(WWWDIR)/class/.index.html
 multi_class:	$(MULTI_CLASS)
 $(MULTI_CLASS):	$(DBFILE) $(BINDIR)/aid_multi_class_html
 	$(MKDIR) $(WWWDIR)/class
-	$(BINDIR)/aid_multi_class_html -i "$(MOD_KEYS)" \
+	$(BINDIR)/aid_multi_class_html $(QUIET) -i "$(MOD_KEYS)" \
 		$(DBFILE) $(WWWDIR)/reunions.db
 
 INDEX=$(WWWDIR)/index.html
@@ -138,7 +138,7 @@ INDEX_TS=$(WWWDIR)/.index.html
 index:	$(INDEX_TS)
 $(INDEX_TS):	$(DATADIR)/index.include $(BINDIR)/aid_home_html $(DBFILE)
 	$(BINDIR)/aid_home_html -p0 -f $(DATADIR)/index.include \
-		-t '' \
+		$(QUIET) -t '' \
 		$(INDEX)
 
 REUNIONS=$(WWWDIR)/etc/reunions.html
@@ -161,7 +161,7 @@ links:	$(LINKS_TS)
 $(LINKS_TS):	$(DATADIR)/links.include $(BINDIR)/aid_home_html
 	$(MKDIR) $(WWWDIR)/etc
 	$(BINDIR)/aid_home_html -p12 -f $(DATADIR)/links.include \
-		-t 'Links and Other Alumni Directories' \
+		$(QUIET) -t 'Links and Other Alumni Directories' \
 		$(LINKS)
 
 FAQ=$(WWWDIR)/etc/faq.html
@@ -170,7 +170,7 @@ faq:	$(FAQ_TS)
 $(FAQ_TS):	$(DATADIR)/faq.include $(BINDIR)/aid_home_html
 	$(MKDIR) $(WWWDIR)/etc
 	$(BINDIR)/aid_home_html -p14 -f $(DATADIR)/faq.include \
-		-t 'Frequently Asked Questions' \
+		$(QUIET) -t 'Frequently Asked Questions' \
 		$(FAQ)
 
 COPYRIGHT=$(WWWDIR)/etc/copyright.html
@@ -179,7 +179,7 @@ copyright:	$(COPYRIGHT_TS)
 $(COPYRIGHT_TS):	$(DATADIR)/copyright.include $(BINDIR)/aid_home_html
 	$(MKDIR) $(WWWDIR)/etc
 	$(BINDIR)/aid_home_html -p16 -f $(DATADIR)/copyright.include \
-		-t 'Acceptable Use, Privacy Statement, Copyright' \
+		$(QUIET) -t 'Acceptable Use, Privacy Statement, Copyright' \
 		$(COPYRIGHT)
 	/bin/ln -sf $(COPYRIGHT) $(WWWDIR)/etc/privacy.html
 
@@ -201,7 +201,7 @@ submit:	$(SUBMIT_TS)
 $(SUBMIT_TS):	$(BINDIR)/aid_home_html $(AID_SUBMIT_PL)
 	$(MKDIR) $(WWWDIR)/add
 	$(BINDIR)/aid_home_html -s -p20 \
-		-t 'Join the Directory' \
+		$(QUIET) -t 'Join the Directory' \
 		$(SUBMIT)
 
 ADDUPDATE=$(WWWDIR)/add/index.html
@@ -210,7 +210,7 @@ addupdate:	$(ADDUPDATE_TS)
 $(ADDUPDATE_TS):	$(DATADIR)/add.include $(BINDIR)/aid_home_html
 	$(MKDIR) $(WWWDIR)/add
 	$(BINDIR)/aid_home_html -p10 -f $(DATADIR)/add.include \
-		-t 'Join or Modify Your Listing' \
+		$(QUIET) -t 'Join or Modify Your Listing' \
 		$(ADDUPDATE)
 
 DOWNLOAD=$(WWWDIR)/download/index.html
@@ -219,7 +219,7 @@ download:	$(DOWNLOAD_TS)
 $(DOWNLOAD_TS):	$(BINDIR)/aid_home_html $(DBFILE)
 	$(MKDIR) $(WWWDIR)/download
 	$(BINDIR)/aid_home_html -d -p13 -i "$(MOD_KEYS)" \
-		-t 'Download Nickname and Address Book Files' \
+		$(QUIET) -t 'Download Nickname and Address Book Files' \
 		$(DOWNLOAD)
 
 PINE_BOOK=$(HOME)/.addressbook-$(SCHOOL)
@@ -232,7 +232,7 @@ alpha.txt:	$(DBFILE) $(BINDIR)/aid_alpha_html
 	$(BINDIR)/aid_alpha_html -t $(DBFILE) alpha.txt
 
 class.txt:	$(DBFILE) $(BINDIR)/aid_class_html
-	$(BINDIR)/aid_class_html -t $(DBFILE) class.txt
+	$(BINDIR)/aid_class_html $(QUIET) -t $(DBFILE) class.txt
 
 recent.txt:	$(DBFILE) $(BINDIR)/aid_shortlist_html
 	$(BINDIR)/aid_shortlist_html -e -m3 -t $(DBFILE) recent.txt
