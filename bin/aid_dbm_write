@@ -1,23 +1,36 @@
 #!/usr/bin/perl -w
 
-# $Id: aid_dbm_write,v 1.3 1999/02/05 01:20:19 mradwin Exp mradwin $
+# $Id: aid_dbm_write,v 1.4 1999/02/05 01:42:17 mradwin Exp mradwin $
 
 require 'aid_util.pl';
+require 'getopts.pl';
 
-$dbFile = &aid_config('aiddir') . "data/master.adr";
+$0 =~ s,.*/,,;  # basename
+$usage = "usage: $0 [-h] infile.adr outfile.db
+    -h        Display usage information.
+";
+
+&Getopts('h') || die "$usage\n";
+$opt_h && die "$usage\n";
+$ARGV[0] || die "$usage\n";
+$ARGV[1] || die "$usage\n";
+$opt_h = $opt_h;		# avoid warning
+
 %class_members = ();
 @alpha_ids = ();
 
 print STDERR "reading text db...";
-@db = &aid_alpha_db($dbFile);
+@db = &aid_alpha_db($ARGV[0]);
 print STDERR "\n";
 
+$ARGV[1] =~ s/\.db$//;
+
 print STDERR "making binary db...";
-dbmopen(DB, 'master', 0666);
+dbmopen(DB, $ARGV[1], 0666);
 for (@db)
 {
     next unless defined($_) && $_ ne '';
-    %rec = &aid_split($_);
+    %rec = &aid_parse($_);
 
     $DB{$rec{'id'}} = 
 	pack("C3N4",
@@ -38,10 +51,11 @@ for (@db)
 	     $rec{'email'},
 	     $rec{'www'},
 	     $rec{'location'},
-	     $rec{'inethost'}
+	     $rec{'inethost'},
+	     $rec{'alias'}
 	     );
 
-    $DB{$rec{'email'}} = $rec{'id'};
+    $DB{"\L$rec{'email'}\E"} = pack("n", $rec{'id'});
 
     # make a list of alpha years
     $ykey = ($rec{'year'} =~ /^\d+$/) ? $rec{'year'} : 'other';

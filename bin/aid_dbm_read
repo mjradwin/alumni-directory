@@ -1,33 +1,75 @@
 #!/usr/bin/perl -w
 
-# $Id: aid_dbm_read,v 1.1 1999/02/05 00:13:38 mradwin Exp $
+# $Id: aid_dbm_read,v 1.2 1999/02/05 01:42:17 mradwin Exp mradwin $
 
-dbmopen(DB2, 'master', 0444);
+require 'aid_util.pl';
+require 'getopts.pl';
 
-if ($ARGV[0])
+$0 =~ s,.*/,,;  # basename
+$usage = "usage: $0 [-h] infile.db [key]
+    -h        Display usage information.
+";
+
+&Getopts('h') || die "$usage\n";
+$opt_h && die "$usage\n";
+$ARGV[0] || die "$usage\n";
+$opt_h = $opt_h;		# avoid warning
+
+$ARGV[0] =~ s/\.db$//;
+die "can't open $ARGV[0].db\n" unless -r "$ARGV[0].db";
+
+dbmopen(DB, $ARGV[0], 0444);
+
+if ($ARGV[1])
 {
-    print $DB2{$ARGV[0]}, "\n";
-    dbmclose(DB2);
-    exit 0;
+    &display_key_val("\L$ARGV[1]\E",$DB{"\L$ARGV[1]\E"});
+}
+else
+{
+    while (($key,$val) = each %DB)
+    {
+	&display_key_val($key,$val);
+    }
 }
 
-while (($key,$val) = each %DB2)
+dbmclose(DB);
+exit 0;
+
+
+sub display_key_val
 {
-    undef %rec;
+    local($key,$val) = @_;
+    local(*rec);
 
     if ($key =~ /^\d+$/)
     {
-	$packed = substr($val, 0, 19);
-	@rest = split(/\0/, substr($val, 19));
+	%rec = ();
+	$rec{'id'} = $key;
 
-	($rec{'valid'}, $rec{'request'}, $rec{'reunion'},
-	 $rec{'bounce'}, $rec{'created'}, $rec{'time'}, $rec{'fresh'}) =
-	     unpack("C3N4", $packed);
+	(
+	 $rec{'valid'},
+	 $rec{'request'},
+	 $rec{'reunion'},
+	 $rec{'bounce'},
+	 $rec{'created'},
+	 $rec{'time'},
+	 $rec{'fresh'}
+	 ) = unpack("C3N4", substr($val, 0, 19));
 
-	print $key, ' = ', join(';', $rec{'valid'}, $rec{'request'}, 
-				$rec{'reunion'},  $rec{'bounce'}, $rec{'created'},
-				$rec{'time'}, $rec{'fresh'}),
-	';', join(';', @rest),  "\n";
+	(
+	 $rec{'last'},
+	 $rec{'married'},
+	 $rec{'first'},
+	 $rec{'school'},
+	 $rec{'year'},
+	 $rec{'email'},
+	 $rec{'www'},
+	 $rec{'location'},
+	 $rec{'inethost'},
+	 $rec{'alias'}
+	 ) = split(/\0/, substr($val, 19));
+
+	print "record $key = ", &aid_join(*rec), "\n";
     }
 
     elsif ($key =~ /^__(\d\d\d\d)__$/)
@@ -42,17 +84,23 @@ while (($key,$val) = each %DB2)
 
     elsif ($key =~ /^__class__$/)
     {
-	print "class = ", join(',', unpack("n*", $val)), "\n";
+	print "list class = ", join(',', unpack("n*", $val)), "\n";
     }
 
     elsif ($key =~ /^__alpha__$/)
     {
-	print "alpha = ", join(',', unpack("n*", $val)), "\n";
+	print "list alpha = ", join(',', unpack("n*", $val)), "\n";
+    }
+
+    elsif ($key =~ /\@/)
+    {
+	print "email $key = ", unpack("n*", $val), "\n";
     }
 
     else
     {
 	print "unknown key $key!\n";
     }
+
+    1;
 }
-dbmclose(DB2);
