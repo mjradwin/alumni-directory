@@ -1,0 +1,70 @@
+Alumni Internet Directory README file
+$Id$
+
+------------------------------------------------------------------------
+ Copyright (c) 1995-1999  Michael John Radwin
+
+ This program is free software; you can redistribute it and/or modify
+ it under the terms of the GNU General Public License as published by
+ the Free Software Foundation; either version 2 of the License, or
+ (at your option) any later version.
+
+ This program is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ GNU General Public License for more details.
+
+ You should have received a copy of the GNU General Public License
+ along with this program; if not, write to the Free Software
+ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+------------------------------------------------------------------------
+
+DISCLAIMER: This is not very well packaged code.  It's not packaged at
+all.  Don't come here expecting something you plop in a directory,
+twiddle a few things, and you're off and using it.
+
+To set up the Alumni Internet Directory, you'll need to edit the
+following things (and probably several more):
+
+cgi-bin/cgi-lib.pl:
+  download a copy of cgi-lib.pl from http://cgi-lib.stanford.edu/cgi-lib/
+
+bin/generic_config.pl:
+  copy this file to customize for your high school (change all GHS
+  and Generic High School references to your own school)
+
+bin/aid_util.pl:
+  change the "require 'generic_config.pl'" line to your particular school
+
+Makefile:
+  SCHOOL, WWWROOT, WWWDIR, CGIDIR
+
+data/*.include:
+  [all text]
+
+data/master.adr:
+  create a one-line file that looks like this:
+1;1;Smith;;Jane;4;1;0;815137658;920508844;920508844;1;1993;jsmith@bogus-domain.org;;;;;0;
+
+
+You'll probably want to remove the references to "Awalt" as well.
+
+After editing Makefile and the .pl configuration files appropriately, do
+a 'make symlinks' to set up symbolic links from the web's cgi-bin
+directory to the bin directory.
+
+If you're using Apache and a directory other than cgi-bin for your
+binaries, you'll also need to create a .htaccess file in your web's bin
+directory with this directive:
+
+  SetHandler cgi-script
+
+If that doesn't work (or you're using another web server), you might
+need to rename all of the cgi binaries with the extension .cgi.
+
+------------------------------------------------------------------------
+Michael John Radwin
+mjr@acm.org
+http://www.radwin.org/michael/
+
+
