@@ -4,7 +4,7 @@
 #     FILE: search.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: Alumni Internet Directory CGI search
-#      $Id: search,v 5.8 1999/06/08 22:00:52 mradwin Exp mradwin $
+#      $Id: search,v 5.9 1999/06/22 19:11:05 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -55,7 +55,7 @@ if (!&ReadParse() || !defined($in{'q'}) || $in{'q'} =~ /^[^\w]*$/)
     print "Content-Type: text/html\015\012\015\012";
 
     print &aid_common_html_hdr(6, 'Search', 1);
-    &print_search_form('',defined $in{'y'} ? $in{'y'} : '');
+    &print_search_form('', defined $in{'y'} ? $in{'y'} : '');
     print &aid_common_html_ftr(6);
 
     close(STDOUT);
@@ -141,7 +141,7 @@ if ($#results == -1)
     print "<a href=\"", &aid_config('master_path');
     print "etc/faq.html#incomplete\">Frequently Asked Questions</a>.</p>\n\n";
 
-    &print_search_form($in{'q'},$in{'y'});
+    &print_search_form($in{'q'}, defined $in{'y'} ? $in{'y'} : '');
     print &aid_common_html_ftr(26);
 
     dbmclose(%DB);
@@ -183,10 +183,9 @@ else
 	print "\n";
     }
     print "</ul>\n";
-    &print_search_form($in{'q'},$in{'y'});
+    &print_search_form($in{'q'}, defined $in{'y'} ? $in{'y'} : '');
     print &aid_common_html_ftr(26);
 }
-
 
 dbmclose(%DB);
 close(STDOUT);
