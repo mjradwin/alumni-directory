@@ -1,0 +1,73 @@
+#!/usr/bin/perl -w
+
+#
+# does the html verbose pages
+# $Id: aid_verbose_html,v 2.7 1998/05/17 01:22:53 mradwin Exp $
+#
+
+require 'aid_util.pl';
+require 'getopts.pl';
+require 'ctime.pl';
+
+$usage = 'usage: aid_alpha2_html [-h] infile.adr
+    -h        Display usage information.
+';
+
+&Getopts('h') || die "$usage\n";
+$opt_h && die "$usage\n";
+$ARGV[0] || die "$usage\n";
+$opt_h = $opt_h;		# avoid warning
+
+open(DATA,$ARGV[0]) || die "Can't open $ARGV[0]: $!\n";
+
+$initial = "Z";
+
+while(<DATA>) {
+    chop;
+    %rec = &aid_parse($_);
+    next unless $rec{'valid'};
+
+    if ($initial ne substr($rec{'last'}, 0, 1)) {
+	
+	$initial = substr($rec{'last'}, 0, 1);
+	if ($initial ne 'A') {
+	    print FMTOUT &common_html_ftr(-1);
+	    close(FMTOUT);
+	}
+
+	$outFile = &aid_config('wwwdir') . "alpha/\L${initial}\E-index.html";
+	open(FMTOUT,">$outFile") || die "Can't open $outFile: $!\n";
+
+	print FMTOUT &common_html_hdr(1,'Alumni Listed by Last Name',0);
+	print FMTOUT "<p>\n", &jump_bar($initial), "<hr noshade size=1>\n\n";
+	print FMTOUT &common_intro_para(0);
+
+	&aid_write_verbose_entry(*FMTOUT,*rec,1);
+    } else {
+	&aid_write_verbose_entry(*FMTOUT,*rec,1);
+    }
+}
+
+print FMTOUT &common_html_ftr(-1);
+close(FMTOUT);
+
+exit(0);
+
+# do the funky quick-jump bar
+sub jump_bar {
+    local($regular) = @_;
+    local($initial,$retval);
+
+    $retval = '';
+    $initial = 'a';
+    $regular = "\L${regular}\E";
+
+    while ($initial ne 'aa') {
+	$retval .= (($regular eq $initial) ?
+		    "\U${initial}\E\n" :
+		    "<a href=\"${initial}-index.html\">\U${initial}\E</a>\n");
+	$initial++;
+    }
+
+    $retval;
+}
