@@ -4,7 +4,7 @@
 #     FILE: mvhsaid.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: MVHS Alumni Internet Directory CGI interface
-#      $Id: mvhsaid,v 1.62 1998/03/10 18:44:15 mjr Exp mjr $
+#      $Id: mvhsaid,v 1.63 1998/03/10 19:13:22 mjr Exp mjr $
 #
 
 require 'aid_util.pl';
@@ -24,7 +24,7 @@ if (defined($ENV{'PATH_INFO'}) && $ENV{'PATH_INFO'} =~ m,^/vcard/,) {
     $in{'vcard'} =~ s,^/vcard/(\d+).*$,$1,;
 }
 
-$rcsid = '$Id: mvhsaid,v 1.62 1998/03/10 18:44:15 mjr Exp mjr $'; #'fnt
+$rcsid = '$Id: mvhsaid,v 1.63 1998/03/10 19:13:22 mjr Exp mjr $'; #'fnt
 
 # special flags: version, update, vcard, about
 #
@@ -300,7 +300,30 @@ sub send_about {
     print "vCard tech note</a>\n";
     print "for plugin information.\n<p>\n\n";
     print &about_text(*rec,0,1,1), "\n";
+    print &modify_button($rec{'id'}, &inorder_fullname(*rec));
     print &common_html_ftr(-1);
+}
+
+sub modify_button {
+    local($id,$name) = @_;
+    local($cgi) = &aid_config('cgi_path');
+
+    "
+<!-- borrowed from gamelan -->
+<p>
+To update the entry for this person, please click the button below.
+
+<form method=get action=\"$cgi\">
+<center><input type=hidden name=\"update\" value=\"$id\">
+<input type=submit value=\"Update $name\">
+</center>
+</form>
+
+To avoid malicious modification by other people passing through, we
+mail the original user about the change (plus the new user if the
+email changes). The honor system has worked for us so far; please
+don't abuse it and force us to install a password door.<p>
+";
 }
 
 sub send_vcard {
