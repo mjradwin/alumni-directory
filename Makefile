@@ -2,7 +2,7 @@
 #     FILE: Makefile
 #   AUTHOR: Michael J. Radwin
 #    DESCR: Makefile for building the Alumni Internet Directory
-#      $Id: Makefile,v 5.32 2003/11/06 01:36:56 mradwin Exp mradwin $
+#      $Id: Makefile,v 5.33 2003/11/12 20:20:51 mradwin Exp mradwin $
 #
 # Copyright (c) 2003  Michael J. Radwin.
 # All rights reserved.
@@ -80,8 +80,7 @@ install:
 	echo 'AddType text/xml xml rdf' >> $(WWWDIR)/.htaccess
 	($(MKDIR) $(CGIDIR) ; /bin/chmod 0755 $(CGIDIR))
 	$(CP) $(AID_SUBMIT_PL) $(AID_UTIL_PL) $(BINDIR)/school_config.pl \
-	      $(CGISRC)/form $(CGISRC)/search $(CGISRC)/alumni.txt \
-	      $(CGISRC)/vcard $(CGISRC)/about $(CGISRC)/yab \
+	      $(CGISRC)/form $(CGISRC)/search $(CGISRC)/about \
 	      $(CGISRC)/go $(CGISRC)/msg $(CGISRC)/remove $(CGISRC)/verify \
 	      $(CGIDIR)
 	$(CP) $(CGISRC)/default.css $(WWWDIR)
