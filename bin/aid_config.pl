@@ -2,7 +2,7 @@
 #     FILE: aid_config.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: configuration variables for Alumni Internet Directory
-#      $Id: aid_config.pl,v 1.23 1999/04/07 16:27:43 mradwin Exp mradwin $
+#      $Id: aid_config.pl,v 1.24 1999/04/07 16:29:28 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -22,7 +22,7 @@
 #
 
 $aid_util'rcsid =
- '$Id: aid_config.pl,v 1.23 1999/04/07 16:27:43 mradwin Exp mradwin $';
+ '$Id: aid_config.pl,v 1.24 1999/04/07 16:29:28 mradwin Exp mradwin $';
 
 # radwin.org (FreeBSD 2.2.2) configuration
 %aid_util'config =   #'#
@@ -120,20 +120,20 @@ $aid_util'body_vlink = '990099'; #'#
 
 @aid_util'req_descr_long =   #'#
     (
-     'No e-mail except for bi-yearly address verification.',
-     'All alumni, sorted by name. [~ 65 kbytes]',
-     'All alumni, sorted by graduating class. [~ 65 kbytes]',
-     'New and updated alumni.',
-     'Only alumni from my graduating class.',
+     'No thanks, just send me bi-yearly address verification messages.',
+     'Yes, send me the entire Directory, sorted by name. [~ 65 kbytes]',
+     'Yes, send me the entire Directory, sorted by graduating class. [~ 65 kbytes]',
+     'Yes, send me a list of all new/updated alumni during the last quarter.',
+     'Yes, send me a list of alumni from my graduating class.',
      );
 
 @aid_util'req_descr =   #'#
     (
      'only address verification',
-     'yes (sorted by name)',
-     'yes (sorted by graduating class)',
-     'yes (new and updated alumni)',
-     'yes (only my graduating class)',
+     'yes (entire Directory, sorted by name)',
+     'yes (entire Directory, sorted by graduating class)',
+     'yes (all new and updated alumni)',
+     'yes (alumni from my graduating class)',
      );
 
 @aid_util'page_idx = #'#
