@@ -4,7 +4,7 @@
 #     FILE: mvhsaid.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: MVHS Alumni Internet Directory CGI interface
-#      $Id: mvhsaid,v 3.31 1998/10/20 19:17:16 mradwin Exp mradwin $
+#      $Id: mvhsaid,v 3.32 1998/10/26 21:21:51 mradwin Exp mradwin $
 #
 
 require 'aid_util.pl';
@@ -24,7 +24,7 @@ if (defined($ENV{'PATH_INFO'}) && $ENV{'PATH_INFO'} =~ m,^/vcard/,) {
     $in{'vcard'} =~ s,^/vcard/(\d+).*$,$1,;
 }
 
-$rcsid = '$Id: mvhsaid,v 3.31 1998/10/20 19:17:16 mradwin Exp mradwin $'; #'fnt
+$rcsid = '$Id: mvhsaid,v 3.32 1998/10/26 21:21:51 mradwin Exp mradwin $'; #'fnt
 
 # special flags: version, update, vcard, about
 #
@@ -172,8 +172,10 @@ $in{'married'} = "\L$in{'married'}\E"
 
 # initial capitalize those lazy names
 $in{'first'} = "\u$in{'first'}";
-$in{'last'} = "\u$in{'last'}";
-$in{'married'} = "\u$in{'married'}";
+$in{'last'} = "\u$in{'last'}"
+    unless $in{'last'} =~ /^(van|d[ie]) /;
+$in{'married'} = "\u$in{'married'}"
+    unless $in{'married'} =~ /^(van|d[ie]) /;
 
 $in{'www'} = '' if $in{'www'} eq 'http://';
 
