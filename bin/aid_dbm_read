@@ -1,6 +1,6 @@
 #!/usr/bin/perl -w
 
-# $Id: aid_dbm_read,v 1.2 1999/02/05 01:42:17 mradwin Exp mradwin $
+# $Id: aid_dbm_read,v 1.3 1999/02/05 18:34:12 mradwin Exp mradwin $
 
 require 'aid_util.pl';
 require 'getopts.pl';
@@ -43,32 +43,7 @@ sub display_key_val
 
     if ($key =~ /^\d+$/)
     {
-	%rec = ();
-	$rec{'id'} = $key;
-
-	(
-	 $rec{'valid'},
-	 $rec{'request'},
-	 $rec{'reunion'},
-	 $rec{'bounce'},
-	 $rec{'created'},
-	 $rec{'time'},
-	 $rec{'fresh'}
-	 ) = unpack("C3N4", substr($val, 0, 19));
-
-	(
-	 $rec{'last'},
-	 $rec{'married'},
-	 $rec{'first'},
-	 $rec{'school'},
-	 $rec{'year'},
-	 $rec{'email'},
-	 $rec{'www'},
-	 $rec{'location'},
-	 $rec{'inethost'},
-	 $rec{'alias'}
-	 ) = split(/\0/, substr($val, 19));
-
+	%rec = &aid_db_unpack_rec($key,$val);
 	print "record $key = ", &aid_join(*rec), "\n";
     }
 
@@ -80,6 +55,11 @@ sub display_key_val
     elsif ($key =~ /^__other__$/)
     {
 	print "year other = ", join(',', unpack("n*", $val)), "\n";
+    }
+
+    elsif ($key =~ /^__years__$/)
+    {
+	print "list years = ", join(',', unpack("n*", $val)), "\n";
     }
 
     elsif ($key =~ /^__class__$/)

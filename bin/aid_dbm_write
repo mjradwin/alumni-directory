@@ -1,6 +1,6 @@
 #!/usr/bin/perl -w
 
-# $Id: aid_dbm_write,v 1.5 1999/02/05 18:34:12 mradwin Exp mradwin $
+# $Id: aid_dbm_write,v 1.6 1999/02/05 19:12:24 mradwin Exp mradwin $
 
 require 'aid_util.pl';
 require 'getopts.pl';
@@ -33,30 +33,7 @@ for (@db)
     %rec = &aid_parse($_);
     $rec{'message'} = &aid_get_usertext($rec{'id'});
 
-    $DB{$rec{'id'}} = 
-	pack("C3N4",
-	     $rec{'valid'},
-	     $rec{'request'},
-	     $rec{'reunion'},
-	     $rec{'bounce'},
-	     $rec{'created'},
-	     $rec{'time'},
-	     $rec{'fresh'}
-	     ) .
-	join("\0",
-	     $rec{'last'},
-	     $rec{'married'},
-	     $rec{'first'},
-	     $rec{'school'},
-	     $rec{'year'},
-	     $rec{'email'},
-	     $rec{'www'},
-	     $rec{'location'},
-	     $rec{'inethost'},
-	     $rec{'alias'},
-	     $rec{'message'}
-	     );
-
+    $DB{$rec{'id'}} = &aid_db_pack_rec(*rec);
     $DB{"\L$rec{'email'}\E"} = pack("n", $rec{'id'});
 
     # make a list of alpha years
@@ -82,7 +59,10 @@ $DB{'__alpha__'} = pack("n*", @alpha_ids);
 print STDERR ".";
 
 @class_ids = ();
-foreach $ykey (sort keys %class_members)
+@years = sort keys %class_members;
+$DB{'__years__'} = pack("n*", @years);
+
+foreach $ykey (@years)
 {
     @alpha_ids = split(/ /, $class_members{$ykey});
     $DB{"__${ykey}__"} = pack("n*", @alpha_ids);
