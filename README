@@ -1,5 +1,5 @@
 Alumni Internet Directory README file
-$Id: README,v 5.6 1999/08/04 18:45:57 mradwin Exp mradwin $
+$Id: README,v 5.7 1999/11/30 22:02:38 mradwin Exp mradwin $
 
 ========================================================================
  Copyright (c) 1995-1999  Michael John Radwin
@@ -51,8 +51,8 @@ data/*.include:
 
 2. Create a data/working.db file and put at least one entry in it
 ------------------------------------------------------------------------
-  There's no script to do it automatically, so run these commands:
-    $ perl -e 'dbmopen(%DB,"data/working",0666); dbmclose(%DB);'
+  Run these commands:
+    $ ./bin/aid_dbm_create data/working.db /dev/null
     $ ./bin/aid_edit_entry data/working.db -1
 
   The first should create a valid, empty DBM file for your particular OS.
