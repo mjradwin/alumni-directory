@@ -2,7 +2,7 @@
 #     FILE: Makefile
 #   AUTHOR: Michael J. Radwin
 #    DESCR: Makefile for building the Alumni Internet Directory
-#      $Id: Makefile,v 5.26 2000/06/14 19:02:12 mradwin Exp mradwin $
+#      $Id: Makefile,v 5.27 2000/08/01 17:56:34 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -233,7 +233,7 @@ recent.txt:	$(DBFILE) $(BINDIR)/aid_shortlist_html
 
 tar:
 	$(MKDIR) $(WWWDIR)/etc
-	( cd $(HOME) ; tar cfz $(WWWDIR)/etc/$(SCHOOL)aid.tar.gz $(TARFILES) )
+	( cd $(HOME) ; tar cfz $(WWWDIR)/etc/aid.tar.gz $(TARFILES) )
 
 snapshot:
 	$(MKDIR) $(WWWDIR)/etc
