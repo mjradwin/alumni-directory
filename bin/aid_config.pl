@@ -2,7 +2,7 @@
 #     FILE: aid_config.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: configuration for Alumni Internet Directory
-#      $Id: aid_config.pl,v 1.12 1999/03/26 19:42:57 mradwin Exp mradwin $
+#      $Id: aid_config.pl,v 1.13 1999/03/26 20:21:26 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -84,11 +84,24 @@ High School and Awalt High School communities.  Any redistribution
 outside of this community, or solicitation of business or contributions
 from individuals listed in this publication is forbidden.";
 
+# school name stuff
 $aid_util'school_default    = 1; #'#
 $aid_util'school_awalt      = 2; #'#
 $aid_util'school_both       = 3; #'#
 
 @aid_util'school_affil      = ('', '', 'A', 'A/MV');
 @aid_util'school_name       = ('', 'MVHS', 'Awalt', 'Awalt/MV');
+
+# colors
+$aid_util'header_bg  = 'ffff99'; #'#
+$aid_util'header_fg  = '000000'; #'#
+
+$aid_util'cell_bg    = 'ffffcc'; #'#
+$aid_util'star_fg    = 'ff0000'; #'#
+
+$aid_util'body_bg    = 'ffffff'; #'#
+$aid_util'body_fg    = '000000'; #'#
+$aid_util'body_link  = '0000cc'; #'#
+$aid_util'body_vlink = '990099'; #'#
 
 1;
