@@ -2,11 +2,11 @@
 #     FILE: aid_util.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: perl library routines for the Alumni Internet Directory
-#      $Id: aid_util.pl,v 3.93 1999/01/20 19:04:59 mradwin Exp mradwin $
+#      $Id: aid_util.pl,v 3.94 1999/01/20 19:06:49 mradwin Exp mradwin $
 #
 
 $aid_util'rcsid =
- '$Id: aid_util.pl,v 3.93 1999/01/20 19:04:59 mradwin Exp mradwin $';
+ '$Id: aid_util.pl,v 3.94 1999/01/20 19:06:49 mradwin Exp mradwin $';
 
 # ----------------------------------------------------------------------
 # CONFIGURATION
@@ -43,13 +43,22 @@ $aid_util'rcsid =
      'rcsid',        "$aid_util'rcsid",
      );
 
+@aid_util'req_descr_long =   #'#
+    (
+     'No e-mail except for yearly address verification.',
+     'All alumni, sorted by name. [~ 50 kbytes]',
+     'All alumni, sorted by graduating class. [~ 50 kbytes]',
+     'Only new and changed alumni entries. [~ 10 kbytes]',
+     'Only people from my graduating class.',
+     );
+
 @aid_util'req_descr =   #'#
     (
      'only address verification',
      'yes (sorted by name)',
      'yes (sorted by graduating class)',
      'yes (new and changed entries)',
-     'yes (brief reminder)',
+     'yes (just my graduating class)',
      );
 
 @aid_util'page_idx = #'#
@@ -92,7 +101,7 @@ $aid_util'config{'admin_email'} .
 "\" r (SS~~000 1 SS~~100 1))'>"; #"#
 
 $aid_util'site_tags = #'#
-"  <meta name=\"keywords\"    content=\"Mountain View High School, Alumni, MVHS, Awalt High School, Mountain View, Los Altos, California, reunion, Radwin\">\n  <meta name=\"description\" content=\"Alumni email and web page directory for Mountain View High School (MVHS) and Awalt High School in Mountain View, CA. Updated $aid_util'caldate.\">\n  <meta name=\"author\"  content=\"$aid_util'config{'admin_name'}\">\n  <link rev=\"made\"     href=\"mailto:" . $aid_util'config{'admin_email'} . "\">\n  <link rel=\"contents\" href=\"http://" . $aid_util'config{'master_srv'} . $aid_util'config{'master_path'} . "\" title=\"Home page for MVHS Alumni Internet Directory\">";
+"  <meta name=\"keywords\"    content=\"Mountain View High School, Alumni, MVHS, Awalt High School, Mountain View, Los Altos, California, reunion, Radwin\">\n  <meta name=\"description\" content=\"Alumni e-mail and web page directory for Mountain View High School (MVHS) and Awalt High School in Mountain View, CA. Updated $aid_util'caldate.\">\n  <meta name=\"author\"  content=\"$aid_util'config{'admin_name'}\">\n  <link rev=\"made\"     href=\"mailto:" . $aid_util'config{'admin_email'} . "\">\n  <link rel=\"contents\" href=\"http://" . $aid_util'config{'master_srv'} . $aid_util'config{'master_path'} . "\" title=\"Home page for MVHS Alumni Internet Directory\">";
 
 $aid_util'noindex = "  <meta name=\"robots\"  content=\"noindex\">"; #'#
 %aid_util'aid_aliases = ();   #'# global alias hash repository 
@@ -611,7 +620,7 @@ sub submit_body {
 	if ($blank_entries =~ /email/ &&
 	    $rec{'email'} ne '' && $rec{'email'} !~ /\@/)
 	{
-	    $body .= "<p><strong><font color=\"#$star_fg\">Your email ";
+	    $body .= "<p><strong><font color=\"#$star_fg\">Your e-mail ";
 	    $body .= "address appears to be missing a domain name.</font>\n";
 	    $body .= "<br>It must be in the form of ";
 	    $body .= "<code>user\@isp.net</code>.\n";
@@ -736,33 +745,30 @@ are required.  All other fields are optional.</p>\n\n";
   <td colspan=3><font color=\"#$cell_fg\" size=\"-1\"><input type=checkbox
   name=\"reunion\" id=\"reunion\" $reunion_chk><label
   for=\"reunion\">&nbsp;My class officers may notify me of
-  reunion information via email.</label><br><br>Please 
+  reunion information via e-mail.</label><br><br>Please 
   <a href=\"" . $config{'master_path'} . "etc/faq.html#mailings\">send 
-  an updated copy</a> of the Directory to my email address every 3 
+  an updated copy</a> of the Directory to my e-mail address every 3 
   months:<br>
 
   &nbsp;&nbsp;&nbsp;&nbsp;<input type=radio name=\"request\" id=\"request4\"
-  value=\"4\"$reqchk[4]><label
-  for=\"request4\">&nbsp;Brief reminder about what has changed.</label><br>
+  value=\"4\"$reqchk[4]><label for=\"request4\">&nbsp;
+  $req_descr_long[4]</label><br>
 
   &nbsp;&nbsp;&nbsp;&nbsp;<input type=radio name=\"request\" id=\"request3\"
-  value=\"3\"$reqchk[3]><label
-  for=\"request3\">&nbsp;Only new and changed alumni entries. [~ 10 kbytes]</label><br>
+  value=\"3\"$reqchk[3]><label for=\"request3\">&nbsp;
+  $req_descr_long[3]</label><br>
 
   &nbsp;&nbsp;&nbsp;&nbsp;<input type=radio name=\"request\" id=\"request2\"
-  value=\"2\"$reqchk[2]><label
-  for=\"request2\">&nbsp;All alumni, sorted by graduating class.
-  [~ 50 kbytes]</label><br>
+  value=\"2\"$reqchk[2]><label for=\"request2\">&nbsp;
+  $req_descr_long[2]</label><br>
 
   &nbsp;&nbsp;&nbsp;&nbsp;<input type=radio name=\"request\" id=\"request1\"
-  value=\"1\"$reqchk[1]><label
-  for=\"request1\">&nbsp;All alumni, sorted by name.
-  [~ 50 kbytes]</label><br>
+  value=\"1\"$reqchk[1]><label for=\"request1\">&nbsp;
+  $req_descr_long[1]</label><br>
 
   &nbsp;&nbsp;&nbsp;&nbsp;<input type=radio name=\"request\" id=\"request0\"
-  value=\"0\"$reqchk[0]><label
-  for=\"request0\">&nbsp;No e-mail except for yearly address
-  verification.</label></font>
+  value=\"0\"$reqchk[0]><label for=\"request0\">&nbsp;
+  $req_descr_long[0]</label></font>
 
   <input type=\"hidden\" name=\"id\" value=\"$rec{'id'}\">
   <input type=\"hidden\" name=\"created\" value=\"$rec{'created'}\">
@@ -875,7 +881,7 @@ sub aid_verbose_entry {
 	$retval .= "</a></strong></dt>\n";
     }
 
-    $retval .= "<dt>Email: <code><strong><a href=\"mailto:$rec{'email'}\">";
+    $retval .= "<dt>E-mail: <code><strong><a href=\"mailto:$rec{'email'}\">";
     $retval .= $rec{'email'};
     $retval .= "</a></strong></code></dt>\n";
     $retval .= "<dt>Web Page: <code><strong><a href=\"$rec{'www'}\">$rec{'www'}</a></strong></code></dt>\n"
@@ -988,7 +994,7 @@ sub about_text {
     $retval .= "\n";
 
     $retval .= "\n";
-    $retval .= "Email              : ";
+    $retval .= "E-mail             : ";
     $retval .= "<strong>" if $do_html_p;
     $retval .= "<a href=\"mailto:$rec{'email'}\">"
 	if $do_html_p && !$show_req_p;
@@ -1023,7 +1029,7 @@ sub about_text {
 	$retval .= "Reunion Info Okay  : ";
 	$retval .= ($rec{'reunion'} == 1) ?
 	    "yes\n" : "no\n";
-	$retval .= "Send Email Updates : ";
+	$retval .= "Send E-mail Updates: ";
 	$retval .= defined $req_descr[$rec{'request'}] ?
 	    "$req_descr[$rec{'request'}]\n" : "(unknown)\n";
     } 
