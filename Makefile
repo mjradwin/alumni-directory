@@ -2,7 +2,7 @@
 #     FILE: Makefile
 #   AUTHOR: Michael J. Radwin
 #    DESCR: Makefile for building the Alumni Internet Directory
-#      $Id: Makefile,v 3.23 1998/09/23 22:25:00 mradwin Exp mradwin $
+#      $Id: Makefile,v 3.24 1998/10/09 16:46:33 mradwin Exp mradwin $
 #
 
 WWWROOT=/home/web/radwin.org
@@ -180,6 +180,9 @@ alpha.txt:	$(ADR_ALPHA) $(BIN_ALPHA)
 
 class.txt:	$(ADR_CLASS) $(BIN_CLASS)
 	$(BIN_CLASS) -t $(ADR_CLASS) class.txt
+
+recent.txt:	$(ADR_CLASS) $(BIN_RECENT)
+	$(BIN_RECENT) -t $(ADR_CLASS) recent.txt
 
 tar:
 	tar cf $(WWWDIR)/mvhsaid.tar $(TARFILES)

@@ -2,7 +2,7 @@
 
 #
 # does the html version of the recent address list
-# $Id: aid_recent_html,v 3.11 1998/09/03 02:25:12 mradwin Exp mradwin $
+# $Id: aid_recent_html,v 3.12 1998/09/18 23:42:12 mradwin Exp mradwin $
 #
 
 require 'aid_util.pl';
@@ -43,6 +43,9 @@ while(<DATA>) {
 }
 
 if ($opt_t) {
+    print FMTOUT "Name and Graduation Year                 Email\n";
+    print FMTOUT "---------------------------------------------------------------------------\n";
+
     while (defined($_ = shift(@newbies))) {
 	%rec = &aid_parse($_);
 
