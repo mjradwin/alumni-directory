@@ -4,7 +4,7 @@
 #     FILE: search.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: Alumni Internet Directory CGI search
-#      $Id: search,v 5.5 1999/06/08 18:52:41 mradwin Exp mradwin $
+#      $Id: search,v 5.6 1999/06/08 20:55:23 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -112,6 +112,9 @@ print "Content-Type: text/html\015\012\015\012";
 
 @results = sort keys %results;
 undef %results;
+
+$in{'q'} = &aid_html_entify_str($in{'q'});
+
 if ($#results == -1)
 {
     print &aid_common_html_hdr(6, 'No matches', 1);
