@@ -4,7 +4,7 @@
 #     FILE: mvhsaid.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: MVHS Alumni Internet Directory CGI interface
-#      $Id: mvhsaid,v 1.2 1997/03/23 22:24:19 mjr Exp $
+#      $Id: mvhsaid,v 1.3 1997/03/24 15:33:34 mjr Exp mjr $
 #
 
 require 'mv_util.pl';
@@ -33,7 +33,7 @@ close(SUBMIT_FTR);
 # debugging: what version is installed?
 if (defined($in{'version'})) {
     print @submit_hdr, "\n";
-    print '<pre>Version: $Id: mvhsaid,v 1.2 1997/03/23 22:24:19 mjr Exp $</pre>', "\n";
+    print '<pre>Version: $Id: mvhsaid,v 1.3 1997/03/24 15:33:34 mjr Exp mjr $</pre>', "\n";
     print @submit_ftr, "\n";
     
     exit(0);
@@ -107,14 +107,18 @@ exit(0);
 
 sub queue_submission {
     require 'tableheader.pl';
+    require 'ctime.pl';
 
     # a little more cleanup and then update the db.
     $in{'homepage'} = '' if $in{'homepage'} eq 'http://';
     $time = time;
-    $mailto = 'mjr ' . &mv_config('admin_email');
+    $date = &ctime($time);
+    $mailto = &mv_config('mailto');
+    $mailsubj = &mv_config('mailsubj');
+    $mailname = &mv_config('admin_name');
 
-    system("$mailprog -s MVHSAID $mailto <<'EOM'
-Dear mjr,
+    system("$mailprog -s $mailsubj $mailto <<'EOM'
+Dear $mailname,
 
 This was submitted to the MVHS address database:
 
@@ -122,6 +126,9 @@ $time;$in{'id'};$in{'request'};$in{'last'};$in{'first'};$in{'married'};$in{'scho
 
 The kind soul who submitted it was using the web from $ENV{'REMOTE_HOST'}
 
+Love,
+the mvhsaid cgi-bin script
+$date
 EOM
 ");
 
@@ -169,7 +176,6 @@ sub about_text {
     }
 
     if ($time ne '') {
-	$ENV{'TZ'} = 'EST';
 	$retval .= "\n";
 	$retval .= "Last Updated      : ";
 	$retval .= &ctime($time);
