@@ -2,11 +2,11 @@
 #     FILE: aid_util.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: perl library routines for the Alumni Internet Directory
-#      $Id: aid_util.pl,v 3.26 1998/05/28 21:53:48 mradwin Exp mradwin $
+#      $Id: aid_util.pl,v 3.27 1998/06/03 20:14:57 mradwin Exp mradwin $
 #
 
 $aid_util'rcsid =
- '$Id: aid_util.pl,v 3.26 1998/05/28 21:53:48 mradwin Exp mradwin $';
+ '$Id: aid_util.pl,v 3.27 1998/06/03 20:14:57 mradwin Exp mradwin $';
 
 # ----------------------------------------------------------------------
 # CONFIGURATION
@@ -953,19 +953,12 @@ sub common_html_ftr {
     $copyright =~ s/^[^,]+,//;
 
     $ftr  = "\n<!-- begin common_html_ftr -->\n";
-    $ftr .=
-"<table cellspacing=0 cellpadding=6 border=1 width=\"100%\">
-  <tr>
-    <td bgcolor=\"#$cell_bg\" valign=middle>
-    <strong>$result</strong>
-";
-#    $ftr .= "<hr noshade size=1>\n";
+    $ftr .= "<table cellspacing=0 cellpadding=6 border=1 width=\"100%\">\n" .
+	"  <tr>\n    <td bgcolor=\"#$cell_bg\" valign=middle>\n";
+#   $ftr .= "<hr noshade size=1>\n";
     $ftr .= &main'common_link_table($page); #'#
     $ftr .= "\n" . $disclaimer . "\n\n";
-    $ftr .= "    </td>
-  </tr>
-</table>
-";
+    $ftr .= "    </td>\n  </tr>\n</table>\n";
 
     $ftr .= "\n<br><font size=\"-1\"><a href=\"" . $copyright . "\">" .
 	"Copyright\n&copy; 1998 " . $config{'admin_name'} . "</a></font>\n\n" .
