@@ -2,7 +2,7 @@
 
 #
 # generates address books in several formats
-# $Id: aid_book,v 3.14 1998/10/27 18:31:48 mradwin Exp mradwin $
+# $Id: aid_book,v 3.15 1998/10/27 18:45:41 mradwin Exp mradwin $
 #
 
 require 'aid_util.pl';
@@ -133,13 +133,26 @@ sub write_entry {
 	$vdate =~ s/T//;
 	print BOOK "$vdate\r\n";
         print BOOK "cn: $rec{'first'} $long_last\r\n";
-        print BOOK "sn: $long_last\r\n";
+	if ($rec{'married'} ne '') {
+	    print BOOK "sn: $rec{'married'}\r\n";
+	} else {
+	    print BOOK "sn: $rec{'last'}\r\n";
+	}
         print BOOK "givenname: $rec{'first'}\r\n";
         print BOOK "objectclass: top\r\nobjectclass: person\r\n";
         print BOOK "mail: $rec{'email'}\r\n";
-        print BOOK "locality: $rec{'location'}\r\n" if $rec{'location'} ne '';
+	if ($rec{'location'} =~ /^(.*),\s+(\w\w)$/) {
+	    print BOOK "locality: $1\r\n";
+	    print BOOK "st: $2\r\n";
+	} else {
+	    print BOOK "locality: $rec{'location'}\r\n" if $rec{'location'} ne '';
+	}
         print BOOK "o: $rec{'school'}\r\n";
-	print BOOK "ou: $rec{'year'}\r\n";
+	if ($rec{'year'} =~ /^\d+$/) {
+	    print BOOK "ou: Class of $rec{'year'}\r\n";
+	} else {
+	    print BOOK "ou: $rec{'year'}\r\n";
+	}
         print BOOK "homeurl: $rec{'www'}\r\n" if $rec{'www'} ne '';
         print BOOK "xmozillanickname: $rec{'alias'}\r\n";
         print BOOK "\r\n";
