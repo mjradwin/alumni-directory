@@ -2,7 +2,7 @@
 
 #
 # does the html verbose pages
-# $Id: aid_multi_alpha_html,v 5.8 1999/06/11 16:23:29 mradwin Exp mradwin $
+# $Id: aid_multi_alpha_html,v 5.9 1999/06/12 19:16:14 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -46,9 +46,22 @@ die "can't open $ARGV[0].db\n" unless -r "$ARGV[0].db";
 dbmopen(%DB,$ARGV[0],0444);
 
 @initials = ();
+%init_prev = ();
+%init_next = ();
+$prev = '';
+
 for ($initial = 'a'; $initial ne 'aa'; $initial++)
 {
-    push(@initials, $initial) if defined $DB{"_a_${initial}"};
+    if (defined $DB{"_a_${initial}"})
+    {
+	push(@initials, $initial);
+	if ($prev ne '')
+	{
+	    $init_next{$prev}    = $initial;
+	    $init_prev{$initial} = $prev;
+	}
+	$prev = $initial;
+    }
 }
 
 select(STDOUT); $| = 1;
@@ -72,7 +85,14 @@ foreach $initial (@initials)
     $outFile = &aid_config('wwwdir') . "alpha/${initial}-index.html";
     open(FMTOUT,">$outFile") || die "Can't open $outFile: $!\n";
 
-    print FMTOUT &aid_common_html_hdr(1,"`\u$initial' Alumni",1,$time),
+    $extra_meta  = "\n<link rel=\"contents\" href=\"./\" title=\"Alphabetically\">";
+    $extra_meta .= "\n<link rel=\"prev\" href=\"$init_prev{$initial}-index.html\" title=\"`\u$init_prev{$initial}' Alumni\">"
+	if defined $init_prev{$initial};
+    $extra_meta .= "\n<link rel=\"next\" href=\"$init_next{$initial}-index.html\" title=\"`\u$init_next{$initial}' Alumni\">"
+	if defined $init_next{$initial};
+
+    print FMTOUT &aid_common_html_hdr(1,"`\u$initial' Alumni",1,$time,
+				      '',$extra_meta),
       &aid_common_intro_para(1),
       "<p>\n", &alpha_jump_bar($initial), "</p>\n",
       "<hr noshade=\"noshade\" size=\"1\"${ht_empty_close_tag}\n\n<pre>";

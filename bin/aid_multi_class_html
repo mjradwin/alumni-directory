@@ -2,7 +2,7 @@
 
 #
 # does the html multi_class pages
-# $Id: aid_multi_class_html,v 5.5 1999/06/11 00:42:21 mradwin Exp mradwin $
+# $Id: aid_multi_class_html,v 5.6 1999/06/11 16:23:29 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -50,6 +50,19 @@ die "no _years key!\n" unless defined $DB{'_years'};
 @years = unpack("n*",$DB{'_years'});
 push(@years, 'other');
 
+%class_prev = ();
+%class_next = ();
+$prev = '';
+foreach $year (@years)
+{
+    if ($prev ne '')
+    {
+	$class_next{$prev} = $year;
+	$class_prev{$year} = $prev;
+    }
+    $prev = $year;
+}
+
 select(STDOUT); $| = 1;
 foreach $year (@years)
 {
@@ -83,8 +96,16 @@ foreach $year (@years)
     {
 	$subtitle = sprintf("%d alumni", $#ids + 1);
     }
-    
-    print FMTOUT &aid_common_html_hdr(2,$title,1,$time,$subtitle);
+
+    $extra_meta  = "\n<link rel=\"contents\" href=\"./\" title=\"Graduating Classes\">";
+    $extra_meta .= "\n<link rel=\"prev\" href=\"$class_prev{$year}.html\" title=\"Class of $class_prev{$year}\">"
+	if defined $class_prev{$year};
+    $link_title = ($class_next{$year} =~ /^\d+$/) ? 
+	"Class of $class_next{$year}" : "Faculty and Staff";
+    $extra_meta .= "\n<link rel=\"next\" href=\"$class_next{$year}.html\" title=\"$link_title\">"
+	if defined $class_next{$year};
+
+    print FMTOUT &aid_common_html_hdr(2,$title,1,$time,$subtitle,$extra_meta);
     print FMTOUT &aid_common_intro_para(0);
     print FMTOUT &aid_class_jump_bar('', '.html', *years, 1, $year);
     print FMTOUT "<hr noshade=\"noshade\" size=\"1\"${ht_empty_close_tag}\n\n";
