@@ -2,7 +2,7 @@
 #     FILE: Makefile
 #   AUTHOR: Michael J. Radwin
 #    DESCR: Makefile for building the Alumni Internet Directory
-#      $Id: Makefile,v 3.12 1998/05/18 19:40:04 mradwin Exp mradwin $
+#      $Id: Makefile,v 3.13 1998/05/18 22:18:38 mradwin Exp mradwin $
 #
 
 WWWDIR=/home/web/radwin.org/docs/mvhs-alumni
@@ -14,7 +14,7 @@ ADR_CLASS=./data/class.adr
 ADR_AWALT=./data/awalt.adr
 ADR_DATE=./data/date.adr
 
-BIN_ALPHA2=./bin/aid_alpha2_html
+BIN_MULTI=./bin/aid_multi_alpha_html
 BIN_ALPHA=./bin/aid_alpha_html
 BIN_BOOK=./bin/aid_book
 BIN_CLASS=./bin/aid_class_html
@@ -29,7 +29,7 @@ SNAPSHOTFILES=bin/aid_make mvhs web/mvhs-alumni/*.gif \
 	web/mvhs-alumni/whatsnew
 
 all:	adrfile index submit reunions links nicknames tech copyright \
-	recent pages alpha2 class awalt goners \
+	recent pages multi class awalt goners \
 	verbose books
 
 ADRFILE=$(WWWDIR)/master.adr
@@ -42,10 +42,10 @@ alpha:	$(ALPHA)
 $(ALPHA):	$(ADR_ALPHA) $(BIN_ALPHA)
 	$(BIN_ALPHA) $(ADR_ALPHA) $(ALPHA)
 
-ALPHA2=$(WWWDIR)/alpha/a-index.html
-alpha2:	$(ALPHA2)
-$(ALPHA2):	$(ADR_ALPHA) $(BIN_ALPHA2)
-	$(BIN_ALPHA2) $(ADR_ALPHA)
+MULTI=$(WWWDIR)/alpha/a-index.html
+multi:	$(MULTI)
+$(MULTI):	$(ADR_ALPHA) $(BIN_MULTI)
+	$(BIN_MULTI) $(ADR_ALPHA)
 
 CLASS=$(WWWDIR)/class.html
 class:	$(CLASS)
