@@ -4,7 +4,7 @@
 #     FILE: mvhsaid.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: Alumni Internet Directory CGI interface
-#      $Id: mvhsaid,v 3.54 1999/02/05 00:54:42 mradwin Exp mradwin $
+#      $Id: mvhsaid,v 3.55 1999/02/05 18:45:30 mradwin Exp mradwin $
 #
 
 require 'aid_util.pl';
@@ -22,7 +22,7 @@ if ($ENV{'SCRIPT_NAME'} =~ m,/nph-,)
 # configuration
 $mailprog = &aid_config('mailprog');
 $dbfile = &aid_config('wwwdir') . "master.adr";
-$rcsid = '$Id: mvhsaid,v 3.54 1999/02/05 00:54:42 mradwin Exp mradwin $'; #'fnt
+$rcsid = '$Id: mvhsaid,v 3.55 1999/02/05 18:45:30 mradwin Exp mradwin $'; #'fnt
 
 @required_headers = ('id', 'first', 'last', 'school', 'year', 'email');
 
@@ -281,7 +281,7 @@ correct.</font></strong></p>
 If everything is correct, please hit the
 <strong>Finish&nbsp;&gt;</strong> button.</p>\n";
 
-    print "\n<form method=post action=\", &aid_config('confirm_cgi'), "\">\n";
+    print "\n<form method=post action=\"", &aid_config('confirm_cgi'), "\">\n";
     %newrec = &rec_html_entify(*in);
     foreach (keys %newrec) {
 	print "<input type=hidden name=\"$_\"";
