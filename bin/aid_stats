@@ -1,6 +1,6 @@
 #!/usr/bin/perl -w
 
-# $Id: aid_stats,v 5.4 1999/06/08 19:42:09 mradwin Exp mradwin $
+# $Id: aid_stats,v 5.5 1999/06/21 20:13:43 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -130,61 +130,61 @@ else
     print FMTOUT "------------------------------------------------------------------------\n\n";
 }
 
-printf FMTOUT "     %4d  total entries in the Directory\n",
+printf FMTOUT "      %4d  total entries in the Directory\n",
     $ntotal;
-printf FMTOUT "%2.0f%% (%4d) have valid   e-mail address\n",
+printf FMTOUT "%3.0f%% (%4d) have valid   e-mail address\n",
     ((100 * $nlegit) / $ntotal), $nlegit;
-printf FMTOUT "%2.0f%% (%4d) have valid   e-mail address but bounced recently\n",
+printf FMTOUT "%3.0f%% (%4d) have valid   e-mail address but bounced recently\n",
     ((100 * $ndubious) / $ntotal), $ndubious;
 
-printf FMTOUT "%2.0f%% (%4d) have invalid e-mail address\n",
+printf FMTOUT "%3.0f%% (%4d) have invalid e-mail address\n",
     ((100 * ($ntotal - $nlegit)) / $ntotal), ($ntotal - $nlegit);
 
 print FMTOUT "\n";
 
-printf FMTOUT "%2.0f%% (%4d) requesting quarterly digests:\n",
+printf FMTOUT "%3.0f%% (%4d) requesting quarterly digests:\n",
     ((100 * ($nreq[1] + $nreq[2] + $nreq[3] + $nreq[4])) / $nlegit),
     ($nreq[1] + $nreq[2] + $nreq[3] + $nreq[4]);
 
-printf FMTOUT "%2.0f%% (%4d) - %s\n",
+printf FMTOUT "%3.0f%% (%4d) - %s\n",
     ((100 * $nreq[1]) / $nlegit),
     $nreq[1],
     $aid_util'req_descr_long[1]; #'#
-printf FMTOUT "%2.0f%% (%4d) - %s\n",
+printf FMTOUT "%3.0f%% (%4d) - %s\n",
     ((100 * $nreq[2]) / $nlegit),
     $nreq[2],
     $aid_util'req_descr_long[2]; #'#
-printf FMTOUT "%2.0f%% (%4d) - %s\n",
+printf FMTOUT "%3.0f%% (%4d) - %s\n",
     ((100 * $nreq[3]) / $nlegit),
     $nreq[3],
     $aid_util'req_descr_long[3]; #'#
-printf FMTOUT "%2.0f%% (%4d) - %s\n",
+printf FMTOUT "%3.0f%% (%4d) - %s\n",
     ((100 * $nreq[4]) / $nlegit),
     $nreq[4],
     $aid_util'req_descr_long[4]; #'#
 
 print FMTOUT "\n";
 
-printf FMTOUT "%2.0f%% (%4d) allow class officers to mail reunion info\n",
+printf FMTOUT "%3.0f%% (%4d) allow class officers to mail reunion info\n",
     ((100 * $nreunion) / $nlegit), $nreunion;
-printf FMTOUT "%2.0f%% (%4d) wrote some location info\n",
+printf FMTOUT "%3.0f%% (%4d) wrote some location info\n",
     ((100 * $nlocation) / $nlegit), $nlocation;
-printf FMTOUT "%2.0f%% (%4d) have personal web page\n",
+printf FMTOUT "%3.0f%% (%4d) have personal web page\n",
     ((100 * $nweb) / $nlegit), $nweb;
-printf FMTOUT "%2.0f%% (%4d) wrote What's New? paragraph\n",
+printf FMTOUT "%3.0f%% (%4d) wrote What's New? paragraph\n",
     ((100 * $nnews) / $nlegit), $nnews;
 
 print FMTOUT "\n";
 
-printf FMTOUT "%2.0f%% (%4d) joined during past week\n",
+printf FMTOUT "%3.0f%% (%4d) joined during past week\n",
     ((100.0 * $nweek) / $nlegit), $nweek;
-printf FMTOUT "%2.0f%% (%4d) joined during past month\n",
+printf FMTOUT "%3.0f%% (%4d) joined during past month\n",
     ((100.0 * $nmonth) / $nlegit), $nmonth;
-printf FMTOUT "%2.0f%% (%4d) joined during past 3 months\n",
+printf FMTOUT "%3.0f%% (%4d) joined during past 3 months\n",
     ((100.0 * $n3month) / $nlegit), $n3month;
-printf FMTOUT "%2.0f%% (%4d) joined during past year\n",
+printf FMTOUT "%3.0f%% (%4d) joined during past year\n",
     ((100.0 * $n13month) / $nlegit), $n13month;
-printf FMTOUT "%2.0f%% (%4d) have never modified their listings\n",
+printf FMTOUT "%3.0f%% (%4d) have never modified their listings\n",
     ((100.0 * $nnever_updated) / $nlegit), $nnever_updated;
 
 print FMTOUT "\n";
