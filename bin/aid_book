@@ -1,0 +1,65 @@
+#!/usr/local/bin/perl
+#
+# converts UC-Update type alias file into a
+# pine-style address book
+#
+
+@INC=('/u/mjr/doc/mvhs', '/usr/local/lib/perl');
+require 'mv_util.pl';
+require 'getopts.pl';
+
+$usage = 'usage: mv_book [-h] -{p,e,b,w,m,n} infile.adr outfile
+    -h        Display usage information.
+
+    -p        Pine address book
+    -e        Elm aliases
+    -b        Berkeley Mail aliases
+    -w        Eudora for Windows nicknames
+    -m        Eudora Pro for Macintosh nicknames
+    -n        Netscape address book
+';
+
+# get the command-line options and die if there is a bad option or
+# there are no filenames
+&Getopts('hpebwmn') || die "$usage\n";
+$opt_h && die "$usage\n";
+$ARGV[0] || die "$usage\n";
+$ARGV[1] || die "$usage\n";
+
+open(MVHS,$ARGV[0]) || die "Can't open $ARGV[0]: $!\n";
+open(BOOK,">$ARGV[1]") || die "Can't open $ARGV[1]: $!\n";
+
+# special case for netscape
+$opt_n && print BOOK "<TITLE>MVHS Alumni Address book</TITLE>\n";
+$opt_n && print BOOK "<H1>MVHS Alumni Address book</H1>\n\n";
+$opt_n && print BOOK "<DL><p>\n";
+
+while(<MVHS>) {
+    chop;
+    ($time,$id,$req,$last,$first,$school,$year,$email,$alias,$homepage) = &mv_parse($_);
+    
+    if ($aliases{$alias} > 0) {
+	$aliases{$alias} = $aliases{$alias} + 1;
+	$alias = substr($alias, 0, 7) . $aliases{$alias};
+    } else {
+	$aliases{$alias} = 1;
+    }
+
+    $opt_p && print BOOK "$alias\t$last, $first\t$email\t\t$school $year\n";
+    $opt_e && print BOOK "$alias = $last; $first, $school $year = $email\n";
+    $opt_b && print BOOK "alias $alias\t$email\n";
+    $opt_w && print BOOK "<$alias>\n>$first $last <$email>\n<$alias>\n>$school $year\n";
+    $opt_m && print BOOK "alias $alias $email ($first $last)\nnote $alias $school $year\n";
+
+    # netscape is a bigger sucker
+    $opt_n && print BOOK "    <DT><A HREF=\"mailto:$email\" ";
+    $opt_n && print BOOK "NICKNAME=\"$alias\">$first $last</A>\n";
+    $opt_n && print BOOK "<DD>$school $year\n";
+
+}
+
+$opt_n && print BOOK "</DL><p>\n";
+close(MVHS);
+close(BOOK);
+
+exit(0);

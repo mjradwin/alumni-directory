@@ -1,0 +1,81 @@
+#!/usr/local/bin/perl
+
+# does the html version of the alphabetical address list
+#
+
+@INC=('/u/mjr/doc/mvhs', '/usr/local/lib/perl');
+require 'mv_util.pl';
+require 'ctime.pl';
+require 'getopts.pl';
+
+$today = &ctime(time);
+chop $today;
+
+$usage = 'usage: mv_alpha_html [-t] infile.adr outfile
+    -h        Display usage information.
+
+    -t        Output text only
+';
+
+&Getopts('ht') || die "$usage\n";
+$opt_h && die "$usage\n";
+$ARGV[0] || die "$usage\n";
+$ARGV[1] || die "$usage\n";
+
+open(MVHS,$ARGV[0]) || die "Can't open $ARGV[0]: $!\n";
+open(FMTOUT,">$ARGV[1]") || die "Can't open $ARGV[1]: $!\n";
+
+if (!$opt_t) {
+    print FMTOUT &common_html_hdr(1);
+    print FMTOUT "<p>Index: <tt>";
+    # do the funky quick-jump bar
+    $lastInitial = 'A';
+    while ($lastInitial ne 'AA') {
+	print FMTOUT "<a href=\"#$lastInitial\">$lastInitial</a>\n";
+	$lastInitial++;
+    }
+    print FMTOUT "</tt>";
+    print FMTOUT "\n<p>\n<pre>";
+}
+
+print FMTOUT "Name                       Email                           Grad. Class/School\n";
+print FMTOUT "-----------------------------------------------------------------------------";
+
+
+$lastInitial = "Z";
+while(<MVHS>) {
+    chop;
+    ($time,$id,$req,$last,$first,$school,$year,$email,$alias,$homepage) = &mv_parse($_);
+
+    if ($lastInitial ne substr($last, 0, 1)) {
+	$lastInitial = substr($last, 0, 1);
+	print FMTOUT "\n";
+	$opt_t || print FMTOUT "<a name=\"$lastInitial\">";
+	print FMTOUT $lastInitial;
+	$opt_t || print FMTOUT "</a>  (<a href=\"#index\">top</a>)";
+	print FMTOUT "\n";
+    }
+    if ($first) {
+       $fullname = "$last, $first";
+    } else {
+       $fullname = $last;
+    }
+    print FMTOUT '   ';
+    $opt_t || print FMTOUT "<a href=\"$homepage\">" if $homepage ne '';
+    print FMTOUT $fullname;
+    $opt_t || print FMTOUT "</a>" if $homepage ne '';
+    print FMTOUT ' ' x (24 - length($fullname));
+    $opt_t || print FMTOUT "<a href=\"mailto:", $email, "\">";
+    print FMTOUT $email;
+    $opt_t || print FMTOUT "</a>";
+    print FMTOUT ' ', ' ' x (35 - length($email));
+    print FMTOUT $year;
+    print FMTOUT " $school" if $school ne 'MVHS' && $school ne '';
+$opt_t || print FMTOUT " <img alt=\"[new]\" WIDTH=28 HEIGHT=11 SRC=\"new.gif\">" if &is_new($time);
+    print FMTOUT "\n";
+}
+
+$opt_t || print FMTOUT "</PRE>\n";
+$opt_t || print FMTOUT &common_html_ftr;
+
+exit(0);

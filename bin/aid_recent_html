@@ -1,0 +1,49 @@
+#!/usr/local/bin/perl
+
+# does the html version of the recent address list
+#
+
+@INC=('/u/mjr/doc/mvhs', '/usr/local/lib/perl');
+require 'mv_util.pl';
+require 'ctime.pl';
+
+$now = time;
+$today = &ctime(time);
+chop $today;
+
+die "Usage: mv_new_html infile.adr outfile.html\n" if !$ARGV[0] || !$ARGV[1];
+open(MVHS,$ARGV[0]) || die "Can't open $ARGV[0]: $!\n";
+open(FMTOUT,">$ARGV[1]") || die "Can't open $ARGV[1]: $!\n";
+
+print FMTOUT &common_html_hdr(3);
+print FMTOUT "<pre>";
+print FMTOUT "Name                       Email                           Grad. Class/School\n";
+print FMTOUT "-----------------------------------------------------------------------------\n";
+
+while(<MVHS>) {
+    chop;
+    ($time,$id,$req,$last,$first,$school,$year,$email,$alias,$homepage) = &mv_parse($_);
+    next unless &is_new($time);
+
+    if ($first) {
+       $fullname = "$last, $first";
+    } else {
+       $fullname = $last;
+    }
+#    print FMTOUT '   ';
+    print FMTOUT "<a href=\"$homepage\">" if $homepage ne '';
+    print FMTOUT $fullname;
+    print FMTOUT "</a>" if $homepage ne '';
+    print FMTOUT ' ' x (27 - length($fullname));
+    print FMTOUT "<a href=\"mailto:", $email, "\">", $email, "</a>";
+    print FMTOUT ' ', ' ' x (36 - length($email));
+    print FMTOUT $year;
+    print FMTOUT " $school" if $school ne 'MVHS' && $school ne '';
+#    print FMTOUT " <img alt=\"[new]\" WIDTH=28 HEIGHT=11 SRC=\"new.gif\">";
+    print FMTOUT "\n";
+}
+
+print FMTOUT "</pre>\n";
+print FMTOUT &common_html_ftr;
+
+exit(0);

@@ -1,0 +1,42 @@
+#!/usr/local/bin/perl
+
+# does the html version of just home pages
+#
+
+@INC=('/u/mjr/doc/mvhs', '/usr/local/lib/perl');
+require 'mv_util.pl';
+require 'getopts.pl';
+require 'ctime.pl';
+
+$usage = 'usage: mv_home_html [-h] -i|-s
+    -h        Display usage information.
+    -i        Create the index page
+    -s        Create the submit page
+';
+
+&Getopts('his') || die "$usage\n";
+$opt_h && die "$usage\n";
+$opt_i || $opt_s || die "$usage\n";
+$opt_i && $opt_s && die "$usage\n";
+$pageno = 0;
+$pageno = 5 if $opt_s;
+
+$home = "/pro/web/web/people/mjr/mvhs/.home.include";
+$fmtout = ($opt_i) ? "/pro/web/web/people/mjr/mvhs/home.html"
+    : "/pro/web/web/people/mjr/mvhs/add.html";
+
+open(FMTOUT,">$fmtout") || die "Can't open $fmtout: $!\n";
+
+print FMTOUT &common_html_hdr($pageno);
+if ($opt_i) {
+    open(HOME,$home) || die "Can't open $home: $!\n";
+    @lines = <HOME>;
+    print FMTOUT @lines;
+    close(HOME);
+} else {
+    print FMTOUT &submit_body(":-1:1:::MVHS:::");
+}
+
+print FMTOUT &common_html_ftr;
+
+exit(0);
