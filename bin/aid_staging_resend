@@ -1,6 +1,6 @@
 #!/usr/local/bin/perl -w
 
-# $Id: aid_staging_resend,v 1.4 2001/09/16 16:57:51 mradwin Exp mradwin $
+# $Id: aid_staging_resend,v 1.5 2002/03/07 23:29:39 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -23,8 +23,8 @@ $dirname = $0;
 $dirname =~ s,/[^/]+$,,;
 unshift(@INC, $dirname);
 
-use DB_File;
-use Fcntl qw(:DEFAULT :flock);
+use lib "/pub/m/r/mradwin/private/lib/perl5/site_perl";
+use DB_File::Lock;
 
 require 'aid_util.pl';
 use Getopt::Std;
@@ -42,13 +42,9 @@ $opt_h && die "$usage\n";
 my($dbmfile) = &aid_config('staging');
 die "$dbmfile: $!\n" unless -r $dbmfile;
 
-my(%DB,$db,$fd);
-$db = tie(%DB, 'DB_File', $dbmfile, O_CREAT|O_RDWR, 0644,
-	   $DB_File::DB_HASH)
+my(%DB);
+tie(%DB, 'DB_File::Lock', $dbmfile, O_CREAT|O_RDWR, 0644, $DB_HASH, 'write')
     or die "$dbmfile: $!\n";
-
-$fd = $db->fd;
-open(DB_FH, "+<&=$fd") || die "dup $!";
 
 foreach $key (@ARGV)
 {
@@ -72,11 +68,8 @@ foreach $key (@ARGV)
 	next unless $status;
 
 	# update timestamp
-	unless (flock (DB_FH, LOCK_EX)) { die "flock: $!" }
 	$rec{'lm'} = time;
 	$DB{$key} = $rec{'id'} . "\0" . &aid_db_pack_rec(*rec);
-	$db->sync;
-	flock(DB_FH, LOCK_UN);
 
 	# display something to stdout
 	($affil,undef) = &aid_affiliate(*rec,0);
@@ -89,9 +82,7 @@ foreach $key (@ARGV)
     }
 }
 
-undef $db;
 untie(%DB);
-close(DB_FH);
 
 exit 0;
 

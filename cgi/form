@@ -4,7 +4,7 @@
 #     FILE: form.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: Alumni Internet Directory CGI form-submission interface
-#      $Id: form,v 5.43 2001/09/16 16:58:27 mradwin Exp mradwin $
+#      $Id: form,v 5.44 2003/02/20 01:09:16 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -28,18 +28,17 @@ $dirname =~ s,/[^/]+$,,;
 unshift(@INC, $dirname);
 
 require 'aid_util.pl';
-use DB_File;
-use Fcntl qw(:DEFAULT :flock);
 use CGI;
 use CGI::Carp qw(fatalsToBrowser);
 
 use lib "/pub/m/r/mradwin/private/lib/perl5/site_perl";
+use DB_File::Lock;
 use Email::Valid;
 
 # configuration
-$dbmfile = &aid_config('dbmfile');
+my $dbmfile = &aid_config('dbmfile');
 
-$rcsid = '$Id: form,v 5.43 2001/09/16 16:58:27 mradwin Exp mradwin $'; #'fnt
+$rcsid = '$Id: form,v 5.44 2003/02/20 01:09:16 mradwin Exp mradwin $'; #'fnt
 
 $listing_upd_title = 'Modify Your Directory Listing';
 $listing_add_title = 'Join the Directory';
@@ -75,30 +74,21 @@ elsif (defined($cgi{'update'}) || defined($cgi{'upd'}))
 
     if ($key =~ /^\d+$/)
     {
-	my($db) = tie(%DB, 'DB_File', $dbmfile, O_RDONLY, 0444,
-		      $DB_File::DB_HASH)
+	my(%DB);
+	tie(%DB, 'DB_File::Lock', $dbmfile, O_RDONLY, 0444, $DB_HASH, 'read')
 	    or die "$dbmfile: $!\n";
+	my $val = $DB{$key};
+	untie(%DB);
 
-	my($fd) = $db->fd;
-	open(DB_FH, "<&=$fd") || die "dup $!";
-
-	unless (flock (DB_FH, LOCK_SH | LOCK_NB)) {
-	    unless (flock (DB_FH, LOCK_SH)) { die "flock: $!" }
-	}
-
-	if (defined $DB{$key})
+	if (defined $val)
 	{
-	    %updateme = &aid_db_unpack_rec($key,$DB{$key});
+	    %updateme = &aid_db_unpack_rec($key,$val);
 	    &send_upd_real(*updateme,'');
 	}
 	else
 	{
 	    &send_upd_real(*aid_util::blank_entry,'');
 	}
-	flock(DB_FH, LOCK_UN);
-	undef $db;
-	untie(%DB);
-	close(DB_FH);
     }
     elsif ($key =~ /^\s*[^@]+@[^\.]+\./) 
     {
@@ -106,16 +96,9 @@ elsif (defined($cgi{'update'}) || defined($cgi{'upd'}))
 	$key =~ s/\s*$//;
 	$key = "\L$key\E";
 
-	my($db) = tie(%DB, 'DB_File', $dbmfile, O_RDONLY, 0444,
-		      $DB_File::DB_HASH)
+	my(%DB);
+	tie(%DB, 'DB_File::Lock', $dbmfile, O_RDONLY, 0444, $DB_HASH, 'read')
 	    or die "$dbmfile: $!\n";
-
-	my($fd) = $db->fd;
-	open(DB_FH, "<&=$fd") || die "dup $!";
-
-	unless (flock (DB_FH, LOCK_SH | LOCK_NB)) {
-	    unless (flock (DB_FH, LOCK_SH)) { die "flock: $!" }
-	}
 
 	if (defined $DB{$key})
 	{
@@ -124,10 +107,7 @@ elsif (defined($cgi{'update'}) || defined($cgi{'upd'}))
 	    {
 		%updateme = &aid_db_unpack_rec($id,$DB{$id});
 
-		flock(DB_FH, LOCK_UN);
-		undef $db;
 		untie(%DB);
-		close(DB_FH);
 
 		&send_upd_real(*updateme,'');
 		close(STDOUT);
@@ -136,10 +116,7 @@ elsif (defined($cgi{'update'}) || defined($cgi{'upd'}))
 	}
 	&send_upd_notfound($key);
 
-	flock(DB_FH, LOCK_UN);
-	undef $db;
 	untie(%DB);
-	close(DB_FH);
     }
     else
     {
@@ -349,16 +326,8 @@ sub queue_submission {
     my($dbmfilew) = &aid_config('staging');
 
     my(%DBW);
-    my($dbw) = tie(%DBW, 'DB_File', $dbmfilew, O_CREAT|O_RDWR, 0644,
-		   $DB_File::DB_HASH)
-	or die "$dbmfilew: $!\n";
-
-    my($fdw) = $dbw->fd;
-    open(DB_FHW, "+<&=$fdw") || die "dup $!";
-    
-    unless (flock (DB_FHW, LOCK_EX | LOCK_NB)) {
-	unless (flock (DB_FHW, LOCK_EX)) { die "flock: $!" }
-    }
+    tie(%DBW, 'DB_File::Lock', $dbmfilew, O_CREAT|O_RDWR, 0644,
+	$DB_HASH, 'write') or die "$dbmfilew: $!\n";
 
     my($randkey);
 
@@ -393,11 +362,7 @@ sub queue_submission {
 	    $DBW{'_verified'} = $randkey;
 	}
 
-	$dbw->sync;
-	flock(DB_FHW, LOCK_UN);
-	undef $dbw;
 	untie(%DBW);
-	close(DB_FHW);
 
 	$fullname = &aid_inorder_fullname(*cgi);
 
@@ -426,11 +391,7 @@ Here is what your listing will look like:
     }
     else
     {
-	$dbw->sync;
-	flock(DB_FHW, LOCK_UN);
-	undef $dbw;
 	untie(%DBW);
-	close(DB_FHW);
 
 	&send_verify_email($randkey);
     }
@@ -466,23 +427,14 @@ sub send_verify_email {
     # success sending email; update last-mail timestamp
     my($dbmfilew) = &aid_config('staging');
 
-    my(%DBW,$dbw,$fdw);
-    $dbw = tie(%DBW, 'DB_File', $dbmfilew, O_CREAT|O_RDWR, 0644,
-		   $DB_File::DB_HASH)
-	or die "$dbmfilew: $!\n";
-
-    $fdw = $dbw->fd;
-    open(DB_FHW, "+<&=$fdw") || die "dup $!";
-    unless (flock (DB_FHW, LOCK_EX)) { die "flock: $!" }
+    my(%DBW);
+    tie(%DBW, 'DB_File::Lock', $dbmfilew, O_CREAT|O_RDWR, 0644,
+	$DB_HASH, 'write') or die "$dbmfilew: $!\n";
 
     $cgi{'lm'} = time;
     $DBW{$randkey} = $cgi{'id'} . "\0" . &aid_db_pack_rec(*cgi);
 
-    $dbw->sync;
-    flock(DB_FHW, LOCK_UN);
-    undef $dbw;
     untie(%DBW);
-    close(DB_FHW);
 
     print "Content-Type: text/html\015\012\015\012";
     print &aid_common_html_hdr(20,'Final Step: verify e-mail address',1);

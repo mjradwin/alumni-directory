@@ -4,7 +4,7 @@
 #     FILE: alumni.txt.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: Address Book/Nicknames Downloading module
-#      $Id: alumni.txt,v 5.11 2001/01/26 18:40:27 mradwin Exp mradwin $
+#      $Id: alumni.txt,v 5.12 2003/02/20 01:09:44 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -28,12 +28,12 @@ $dirname =~ s,/[^/]+$,,;
 unshift(@INC, $dirname);
 
 require 'aid_util.pl';
-use DB_File;
-use Fcntl qw(:DEFAULT :flock);
+use lib "/pub/m/r/mradwin/private/lib/perl5/site_perl";
+use DB_File::Lock;
 use CGI;
 use CGI::Carp qw(fatalsToBrowser);
 
-$dbmfile = &aid_config('dbmfile');
+my $dbmfile = &aid_config('dbmfile');
 die "$dbmfile: $!\n" unless -r $dbmfile;
 
 CGI::ReadParse();
@@ -80,7 +80,7 @@ exit(0);
 
 sub send_address_book {
     local($format,$year,$plusminus_p) = @_;
-    local(@class_ids,%DB);
+    local(@class_ids);
     local($_,%rec,$minyr,$maxyr);
     local($subtype) = 'plain';
     local($filename) = &aid_config('short_school');
@@ -112,15 +112,9 @@ sub send_address_book {
 	$minyr = $maxyr = $year;
     }
 
-    my($db) = tie(%DB, 'DB_File', $dbmfile, O_RDONLY, 0444, $DB_File::DB_HASH)
+    my(%DB);
+    tie(%DB, 'DB_File::Lock', $dbmfile, O_RDONLY, 0444, $DB_HASH, 'read')
 	or die "$dbmfile: $!\n";
-
-    my($fd) = $db->fd;
-    open(DB_FH, "<&=$fd") || die "dup $!";
-
-    unless (flock (DB_FH, LOCK_SH | LOCK_NB)) {
-	unless (flock (DB_FH, LOCK_SH)) { die "flock: $!" }
-    }
 
     defined $DB{'_class'} || die "$dbmfile: missing _class\n";
 
@@ -148,10 +142,8 @@ sub send_address_book {
 
 	&aid_book_write_entry(*STDOUT,$format,*rec);
     }
-    flock(DB_FH, LOCK_UN);
-    undef $db;
+
     untie(%DB);
-    close(DB_FH);
 
     &aid_book_write_suffix(*STDOUT,$format);
 }

@@ -4,7 +4,7 @@
 #     FILE: msg.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: Alumni Internet Directory update redirector
-#      $Id: msg,v 1.5 2003/02/20 19:17:26 mradwin Exp mradwin $
+#      $Id: msg,v 1.6 2003/02/21 19:36:56 mradwin Exp mradwin $
 #
 #   Copyright (c) 2003  Michael John Radwin
 #
@@ -28,21 +28,29 @@ $dirname =~ s,/[^/]+$,,;
 unshift(@INC, $dirname);
 
 require 'aid_util.pl';
-use DB_File;
-use Fcntl qw(:DEFAULT :flock);
 use CGI;
 use CGI::Carp qw(fatalsToBrowser);
 
 use lib "/pub/m/r/mradwin/private/lib/perl5/site_perl";
+use DB_File::Lock;
 use Digest::MD5  qw(md5_hex);
 use Email::Valid;
 
 CGI::ReadParse();
 
+my $dbmfile = &aid_config('dbmfile');
+die "$dbmfile: $!\n" unless -r $dbmfile;
+
 if (defined($in{'to'}) && $in{'to'} =~ /^\d+$/)
 {
     my $id = $in{'to'};
-    my $val = get_db_val($id);
+
+    my(%DB);
+    tie(%DB, 'DB_File::Lock', $dbmfile, O_RDONLY, 0444, $DB_HASH, 'read')
+	or die "$dbmfile: $!\n";
+    my $val = $DB{$id};
+    untie(%DB);
+
     bail() unless $val;
 
     %rec = &aid_db_unpack_rec($id,$val);
@@ -63,7 +71,13 @@ elsif (defined($in{'id'}) && $in{'id'} =~ /^\d+$/ && $in{'hash'} &&
        defined($in{'message'}))
 {
     my $id = $in{'id'};
-    my $val = get_db_val($id);
+
+    my(%DB);
+    tie(%DB, 'DB_File::Lock', $dbmfile, O_RDONLY, 0444, $DB_HASH, 'read')
+	or die "$dbmfile: $!\n";
+    my $val = $DB{$id};
+    untie(%DB);
+
     bail() unless $val;
 
     %rec = &aid_db_unpack_rec($id,$val);
@@ -230,30 +244,4 @@ sub bail
 		 ($err ? "<br><b>$err</b>" : ""));
     close(STDOUT);
     exit(0);
-}
-
-sub get_db_val
-{
-    my($id) = @_;
-    my $dbmfile = &aid_config('dbmfile');
-    die "$dbmfile: $!\n" unless -r $dbmfile;
-
-    my($db) = tie(%DB, 'DB_File', $dbmfile, O_RDONLY, 0444, $DB_File::DB_HASH)
-	or die "$dbmfile: $!\n";
-
-    my($fd) = $db->fd;
-    open(DB_FH, "<&=$fd") || die "dup $!";
-
-    unless (flock (DB_FH, LOCK_SH | LOCK_NB)) {
-	unless (flock (DB_FH, LOCK_SH)) { die "flock: $!" }
-    }
-
-    my $val = $DB{$id};
-
-    flock(DB_FH, LOCK_UN);
-    undef $db;
-    untie(%DB);
-    close(DB_FH);
-    
-    $val;
 }

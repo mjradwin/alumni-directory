@@ -4,7 +4,7 @@
 #     FILE: about.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: Alumni Internet Directory CGI "About" page generation
-#      $Id: about,v 5.17 2000/06/26 21:34:01 mradwin Exp mradwin $
+#      $Id: about,v 5.18 2001/09/16 16:58:27 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -28,8 +28,8 @@ $dirname =~ s,/[^/]+$,,;
 unshift(@INC, $dirname);
 
 require 'aid_util.pl';
-use DB_File;
-use Fcntl qw(:DEFAULT :flock);
+use lib "/pub/m/r/mradwin/private/lib/perl5/site_perl";
+use DB_File::Lock;
 
 &aid_cgi_die('$PATH_INFO Missing', "This URL is bogus.")
     unless defined $ENV{'PATH_INFO'};
@@ -44,36 +44,21 @@ if ($ENV{'PATH_INFO'} =~ m,/(\d+)$,)
     $dbmfile = &aid_config('dbmfile');
     die "$dbmfile: $!\n" unless -r $dbmfile;
 
-    my($db) = tie(%DB, 'DB_File', $dbmfile, O_RDONLY, 0444, $DB_File::DB_HASH)
+    my(%DB);
+    tie(%DB, 'DB_File::Lock', $dbmfile, O_RDONLY, 0444, $DB_HASH, 'read')
 	or die "$dbmfile: $!\n";
 
-    my($fd) = $db->fd;
-    open(DB_FH, "<&=$fd") || die "dup $!";
+    $val = $DB{$id};
 
-    unless (flock (DB_FH, LOCK_SH | LOCK_NB)) {
-	unless (flock (DB_FH, LOCK_SH)) { die "flock: $!" }
-    }
+    untie(%DB);
 
-    if (defined $DB{$id})
+    if (defined $val)
     {
-	$val = $DB{$id};
-	flock(DB_FH, LOCK_UN);
-	undef $db;
-	untie(%DB);
-	close(DB_FH);
-
 	%rec = &aid_db_unpack_rec($id,$val);
 
 	&send_about(*rec);
 	close(STDOUT);
 	exit(0);
-    }
-    else
-    {
-	flock(DB_FH, LOCK_UN);
-	undef $db;
-	untie(%DB);
-	close(DB_FH);
     }
 }
 

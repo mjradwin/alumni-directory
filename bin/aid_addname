@@ -1,6 +1,6 @@
 #!/usr/local/bin/perl -w
 
-# $Id: aid_addname,v 5.32 2002/03/07 23:29:39 mradwin Exp mradwin $
+# $Id: aid_addname,v 5.33 2003/03/14 23:30:26 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -24,8 +24,8 @@ $dirname =~ s,/[^/]+$,,;
 unshift(@INC, $dirname);
 
 use Getopt::Std;
-use DB_File;
-use Fcntl qw(:DEFAULT :flock);
+use lib "/pub/m/r/mradwin/private/lib/perl5/site_perl";
+use DB_File::Lock;
 require 'aid_util.pl';
 
 $0 =~ s,.*/,,;  # basename
@@ -70,13 +70,9 @@ sub readspool
     die "$staging: $!\n" unless -r $staging;
 
     my(%DBS);
-    my($dbs) = tie(%DBS, 'DB_File', $staging, O_CREAT|O_RDWR, 0644,
-		   $DB_File::DB_HASH)
+    tie(%DBS, 'DB_File::Lock', $staging, O_CREAT|O_RDWR, 0644,
+	$DB_HASH, 'write')
 	or die "$staging: $!\n";
-
-    my($fd) = $dbs->fd;
-    open(DBS_FH, "+<&=$fd") || die "dup $!";
-    unless (flock (DBS_FH, LOCK_EX)) { die "flock: $!" }
 
     my(@vals) = ();
     if (defined $DBS{'_verified'})
@@ -119,13 +115,9 @@ sub readspool
 	}
 
 	delete $DBS{'_verified'};
-	$dbs->sync;
     }
 
-    flock(DBS_FH, LOCK_UN);
-    undef $dbs;
     untie(%DBS);
-    close(DBS_FH);
 
     my($val);
     foreach $val (@vals)
@@ -144,21 +136,13 @@ sub readspool
     if ($success)
     {
 	my(%DB);
-	my($db) = tie(%DB, 'DB_File', $dbmfile, O_CREAT|O_RDWR, 0644,
-		      $DB_File::DB_HASH)
+	tie(%DB, 'DB_File::Lock', $dbmfile, O_CREAT|O_RDWR, 0644,
+	    $DB_HASH, 'write')
 	    or die "$dbmfile: $!\n";
-
-	my($fd) = $db->fd;
-	open(DB_FH, "+<&=$fd") || die "dup $!";
-	unless (flock (DB_FH, LOCK_EX)) { die "flock: $!" }
 
 	@mod_keys = aid_rebuild_secondary_keys(\%DB,$opt_q,0,1);
 
-	$db->sync;
-	flock(DB_FH, LOCK_UN);
-	undef $db;
 	untie(%DB);
-	close(DB_FH);
     }
 
     $success;
@@ -218,13 +202,8 @@ sub addname
     $logFile = &aid_config('aiddir') . "logs/additions.log";
 
     my(%DB);
-    my($db) = tie(%DB, 'DB_File', $dbmfile, O_CREAT|O_RDWR, 0644,
-		  $DB_File::DB_HASH)
+    tie(%DB, 'DB_File::Lock', $dbmfile, O_CREAT|O_RDWR, 0644, $DB_HASH, 'write')
 	or die "$dbmfile: $!\n";
-
-    my($fd) = $db->fd;
-    open(DB_FH, "+<&=$fd") || die "dup $!";
-    unless (flock (DB_FH, LOCK_EX)) { die "flock: $!" }
 
     while (($key,$val) = each %DB)
     {
@@ -321,11 +300,7 @@ sub addname
     $email = $rec{'e'};
     $DB{"\L$email\E"} = pack('n', $rec{'id'});
 
-    $db->sync;
-    flock(DB_FH, LOCK_UN);
-    undef $db;
     untie(%DB);
-    close(DB_FH);
 
     local($joined) = &aid_ampersand_join(*rec);
     print     $joined, "\n"

@@ -4,7 +4,7 @@
 #     FILE: search.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: Alumni Internet Directory CGI search
-#      $Id: search,v 5.21 2001/09/16 16:58:27 mradwin Exp mradwin $
+#      $Id: search,v 5.22 2003/02/20 01:28:10 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -28,23 +28,17 @@ $dirname =~ s,/[^/]+$,,;
 unshift(@INC, $dirname);
 
 require 'aid_util.pl';
-use DB_File;
-use Fcntl qw(:DEFAULT :flock);
+use lib "/pub/m/r/mradwin/private/lib/perl5/site_perl";
+use DB_File::Lock;
 use CGI;
 use CGI::Carp qw(fatalsToBrowser);
 
 $dbmfile = &aid_config('dbmfile');
 die "$dbmfile: $!\n" unless -r $dbmfile;
 
-my($db) = tie(%DB, 'DB_File', $dbmfile, O_RDONLY, 0444, $DB_File::DB_HASH)
+my(%DB);
+tie(%DB, 'DB_File::Lock', $dbmfile, O_RDONLY, 0444, $DB_HASH, 'read')
     or die "$dbmfile: $!\n";
-
-my($fd) = $db->fd;
-open(DB_FH, "<&=$fd") || die "dup $!";
-
-unless (flock (DB_FH, LOCK_SH | LOCK_NB)) {
-    unless (flock (DB_FH, LOCK_SH)) { die "flock: $!" }
-}
 
 CGI::ReadParse();
 if (!defined($in{'q'}) || $in{'q'} =~ /^[^\w]*$/)
@@ -55,10 +49,7 @@ if (!defined($in{'q'}) || $in{'q'} =~ /^[^\w]*$/)
     &print_search_form('', defined $in{'y'} ? $in{'y'} : '');
     print &aid_common_html_ftr(6);
 
-    flock(DB_FH, LOCK_UN);
-    undef $db;
     untie(%DB);
-    close(DB_FH);
 
     close(STDOUT);
     exit(0);
@@ -137,10 +128,7 @@ if ($#results == -1)
     &print_search_form($query_save, defined $in{'y'} ? $in{'y'} : '');
     print &aid_common_html_ftr(26);
 
-    flock(DB_FH, LOCK_UN);
-    undef $db;
     untie(%DB);
-    close(DB_FH);
 
     close(STDOUT);
     exit(0);
@@ -187,10 +175,7 @@ else
     print &aid_common_html_ftr(26);
 }
 
-flock(DB_FH, LOCK_UN);
-undef $db;
 untie(%DB);
-close(DB_FH);
 
 close(STDOUT);
 exit(0);

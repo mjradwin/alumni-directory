@@ -4,7 +4,7 @@
 #     FILE: remove.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: CGI for removal of e-mail address from staging DB
-#      $Id: remove,v 1.8 2000/06/07 22:44:14 mradwin Exp mradwin $
+#      $Id: remove,v 1.9 2001/09/16 16:58:27 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-2000  Michael John Radwin
 #
@@ -28,8 +28,8 @@ $dirname =~ s,/[^/]+$,,;
 unshift(@INC, $dirname);
 
 require 'aid_util.pl';
-use DB_File;
-use Fcntl qw(:DEFAULT :flock);
+use lib "/pub/m/r/mradwin/private/lib/perl5/site_perl";
+use DB_File::Lock;
 use CGI;
 use CGI::Carp qw(fatalsToBrowser);
 
@@ -51,19 +51,12 @@ else
 
 if (defined $key)
 {
-    $dbmfile = &aid_config('staging');
+    my $dbmfile = &aid_config('staging');
     die "$dbmfile: $!\n" unless -r $dbmfile;
 
-    my($db) = tie(%DB, 'DB_File', $dbmfile, O_CREAT|O_RDWR, 0644,
-		  $DB_File::DB_HASH)
+    my(%DB);
+    tie(%DB, 'DB_File::Lock', $dbmfile, O_CREAT|O_RDWR, 0644, $DB_HASH, 'write')
 	or die "$dbmfile: $!\n";
-
-    my($fd) = $db->fd;
-    open(DB_FH, "+<&=$fd") || die "dup $!";
-
-    unless (flock (DB_FH, LOCK_EX | LOCK_NB)) {
-	unless (flock (DB_FH, LOCK_EX)) { die "flock: $!" }
-    }
 
     if (defined $DB{$key} && $DB{$key} =~ /^-?\d+\0/)
     {
@@ -74,12 +67,7 @@ if (defined $key)
 	if (defined($in{'confirm'}))
 	{
 	    $DB{$key} = "r\0";
-	    $db->sync;
-
-	    flock(DB_FH, LOCK_UN);
-	    undef $db;
 	    untie(%DB);
-	    close(DB_FH);
 
 	    print "Content-Type: text/html\015\012\015\012";
 	    print &aid_common_html_hdr(20,'E-mail address removed',1);
@@ -97,10 +85,7 @@ inconvenience this may have caused you.</p>
 	}
 	elsif (defined($in{'skip'}))
 	{
-	    flock(DB_FH, LOCK_UN);
-	    undef $db;
 	    untie(%DB);
-	    close(DB_FH);
 
 	    print "Location: http://", 
 	    &aid_config('master_srv'), &aid_config('master_path'),
@@ -111,10 +96,7 @@ inconvenience this may have caused you.</p>
 	}
 	else
 	{
-	    flock(DB_FH, LOCK_UN);
-	    undef $db;
 	    untie(%DB);
-	    close(DB_FH);
 
 	    print "Content-Type: text/html\015\012\015\012";
 	    print &aid_common_html_hdr(20,'Remove user',1);
@@ -158,10 +140,7 @@ entry from the Directory?</big></p>
     }
     else
     {
-	flock(DB_FH, LOCK_UN);
-	undef $db;
 	untie(%DB);
-	close(DB_FH);
 
 	print "Content-Type: text/html\015\012\015\012";
         print &aid_common_html_hdr(20,'Remove user',1);

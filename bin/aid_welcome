@@ -2,7 +2,7 @@
 
 #
 # mails a welcome, update, confirm, or massmail message to members
-# $Id: aid_welcome,v 5.34 2003/03/14 20:25:54 mradwin Exp mradwin $
+# $Id: aid_welcome,v 5.35 2003/03/14 20:32:27 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -26,14 +26,12 @@ $dirname = $0;
 $dirname =~ s,/[^/]+$,,;
 unshift(@INC, $dirname);
 
-use DB_File;
-use Fcntl qw(:DEFAULT :flock);
-
 require 'aid_util.pl';
 use Getopt::Std;
 require 'ctime.pl';
 
 use lib "/pub/m/r/mradwin/private/lib/perl5/site_perl";
+use DB_File::Lock;
 use Net::SMTP; 
 
 $default_sleep = 0;
@@ -174,24 +172,12 @@ if ($opt_s || $opt_m) {
 
 $params{'sleep'} = $opt_d if defined $opt_d;
 
-$dbmfile = shift;
+my $dbmfile = shift;
 die "$0: $dbmfile: $!\n" unless -r $dbmfile;
-my($db,$fd);
-if (-w $dbmfile) 
-{
-    $db = tie(%DB, 'DB_File', $dbmfile, O_CREAT|O_RDWR, 0644,
-	      $DB_File::DB_HASH)
-	or die "$dbmfile: $!\n";
-}
-else
-{
-    warn "$0: warning: $dbmfile not writeable\n";
-    $db = tie(%DB, 'DB_File', $dbmfile, O_RDONLY, 0444,
-	      $DB_File::DB_HASH)
-	or die "$dbmfile: $!\n";
-}
-$fd = $db->fd;
-open(DB_FH, "+<&=$fd") || die "dup $!";
+
+my(%DB);
+tie(%DB, 'DB_File::Lock', $dbmfile, O_RDONLY, 0444, $DB_HASH, 'read')
+    or die "$dbmfile: $!\n";
 
 die "invalid DB: $dbmfile\n" unless defined $DB{'_class'};
 
@@ -206,8 +192,8 @@ print LOG "# [$today] - $0 ", join(' ', @args), "\n";
 if ($opt_a)
 {
     @ARGV = ();
-    unless (flock (DB_FH, LOCK_SH)) { die "flock: $!" }
-    while (($key,$val) = each(%DB))
+
+    while (my($key,$val) = each(%DB))
     {
 	if ($key =~ /^\d+$/)
 	{
@@ -225,11 +211,11 @@ if ($opt_a)
 	    push(@ARGV, $rec{'id'});
 	}
     }
-    flock(DB_FH, LOCK_UN);
 
     @ARGV = sort { $a <=> $b } @ARGV;
 }
 
+my(%lm);
 foreach (@ARGV)
 {
     unless (/^\d+$/)
@@ -238,43 +224,42 @@ foreach (@ARGV)
 	next;
     }
     
-    unless (flock (DB_FH, LOCK_SH)) { die "flock: $!" }
     unless (defined $DB{$_})
     {
 	warn "$0: skipping target `$_' (missing from $dbmfile)\n";
-	flock(DB_FH, LOCK_UN);
 	next;
     }
 
     %rec = &aid_db_unpack_rec($_,$DB{$_});
-    flock(DB_FH, LOCK_UN);
 
     $time = time;
     if (&mail_user($time, *rec))
     {
-	# sucessful mailing; update timestamp
-	$rec{'lm'} = $time;
-
-	if (-w $dbmfile)
-	{
-	    unless (flock (DB_FH, LOCK_EX)) { die "flock: $!" }
-	    $DB{$rec{'id'}} = &aid_db_pack_rec(*rec);
-	    $db->sync;
-	    flock(DB_FH, LOCK_UN);
-	}
-
+	$lm{$_} = $time;
 	sleep($params{'sleep'}) if $params{'sleep'} > 0;
     }
 }
 
+untie(%DB);
 close(LOG);
 
-undef $db;
-untie(%DB);
-close(DB_FH);
+if (-w $dbmfile)
+{
+    tie(%DB, 'DB_File::Lock', $dbmfile, O_CREAT|O_RDWR, 0644, $DB_HASH, 'write')
+	or die "$dbmfile: $!\n";
+
+    # sucessful mailing; update timestamp
+    while (my($key,$val) = each(%lm))
+    {
+	%rec = &aid_db_unpack_rec($key,$DB{$key});
+	$rec{'lm'} = $val;
+	$DB{$rec{'id'}} = &aid_db_pack_rec(*rec);
+    }
+
+    untie(%DB);
+}
 
 exit(0);
-
 
 sub mail_user
 {

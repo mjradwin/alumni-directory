@@ -1,6 +1,6 @@
 #!/usr/local/bin/perl -w
 
-# $Id: aid_delete_entry,v 1.9 2003/03/14 23:30:26 mradwin Exp mradwin $
+# $Id: aid_delete_entry,v 1.10 2003/05/01 19:08:06 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -23,8 +23,8 @@ $dirname = $0;
 $dirname =~ s,/[^/]+$,,;
 unshift(@INC, $dirname);
 
-use DB_File;
-use Fcntl qw(:DEFAULT :flock);
+use lib "/pub/m/r/mradwin/private/lib/perl5/site_perl";
+use DB_File::Lock;
 
 require 'aid_util.pl';
 use Getopt::Std;
@@ -45,13 +45,8 @@ defined $ARGV[1] || die "$usage\n";
 my $dbmfile = shift;
 
 my(%DB);
-my($db) = tie(%DB, 'DB_File', $dbmfile, O_CREAT|O_RDWR, 0644,
-	      $DB_File::DB_HASH)
+tie(%DB, 'DB_File::Lock', $dbmfile, O_CREAT|O_RDWR, 0644, $DB_HASH, 'write')
     or die "$dbmfile: $!\n";
-
-my($fd) = $db->fd;
-open(DB_FH, "+<&=$fd") || die "dup $!";
-unless (flock (DB_FH, LOCK_EX)) { die "flock: $!" }
 
 my $logFile = &aid_config('aiddir') . "logs/additions.log";
 open(LOG, ">>$logFile") || die "$0: can't open $logFile: $!\n";
@@ -94,7 +89,6 @@ print LOG "del - $joined\n";
 my $prevnextid = $DB{'_nextid'};
 my @diffs = &aid_rebuild_secondary_keys(\%DB,0);
 $DB{'_nextid'} = $prevnextid;
-$db->sync;
 
 if ($opt_d)
 {
@@ -106,11 +100,7 @@ if ($opt_d)
 
 warn "$0: delete successful\n";
 
-$db->sync;
-flock(DB_FH, LOCK_UN);
-undef $db;
 untie(%DB);
-close(DB_FH);
 
 close(LOG);
 exit 0;

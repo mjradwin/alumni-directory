@@ -1,6 +1,6 @@
 #!/usr/local/bin/perl -w
 
-# $Id: aid_dbm_read,v 5.20 2002/03/07 23:29:39 mradwin Exp mradwin $
+# $Id: aid_dbm_read,v 5.21 2002/08/01 20:06:03 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -23,8 +23,8 @@ $dirname = $0;
 $dirname =~ s,/[^/]+$,,;
 unshift(@INC, $dirname);
 
-use DB_File;
-use Fcntl qw(:DEFAULT :flock);
+use lib "/pub/m/r/mradwin/private/lib/perl5/site_perl";
+use DB_File::Lock;
 
 require 'aid_util.pl';
 use Getopt::Std;
@@ -54,12 +54,9 @@ die "$0: Too many mutually-exclusive options\n$usage\n"
 	($opt_f ? 1 : 0) + ($opt_o ? 1 : 0)) > 1;
 
 $dbmfile = shift;
-my($db) = tie(%DB, 'DB_File', $dbmfile, O_RDONLY, 0444, $DB_File::DB_HASH)
+my(%DB);
+tie(%DB, 'DB_File::Lock', $dbmfile, O_RDONLY, 0444, $DB_HASH, 'read')
     or die "$dbmfile: $!\n";
-defined $db or die "$dbmfile: $!\n";
-my($fd) = $db->fd;
-open(DB_FH, "<&=$fd") || die "dup $!";
-unless (flock (DB_FH, LOCK_SH)) { die "flock: $!" }
 
 if ($opt_u)
 {
@@ -225,10 +222,7 @@ else
 
 print "\n" if $opt_i;
 
-flock(DB_FH, LOCK_UN);
-undef $db;
 untie(%DB);
-close(DB_FH);
 
 exit 0;
 

@@ -1,6 +1,6 @@
 #!/usr/local/bin/perl -w
 
-# $Id: aid_bounce,v 5.13 2002/03/07 23:29:39 mradwin Exp mradwin $
+# $Id: aid_bounce,v 5.14 2003/03/14 23:30:26 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -23,8 +23,8 @@ $dirname = $0;
 $dirname =~ s,/[^/]+$,,;
 unshift(@INC, $dirname);
 
-use DB_File;
-use Fcntl qw(:DEFAULT :flock);
+use lib "/pub/m/r/mradwin/private/lib/perl5/site_perl";
+use DB_File::Lock;
 
 use Getopt::Std;
 require 'aid_util.pl';
@@ -64,11 +64,8 @@ if ($opt_d)
     chmod 0444, $dbmfile;
 
     my(%DB);
-    my($db) = tie(%DB, 'DB_File', $dbmfile, O_RDONLY, 0444, $DB_File::DB_HASH)
+    tie(%DB, 'DB_File::Lock', $dbmfile, O_RDONLY, 0444, $DB_HASH, 'read')
 	or die "$dbmfile: $!\n";
-    my($fd) = $db->fd;
-    open(DB_FH, "<&=$fd") || die "dup $!";
-    unless (flock (DB_FH, LOCK_SH)) { die "flock: $!" }
 
     while (($key,$val) = each %DB)
     {
@@ -84,10 +81,7 @@ if ($opt_d)
 	print "\n";
     }
 
-    flock(DB_FH, LOCK_UN);
-    undef $db;
     untie(%DB);
-    close(DB_FH);
 
     chmod $mode, $dbmfile;
     exit(0);
@@ -95,38 +89,24 @@ if ($opt_d)
 elsif ($opt_f)
 {
     my(%DB);
-    my($db) = tie(%DB, 'DB_File', $dbmfile, O_RDWR|O_CREAT, 0644, $DB_File::DB_HASH)
+    tie(%DB, 'DB_File::Lock', $dbmfile, O_RDWR|O_CREAT, 0644, $DB_HASH, 'write')
 	or die "$dbmfile: $!\n";
-    my($fd) = $db->fd;
-    open(DB_FH, "+<&=$fd") || die "dup $!";
-    unless (flock (DB_FH, LOCK_EX)) { die "flock: $!" }
 
     my @freshness = time_log($opt_f);
     freshen(\%DB, @freshness);
 
-    $db->sync;
-    flock(DB_FH, LOCK_UN);
-    undef $db;
     untie(%DB);
-    close(DB_FH);
 }
 else
 {
     my(%DB);
-    my($db) = tie(%DB, 'DB_File', $dbmfile, O_RDWR|O_CREAT, 0644, $DB_File::DB_HASH)
+    tie(%DB, 'DB_File::Lock', $dbmfile, O_RDWR|O_CREAT, 0644, $DB_HASH, 'write')
 	or die "$dbmfile: $!\n";
-    my($fd) = $db->fd;
-    open(DB_FH, "+<&=$fd") || die "dup $!";
-    unless (flock (DB_FH, LOCK_EX)) { die "flock: $!" }
 
     bounce_args(\%DB, @ARGV);
     aid_rebuild_secondary_keys(\%DB, 0);
 
-    $db->sync;
-    flock(DB_FH, LOCK_UN);
-    undef $db;
     untie(%DB);
-    close(DB_FH);
 }
 
 exit(0);
