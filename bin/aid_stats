@@ -1,6 +1,6 @@
 #!/usr/bin/perl -w
 
-# $Id: aid_stats,v 1.9 1999/02/10 20:28:51 mradwin Exp mradwin $
+# $Id: aid_stats,v 1.10 1999/02/24 21:06:25 mradwin Exp mradwin $
 
 require 'aid_util.pl';
 require 'ctime.pl';
@@ -61,6 +61,9 @@ while (($key,$val) = each %DB)
     $nnews++ if -f &aid_newsfile($rec{'id'});
 }
 
+$nlegit = $nvalid + $ndubious;
+
+
 print FMTOUT "Mountain View High School Alumni Internet Directory\n";
 print FMTOUT "Member Statistics\n";
 print FMTOUT "------------------------------------------------------------------------\n\n";
@@ -68,11 +71,9 @@ print FMTOUT "------------------------------------------------------------------
 printf FMTOUT "%4d       total entries in the Directory\n",
     $ntotal;
 printf FMTOUT "%4d (%2.0f%%) members w/valid   e-mail address\n",
-    $nvalid, ((100 * $nvalid) / $ntotal);
+    $nlegit, ((100 * $nlegit) / $ntotal);
 printf FMTOUT "%4d (%2.0f%%) members w/valid   e-mail address but bounced recently\n",
     $ndubious, ((100 * $ndubious) / $ntotal);
-
-$nlegit = $nvalid + $ndubious;
 
 printf FMTOUT "%4d (%2.0f%%) members w/invalid e-mail address\n",
     ($ntotal - $nlegit), ((100 * ($ntotal - $nlegit)) / $ntotal);
