@@ -4,7 +4,7 @@
 #     FILE: mvhsaid.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: Alumni Internet Directory CGI interface
-#      $Id: mvhsaid,v 3.85 1999/03/17 19:07:41 mradwin Exp mradwin $
+#      $Id: mvhsaid,v 3.86 1999/03/23 16:41:21 mradwin Exp mradwin $
 #
 
 require 'aid_util.pl';
@@ -22,7 +22,7 @@ if ($ENV{'SCRIPT_NAME'} =~ m,/nph-,)
 # configuration
 $mailprog = &aid_config('mailprog');
 $dbmfile = &aid_config('wwwdir') . 'master';
-$rcsid = '$Id: mvhsaid,v 3.85 1999/03/17 19:07:41 mradwin Exp mradwin $'; #'fnt
+$rcsid = '$Id: mvhsaid,v 3.86 1999/03/23 16:41:21 mradwin Exp mradwin $'; #'fnt
 
 $listing_upd_title = 'Update Your Directory Listing';
 $listing_upl_title = 'Select a Listing to Update';
@@ -248,10 +248,11 @@ foreach (@required_headers)
 }
 
 # lowercase the hostname portion of the email address
-$in{'email'} =~ s/\s//g;
-if (&is_email_okay($in{'email'}))
+$email_tmp = $in{'email'};
+$email_tmp =~ s/\s//g;
+if (&is_email_okay($email_tmp))
 {
-    ($mail_user, $mail_addr) = split(/\@/, $in{'email'});
+    ($mail_user,$mail_addr) = split(/\@/, $email_tmp);
 	
     # test for initial-cap, rest lower user
     $lower_user = "\L$mail_user\E";

@@ -2,11 +2,11 @@
 #     FILE: aid_util.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: perl library routines for the Alumni Internet Directory
-#      $Id: aid_util.pl,v 4.67 1999/03/16 19:53:00 mradwin Exp mradwin $
+#      $Id: aid_util.pl,v 4.68 1999/03/23 16:41:21 mradwin Exp mradwin $
 #
 
 $aid_util'rcsid =
- '$Id: aid_util.pl,v 4.67 1999/03/16 19:53:00 mradwin Exp mradwin $';
+ '$Id: aid_util.pl,v 4.68 1999/03/23 16:41:21 mradwin Exp mradwin $';
 
 # ----------------------------------------------------------------------
 # CONFIGURATION
@@ -685,8 +685,9 @@ sub submit_body {
     {
 	if ($empty_fields =~ /email/ && $rec{'email'} !~ /^\s*$/)
 	{
-	    $body .= "<p><strong><span class=\"alert\">Your e-mail\n";
-	    $body .= "address appears to be invalid.</span>\n";
+	    $body .= "<p><strong><span class=\"alert\">Your e-mail address\n";
+	    $body .= "(<code>" . $rec{'email'} . "</code>)\n";
+	    $body .= "appears to be invalid.</span>\n";
 	    $body .= "<br>It must be in the form of ";
 	    $body .= "<code>user\@isp.net</code>.\n";
 	    if ($rec{'email'} !~ /\@/)
