@@ -2,11 +2,11 @@
 #     FILE: aid_util.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: perl library routines for the Alumni Internet Directory
-#      $Id: aid_util.pl,v 2.15 1998/05/15 21:08:59 mradwin Exp mradwin $
+#      $Id: aid_util.pl,v 2.16 1998/05/15 21:11:46 mradwin Exp mradwin $
 #
 
 $aid_util'rcsid =
- '$Id: aid_util.pl,v 2.15 1998/05/15 21:08:59 mradwin Exp mradwin $';
+ '$Id: aid_util.pl,v 2.16 1998/05/15 21:11:46 mradwin Exp mradwin $';
 
 # ----------------------------------------------------------------------
 # CONFIGURATION
@@ -621,15 +621,15 @@ are required.  All other fields are optional.</p>\n\n";
 <tr>
   <td colspan=3><font color=\"#$cell_fg\"><br>Please 
   <a href=\"" . $config{'master_path'} . "tech.html#mailings\">send 
-  an updated copy</a> of the Directory to my email address every 3-4 
+  an updated copy</a> of the Directory to my email address every 3 
   months:<br>
   &nbsp;&nbsp;&nbsp;&nbsp;<input type=radio name=\"request\"
   value=\"1\"$reqchk[1]>&nbsp;&nbsp;Sorted by name.<br>
   &nbsp;&nbsp;&nbsp;&nbsp;<input type=radio name=\"request\" 
   value=\"2\"$reqchk[2]>&nbsp;&nbsp;Sorted by graduating class.<br>
   &nbsp;&nbsp;&nbsp;&nbsp;<input type=radio name=\"request\"
-  value=\"0\"$reqchk[0]>&nbsp;&nbsp;No, please do not send me copies
-  of the Directory.</font>
+  value=\"0\"$reqchk[0]>&nbsp;&nbsp;No e-mail except for address
+  verification (1 per year).</font>
   </td>
 </tr>
 </table>
