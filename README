@@ -1,5 +1,5 @@
 Alumni Internet Directory README file
-$Id$
+$Id: README,v 1.1 1999/05/24 18:37:13 mradwin Exp mradwin $
 
 ------------------------------------------------------------------------
  Copyright (c) 1995-1999  Michael John Radwin
@@ -46,8 +46,6 @@ data/master.adr:
   create a one-line file that looks like this:
 1;1;Smith;;Jane;4;1;0;815137658;920508844;920508844;1;1993;jsmith@bogus-domain.org;;;;;0;
 
-
-You'll probably want to remove the references to "Awalt" as well.
 
 After editing Makefile and the .pl configuration files appropriately, do
 a 'make symlinks' to set up symbolic links from the web's cgi-bin
