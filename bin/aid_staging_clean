@@ -1,6 +1,6 @@
 #!/usr/local/bin/perl5 -w
 
-# $Id: aid_staging_clean,v 1.1 2000/06/30 20:56:08 mradwin Exp mradwin $
+# $Id: aid_staging_clean,v 1.2 2000/07/07 16:11:29 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -78,6 +78,14 @@ while (($key,$val) = each %DB)
 	    unless ($opt_n)
 	    {
 		$DB{$key} = "e\0";
+		if (defined $DB{$rec{'id'}})
+		{
+		    delete $DB{$rec{'id'}};
+		}
+		elsif ($rec{'id'} == -1 && defined $DB{"\L$rec{'e'}\E"})
+		{
+		    delete $DB{"\L$rec{'e'}\E"};
+		}
 		$db->sync;
 	    }
 	}
