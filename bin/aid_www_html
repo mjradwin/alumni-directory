@@ -17,7 +17,7 @@ $opt_h = $opt_h;		# avoid warning
 
 $info_gif = &aid_image_tag('info');
 $blank_gif = &aid_image_tag('blank');
-$cgi = &aid_config('cgi_path');
+$cgi_path = &aid_config('cgi_path');
 
 open(DATA,$ARGV[0]) || die "Can't open $ARGV[0]: $!\n";
 open(FMTOUT,">$ARGV[1]") || die "Can't open $ARGV[1]: $!\n";
@@ -37,7 +37,7 @@ while(<DATA>) {
     $fullname = &fullname(*rec);
     ($affil,$len) = &affiliate(*rec,1,'foob');
 
-    print FMTOUT "<a href=\"$cgi/dyn?about=$rec{'id'}\">$info_gif</a>";
+    print FMTOUT "<a href=\"$cgi_path/dyn?about=$rec{'id'}\">$info_gif</a>";
     print FMTOUT "<a name=\"$rec{'alias'}\"";
     print FMTOUT ' ' x (8 - (length($rec{'alias'})));
     print FMTOUT " href=\"$rec{'homepage'}\"";
