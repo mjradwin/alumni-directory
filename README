@@ -1,5 +1,5 @@
 Alumni Internet Directory README file
-$Id: README,v 5.5 1999/06/29 21:46:01 mradwin Exp mradwin $
+$Id: README,v 5.6 1999/08/04 18:45:57 mradwin Exp mradwin $
 
 ========================================================================
  Copyright (c) 1995-1999  Michael John Radwin
@@ -93,7 +93,7 @@ Graduating Class/Alphabetical listings and the index.html, FAQ, reunions
 page, download page, etc.
 
 
-5. You're up and running!
+5. Process new submissions as they come in
 ------------------------------------------------------------------------
 As you get new submissions in your e-mail inbox, run ./bin/aid_addname
 and then delete the submission e-mails.  aid_addname reads the spool
@@ -101,25 +101,39 @@ file and modifies data/working.db, invokes 'make all' to push out the
 new static HTML pages, and then invokes aid_welcome to e-mail the new
 members to tell them that their submission has been received.
 
-aid_bounce will help you manage people who's email has been bouncing (I
-usually let e-mail bounce for 6 months before I make their record
-invalid).
 
+6. Send out quarterly digests and bi-yearly confirmation messages
+------------------------------------------------------------------------
 In addition to notifying new/updated alumni that their submissions have
 been processed, aid_welcome can also be used for sending out the
 quarterly digests or bi-yearly verification messages.
 
-For quarterly digests, you'll probably want to run: 
-  make recent.txt
-  ./bin/aid_welcome -a -r3 -m recent.txt data/working.db
-  rm recent.txt
+For quarterly digests and bi-yearly confirmation messages, run:
+  ./bin/aid_quarterly
 
-and:
+Be careful only to run this script once every 3 months!
 
-  mkdir classonly
-  ./bin/aid_multi_class_txt data/working.db classonly
-  ./bin/aid_multi_class_welcome data/working.db classonly
-  rm -rf classonly
+
+7. Manage invalid email addresses
+------------------------------------------------------------------------
+aid_bounce will help you manage people who's email has been bouncing (I
+usually let e-mail bounce for 6 months before I make their record
+invalid).
+
+To extract a list of userids who bounced from your last mailing
+(determined by scanning messages in your mail spool), run:
+  ./bin/aid_grep_bounce $MAIL
+
+If the list looks okay, set their bounce flag in the database:
+  ./bin/aid_bounce data/working.db `./bin/aid_grep_bounce $MAIL`
+
+
+To see a list of userids to invalidate, run:
+  ./bin/aid_dbm_read -g data/working.db
+
+If the list looks okay, move their entry to the invalid page:
+  ./bin/aid_bounce -v data/working.db `./bin/aid_dbm_read -gi data/working.db`
+
 
 ========================================================================
 Michael John Radwin
