@@ -2,7 +2,7 @@
 
 #
 # does the html verbose pages
-# $Id: aid_verbose_html,v 1.13 1998/01/03 11:38:28 mjr Exp mjr $
+# $Id: aid_verbose_html,v 1.14 1998/01/03 12:30:11 mjr Exp mjr $
 #
 
 require 'aid_util.pl';
@@ -129,7 +129,7 @@ sub write_entry {
 
     $message = &aid_get_usertext($rec{'id'});
     if ($message ne '') {
-	print FMTOUT "<dt>What's New? (beta):\n";
+	print FMTOUT "<dt>What's New?\n";
 	print FMTOUT "<dd>$message\n";
     }
     print FMTOUT "</dl>\n\n";

@@ -2,11 +2,11 @@
 #     FILE: aid_util.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: perl library routines for the Alumni Internet Directory
-#      $Id: aid_util.pl,v 1.84 1998/01/03 11:37:47 mjr Exp mjr $
+#      $Id: aid_util.pl,v 1.85 1998/01/03 11:58:27 mjr Exp mjr $
 #
 
 $aid_util'rcsid =
- '$Id: aid_util.pl,v 1.84 1998/01/03 11:37:47 mjr Exp mjr $';
+ '$Id: aid_util.pl,v 1.85 1998/01/03 11:58:27 mjr Exp mjr $';
 
 # ----------------------------------------------------------------------
 # CONFIGURATION
@@ -589,7 +589,7 @@ are required.  All other fields are optional.</p>\n\n";
 </tr>
 <tr>
   <td colspan=3><font color=\"#$cell_fg\">
-  <br><strong>What's New?</strong> (Beta) Tell us, in 100 words or less, what
+  <br><strong>What's New?</strong> Tell us, in 100 words or less, what
   you've been up to recently.</font>
   $image_tag{'new'}<br>
   <textarea name=\"message\" rows=10 cols=55 wrap>$message</textarea>
