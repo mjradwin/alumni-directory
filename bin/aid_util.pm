@@ -1,8 +1,8 @@
 #
 #     FILE: aid_util.pl
 #   AUTHOR: Michael J. Radwin
-#    DECR: perl library routines for the Alumni Internet Directory
-#      $Id: aid_util.pl,v 4.113 1999/05/27 21:51:14 mradwin Exp mradwin $
+#    DESCR: perl library routines for the Alumni Internet Directory
+#      $Id: aid_util.pl,v 4.114 1999/05/28 21:41:58 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -21,7 +21,7 @@
 #   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #
 
-require 'mvhs_config.pl';
+require 'awalt_config.pl';
 require 'aid_config.pl';
 require 'aid_submit.pl';
 
@@ -137,18 +137,9 @@ sub aid_affiliate
 	    if $do_html_p;
 	$year = sprintf("%02d", $rec{'yr'} % 100);
 
-	if ($rec{'s'} == $school_default ||
-	    $rec{'s'} == $school_awalt ||
-	    $rec{'s'} == $school_both)
-	{
-	    $tmp = $school_affil[$rec{'s'}] . "'" . $year;
-	    $affil .= $tmp;
-	    $len   += length($tmp);
-	}
-	else
-	{
-	    warn "bad school $rec{'s'} (id == $rec{'id'})!\n";
-	}
+	$tmp = "'" . $year;
+	$affil .= $tmp;
+	$len   += length($tmp);
 
 	$affil .= "</a>" if $do_html_p;
 
@@ -157,9 +148,7 @@ sub aid_affiliate
     {
 	$affil .= "<a href=\"" . &main'aid_about_path(*rec,1) . "\">" #'#
 	    if $do_html_p;
-	$tmp    = $school_affil[$rec{'s'}] eq '' ?
-	    $school_name[$rec{'s'}] : $school_affil[$rec{'s'}];
-	$tmp    = "[$tmp $rec{'yr'}]";
+	$tmp    = '[' . $config{'short_school'} . ' ' . $rec{'yr'} . ']';
 	$affil .= $tmp;
 	$len   += length($tmp);
 	$affil .= "</a>" if $do_html_p;
@@ -289,50 +278,46 @@ sub aid_yahoo_abook_path {
     local(*rec) = @_;
     local($url) = 'http://address.yahoo.com/yab?A=da&amp;au=a';
 
-    $url .= '&amp;fn=' . &main'aid_url_escape($rec{'gn'});
+    $url .= '&amp;fn=' . &main'aid_url_escape($rec{'gn'}); #'#
     if ($rec{'mn'} ne '')
     {
-	$url .= '&amp;mn=' . &main'aid_url_escape($rec{'sn'});
-	$url .= '&amp;ln=' . &main'aid_url_escape($rec{'mn'});
+	$url .= '&amp;mn=' . &main'aid_url_escape($rec{'sn'}); #'#
+	$url .= '&amp;ln=' . &main'aid_url_escape($rec{'mn'}); #'#
     }
     else
     {
-	$url .= '&amp;mn=' . &main'aid_url_escape($rec{'mi'});
-	$url .= '&amp;ln=' . &main'aid_url_escape($rec{'sn'});
+	$url .= '&amp;mn=' . &main'aid_url_escape($rec{'mi'}); #'#
+	$url .= '&amp;ln=' . &main'aid_url_escape($rec{'sn'}); #'#
     }
     $url .= '&amp;c=Unfiled';
-    $url .= '&amp;nn=' . &main'aid_url_escape($rec{'a'});
-    $url .= '&amp;e='  . &main'aid_url_escape($rec{'e'});
+    $url .= '&amp;nn=' . &main'aid_url_escape($rec{'a'}); #'#
+    $url .= '&amp;e='  . &main'aid_url_escape($rec{'e'}); #'#
     $url .= '&amp;pp=0';
-    $url .= '&amp;co=' . $school_name[$rec{'s'}];
+    $url .= '&amp;co=' . $config{'short_school'};
     if ($rec{'yr'} =~ /^\d+$/) {
 	$url .= '+Class+of+' . $rec{'yr'};
     } else {
-	$url .= '+' . &main'aid_url_escape($rec{'yr'});
+	$url .= '+' . &main'aid_url_escape($rec{'yr'}); #'#
     }
 
-    $url .= '&amp;pu=' . &main'aid_url_escape($rec{'w'});
+    $url .= '&amp;pu=' . &main'aid_url_escape($rec{'w'}); #'#
     $url .= '&amp;af=d';
 
     if ($rec{'l'} =~ /^(.*),\s+(\w\w)$/)
     {
-	$url .= '&amp;hc=' . &main'aid_url_escape($1);
+	$url .= '&amp;hc=' . &main'aid_url_escape($1); #'#
 	$url .= '&amp;hs=' . $2;
     }
     elsif ($rec{'l'} =~ /^(.*),\s+(\w\w)\s+(\d\d\d\d\d)$/)
     {
-	$url .= '&amp;hc=' . &main'aid_url_escape($1);
+	$url .= '&amp;hc=' . &main'aid_url_escape($1); #'#
 	$url .= '&amp;hs=' . $2;
 	$url .= '&amp;hz=' . $3;
     }
     else
     {
-	$url .= '&amp;hc=' . &main'aid_url_escape($rec{'l'});
+	$url .= '&amp;hc=' . &main'aid_url_escape($rec{'l'}); #'#
     }
-
-#    $url .= '&amp;.done=' .
-#        &main'aid_url_escape('http://' .
-#			     $config{'master_srv'} . $config{'master_path'});
 
     $url;
 }
@@ -487,9 +472,6 @@ sub aid_verbose_entry {
     $retval .= "</dt>\n";
 
     if ($rec{'yr'} =~ /^\d+$/) {
-	# Last Awalt student graduated in 1983
-	$retval .= "<dt>School: <strong>$school_name[$rec{'s'}]</strong></dt>\n" 
-	    if $rec{'yr'} <= 1983;
 	if ($display_year) {
 	    $retval .= "<dt>Year:  <strong>";
 	    $retval .= 
@@ -498,7 +480,6 @@ sub aid_verbose_entry {
 	    $retval .= "</a></strong></dt>\n";
 	}
     } else {
-	$retval .= "<dt>School: <strong>$school_name[$rec{'s'}]</strong></dt>\n";
 	$retval .= "<dt>Affiliation:  <strong>";
 	$retval .= "<a href=\"" . &main'aid_about_path(*rec,1) . "\">"; #'#
 	$retval .= $rec{'yr'};
@@ -548,7 +529,7 @@ sub aid_vcard_text {
     $retval  = "Begin:vCard\015\012";
     $retval .= $v_n;
     $retval .= $v_fn;
-    $retval .= "ORG:$school_name[$rec{'s'}];";
+    $retval .= "ORG:" . $config{'short_school'} . ";";
     if ($rec{'yr'} =~ /^\d+$/) {
 	$retval .= "Class of $rec{'yr'}\015\012";
     } else {	
@@ -627,12 +608,6 @@ sub aid_about_text
     $retval .= "\n";
     
     $retval .= "\n";
-    $retval .= "School             : ";
-    $retval .= "<strong>" if $do_html_p;
-    $retval .= $school_name[$rec{'s'}];
-    $retval .= "</strong>" if $do_html_p;
-    $retval .= "\n";
-    
     if ($rec{'yr'} =~ /^\d+$/) {
 	$retval .= "Graduation Year    : ";
     } else {
@@ -835,7 +810,7 @@ sub aid_common_html_hdr
 
     $tablehdr = $title eq '' ? '' :
 	"    <!-- \"$title\" --><strong>" .
-	&main'tableheader_internal($title,1,$header_fg) . #'#
+	&main'tableheader_internal($title,1,$cell_fg) . #'#
 	    "</strong>\n";
     $tablehdr .= "    <br />$subtitle\n" if defined $subtitle && $subtitle ne '';
     $tablehdr .= "\n";
@@ -985,17 +960,17 @@ sub aid_book_write_entry {
 
     $long_last .= " $rec{'mn'}" if $rec{'mn'} ne '';
 
-    $option eq 'p' && print BOOK "$rec{'a'}\t$long_last, $rec{'gn'}$mi_spc\t$rec{'e'}\t\t$school_name[$rec{'s'}] $rec{'yr'}\n";
-    $option eq 'e' && print BOOK "$rec{'a'} = $long_last; $rec{'gn'}, $school_name[$rec{'s'}] $rec{'yr'} = $rec{'e'}\n";
+    $option eq 'p' && print BOOK "$rec{'a'}\t$long_last, $rec{'gn'}$mi_spc\t$rec{'e'}\t\t$config{'short_school'} $rec{'yr'}\n";
+    $option eq 'e' && print BOOK "$rec{'a'} = $long_last; $rec{'gn'}, $config{'short_school'} $rec{'yr'} = $rec{'e'}\n";
     $option eq 'b' && print BOOK "alias $rec{'a'}\t$rec{'e'}\n";
-    $option eq 'w' && print BOOK "<$rec{'a'}>\015\012>$rec{'gn'}$mi_spc $long_last <$rec{'e'}>\015\012<$rec{'a'}>\015\012>$school_name[$rec{'s'}] $rec{'yr'}\015\012";
-    $option eq 'm' && print BOOK "alias $rec{'a'} $rec{'e'}\015\012note $rec{'a'} <name:$rec{'gn'}$mi_spc $long_last>$school_name[$rec{'s'}] $rec{'yr'}\015\012";
+    $option eq 'w' && print BOOK "<$rec{'a'}>\015\012>$rec{'gn'}$mi_spc $long_last <$rec{'e'}>\015\012<$rec{'a'}>\015\012>$config{'short_school'} $rec{'yr'}\015\012";
+    $option eq 'm' && print BOOK "alias $rec{'a'} $rec{'e'}\015\012note $rec{'a'} <name:$rec{'gn'}$mi_spc $long_last>$config{'short_school'} $rec{'yr'}\015\012";
 
     # netscape is a bigger sucker
     if ($option eq 'n') {
 	print BOOK "    <DT><A HREF=\"mailto:$rec{'e'}\" ";
 	print BOOK "NICKNAME=\"$rec{'a'}\">$rec{'gn'}$mi_spc $long_last</A>\n";
-	print BOOK "<DD>$school_name[$rec{'s'}] $rec{'yr'}\n";
+	print BOOK "<DD>$config{'short_school'} $rec{'yr'}\n";
     }
 
     elsif ($option eq 'l') {
@@ -1019,7 +994,7 @@ sub aid_book_write_entry {
 	} else {
 	    print BOOK "locality: $rec{'l'}\015\012" if $rec{'l'} ne '';
 	}
-        print BOOK "o: $school_name[$rec{'s'}]\015\012";
+        print BOOK "o: $config{'short_school'}\015\012";
 	if ($rec{'yr'} =~ /^\d+$/) {
 	    print BOOK "ou: Class of $rec{'yr'}\015\012";
 	} else {
@@ -1043,7 +1018,7 @@ sub aid_book_write_entry {
 	    print BOOK "\"$mi\",\"$rec{'sn'}\",";
 	}
 
-	print BOOK "\"\",\"$school_name[$rec{'s'}] $rec{'yr'}\",\"\",";
+	print BOOK "\"\",\"$config{'short_school'} $rec{'yr'}\",\"\",";
 	print BOOK "\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",";
 
 	if ($rec{'l'} =~ /^(.*),\s+(\w\w)$/) {
@@ -1168,9 +1143,7 @@ sub aid_rebuild_secondary_keys
 
     local($latest) = 0;
     local($latest_www) = 0;
-    local($latest_awalt) = 0;
     local($latest_goner) = 0;
-    local(%awalt) = ();
     local(%class_members) = ();
     local(%class_latest) = ();
     local(%www_class_members) = ();
@@ -1263,21 +1236,6 @@ sub aid_rebuild_secondary_keys
 		    $www_class_members{$ykey}  =       $rec{'id'};
 		}
 	    }
-
-	    if ($rec{'s'} == $aid_util'school_awalt ||
-		$rec{'s'} == $aid_util'school_both)
-	    {
-		$latest_awalt = $rec{'u'} if $rec{'u'} > $latest_awalt;
-
-		if (defined $awalt{$ykey})
-		{
-		    $awalt{$ykey} .= ' ' . $rec{'id'};
-		}
-		else
-		{
-		    $awalt{$ykey}  =       $rec{'id'};
-		}
-	    }
 	}
 	else
 	{
@@ -1316,19 +1274,8 @@ sub aid_rebuild_secondary_keys
     }
     print STDOUT "." unless $quiet;
 
-    # now do years, but only for awalt
-    @years = sort keys %awalt;
-    $DB{'_awalt_years'} = pack("n*",grep(/\d+/,@years));
-    foreach $ykey (@years)
-    {
-	$DB{"_awalt_${ykey}"} = pack("n*", split(/ /, $awalt{$ykey}));
-	$new_db{"_awalt_${ykey}"} = 1;
-    }
-    print STDOUT "." unless $quiet;
-
     $DB{'_t'} = pack("N", $latest);
     $DB{'_t_www'} = pack("N", $latest_www);
-    $DB{'_t_awalt'} = pack("N", $latest_awalt);
     $DB{'_t_goner'} = pack("N", $latest_goner);
     $DB{'_nextid'}  = $maxval + 1;
 
@@ -1347,8 +1294,8 @@ sub aid_rebuild_secondary_keys
 
     # static keys (always present)
     $new_db{'_alpha'} =  $new_db{'_years'} =
-	$new_db{'_class'} = $new_db{'_www_years'} = $new_db{'_awalt_years'} =
-	    $new_db{'_t'} = $new_db{'_t_www'} = $new_db{'_t_awalt'} =
+	$new_db{'_class'} = $new_db{'_www_years'} =
+	    $new_db{'_t'} = $new_db{'_t_www'} =
 		$new_db{'_t_goner'} = $new_db{'_nextid'} = 1;
 
     while (($key,$val) = each(%DB))
@@ -1462,24 +1409,18 @@ if ($^W && 0)
     &aid_db_pack_rec();
     &aid_yahoo_abook_path();
     &aid_url_escape();
+    &aid_rebuild_secondary_keys();
 
+    $aid_util'body_bg = $aid_util'body_fg = $aid_util'body_vlink =
+	$aid_util'body_link = $aid_util'cell_bg = $aid_util'cell_fg =
+	    $aid_util'header_bg = '';
     $aid_util'ID_INDEX = '';
-    $aid_util'body_vlink = '';
-    $aid_util'school_both = '';
-    $aid_util'body_bg = '';
-    $aid_util'body_fg = '';
     $aid_util'pack_len = '';
-    $aid_util'cell_bg = '';
-    $aid_util'school_default = '';
     $aid_util'MoY = '';
     $aid_util'noindex = '';
     $aid_util'disclaimer = $aid_util'copyright_path = '';
-    $aid_util'school_awalt = '';
     $aid_util'pics_label = '';
     $aid_util'author_meta = $aid_util'navigation_meta = $aid_util'descr_meta;
-    $aid_util'header_bg = '';
-    $aid_util'body_link = '';
-    &aid_rebuild_secondary_keys();
 }
 
 1;

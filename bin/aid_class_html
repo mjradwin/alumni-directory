@@ -2,7 +2,7 @@
 
 #
 # does the html version of the grad-date address list
-# $Id: aid_class_html,v 3.38 1999/05/19 01:36:09 mradwin Exp mradwin $
+# $Id: aid_class_html,v 3.39 1999/05/24 18:55:52 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -121,17 +121,6 @@ foreach $year (@years)
 	next unless $rec{'v'};
 
 	$fullname = &aid_fullname(*rec);
-	$regschool = ($opt_a) ? $aid_util'school_awalt :
-	    $aid_util'school_default;
-
-	if ($rec{'s'} != $regschool)
-	{
-	    $affil     = "  [$aid_util'school_affil[$rec{'s'}]]";
-	}
-	else
-	{
-	    $affil     = "";
-	}
 
 	print FMTOUT ' ';
 	$opt_t || print FMTOUT "<a href=\"" . &aid_about_path(*rec) . "\">$info_gif</a> "; #'#
@@ -140,8 +129,7 @@ foreach $year (@years)
 	$opt_t || print FMTOUT ">";
 	print FMTOUT $fullname;
 	$opt_t || print FMTOUT "</a>";
-	print FMTOUT $affil;
-	print FMTOUT ' ', ' ' x (39 - (length($fullname) + length($affil)));
+	print FMTOUT ' ', ' ' x (39 - (length($fullname)));
 	$opt_t || print FMTOUT "<a href=\"mailto:", $rec{'e'}, "\">";
 	print FMTOUT $rec{'e'};
 	$opt_t || print FMTOUT "</a>";

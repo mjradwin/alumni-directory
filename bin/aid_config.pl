@@ -2,7 +2,7 @@
 #     FILE: aid_config.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: configuration variables for Alumni Internet Directory
-#      $Id: aid_config.pl,v 1.41 1999/05/19 17:48:05 mradwin Exp mradwin $
+#      $Id: aid_config.pl,v 1.42 1999/05/24 18:21:51 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -29,14 +29,6 @@ if (defined $aid_util'descr_meta) #'#
 {
     $aid_util'descr_meta =~ s/__DATE__/$aid_util'caldate/g;
 }
-
-# school name stuff
-$aid_util'school_default    = 1; #'#
-$aid_util'school_awalt      = 2; #'#
-$aid_util'school_both       = 3; #'#
-
-@aid_util'school_affil      = ('', '', 'A', 'A/MV');
-@aid_util'school_name       = ('', 'MVHS', 'Awalt', 'Awalt/MV');
 
 @aid_util'req_descr_long =   #'#
     (
@@ -178,24 +170,20 @@ $aid_util'blank_entry{'b'}  = 0;       #'#
 $aid_util'blank_entry{'eu'} = 0;       #'#
 $aid_util'blank_entry{'eo'} = '';      #'#
 $aid_util'blank_entry{'n'}  = '';      #'#
-$aid_util'blank_entry{'s'}  = $aid_util'school_default;
 
 %aid_util'image_tag = #'#
     (
      'new',
-     "<strong class=\"y\">*NEW*</strong>",
-
-     'new_anchored',
-     "<strong class=\"y\">*NEW*</strong>",
+     "<strong class=\"nu\">*NEW*</strong>",
 
      'updated',
-     "<strong class=\"y\">*UPDATED*</strong>",
+     "<strong class=\"nu\">*UPDATED*</strong>",
 
      'vcard',
      'View vCard',
 
      'info',
-     "<strong class=\"y\">[i]</strong>",
+     "<strong class=\"i\">[i]</strong>",
 
      'blank',
      "<strong>&nbsp;&nbsp;&nbsp;</strong>",
@@ -241,17 +229,13 @@ if ($^W && 0)
     &aid_config('');
     $aid_util'copyright_path = '';
     $aid_util'second_idx = ''; # line 150.
-    $aid_util'school_awalt = ''; # line 102.
     $aid_util'page_idx = ''; # line 139.
     $aid_util'ID_INDEX = ''; # line 177.
     $aid_util'req_descr_long = ''; # line 121.
     $aid_util'FIELD_SEP = ''; # line 176.
     $aid_util'pics_label = ''; # line 161.
-    $aid_util'school_both = ''; # line 103.
     $aid_util'pack_len = ''; # line 227.
     $aid_util'pack_format = ''; # line 226.
-    $aid_util'school_name = ''; # line 106.
-    $aid_util'school_affil = ''; # line 105.
     $aid_util'aid_aliases = ''; # line 174.
     $aid_util'noindex = ''; # line 173.
     $aid_util'field_names = ''; # line 178.

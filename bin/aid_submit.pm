@@ -2,7 +2,7 @@
 #     FILE: aid_submit.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: submission form for Alumni Internet Directory
-#      $Id: aid_submit.pl,v 1.5 1999/05/04 17:11:41 mradwin Exp mradwin $
+#      $Id: aid_submit.pl,v 1.6 1999/05/07 00:47:36 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -31,7 +31,6 @@ sub aid_submit_body
     local($star) = "<font color=\"#$star_fg\">*</font>";
     local(*rec_arg,$empty_fields) = @_;
     local(%rec) = &main'aid_html_entify_rec(*rec_arg); #'#
-    local(@school_checked) = ('', '', '', '');
     local(@reqradio,$i,$reunion_chk,@empty_fields,$prev_email);
 
     $prev_email = defined $rec{'pe'} ? 
@@ -54,7 +53,6 @@ sub aid_submit_body
     }
 
     $reunion_chk = ($rec{'r'} == 1) ? ' checked' : '';
-    $school_checked[$rec{'s'}] = ' checked';
 
     $body = '';
 
@@ -140,25 +138,8 @@ are required.  All other fields are optional.</p>
 </tr>
 
 <tr><td colspan=\"3\" bgcolor=\"#$header_bg\">
-<font size=\"+1\"><strong>2. Graduating Class while at $config{'short_school'}/Awalt</strong></font>
+<font size=\"+1\"><strong>2. Graduating Class while at $config{'short_school'}</strong></font>
 </td></tr>
-<tr>
-  <td valign=\"top\" align=\"right\"><strong>High School Attended:</strong></td>
-  <td valign=\"top\">$star</td>
-  <td valign=\"top\"><input type=\"radio\" name=\"s\" id=\"school_default\"
-  value=\"$school_default\"$school_checked[$school_default] /><label
-  for=\"school_default\">&nbsp;$school_name[$school_default]</label>
-  &nbsp;&nbsp;&nbsp;&nbsp;<input type=\"radio\" name=\"s\" id=\"school_awalt\"
-  value=\"$school_awalt\"$school_checked[$school_awalt] /><label
-  for=\"school_awalt\">&nbsp;$school_name[$school_awalt]</label>
-  &nbsp;&nbsp;&nbsp;&nbsp;<input type=\"radio\" name=\"s\" id=\"school_both\"
-  value=\"$school_both\"$school_checked[$school_both] /><label
-  for=\"school_both\">&nbsp;Both&nbsp;$school_name[$school_default]&nbsp;&amp;&nbsp;$school_name[$school_awalt]</label>
-  <br />
-  <small>(Did you attend/graduate from another school such as
-  Shoreline or Los Altos HS?  Write about it below in the <strong>What's
-  New?</strong> section.)</small></td>
-</tr>
 <tr>
   <td valign=\"top\" align=\"right\"><label
   for=\"yr\"><strong>Graduation Year or Affiliation:</strong></label><br />
@@ -189,7 +170,7 @@ are required.  All other fields are optional.</p>
 <tr>
   <td valign=\"top\" align=\"right\"><label
   for=\"l\"><strong>Location:</strong></label><br />
-  <small>(your city, school, or company)</small></td>
+  <small>(your city, college, or company)</small></td>
   <td>&nbsp;</td>
   <td valign=\"top\"><input type=\"text\" name=\"l\" size=\"35\"
   value=\"$rec{'l'}\" id=\"l\" /><br /><br /></td>
