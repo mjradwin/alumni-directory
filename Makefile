@@ -2,7 +2,7 @@
 #     FILE: Makefile
 #   AUTHOR: Michael J. Radwin
 #    DESCR: Makefile for building the Alumni Internet Directory
-#      $Id: Makefile,v 3.45 1999/02/03 19:01:32 mradwin Exp mradwin $
+#      $Id: Makefile,v 3.46 1999/02/05 18:53:52 mradwin Exp mradwin $
 #
 
 WWWROOT=/home/web/radwin.org
@@ -12,6 +12,8 @@ AID_UTIL_PL=$(CGIDIR)/aid_util.pl
 MVHSDIR=/home/users/mradwin/mvhs
 
 RM=/bin/rm -f
+MV=/bin/mv -f
+CP=/bin/cp -pf
 
 ADR_MASTER=$(MVHSDIR)/data/master.adr
 ADR_ALPHA=$(MVHSDIR)/data/alpha.adr
@@ -49,10 +51,15 @@ all:	adrfile stats index submit \
 	pages class awalt goners download books2
 
 ADRFILE=$(WWWDIR)/master.adr
-adrfile:	$(ADRFILE)
-$(ADRFILE):	$(ADR_MASTER) $(BIN_DBM_WRITE)
-	cp $(ADR_MASTER) $(WWWDIR)
-	$(BIN_DBM_WRITE) $(ADR_MASTER) $(WWWDIR)/master.db
+DBFILE=$(WWWDIR)/master.db
+adrfile:	$(ADRFILE) $(DBFILE)
+$(ADRFILE):	$(ADR_MASTER)
+	$(CP) $(ADR_MASTER) $(WWWDIR)
+
+$(DBFILE):	$(ADR_MASTER) $(BIN_DBM_WRITE)
+	$(RM) ./master.db
+	$(BIN_DBM_WRITE) $(ADR_MASTER) ./master.db
+	$(MV) ./master.db $(WWWDIR)/master.db
 
 MULTI_ALPHA=$(WWWDIR)/alpha/a-index.html
 multi_alpha:	$(MULTI_ALPHA)
