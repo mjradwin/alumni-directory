@@ -2,42 +2,36 @@
 #     FILE: mv_util.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: perl library routines for the MVHS Alumni Internet Directory
-#      $Id: mv_util.pl,v 1.13 1997/03/23 20:56:31 mjr Exp mjr $
+#      $Id: mv_util.pl,v 1.14 1997/03/23 22:23:58 mjr Exp $
 #
 
 CONFIG: {
     package mv_util;
 
-    # BrownCS configuration
-#    %config = ('admin_email',  "mjr\@acm.org",
-#	       'admin_name',   "Michael John Radwin",
-#	       'admin_school', "Mountain View High School, Class of '93",
-#	       'admin_phone',  "401-863-6418",
-#	       'admin_usmail', "Brown University, Box 4505, Providence, RI, 02912-4505",
-#	       'admin_url',    "http://www.cs.brown.edu/people/mjr/",
-#	       'master_url',   "http://www.cs.brown.edu/people/mjr/mvhs/",
-#	       'cgi_url',      "http://www.cs.brown.edu/cgi-bin/mjr-mvhs.cgi",
-#	       'wwwdir',       "/pro/web/web/people/mjr/mvhs/",
-#	       'mvhsdir',      "/home/mjr/doc/mvhs/",
-#	       'sendmail',     "/usr/lib/sendmail",
-#	       'mailprog',     "/usr/ucb/mail",
-#	       'cgi_path',     "/cgi-bin/mjr-mvhs.cgi");
-
     # divcom configuration
-     %config = ('admin_email', "mjr\@acm.org",
-	       'admin_school', "Mountain View High School, Class of '93",
-	       'admin_phone',  "401-863-6418",
-	       'admin_usmail', "Brown University, Box 4505, Providence, RI, 02912-4505",
-	       'admin_name',  "Michael John Radwin",
-	       'admin_url',   "http://www.cs.brown.edu/people/mjr/",
-# 	       'admin_url',   "http://umop-ap.com/~mjr/",
- 	       'master_url',  "http://umop-ap.com/~mjr/mvhs/",
- 	       'cgi_url',     "http://umop-ap.com/cgi-bin/cgiwrap/mjr/mvhsaid",
- 	       'wwwdir',      "/home/divcom/mjr/public_html/mvhs/",
- 	       'mvhsdir',     "/home/divcom/mjr/mvhs/",
-	       'sendmail',     "/usr/lib/sendmail",
-	       'mailprog',     "/usr/ucb/mail",
-	       'cgi_path',    "/cgi-bin/cgiwrap/mjr/mvhsaid");
+    %config =
+	('admin_name',   "Michael John Radwin",
+	 'admin_email',  "mjr\@acm.org",
+	 'admin_school', "Mountain View High School, Class of '93",
+	 'admin_phone',  "401-863-6418",
+	 'admin_usmail', "Brown University, Box 4505, Providence, RI, 02912",
+	 'admin_url',    "http://www.cs.brown.edu/people/mjr/",
+#	 'admin_url',    "http://umop-ap.com/~mjr/",
+	 'master_url',   "http://umop-ap.com/~mjr/mvhs/",
+#	 'master_url',   "http://www.cs.brown.edu/people/mjr/mvhs/",
+	 'cgi_url',      "http://umop-ap.com/cgi-bin/cgiwrap/mjr/mvhsaid",
+#	 'cgi_url',      "http://www.cs.brown.edu/cgi-bin/mjr-mvhs.cgi",
+	 'cgi_path',     "/cgi-bin/cgiwrap/mjr/mvhsaid",
+#	 'cgi_path',     "/cgi-bin/mjr-mvhs.cgi",
+	 'wwwdir',       "/home/divcom/mjr/public_html/mvhs/",
+#	 'wwwdir',       "/pro/web/web/people/mjr/mvhs/",
+	 'mvhsdir',      "/home/divcom/mjr/mvhs/",
+#	 'mvhsdir',      "/home/mjr/doc/mvhs/",
+	 'sendmail',     "/usr/lib/sendmail",
+	 'mailprog',     "/usr/ucb/mail",
+	 'mailto',       "mjr\@divcom mjr\@acm.org",
+	 'mailsubj',	 "MVHSAID"
+	  );
 
     @page_idx = ('Home,./',
 		 'Alphabetically,all.html',
@@ -538,7 +532,6 @@ sub common_html_hdr {
 #    ($page_name) = split(/,/, $page_idx[$page]) unless $page_name;
 #    $page_name =~ s/&nbsp;/ /g;
 
-    $ENV{'TZ'} = 'EST';
     $h1 = "<body bgcolor=\"#ffffff\" LINK=\"#0000cc\" TEXT=\"#000000\" VLINK=\"#990099\">
 <hr noshade size=1>
 <table border=0 cellpadding=8 cellspacing=0 width=\"100%\">
