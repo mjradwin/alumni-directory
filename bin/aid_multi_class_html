@@ -2,7 +2,7 @@
 
 #
 # does the html multi_class pages
-# $Id: aid_multi_class_html,v 3.37 1999/05/28 20:19:53 mradwin Exp mradwin $
+# $Id: aid_multi_class_html,v 3.38 1999/05/28 20:24:44 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -112,12 +112,9 @@ open(FMTOUT,">$outFile") || die "Can't open $outFile: $!\n";
 
 print FMTOUT &aid_common_html_hdr(2,'Listed by Graduating Class',0,$time);
 
-print FMTOUT "<p align=center><big>By&nbsp;Class:<br>\n";
+print FMTOUT "<p align=\"center\"><big>Graduating Classes:<br /><br />\n";
 print FMTOUT &aid_class_jump_bar('', '.html', *years, 0);
 print FMTOUT "</big></p>\n\n";
-
-print FMTOUT "<p align=center><big><a href=\"awalt.html\">All\n";
-print FMTOUT "Awalt&nbsp;Alumni</a> (~ 100 kbytes)</big></p>\n";
 
 print FMTOUT &aid_common_html_ftr(2);
 close(FMTOUT);
