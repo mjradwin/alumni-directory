@@ -1,6 +1,6 @@
 #!/usr/bin/perl -w
 
-# $Id$
+# $Id: aid_grep_bounce,v 1.1 1998/11/02 22:34:48 mradwin Exp mradwin $
 
 require 'aid_util.pl';
 
@@ -29,13 +29,13 @@ sub readspool {
 	    s/^<//;
 	    s/>$//;
 
-	    $bouncers{$_} = 1;
+	    $bouncers{"\L$_\E"} = 1;
 	}
 	elsif (/^Email              : /)
 	{
 	    s/^Email              : //;
 	    s/\s*$//;
-	    $bouncers{$_} = 1;
+	    $bouncers{"\L$_\E"} = 1;
 	}
     }
 }
