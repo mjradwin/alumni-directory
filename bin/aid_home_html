@@ -2,7 +2,7 @@
 
 #
 # does the html version of just home pages
-# $Id: aid_home_html,v 3.19 1999/02/05 18:49:28 mradwin Exp mradwin $
+# $Id: aid_home_html,v 3.20 1999/02/10 20:15:58 mradwin Exp mradwin $
 #
 
 require 'aid_util.pl';
@@ -49,7 +49,9 @@ if ($opt_s) {
     print OUTFILE &submit_body(*blank_entry,'');
 
 } elsif ($opt_d) {
-    dbmopen(DB,&aid_config('wwwdir') . 'master',0444);
+    $dbmfile = &aid_config('wwwdir') . 'master';
+    die "can't open ${dbmfile}.db\n" unless -r "${dbmfile}.db";
+    dbmopen(DB,$dbmfile,0444);
     die "no __years__ key!\n" unless defined $DB{'__class__'};
 
     @years = unpack("n*",$DB{'__years__'});

@@ -1,12 +1,13 @@
 #!/usr/bin/perl -w
 
-# $Id: aid_stats,v 1.7 1999/02/05 19:12:35 mradwin Exp mradwin $
+# $Id: aid_stats,v 1.8 1999/02/09 00:53:17 mradwin Exp mradwin $
 
 require 'aid_util.pl';
 require 'ctime.pl';
 
-$dbFile = &aid_config('aiddir') . "data/master.adr";
-@db = &aid_create_db($dbFile);
+$dbmfile = &aid_config('wwwdir') . 'master';
+die "can't open ${dbmfile}.db\n" unless -r "${dbmfile}.db";
+dbmopen(DB,$dbmfile,0444);
 
 $nvalid = 0;
 $ndubious = 0;
@@ -17,10 +18,11 @@ $nlocation = 0;
 $nweb = 0;
 $nnews = 0;
 
-for (@db)
+while (($key,$val) = each %DB)
 {
-    next unless defined($_) && $_ ne '';
-    %rec = &aid_split($_);
+    next unless $key =~ /^\d+$/;
+
+    %rec = &aid_db_unpack_rec($key,$val);
 
     $ntotal++;
 
@@ -79,3 +81,5 @@ printf "%4d (%2.0f%%) wrote What's New? paragraph\n",
 
 print "\n------------------------------------------------------------------------\n";
 print &ctime(time);
+
+dbmclose(DB);
