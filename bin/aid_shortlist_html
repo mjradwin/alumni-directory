@@ -4,7 +4,7 @@
 # does a short list, either compact or verbose, sorted by graduating
 # class with a jump bar
 #
-# $Id: aid_shortlist_html,v 1.15 1999/03/02 17:39:57 mradwin Exp mradwin $
+# $Id: aid_shortlist_html,v 1.16 1999/03/09 20:50:23 mradwin Exp mradwin $
 #
 
 require 'aid_util.pl';
@@ -57,16 +57,26 @@ for (@class)
     &aid_build_yearlist(*years, $rec{'year'});
 }
 
+if ($#ids + 1 == 1)
+{
+    $subtitle = '1 alumnus';
+}
+else
+{
+    $subtitle = sprintf("%d alumni", $#ids + 1);
+}
+$subtitle = "<strong><font color=\"#000000\">$subtitle</font></strong>";
+
 if (!$opt_t) {
     if ($opt_w) {
 	$time = unpack("N",$DB{'__t_www__'});
-	print FMTOUT &common_html_hdr(4,'Alumni with Web Pages',1,$time);
+	print FMTOUT &common_html_hdr(4,'Alumni with Web Pages',1,$time,$subtitle);
 	print FMTOUT &common_intro_para(1);
 
     } elsif ($opt_m) {
 	$opt_M = 'month' unless defined $opt_M;
 	$time = unpack("N",$DB{'__t__'});
-	print FMTOUT &common_html_hdr(5,'Recent Additions and Updates',1,$time);
+	print FMTOUT &common_html_hdr(5,'Recent Additions and Updates',1,$time,$subtitle);
 	print FMTOUT
 "<p>All alumni on this page have been added to the Directory
 or updated their listings within the last $opt_M.</p>\n\n";
