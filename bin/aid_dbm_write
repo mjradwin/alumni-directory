@@ -1,6 +1,6 @@
 #!/usr/bin/perl -w
 
-# $Id: aid_dbm_write,v 1.19 1999/03/26 19:41:22 mradwin Exp mradwin $
+# $Id: aid_dbm_write,v 1.20 1999/04/05 16:26:17 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -29,33 +29,17 @@ $usage = "usage: $0 [-h] infile.adr outfile.db
 
 &Getopts('h') || die "$usage\n";
 $opt_h && die "$usage\n";
-$ARGV[0] || die "$usage\n";
-$ARGV[1] || die "$usage\n";
+defined $ARGV[0] || die "$usage\n";
+defined $ARGV[1] || die "$usage\n";
 $opt_h = $opt_h;		# avoid warning
 
-%awalt = ();
-%class_members = ();
-%class_latest = ();
-%www_class_members = ();
-@alpha_ids = ();
-%alpha_latest = ();
-
-print STDERR "reading text db...";
-@db = &aid_alpha_db($ARGV[0]);
-print STDERR "\n";
+@db = &aid_create_db($ARGV[0]);
 
 $ARGV[1] =~ s/\.db$//;
+dbmopen(%DB,$ARGV[1],0666);
 
-print STDERR "making binary db...";
-dbmopen(%DB, $ARGV[1], 0666);
-
-$DB{'_created'} = pack("N", time);
-
-$latest = 0;
-$latest_www = 0;
-$latest_awalt = 0;
-$latest_goner = 0;
-
+$i = 0;
+print STDERR "$0: writing primary data...";
 for (@db)
 {
     next unless defined($_) && $_ ne '';
@@ -64,129 +48,13 @@ for (@db)
 
     $DB{$rec{'id'}} = &aid_db_pack_rec(*rec);
     $DB{"\L$rec{'e'}\E"} = pack("n", $rec{'id'});
-
-    # make a list of alpha years
-    if ($rec{'v'})
-    {
-	$latest = $rec{'u'} if $rec{'u'} > $latest;
-
-	$ln_key = substr($rec{'sn'},0,1);
-	$ln_key = "\L$ln_key\E";
-	$alpha_latest{$ln_key} = $rec{'u'} if
-	    $rec{'u'} > $alpha_latest{$ln_key};
-
-	$ykey = ($rec{'yr'} =~ /^\d+$/) ? $rec{'yr'} : 'other';
-	if (defined $class_members{$ykey})
-	{
-	    $class_members{$ykey} .= ' ' . $rec{'id'};
-	    $class_latest{$ykey}   =       $rec{'u'} if
-		$rec{'u'} > $class_latest{$ykey};
-	}
-	else
-	{
-	    $class_members{$ykey}  =       $rec{'id'};
-	    $class_latest{$ykey}   =       $rec{'u'};
-	}
-
-	if ($rec{'w'} ne '')
-	{
-	    $latest_www = $rec{'u'} if $rec{'u'} > $latest_www;
-	    if (defined $www_class_members{$ykey})
-	    {
-		$www_class_members{$ykey} .= ' ' . $rec{'id'};
-	    }
-	    else
-	    {
-		$www_class_members{$ykey}  =       $rec{'id'};
-	    }
-	}
-
-	if ($rec{'s'} == $aid_util'school_awalt ||
-            $rec{'s'} == $aid_util'school_both)
-	{
-	    $latest_awalt = $rec{'u'} if $rec{'u'} > $latest_awalt;
-
-	    if (defined $awalt{$ykey})
-	    {
-		$awalt{$ykey} .= ' ' . $rec{'id'};
-	    }
-	    else
-	    {
-		$awalt{$ykey}  =       $rec{'id'};
-	    }
-	}
-    }
-    else
-    {
-	$latest_goner = $rec{'b'} if $rec{'b'} > $latest_goner;
-	$latest_goner = $rec{'f'} if $rec{'f'} > $latest_goner;
-    }
     
-    # also make the alpha list
-    push(@alpha_ids, $rec{'id'});
-    print STDERR ".";
+    print STDERR "." if ($i++ % 100) == 0;
 }
 print STDERR "\n";
 
-print STDERR "secondary keys...";
-$DB{'_alpha'} = pack("n*", @alpha_ids);
-print STDERR ".";
-
-@class_ids = ();
-@years = sort keys %class_members;
-$DB{'_years'} = pack("n*",grep(/\d+/,@years));
-print STDERR ".";
-
-foreach $ykey (@years)
-{
-    @alpha_ids = split(/ /, $class_members{$ykey});
-    $DB{"_${ykey}"} = pack("n*", @alpha_ids);
-    $DB{"_t_${ykey}"} = pack("N", $class_latest{$ykey});
-    push(@class_ids, @alpha_ids);
-    print STDERR ".";
-}
-
-$DB{'_class'} = pack("n*", @class_ids);
-print STDERR ".";
-
-# now do years, but only for www
-@years = sort keys %www_class_members;
-$DB{'_www_years'} = pack("n*",grep(/\d+/,@years));
-foreach $ykey (@years)
-{
-    $DB{"_www_${ykey}"} = pack("n*", split(/ /, $www_class_members{$ykey}));
-    print STDERR ".";
-}
-
-# now do years, but only for awalt
-@years = sort keys %awalt;
-$DB{'_awalt_years'} = pack("n*",grep(/\d+/,@years));
-foreach $ykey (@years)
-{
-    $DB{"_awalt_${ykey}"} = pack("n*", split(/ /, $awalt{$ykey}));
-    print STDERR ".";
-}
-print STDERR "\n";
-
-print STDERR "finishing...";
-
-$DB{'_t'} = pack("N", $latest);
-print STDERR ".";
-$DB{'_t_www'} = pack("N", $latest_www);
-print STDERR ".";
-$DB{'_t_awalt'} = pack("N", $latest_awalt);
-print STDERR ".";
-$DB{'_t_goner'} = pack("N", $latest_goner);
-print STDERR ".";
-
-while (($key,$val) = each(%alpha_latest))
-{
-    $DB{"_t_${key}"} = pack("N", $val);
-}
-
+&aid_rebuild_secondary_keys(*DB,0,0);
 dbmclose(%DB);
 
-print STDERR ".";
-print STDERR "\n";
-
+print STDERR "$0: build successful\n";
 exit(0);
