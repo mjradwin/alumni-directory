@@ -7,16 +7,22 @@ a:link    { color: #0000cc;  }
 a:visited { color: #990099;  }
 a:active  { color: #ffcc00;  }
 
-strong.y {
+strong.nu {
   color: black;
   background: #ffffcb;
+}
+
+strong.i {
+  color: black;
+  background: #ffffcb;
+  text-decoration: none;
 }
 
 .navbar {
   border: none;
   width: 100%;
   color: black;
-  background: #ffffcc;
+  background: #eeeeee;
   text-align: center;
 }
 
@@ -37,14 +43,14 @@ div.about {
   border: none;
   color: black;
   width: 100%;
-  background: #ffffcc;
+  background: #eeeeee;
 }
 
 pre.about {
   color: black;
   margin-left: 1em;
   margin-right: 1em;
-  background: #ffffcc;
+  background: #eeeeee;
 }
 
 .alert {
