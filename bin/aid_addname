@@ -1,6 +1,6 @@
 #!/usr/bin/perl -w
 
-# $Id: aid_addname,v 3.23 1999/03/09 20:29:12 mradwin Exp mradwin $
+# $Id: aid_addname,v 3.24 1999/03/22 17:38:30 mradwin Exp mradwin $
 
 require 'getopts.pl';
 require 'aid_util.pl';
@@ -138,11 +138,14 @@ sub addname {
 	next unless defined($_) && $_ ne '';
 	%oldrec = &aid_split($_);
 
-	$key_email = "\L$oldrec{'email'}$oldrec{'last'}$oldrec{'first'}\E";
-	$key_name = "\L$oldrec{'last'}$oldrec{'first'}$oldrec{'middle'}$oldrec{'year'}\E";
+	$key_email = "\L$oldrec{'email'}\E" .
+	    &mangle("\L$oldrec{'last'}\E") . &mangle("\L$oldrec{'first'}\E");
+	$key_name = &mangle("\L$oldrec{'last'}\E") .
+	    &mangle("\L$oldrec{'first'}\E") . $oldrec{'year'};
 	$id_by_email{$key_email} = $oldrec{'id'};
 	$id_by_name{$key_name} = $oldrec{'id'};
     }
+    undef(%oldrec);
 
     open(LOG, ">>$logFile") || die "Can't open $logFile: $!\n";
     select(LOG); $| = 1; select(STDOUT);
@@ -151,8 +154,10 @@ sub addname {
     # email address before
     if ($rec{'id'} == -1)
     {
-	$key_email = "\L$rec{'email'}$rec{'last'}$rec{'first'}\E";
-	$key_name = "\L$rec{'last'}$rec{'first'}$rec{'middle'}$rec{'year'}\E";
+	$key_email = "\L$rec{'email'}\E" .
+	    &mangle("\L$rec{'last'}\E") . &mangle("\L$rec{'first'}\E");
+	$key_name = &mangle("\L$rec{'last'}\E") .
+	    &mangle("\L$rec{'first'}\E") . $rec{'year'};
 
 	if (defined $id_by_email{$key_email})
 	{
