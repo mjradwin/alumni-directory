@@ -2,11 +2,11 @@
 #     FILE: aid_util.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: perl library routines for the Alumni Internet Directory
-#      $Id: aid_util.pl,v 4.32 1999/03/02 17:38:25 mradwin Exp mradwin $
+#      $Id: aid_util.pl,v 4.33 1999/03/02 22:51:17 mradwin Exp mradwin $
 #
 
 $aid_util'rcsid =
- '$Id: aid_util.pl,v 4.32 1999/03/02 17:38:25 mradwin Exp mradwin $';
+ '$Id: aid_util.pl,v 4.33 1999/03/02 22:51:17 mradwin Exp mradwin $';
 
 # ----------------------------------------------------------------------
 # CONFIGURATION
@@ -607,8 +607,8 @@ sub submit_body {
 	if ($blank_entries =~ /email/ &&
 	    $rec{'email'} ne '' && $rec{'email'} !~ /\@/)
 	{
-	    $body .= "<p><strong><font color=\"#$star_fg\">Your e-mail ";
-	    $body .= "address appears to be missing a domain name.</font>\n";
+	    $body .= "<p><strong><span class=\"alert\">Your e-mail\n";
+	    $body .= "address appears to be missing a domain name.</span>\n";
 	    $body .= "<br>It must be in the form of ";
 	    $body .= "<code>user\@isp.net</code>.\n";
 	    $body .= "Perhaps you meant to type ";
@@ -621,25 +621,25 @@ sub submit_body {
 	@blankies = split(/\s+/, $blank_entries);
 	if (@blankies)
 	{
-	    $body .= "<p><font color=\"#$star_fg\"><strong>It appears that ";
+	    $body .= "<p class=\"alert\"><strong>It appears that\n";
 	    $body .= "the following required fields were blank:";
-	    $body .= "</strong></font></p>\n\n<ul>\n";
+	    $body .= "</strong></p>\n\n<ul>\n";
 
 	    foreach(@blankies)
 	    {
 		$body .= "<li>" . $field_descr{$_} . "\n";
 	    }
-	    $body .= "</ul>\n";
+	    $body .= "</ul>\n\n";
 	}
     }
 
-    $body .= "\n<p>Please ";
+    $body .= "<p>Please ";
     $body .= (($rec{'id'} != -1) ? "update" : "enter");
     $body .= " the following information and hit the
 <strong>Next&nbsp;&gt;</strong> button.</p>
 
 <p>Fields marked with a $star
-are required.  All other fields are optional.</p>\n\n";
+are required.  All other fields are optional.</p>\n";
 
     $body . "
 <form method=post action=\"" . $config{'submit_cgi'} . "\"> 
@@ -649,87 +649,81 @@ are required.  All other fields are optional.</p>\n\n";
 <input type=\"reset\" value=\"Start Over\">
 </td></tr>
 <tr><td>
+<div class=\"about\">
 <table border=0 width=\"100%\" summary=\"\">
-<tr><td bgcolor=\"#$cell_bg\"><table border=0 cellspacing=7 summary=\"\">
+<tr><td><table border=0 cellspacing=7 summary=\"\">
 <tr>
-  <td valign=top><font color=\"#$cell_fg\"><label for=\"first\">First
-  Name</label></font></td>
+  <td valign=top><label for=\"first\">First Name</label></td>
   <td>$star</td>
   <td valign=top><input type=text name=\"first\" size=35 
   value=\"$rec{'first'}\" id=\"first\"></td>
 </tr>
 <tr>
-  <td valign=top><font color=\"#$cell_fg\"><label for=\"last\">Last
-  Name/Maiden Name</label></font><br>
-  <font color=\"#$cell_fg\"><small>(your last name in high school)</small></font></td>
+  <td valign=top><label for=\"last\">Last Name/Maiden Name</label><br>
+  <small>(your last name in high school)</small></td>
   <td>$star</td>
   <td valign=top><input type=text name=\"last\" size=35
   value=\"$rec{'last'}\" id=\"last\"></td>
 </tr>
 <tr>
-  <td colspan=2 valign=top><font color=\"#$cell_fg\"><label
-  for=\"married\">Married Last Name</label></font><br>
-  <font color=\"#$cell_fg\"><small>(if different from maiden name)</small></font></td>
+  <td colspan=2 valign=top><label for=\"married\">Married Last Name</label><br>
+  <small>(if different from maiden name)</small></td>
   <td valign=top><input type=text name=\"married\" size=35
   value=\"$rec{'married'}\" id=\"married\"></td>
 </tr>
 <tr>
-  <td valign=top><font color=\"#$cell_fg\">High School</font></td>
+  <td valign=top>High School</td>
   <td>$star</td>
   <td valign=top><input type=radio name=\"school\" id=\"school_$config{'short_school'}\"
-  value=\"$config{'short_school'}\"$primary_checked><font color=\"#$cell_fg\"><label
+  value=\"$config{'short_school'}\"$primary_checked><label
   for=\"school_$config{'short_school'}\">&nbsp;$config{'short_school'}</label>&nbsp;&nbsp;&nbsp;&nbsp;<input id=\"school_Awalt\"
   type=radio name=\"school\" value=\"Awalt\"$awalt_checked><label
-  for=\"school_Awalt\">&nbsp;Awalt</label></font></td>
+  for=\"school_Awalt\">&nbsp;Awalt</label></td>
 </tr>
 <tr>
   <td valign=top>&nbsp;</td>
   <td valign=top>&nbsp;</td>
   <td valign=top><input type=radio name=\"school\" id=\"school_Other\"
-  value=\"Other\"$other_checked><font color=\"#$cell_fg\"><label
-  for=\"school_Other\">&nbsp;Other:&nbsp;</label></font><input type=text
+  value=\"Other\"$other_checked><label
+  for=\"school_Other\">&nbsp;Other:&nbsp;</label><input type=text
   name=\"sch_other\" size=27 value=\"$rec{'school'}\"></td>
 </tr>
 <tr>
-  <td valign=top><font color=\"#$cell_fg\"><label
-  for=\"year\">Graduation year or affiliation</label></font><br>
-  <font color=\"#$cell_fg\"><small>(such as 1993, 2001, or Teacher)</small></font></td>
+  <td valign=top><label for=\"year\">Graduation year or affiliation</label><br>
+  <small>(such as 1993, 2001, or Teacher)</small></td>
   <td>$star</td>
   <td valign=top><input type=text name=\"year\" size=35
   value=\"$rec{'year'}\" id=\"year\"></td>
 </tr>
 <tr>
-  <td valign=top><font color=\"#$cell_fg\"><label
-  for=\"email\">E-mail address</label></font><br>
-  <font color=\"#$cell_fg\"><small>(such as chester\@aol.com)</small></font></td>
+  <td valign=top><label for=\"email\">E-mail address</label><br>
+  <small>(such as chester\@aol.com)</small></td>
   <td>$star</td>
   <td valign=top><input type=text name=\"email\" size=35
   value=\"$rec{'email'}\" id=\"email\"></td>
 </tr>
 <tr>
-  <td colspan=2 valign=top><font color=\"#$cell_fg\"><label
-  for=\"www\">Personal Web Page</label></font></td>
+  <td colspan=2 valign=top><label for=\"www\">Personal Web Page</label></td>
   <td valign=top><input type=text name=\"www\" size=35
   value=\"$rec{'www'}\" id=\"www\"></td>
 </tr>
 <tr>
-  <td colspan=2 valign=top><font color=\"#$cell_fg\"><label
-  for=\"location\">Location</label></font><br>
-  <font color=\"#$cell_fg\"><small>(your city, school, or company)</small></font></td>
+  <td colspan=2 valign=top><label for=\"location\">Location</label><br>
+  <small>(your city, school, or company)</small></td>
   <td valign=top><input type=text name=\"location\" size=35
   value=\"$rec{'location'}\" id=\"location\"></td>
 </tr>
 <tr>
-  <td colspan=3><font color=\"#$cell_fg\">
+  <td colspan=3>
   <br><label for=\"message\"><strong>What's New?</strong>
   Let your classmates know what you've been doing since<br>graduation,
-  or any important bits of news you'd like to share.</label></font><br>
+  or any important bits of news you'd like to share.</label><br>
   <textarea name=\"message\" rows=10 cols=55 wrap=hard
   id=\"message\">$rec{'message'}</textarea>
   </td>
 </tr>
 <tr>
-  <td colspan=3><font color=\"#$cell_fg\"><small><input type=checkbox
+  <td colspan=3><small><input type=checkbox
   name=\"reunion\" id=\"reunion\" $reunion_chk><label
   for=\"reunion\">&nbsp;My class officers may notify me of
   reunion information via e-mail.</label><br><br>Please 
@@ -755,7 +749,7 @@ are required.  All other fields are optional.</p>\n\n";
 
   &nbsp;&nbsp;&nbsp;&nbsp;<input type=radio name=\"request\" id=\"request0\"
   value=\"0\"$reqchk[0]><label for=\"request0\">&nbsp;
-  $req_descr_long[0]</label></small></font>
+  $req_descr_long[0]</label></small>
 
   <input type=\"hidden\" name=\"id\" value=\"$rec{'id'}\">
   <input type=\"hidden\" name=\"created\" value=\"$rec{'created'}\">
@@ -763,7 +757,10 @@ are required.  All other fields are optional.</p>\n\n";
   </td>
 </tr>
 </table>
-</td></tr></table></td></tr>
+</td></tr>
+</table>
+</div>
+</td></tr>
 <tr><td align=right><input type=\"submit\" value=\"Next&nbsp;&gt;\">
 &nbsp;
 <input type=\"reset\" value=\"Start Over\">

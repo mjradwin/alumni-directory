@@ -4,7 +4,7 @@
 #     FILE: mvhsaid.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: Alumni Internet Directory CGI interface
-#      $Id: mvhsaid,v 3.68 1999/02/27 01:13:21 mradwin Exp mradwin $
+#      $Id: mvhsaid,v 3.69 1999/03/02 23:02:15 mradwin Exp mradwin $
 #
 
 require 'aid_util.pl';
@@ -22,7 +22,7 @@ if ($ENV{'SCRIPT_NAME'} =~ m,/nph-,)
 # configuration
 $mailprog = &aid_config('mailprog');
 $dbmfile = &aid_config('wwwdir') . 'master';
-$rcsid = '$Id: mvhsaid,v 3.68 1999/02/27 01:13:21 mradwin Exp mradwin $'; #'fnt
+$rcsid = '$Id: mvhsaid,v 3.69 1999/03/02 23:02:15 mradwin Exp mradwin $'; #'fnt
 
 $listing_upd_title = 'Step 1: Update Your Directory Listing';
 $listing_upl_title = 'Select a Listing to Update';
@@ -307,6 +307,7 @@ correct.</font></strong></p>
 <strong>Finish&nbsp;&gt;</strong> button.
 </ul>\n";
 
+    print"\n<table border=0 summary=\"\">\n<tr><td colspan=2>";
     print "\n<form method=post action=\"", &aid_config('confirm_cgi'), "\">\n";
     %newrec = &rec_html_entify(*in);
     foreach (keys %newrec) {
@@ -317,12 +318,13 @@ correct.</font></strong></p>
 
     print "\n\n";
     print &about_text(*in,1,1,0), "\n";
-    print "<p align=right>\n";
+
+    print"</td></tr>\n<tr><td>&nbsp;</td><td align=right>\n";
     print "<input type=submit name=\"revise\" value=\"&lt;&nbsp;Back\">\n";
     print "&nbsp;\n";
     print "<input type=submit name=\"confirmed\" value=\"Finish&nbsp;&gt;\">\n";
-    print "</p>\n";
     print "</form>\n";
+    print "</td></tr>\n</table>\n";
     print &common_html_ftr(-1);
 }
 
