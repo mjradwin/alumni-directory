@@ -22,7 +22,7 @@ open(MVHS,$ARGV[0]) || die "Can't open $ARGV[0]: $!\n";
 open(FMTOUT,">$ARGV[1]") || die "Can't open $ARGV[1]: $!\n";
 
 if (!$opt_t) {
-    print FMTOUT &common_html_hdr(1);
+    print FMTOUT &common_html_hdr(1,1);
     print FMTOUT "<br>";
     print FMTOUT &tableheader("Alumni Listed by Last Name", 1, 'ffff99', 1);
     print FMTOUT '

@@ -12,7 +12,7 @@ die "Usage: mv_goners_html infile.adr outfile.html\n" if !$ARGV[0] || !$ARGV[1];
 open(MVHS,$ARGV[0]) || die "Can't open $ARGV[0]: $!\n";
 open(FMTOUT,">$ARGV[1]") || die "Can't open $ARGV[1]: $!\n";
 
-print FMTOUT &common_html_hdr(-1, "Invalid&nbsp;Addresses");
+print FMTOUT &common_html_hdr(-1,1);
 print FMTOUT "<br>";
 print FMTOUT &tableheader("Alumni with Invalid Addresses", 1, 'ffff99', 1);
 print FMTOUT "

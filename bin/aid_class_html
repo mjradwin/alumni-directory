@@ -22,7 +22,7 @@ open(MVHSPRE,$ARGV[0]) || die "Can't open $ARGV[0]: $!\n";
 open(FMTOUT,">$ARGV[1]") || die "Can't open $ARGV[1]: $!\n";
 
 if (!$opt_t) {
-    print FMTOUT &common_html_hdr(2);
+    print FMTOUT &common_html_hdr(2,1);
     print FMTOUT "<br>";
     print FMTOUT &tableheader("Alumni Listed by Graduating Class", 1, 'ffff99', 1);
     print FMTOUT '

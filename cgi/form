@@ -4,7 +4,7 @@
 #     FILE: mvhsaid.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: MVHS Alumni Internet Directory CGI interface
-#      $Id: mvhsaid,v 1.26 1997/09/02 16:56:32 mjr Exp mjr $
+#      $Id: mvhsaid,v 1.27 1997/09/08 15:53:26 mjr Exp mjr $
 #
 
 require 'mv_util.pl';
@@ -22,7 +22,7 @@ $dbfile = &mv_config('wwwdir') . "mvhs.adr";
 if (defined($in{'version'})) {
     select(STDOUT);  $| = 1;
     print "Content-type: text/plain\n\n";
-    print '$Id: mvhsaid,v 1.26 1997/09/02 16:56:32 mjr Exp mjr $', "\n";
+    print '$Id: mvhsaid,v 1.27 1997/09/08 15:53:26 mjr Exp mjr $', "\n";
     exit(0);
 }
 
@@ -143,7 +143,7 @@ EOM
 
     select(STDOUT);  $| = 1;
     print "Content-type: text/html\n\n";
-    print &common_html_hdr(-1);
+    print &common_html_hdr(-1,1);
 
     print "<br>\n";
     print &tableheader("Your submission is queued", 1, "ffff99", 1);
@@ -184,7 +184,7 @@ sub send_upd_real {
     select(STDOUT);  $| = 1;
     print "Content-type: text/html\n\n";
 
-    print &common_html_hdr(-1);
+    print &common_html_hdr(-1,1);
     print &submit_body($rawdata,$interactivep,$blank);
     print &common_html_ftr(-1);
 }
@@ -200,7 +200,7 @@ sub send_about {
 
     select(STDOUT);  $| = 1;
     print "Content-type: text/html\n\n";
-    print &common_html_hdr(-1);
+    print &common_html_hdr(-1,1);
     print "<br>\n";
     print &tableheader($fullname, 1, "ffff99", 1);
     print "<p>Here is more detailed information about $fullname.  To see\n";
@@ -261,7 +261,7 @@ sub send_upd_list {
 
     select(STDOUT);  $| = 1;
     print "Content-type: text/html\n\n";
-    print &common_html_hdr(-1);
+    print &common_html_hdr(-1,1);
     print "<br>\n";
     print &tableheader("Update Your Directory Listing", 1, "ffff99", 1);
     print "\n";
