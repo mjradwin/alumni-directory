@@ -1,6 +1,6 @@
 #!/usr/bin/perl -w
 
-# $Id: aid_addname,v 3.10 1998/05/17 05:18:53 mradwin Exp mradwin $
+# $Id: aid_addname,v 3.11 1998/05/17 05:27:38 mradwin Exp mradwin $
 
 require 'getopts.pl';
 require 'aid_util.pl';
@@ -50,9 +50,10 @@ sub readspool {
     local($[) = 0;
     local($_);
     local($id,$logFile,$newsFile,*SPOOL);
-    local($newsp,$browserLog);
+    local($newsp,$browserLog,$time);
 
     $browserLog = &aid_config('aiddir') . "logs/browsers.log";
+    $time = time;
     open(SPOOL, $spoolFile) || die "can't open $spoolFile: $!\n";
     print "reading spool...\n";
     while(<SPOOL>) {
@@ -67,8 +68,8 @@ sub readspool {
 
 	while(<SPOOL>) {
 	    if (/^Browser: (.*)$/) {
-		system "$echo '$1' >> $browserLog"
-		    || die "failed to $echo '$1' >> $browserLog: $!\n";
+		system "$echo '$id - $time - $1' >> $browserLog"
+		    || die "failed to $echo '$id - $time - $1' >> $browserLog: $!\n";
 	    }
 	    last if /^_AID_END_SUBMISSION_/;
 	    if (/^_AID_BEGIN_MESSAGE_/) {
