@@ -4,7 +4,7 @@
 #     FILE: go.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: Alumni Internet Directory update redirector
-#      $Id: go,v 5.1 1999/05/31 22:41:11 mradwin Exp mradwin $
+#      $Id: go,v 5.4 1999/06/08 19:27:08 mradwin Exp $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -56,10 +56,10 @@ if ($ENV{'PATH_INFO'} =~ m,/(\d+)$,)
 
 	print "Content-Type: text/html\015\012\015\012";
 
-	print &aid_common_html_hdr(-1,'Update Your Directory Listing',
+	print &aid_common_html_hdr(-1,'Modify Your Directory Listing',
 				   1,$rec{'u'});
 	print &aid_submit_body(*rec,'');
-	print &aid_common_html_ftr(-1);
+	print &aid_common_html_ftr(-1,$rec{'u'});
 
 	close(STDOUT);
 	exit(0);
