@@ -2,7 +2,7 @@
 
 #
 # does the html version of the grad-date address list
-# $Id: aid_class_html,v 5.16 2000/06/01 23:34:10 mradwin Exp mradwin $
+# $Id: aid_class_html,v 5.17 2000/06/05 17:01:11 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -142,7 +142,7 @@ foreach $year (@years)
 	    $opt_t || print FMTOUT "<a name=\"grad${year}\" " .
 		"href=\"" . &aid_config('master_path') . "class/${year}.html\">";
 	    print FMTOUT "Class of $year";
-	    $opt_t || print FMTOUT "</a>  (<a href=\"#top\">top</a>)";
+	    $opt_t || print FMTOUT "</a>";
 	    print FMTOUT "\n";
 	    $opt_t || print FMTOUT "<ul>\n";
 	}
@@ -158,7 +158,6 @@ foreach $year (@years)
 	    print FMTOUT "Faculty/Staff";
 	    $opt_t || print FMTOUT "</a>" if $prev =~ /^\d+$/;
 	    print FMTOUT ' ' x (13 - length("Faculty/Staff"));
-	    $opt_t || print FMTOUT "  (<a href=\"#top\">top</a>)";
 	    print FMTOUT "\n";
 	    $opt_t || print FMTOUT "<ul>\n";
 	}
