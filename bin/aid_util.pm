@@ -2,7 +2,7 @@
 #     FILE: mv_util.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: perl library routines for the MVHS Alumni Internet Directory
-#      $Id: mv_util.pl,v 1.71 1997/12/22 20:02:33 mjr Exp mjr $
+#      $Id: mv_util.pl,v 1.72 1997/12/22 20:30:08 mjr Exp mjr $
 #
 
 CONFIG: {
@@ -601,9 +601,13 @@ sub common_html_ftr {
     package mv_util;
 
     local($page) = @_;
+    local($rcsid) = '<!-- $Id$ -->';
     local($ftr);
 
     $ftr = "
+<!-- begin common_html_ftr -->
+$rcsid
+
 <hr noshade size=1>
 <p align=center><font size=\"-1\">";
 
@@ -628,7 +632,7 @@ sub common_html_ftr {
     }
     $ftr .= "</font></p>\n";
     
-    return $ftr . "
+    $ftr .= "
 
 <blockquote><a name=\"disclaimer\">Acceptable use</a>: this directory is
 provided solely for the information of alumni of Mountain View High
@@ -642,10 +646,14 @@ this publication is forbidden.</blockquote>
 "\"><em>" . $config{'admin_name'} . "</em></a><em>,</em> <a 
 href=\"mailto:" . $config{'admin_email'} . 
 "\"><tt>" . $config{'admin_email'} . "</tt></a></p>
+
+<!-- end common_html_ftr -->
+
 </body>
 </html>
 ";
 
+    return $ftr;
 }
 
 
@@ -657,6 +665,7 @@ sub common_html_hdr {
     local($h1, $h2, $h3, $h4, $html_head);
     local($name, $url);
     local($timestamp);
+    local($rcsid) = '<!-- $Id$ -->';
 
     $timestamp = ($page == 0) ? 'Last update to Directory: ' :
 	'Last update to this page: ';
@@ -713,10 +722,12 @@ sub common_html_hdr {
 	"</title>\n" . $site_tags . "\n" . $pics_label . "\n";
     $html_head .= "$noindex\n" if $norobots;
     $html_head .= "</head>\n\n";
-
-    return $html_head . $h1 . $h2 . $h3;
+    
+    return $html_head .
+	"<!-- begin common_html_hdr -->\n$rcsid\n" .
+        $h1 . $h2 . $h3 .
+        "<!-- end common_html_hdr -->\n";
 }
-
 
 1;
 
