@@ -2,7 +2,7 @@
 #     FILE: aid_util.pm
 #   AUTHOR: Michael J. Radwin
 #    DESCR: perl library routines for the Alumni Internet Directory
-#      $Id: aid_util.pm,v 6.11 2004/02/08 20:18:11 mradwin Exp mradwin $
+#      $Id: aid_util.pm,v 6.12 2004/02/08 20:23:56 mradwin Exp mradwin $
 #
 # Copyright (c) 2003  Michael J. Radwin.
 # All rights reserved.
@@ -60,7 +60,7 @@ use strict;
 
 package aid_util;
 
-my($VERSION) = '$Revision: 6.11 $$';
+my($VERSION) = '$Revision: 6.12 $$';
 if ($VERSION =~ /(\d+)\.(\d+)/) {
     $VERSION = "$1.$2";
 }
@@ -666,7 +666,7 @@ Subject: $subject
 
 sub verbose_entry
 {
-    my($rec_arg,$display_year,$suppress_new,$suppress_links) = @_;
+    my($rec_arg,$display_year,$suppress_new,$suppress_links,$suppress_name) = @_;
     my($fullname);
     my($retval) = '';
 
@@ -676,6 +676,7 @@ sub verbose_entry
 
     $retval .= "<dl>\n";
 
+    if (! $suppress_name) {
     $retval .= "<dt><big>";
     $retval .= "<b>";
     $retval .= "<a name=\"id-$rec{'id'}\">";
@@ -686,6 +687,7 @@ sub verbose_entry
     $retval .= is_new_html(\%rec) unless $suppress_new; 
 #    $retval .= "</dt>";
     $retval .= "\n";
+    }
 
     if (! $suppress_links && $rec{'v'})
     {

@@ -2,7 +2,7 @@
 
 #
 # does the html multi_class pages
-# $Id: aid_multi_class_html,v 6.5 2004/01/22 22:46:08 mradwin Exp mradwin $
+# $Id: aid_multi_class_html,v 6.6 2004/02/02 22:58:14 mradwin Exp mradwin $
 #
 # Copyright (c) 2003  Michael J. Radwin.
 # All rights reserved.
@@ -266,7 +266,7 @@ foreach $year (@years)
 	my $name = aid_util::inorder_fullname(\%rec);
 
 	print FMTOUT2 aid_util::common_html_hdr(-2, $name . $affil, 1, $rec{'u'});
-	print FMTOUT2 aid_util::verbose_entry(\%rec,1);
+	print FMTOUT2 aid_util::verbose_entry(\%rec,1,0,0,1);
 	print FMTOUT2 aid_util::common_html_ftr(-2,$rec{'u'});
 	close(FMTOUT2);
 	utime $rec{'u'}, $rec{'u'}, $out2;
