@@ -2,7 +2,7 @@
 #     FILE: aid_util.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: perl library routines for the Alumni Internet Directory
-#      $Id: aid_util.pl,v 5.69 2000/06/05 17:01:11 mradwin Exp mradwin $
+#      $Id: aid_util.pl,v 5.70 2000/06/05 17:02:32 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -352,13 +352,22 @@ sub aid_html_entify_rec
     %rec;
 }
 
-
 sub aid_sendmail
+{
+    local($return_path,$from,$subject,$body,@recip) = @_;
+
+    &main::aid_sendmail_v2($return_path,$from,$subject,'',$body,@recip);
+}
+
+sub aid_sendmail_v2
 {
     package aid_util;
 
-    local($return_path,$from,$subject,$body,@recip) = @_;
+    local($return_path,$from,$subject,$xtrahead,$body,@recip) = @_;
     local($message,$i,$to,$cc,@targets);
+
+    chomp($xtrahead);
+    $xtrahead .= "\n" if $xtrahead ne '';
 
     $to = "\"$recip[0]\" <$recip[1]>";
     @targets = ($recip[1]);
@@ -377,6 +386,7 @@ sub aid_sendmail
 "From: $from <$return_path>
 To: $to
 ${cc}Organization: $config{'school'} Alumni Internet Directory
+${xtrahead}MIME-Version: 1.0
 Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: QUOTED-PRINTABLE
 Subject: $subject
@@ -1378,6 +1388,7 @@ if ($^W && 0)
     &aid_common_intro_para();
     &aid_fullname();
     &aid_is_old();
+    &aid_sendmail_v2();
     &aid_sendmail();
     &aid_db_unpack_rec();
     &aid_db_pack_rec();
