@@ -2,11 +2,11 @@
 #     FILE: aid_util.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: perl library routines for the Alumni Internet Directory
-#      $Id: aid_util.pl,v 4.58 1999/03/12 21:49:04 mradwin Exp mradwin $
+#      $Id: aid_util.pl,v 4.59 1999/03/15 23:50:11 mradwin Exp mradwin $
 #
 
 $aid_util'rcsid =
- '$Id: aid_util.pl,v 4.58 1999/03/12 21:49:04 mradwin Exp mradwin $';
+ '$Id: aid_util.pl,v 4.59 1999/03/15 23:50:11 mradwin Exp mradwin $';
 
 # ----------------------------------------------------------------------
 # CONFIGURATION
@@ -15,11 +15,6 @@ $aid_util'rcsid =
 # *aid_util'variables in this configuration section, and the
 # subroutines submit_body() and affiliate()
 # ----------------------------------------------------------------------
-
-# since aid_config depends on caldate, do these first
-@aid_util'MoY = #'#
-    ('Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec');
-$aid_util'caldate = &aid_caldate(time); #'#
 
 require 'aid_config.pl';
 
@@ -82,8 +77,6 @@ $aid_util'header_bg  = 'ffff99'; #'#
 $aid_util'header_fg  = '000000'; #'#
 
 $aid_util'cell_bg    = 'ffffcc'; #'#
-$aid_util'cell_fg    = '000000'; #'#
-
 $aid_util'star_fg    = 'ff0000'; #'#
 
 $aid_util'body_bg    = 'ffffff'; #'#
@@ -143,12 +136,6 @@ $aid_util'ID_INDEX    = 0;     #'# position that the ID key is in datafile
 
 $aid_util'pack_format = 'C3N5'; #'#
 $aid_util'pack_len    = 23; #'#
-
-$aid_util'school_default    = 1; #'#
-$aid_util'school_awalt      = 2; #'#
-$aid_util'school_both       = 3; #'#
-@aid_util'school_affil      = ('', '', 'A', 'A/MV');
-@aid_util'school_name       = ('', 'MVHS', 'Awalt', 'Awalt/MV');
 
 %aid_util'blank_entry =        #'# a prototypical blank entry to clone
     ();
@@ -956,7 +943,8 @@ sub aid_vcard_text {
     package aid_util;
 
     local(*rec) = @_;
-    local($v_fn,$v_n,$retval,$message);
+    local($v_fn,$v_n,$retval);
+#    local($message);
     local($mid) = ($rec{'middle'} ne '') ? "$rec{'middle'}. " : '';
     local($v_mid) = ($rec{'middle'} ne '') ? ";$rec{'middle'}" : '';
 
@@ -1238,7 +1226,7 @@ sub common_html_hdr {
     local($page,$title,$norobots,$time) = @_;
     local($hdr,$tablehdr,$timestamp,$titletag);
     local($pagetime) = defined $time ? $time : time;
-    local($sec,$min,$hour,@rest) = localtime($pagetime);
+    local($sec,$min,$hour) = localtime($pagetime);
     local($ampm) = $hour >= 12 ? 'pm' : 'am';
 
     $hour -= 12 if $hour > 12;
@@ -1586,37 +1574,37 @@ sub old_encode_base64
 # We get a whole bunch of warnings about "possible typo" when running
 # with the -w switch.  Touch them all once to get rid of the warnings.
 # This is ugly and I hate it.
-if ($^W)
+if ($^W && 0)
 {
-    if (0)
-    {
-	&old_encode_base64();
-	&aid_http_date();
-	&aid_book_write_suffix();
-	&aid_book_write_entry();
-	&aid_book_write_prefix();
-	&aid_class_jump_bar();
-	&aid_build_yearlist();
-	&about_text();
-	&aid_verbose_entry();
-	&aid_html_escape();
-	&aid_class_db();
-	&aid_alpha_db();
-	&aid_parse();
-	&aid_join();
-	&affiliate();
-	&aid_image_tag();
-	&common_html_hdr();
-	&common_html_ftr();
-	&common_intro_para();
-	&fullname();
-	&is_old();
-	&message_footer();
-	&sendmail();
-	&submit_body();
-	&aid_db_unpack_rec();
-	&aid_db_pack_rec();
-    }
+    &old_encode_base64();
+    &aid_http_date();
+    &aid_book_write_suffix();
+    &aid_book_write_entry();
+    &aid_book_write_prefix();
+    &aid_class_jump_bar();
+    &aid_build_yearlist();
+    &about_text();
+    &aid_verbose_entry();
+    &aid_html_escape();
+    &aid_class_db();
+    &aid_alpha_db();
+    &aid_parse();
+    &aid_join();
+    &affiliate();
+    &aid_image_tag();
+    &common_html_hdr();
+    &common_html_ftr();
+    &common_intro_para();
+    &fullname();
+    &is_old();
+    &message_footer();
+    &sendmail();
+    &submit_body();
+    &aid_db_unpack_rec();
+    &aid_db_pack_rec();
+    $aid_util'rcsid = '';
+    $aid_util'disclaimer = '';
+    $aid_util'site_tags = '';
 }
 
 1;

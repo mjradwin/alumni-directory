@@ -2,7 +2,7 @@
 #     FILE: aid_config.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: configuration for Alumni Internet Directory
-#      $Id: aid_config.pl,v 1.7 1999/02/26 19:43:36 mradwin Exp mradwin $
+#      $Id: aid_config.pl,v 1.8 1999/03/05 00:17:27 mradwin Exp mradwin $
 #
 
 # radwin.org (FreeBSD 2.2.2) configuration
@@ -53,6 +53,10 @@ and you can share as much or as little as you want.</p>
 ",
      );
 
+@aid_util'MoY = #'#
+    ('Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec');
+$aid_util'caldate = &aid_caldate(time); #'#
+
 $aid_util'site_tags = #'#
 "  <meta name=\"keywords\"    content=\"Mountain View High School, Alumni, MVHS, Awalt High School, Mountain View, Los Altos, California, reunion, Radwin\">\n  <meta name=\"description\" content=\"Alumni e-mail and web page directory for Mountain View High School (MVHS) and Awalt High School in Mountain View, CA. Updated $aid_util'caldate.\">\n  <meta name=\"author\"  content=\"$aid_util'config{'admin_name'}\">\n  <link rev=\"made\"     href=\"mailto:" . $aid_util'config{'admin_email'} . "\">\n  <link rel=\"contents\" href=\"http://" . $aid_util'config{'master_srv'} . $aid_util'config{'master_path'} . "\" title=\"Home page for MVHS Alumni Internet Directory\">";
 
@@ -62,5 +66,12 @@ Directory is provided solely for the information of the Mountain View
 High School and Awalt High School communities.  Any redistribution
 outside of this community, or solicitation of business or contributions
 from individuals listed in this publication is forbidden.";
+
+$aid_util'school_default    = 1; #'#
+$aid_util'school_awalt      = 2; #'#
+$aid_util'school_both       = 3; #'#
+
+@aid_util'school_affil      = ('', '', 'A', 'A/MV');
+@aid_util'school_name       = ('', 'MVHS', 'Awalt', 'Awalt/MV');
 
 1;
