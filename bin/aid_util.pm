@@ -2,11 +2,11 @@
 #     FILE: aid_util.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: perl library routines for the Alumni Internet Directory
-#      $Id: aid_util.pl,v 4.2 1999/01/29 19:50:54 mradwin Exp mradwin $
+#      $Id: aid_util.pl,v 4.3 1999/01/29 19:59:50 mradwin Exp mradwin $
 #
 
 $aid_util'rcsid =
- '$Id: aid_util.pl,v 4.2 1999/01/29 19:50:54 mradwin Exp mradwin $';
+ '$Id: aid_util.pl,v 4.3 1999/01/29 19:59:50 mradwin Exp mradwin $';
 
 # ----------------------------------------------------------------------
 # CONFIGURATION
@@ -657,14 +657,14 @@ are required.  All other fields are optional.</p>\n\n";
 
     $body . "
 <form method=post action=\"" . $config{'cgi_path'} . "/sub\"> 
-<table border=0>
+<table border=0 summary=\"\">
 <tr><td align=right><input type=\"submit\" value=\"Next&nbsp;&gt;\">
 &nbsp;
 <input type=\"reset\" value=\"Start Over\">
 </td></tr>
 <tr><td>
-<table border=0 width=\"100%\">
-<tr><td bgcolor=\"#$cell_bg\"><table border=0 cellspacing=7>
+<table border=0 width=\"100%\" summary=\"\">
+<tr><td bgcolor=\"#$cell_bg\"><table border=0 cellspacing=7 summary=\"\">
 <tr>
   <td valign=top><font color=\"#$cell_fg\"><label for=\"first\">First
   Name</label></font></td>
@@ -950,7 +950,7 @@ sub about_text {
 
     $do_vcard_p = 0 unless defined($do_vcard_p);
 
-    $retval .= "<table border=0 cellpadding=6><tr><td bgcolor=\"#$cell_bg\"><font color=\"#$cell_fg\">\n<pre>\n\n" if $do_html_p;
+    $retval .= "<table border=0 cellpadding=6 summary=\"\"><tr><td bgcolor=\"#$cell_bg\"><font color=\"#$cell_fg\">\n<pre>\n\n" if $do_html_p;
 
     $retval .= "First Name         : ";
     $retval .= "<strong>" if $do_html_p;
@@ -1177,7 +1177,7 @@ sub common_html_hdr {
     $hdr .= "<body bgcolor=\"#$body_bg\" text=\"#$body_fg\" link=\"#$body_link\" vlink=\"#$body_vlink\">\n";
     
     $hdr .= "
-<table cellspacing=0 cellpadding=6 border=0 width=\"100%\">
+<table cellspacing=0 cellpadding=6 border=0 width=\"100%\" summary=\"\">
   <tr>
     <td bgcolor=\"#$header_bg\" valign=middle>
     <p align=left><font color=\"#$header_fg\" size=\"+2\"><strong><tt>
