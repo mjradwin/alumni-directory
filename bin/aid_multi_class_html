@@ -2,7 +2,7 @@
 
 #
 # does the html multi_class pages
-# $Id: aid_multi_class_html,v 5.17 2000/06/01 23:34:10 mradwin Exp mradwin $
+# $Id: aid_multi_class_html,v 5.18 2000/07/13 21:01:16 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -27,6 +27,7 @@ unshift(@INC, $dirname);
 
 use DB_File;
 use Time::Local;
+use POSIX qw(strftime);
 
 require 'aid_util.pl';
 require 'getopts.pl';
@@ -143,21 +144,48 @@ foreach $year (@years)
 	    next unless $key eq $year;
 	}
 
-	my($date,$html) = split(/\0/, $val, 2);
-	my($yr,$mon,$mday) = split(/\//, $date, 3);
-	my($t) = &Time::Local::timelocal(59,59,23,$mday,$mon-1,$yr-1900,0,0,0);
+#	my($date,$html) = split(/\0/, $val, 2);
+#	my($yr,$mon,$mday) = split(/\//, $date, 3);
+#	my($t) = &Time::Local::timelocal(59,59,23,$mday,$mon-1,$yr-1900,0,0,0);
 
-	if ($t > time)
-	{
+#	if ($t > time)
+#	{
 	    $r{$key} = $val;
-	}
+#	}
     }
 
     if (keys %r)
     {
-	print FMTOUT "<h2>Reunion Info</h2>\n";
-	&aid_write_reunion_hash(*FMTOUT, \%r);
-	print FMTOUT "<hr noshade=\"noshade\" size=\"1\">\n\n";
+	print FMTOUT "<h3>Reunion Info</h3>\n<ul>\n";
+	foreach $key (sort keys %r)
+	{
+	    my($refname,$title);
+
+	    my($date,$html) = split(/\0/, $r{$key}, 2);
+	    my($yr,$mon,$mday) = split(/\//, $date, 3);
+	    my($long_date) = strftime("%A, %B %d, %Y",
+				      (59,59,23,$mday,$mon-1,$yr-1900,0,0,0));
+
+	    if ($key =~ /^\d+$/)
+	    {
+		$refname = "r$key";
+		$title = "Class of $key";
+	    }
+	    else
+	    {
+		$refname = lc($key);
+		$refname =~ s/[^\w]/_/g;
+		$refname =~ s/_+/_/g;
+		$refname =~ s/^_//;
+		$refname =~ s/_$//;
+
+		$title = $key;
+	    }
+
+	    print FMTOUT "<li><a href=\"",  &main::aid_config('master_path'),
+	    "etc/reunions.html#$refname\">$title</a>\n($long_date)</li>\n";
+	}
+	print FMTOUT "</ul>\n<hr noshade=\"noshade\" size=\"1\">\n\n";
     }
 
     foreach $id (@ids)
