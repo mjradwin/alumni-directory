@@ -1,6 +1,6 @@
 #!/usr/bin/perl -w
 
-# $Id: aid_dbm_write,v 1.9 1999/02/16 19:10:59 mradwin Exp mradwin $
+# $Id: aid_dbm_write,v 1.10 1999/02/27 00:16:47 mradwin Exp mradwin $
 
 require 'aid_util.pl';
 require 'getopts.pl';
@@ -18,6 +18,7 @@ $opt_h = $opt_h;		# avoid warning
 
 %awalt = ();
 %class_members = ();
+%class_latest = ();
 @alpha_ids = ();
 
 print STDERR "reading text db...";
@@ -56,10 +57,13 @@ for (@db)
 	if (defined $class_members{$ykey})
 	{
 	    $class_members{$ykey} .= ' ' . $rec{'id'};
+	    $class_latest{$ykey}   =       $rec{'time'} if
+		$rec{'time'} > $class_latest{$ykey};
 	}
 	else
 	{
 	    $class_members{$ykey}  =       $rec{'id'};
+	    $class_latest{$ykey}   =       $rec{'time'};
 	}
 
 	if ($rec{'school'} =~ /awalt/i)
@@ -101,6 +105,7 @@ foreach $ykey (@years)
 {
     @alpha_ids = split(/ /, $class_members{$ykey});
     $DB{"__${ykey}__"} = pack("n*", @alpha_ids);
+    $DB{"__t_${ykey}__"} = pack("N", $class_latest{$ykey});
     push(@class_ids, @alpha_ids);
 }
 print STDERR ".";
