@@ -1,6 +1,6 @@
 #!/usr/bin/perl -w
 
-# $Id: aid_bounce,v 3.13 1998/06/01 16:45:04 mradwin Exp mradwin $
+# $Id: aid_bounce,v 3.14 1998/08/08 02:39:46 mradwin Exp mradwin $
 
 require 'ctime.pl';
 require 'getopts.pl';
@@ -9,6 +9,8 @@ require 'aid_util.pl';
 $usage = 'usage: aid_bounce [-hv] [-f <time>] [ids...]
     -h        Display usage information.
     -v        Invalidate ids.
+    -u        Revalidate ids (zero bounce field).
+    -d        Display goners candidates.
     -f <time> Set all freshness fields to <time> unless an entry
               has non-zero bounces, or freshness is later than <time>.
 
@@ -16,14 +18,16 @@ Bumps up the bounce field for every id or email address listed on the
 command line.
 ';
 
-&Getopts('hvf:') || die "$usage\n";
+&Getopts('hvf:du') || die "$usage\n";
 $opt_h && die "$usage\n";
 $opt_h = $opt_h;                # avoid warning
-$opt_v = $opt_v;                # avoid warning
 
 die "error: freshness date too small\n$usage\n"
     if (defined $opt_f) && ($opt_f < 815137658);
-exit(0) unless $opt_f || @ARGV;
+
+die "$usage\n" unless $opt_d || $opt_f || @ARGV;
+die "$usage\n" if $opt_v && $opt_u;
+die "$usage\n" if $opt_f && ($opt_d || $opt_u || $opt_v);
 
 $cp   = &aid_config('cp');
 -x $cp   || die "error: $cp is not executable!";
@@ -31,18 +35,36 @@ $cp   = &aid_config('cp');
 $dbFile = &aid_config('aiddir') . "data/master.adr";
 @db = &aid_create_db($dbFile);
 
-# hash{email} = id
-for (@db) {
-    next unless defined($_) && $_ ne '';
-    %rec = &aid_split($_);
-    $addrs{"\L$rec{'email'}\E"} = $rec{'id'};
+if ($opt_d)
+{
+    for (@db)
+    {
+	next unless defined($_) && $_ ne '';
+	%rec = &aid_split($_);
+	next unless $rec{'valid'};
+	next if $rec{'bounce'} eq '0';
+
+	print "$rec{'id'} - $rec{'email'} ", &aid_caldate($rec{'bounce'});
+	print " ", &aid_caldate($rec{'fresh'}) if $rec{'fresh'} > $rec{'bounce'};
+	print "\n";
+    }
+
+    exit(0);
 }
-
-$time = time;
-
-if ($opt_f) {
+elsif ($opt_f)
+{
     &freshen();
-} else {
+}
+else
+{
+    # hash{email} = id
+    for (@db)
+    {
+	next unless defined($_) && $_ ne '';
+	%rec = &aid_split($_);
+	$addrs{"\L$rec{'email'}\E"} = $rec{'id'};
+    }
+
     &bounce_argv();
 }
 
@@ -68,7 +90,7 @@ sub freshen {
 	next unless defined($_) && $_ ne '';
 	%rec = &aid_split($_);
 	next unless $rec{'valid'} == 1 && 
-	    $rec{'bounces'} == 0 && $rec{'fresh'} < $opt_f;
+	    $rec{'bounce'} == 0 && $rec{'fresh'} < $opt_f;
 
 	$rec{'fresh'} = $opt_f;
 	$db[$rec{'id'}] = &aid_join(*rec);
@@ -79,7 +101,10 @@ sub freshen {
 
 # if the user has never bounced, set firstbounce to time.
 # if the user has bounced, set freshness to time
-sub bounce_argv {
+sub bounce_argv
+{
+    local($time) = time;
+
     for (@ARGV) {
 	if (/^\d+$/) {
 	    if (defined @db[$_]) {
@@ -99,18 +124,34 @@ sub bounce_argv {
 	}
 
 	print "$rec{'email'} ($rec{'id'}) was ";
-	if ($rec{'bounces'} == 0) {
+	if ($rec{'bounce'} == 0) {
 	    print "blank\n";
 	} else {
-	    print &ctime($rec{'bounces'});
+	    print &ctime($rec{'bounce'});
 	}
 
-	if ($rec{'bounces'} != 0) {
-	    $rec{'fresh'} = $time;
-	} else {
-	    $rec{'bounces'} = $time;
+	if ($opt_u)
+	{
+	    $rec{'bounce'} = 0;
 	}
-	$rec{'valid'} = 0 if $opt_v;
+	else
+	{
+	    if ($rec{'bounce'} != 0)
+	    {
+		$rec{'fresh'} = $time;
+	    }
+	    else
+	    {
+		$rec{'bounce'} = $time;
+	    }
+
+	    if ($opt_v)
+	    {
+		$rec{'valid'} = 0;
+		$rec{'request'} = $aid_util'blank_entry{'request'}; #'#
+	    }
+	}
+
 	$db[$rec{'id'}] = &aid_join(*rec);
     }
 

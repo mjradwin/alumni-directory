@@ -2,7 +2,7 @@
 
 #
 # mails a welcome or update note to everyone in targets.adr
-# $Id: aid_welcome,v 3.14 1998/10/13 23:19:11 mradwin Exp mradwin $
+# $Id: aid_welcome,v 3.15 1998/10/28 21:05:52 mradwin Exp mradwin $
 #
 
 require 'aid_util.pl';
@@ -106,6 +106,8 @@ listed below is forbidden.
      'sleep',    '10',
      );
 
+@args = @ARGV;
+
 &Getopts('hd:r:ucm:l:') || die "$usage\n";
 $opt_h && die "$usage\n";
 $opt_h = $opt_h;                # avoid warning
@@ -139,6 +141,8 @@ select(LOG); $| = 1; select(STDOUT);
 $today = &ctime(time);
 chop $today;
 
+print LOG "# [$today] - $pname ", join(' ', @args), "\n";
+
 while(<TARGET>) {
     chop;
     %rec = &aid_split($_);
@@ -156,7 +160,7 @@ while(<TARGET>) {
     &sendmail($rec{'email'},
 	      &aid_config('admin_email'), &aid_config('admin_name'),
 	      $params{'subject'}, $message);
-    print LOG "[$today] - $rec{'id'} - $rec{'email'}\n";
+    print LOG time, " - $rec{'id'} - $rec{'email'}\n";
  
     sleep $params{'sleep'} if $params{'sleep'} > 0;
 }
