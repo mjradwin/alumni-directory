@@ -4,7 +4,7 @@
 #     FILE: mvhsaid.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: MVHS Alumni Internet Directory CGI interface
-#      $Id: mvhsaid,v 1.56 1998/01/02 20:14:18 mradwin Exp $
+#      $Id: mvhsaid,v 1.56 1998/01/02 20:17:33 mjr Exp mjr $
 #
 
 require 'aid_util.pl';
@@ -24,7 +24,7 @@ if ($ENV{'PATH_INFO'} =~ m,^/vcard/,) {
     $in{'vcard'} =~ s,^/vcard/(\d+).*$,$1,;
 }
 
-$rcsid = '$Id: mvhsaid,v 1.56 1998/01/02 20:14:18 mradwin Exp $'; #'fnt
+$rcsid = '$Id: mvhsaid,v 1.56 1998/01/02 20:17:33 mjr Exp mjr $'; #'fnt
 
 # special flags: version, update, vcard, about
 #
@@ -352,10 +352,6 @@ sub send_upd_list {
     local($time,$req,$id,$last,$first,$married,
 	  $school,$year,$email,$homepage,$location);
 
-    local($info_gif) = &aid_image_tag('info');
-    local($blank_gif) = &aid_image_tag('blank');
-    local($cgi) = &aid_config('cgi_path');
-
     select(STDOUT);  $| = 1;
     print "Content-type: text/html\n\n";
     print &common_html_hdr(-1,1);
@@ -364,7 +360,7 @@ sub send_upd_list {
     print "\n";
     print "<p>Please select an entry to update from the list below.<p>\n";
     print "<pre>";
-    print "Name and Graduation Year$blank_gif                  Email\n";
+    print "Name and Graduation Year                  Email\n";
     print "---------------------------------------------------------------------------\n";
 
     foreach (@db) {
@@ -375,7 +371,6 @@ sub send_upd_list {
 	$fullname = &fullname($first,$last,$married);
 	($affil,$len) = &affiliate($year,$school,0);
 
-	print "<a href=\"$cgi?about=$id\">$info_gif</a>";
 	print "<a href=\"", &aid_config('cgi_path'), "?update=$id\">";
 	print $fullname;
 	print "</a>";
