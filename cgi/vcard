@@ -20,11 +20,6 @@
 
 require 'aid_util.pl';
 
-print "HTTP/1.1 200 OK\015\012", "Date: ", &aid_http_date(time), "\015\012";
-print "Server: ", $ENV{'SERVER_SOFTWARE'}, "\015\012"
-    if defined $ENV{'SERVER_SOFTWARE'};
-print "Connection: close\015\012";
-
 $ENV{'PATH_INFO'} =~ s/\+/ /g;
 $ENV{'PATH_INFO'} =~ s/%([A-Fa-f0-9]{2})/pack("c",hex($1))/ge;
 
@@ -36,20 +31,40 @@ if ($ENV{'PATH_INFO'} =~ m,/(\d+)\.vcf,i)
     $dbmfile =~ s/\.db$//;
 
     dbmopen(%DB,$dbmfile,0444);
-    $val = $DB{$id};
-    dbmclose(%DB);
+    if (defined $DB{$id})
+    {
+	$val = $DB{$id};
 
-    %rec = &aid_db_unpack_rec($id,$val);
+	%rec = &aid_db_unpack_rec($id,$val);
 
-    print "Last-Modified: ", &aid_http_date($rec{'time'}), "\015\012";
-    print "Content-Type: text/x-vcard\015\012\015\012";
-    print &aid_vcard_text(*rec);
-
+	print "HTTP/1.1 200 OK\015\012", "Date: ", &aid_http_date(time), "\015\012";
+	print "Server: ", $ENV{'SERVER_SOFTWARE'}, "\015\012"
+	    if defined $ENV{'SERVER_SOFTWARE'};
+	print "Connection: close\015\012";
+	print "Last-Modified: ", &aid_http_date($rec{'time'}), "\015\012";
+	print "Content-Type: text/x-vcard\015\012\015\012";
+	print &aid_vcard_text(*rec);
+	dbmclose(%DB);
+	close(STDOUT);
+	exit(0);
+    }
+    else
+    {
+	dbmclose(%DB);
+    }
 }
-else
+
+print "HTTP/1.1 404 File Not Found\015\012",
+    "Date: ", &aid_http_date(time), "\015\012";
+print "Server: ", $ENV{'SERVER_SOFTWARE'}, "\015\012"
+    if defined $ENV{'SERVER_SOFTWARE'};
+print "Connection: close\015\012";
+
+print "Content-Type: text/html\015\012\015\012";
+
+if (defined $ENV{'REQUEST_METHOD'} && $ENV{'REQUEST_METHOD'} ne 'HEAD')
 {
-    print "Content-Type: text/html\015\012\015\012";
-    print "<html><head><title>no such user</title></head><body>no such user</body></html>\015\012";
+    print "<html><head><title>no such vcard</title></head><body>no such vcard</body></html>\015\012";
 }
 
 close(STDOUT);
