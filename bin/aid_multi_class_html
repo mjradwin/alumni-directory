@@ -2,7 +2,7 @@
 
 #
 # does the html multi_class pages
-# $Id: aid_multi_class_html,v 5.16 2000/05/25 00:29:05 mradwin Exp mradwin $
+# $Id: aid_multi_class_html,v 5.17 2000/06/01 23:34:10 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -132,20 +132,32 @@ foreach $year (@years)
     print FMTOUT &aid_class_jump_bar('', '.html', *years, 1, $year);
     print FMTOUT "<hr noshade=\"noshade\" size=\"1\">\n\n";
 
-    if (defined $RDB{$year})
+    my(%r);
+    my($key,$val);
+    while (($key,$val) = each(%RDB))
     {
-	my($date,$html) = split(/\0/, $RDB{$year}, 2);
+	next if $key =~ /^_/;
+
+	if ($key =~ /^\d{4}$/ || $key eq 'other')
+	{
+	    next unless $key eq $year;
+	}
+
+	my($date,$html) = split(/\0/, $val, 2);
 	my($yr,$mon,$mday) = split(/\//, $date, 3);
 	my($t) = &Time::Local::timelocal(59,59,23,$mday,$mon-1,$yr-1900,0,0,0);
 
 	if ($t > time)
 	{
-	    my(%r) = ();
-	    $r{$year} = $RDB{$year};
-	    print FMTOUT "<h2>Reunion Info</h2>\n";
-	    &aid_write_reunion_hash(*FMTOUT, \%r);
-	    print FMTOUT "<hr noshade=\"noshade\" size=\"1\">\n\n";
+	    $r{$key} = $val;
 	}
+    }
+
+    if (keys %r)
+    {
+	print FMTOUT "<h2>Reunion Info</h2>\n";
+	&aid_write_reunion_hash(*FMTOUT, \%r);
+	print FMTOUT "<hr noshade=\"noshade\" size=\"1\">\n\n";
     }
 
     foreach $id (@ids)
