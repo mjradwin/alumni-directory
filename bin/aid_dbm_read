@@ -1,6 +1,6 @@
 #!/usr/bin/perl -w
 
-# $Id: aid_dbm_read,v 5.1 1999/05/31 21:20:48 mradwin Exp mradwin $
+# $Id: aid_dbm_read,v 5.2 1999/06/01 05:42:12 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -68,8 +68,6 @@ if ($opt_t)
     {
 	%rec = &aid_db_unpack_rec($_,$DB{$_});
 	print DATA &aid_ampersand_join(*rec);
-	print DATA ';', &old_encode_base64($rec{'n'},'')
-	    if ($rec{'n'} ne '');
 	print DATA "\n";
     } 
     close(DATA);
@@ -88,13 +86,11 @@ elsif ($opt_u)
     foreach (sort { $a <=> $b } @ids)
     {
 	%rec = &aid_db_unpack_rec($_,$DB{$_});
-	print DATA "http://", &aid_config('master_srv'),
-	    &aid_config('confirm_cgi'), '?confirmed=1';
-	while (($key,$val) = each %rec)
-	{
-	    print DATA '&', $key, '=', &aid_url_escape($val);
-	}
-	print DATA '&pe=', &aid_url_escape($rec{'e'}), "\n";
+	print DATA
+	    "http://", &aid_config('master_srv'),
+	    &aid_config('confirm_cgi'), '?confirmed=1&', 
+ 	    &aid_ampersand_join(*rec),
+	    '&pe=', &aid_url_escape($rec{'eo'}), "\n";
     } 
     close(DATA);
 }
