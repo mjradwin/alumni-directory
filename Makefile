@@ -2,7 +2,7 @@
 #     FILE: Makefile
 #   AUTHOR: Michael J. Radwin
 #    DESCR: Makefile for building the Alumni Internet Directory
-#      $Id: Makefile,v 3.63 1999/03/04 17:35:03 mradwin Exp mradwin $
+#      $Id: Makefile,v 3.64 1999/03/04 18:04:58 mradwin Exp mradwin $
 #
 
 WWWROOT=/home/web/radwin.org
@@ -41,6 +41,7 @@ TARFILES= \
 	mvhs/data/test.adr \
 	mvhs/data/*.include \
 	web/images/vcard.gif \
+	web/mvhs-alumni/default.css \
 	web/mvhs-alumni/*.gif
 
 SNAPSHOTFILES= \
@@ -51,6 +52,7 @@ SNAPSHOTFILES= \
 	mvhs/cgi-bin/nph-aid-search \
 	mvhs/cgi-bin/nph-vcard \
 	web/images/vcard.gif \
+	web/mvhs-alumni/default.css \
 	web/mvhs-alumni/*.gif \
 	web/mvhs-alumni/master.db
 
