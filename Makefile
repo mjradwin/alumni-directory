@@ -2,7 +2,7 @@
 #     FILE: Makefile
 #   AUTHOR: Michael J. Radwin
 #    DESCR: Makefile for building the Alumni Internet Directory
-#      $Id: Makefile,v 3.73 1999/04/06 17:12:13 mradwin Exp mradwin $
+#      $Id: Makefile,v 3.74 1999/04/06 17:31:22 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -180,7 +180,7 @@ $(COPYRIGHT_TS):	$(AIDDIR)/data/copyright.include $(BIN_HOME)
 		-t 'Acceptable Use - Privacy Statement - Copyright' \
 		$(COPYRIGHT)
 
-STATS=$(WWWDIR)/etc/stats.txt
+STATS=$(WWWDIR)/etc/stats.html
 stats:	$(STATS)
 $(STATS):	$(BIN_STATS) $(DBFILE)
 	$(BIN_STATS) $(DBFILE) $(STATS)

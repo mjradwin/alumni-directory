@@ -1,6 +1,6 @@
 #!/usr/bin/perl -w
 
-# $Id: aid_stats,v 1.20 1999/04/07 02:00:28 mradwin Exp mradwin $
+# $Id: aid_stats,v 1.21 1999/04/07 02:18:12 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -24,8 +24,9 @@ require 'ctime.pl';
 require 'getopts.pl';
 
 $0 =~ s,.*/,,;  # basename
-$usage = "usage: $0 [-h] infile.db outfile
+$usage = "usage: $0 [-ht] infile.db outfile
     -h        Display usage information.
+    -t        Text only.
 ";
 
 &Getopts('h') || die "$usage\n";
@@ -112,9 +113,17 @@ $median_update_weeks = ($now - $median_update_time) / (60 * 60 * 24 * 7);
 $avg_tenure_weeks = ($now - $avg_join_time) / (60 * 60 * 24 * 7);
 $median_tenure_weeks = ($now - $median_join_time) / (60 * 60 * 24 * 7);
 
-print FMTOUT "Mountain View High School Alumni Internet Directory\n";
-print FMTOUT "Member Statistics\n";
-print FMTOUT "------------------------------------------------------------------------\n\n";
+if (!$opt_t)
+{
+    print FMTOUT &aid_common_html_hdr(15,'Member Statistics',0,time);
+    print FMTOUT "<pre>";
+}
+else
+{
+    print FMTOUT "Mountain View High School Alumni Internet Directory\n";
+    print FMTOUT "Member Statistics\n";
+    print FMTOUT "------------------------------------------------------------------------\n\n";
+}
 
 printf FMTOUT "     %4d  total entries in the Directory\n",
     $ntotal;
@@ -181,8 +190,16 @@ printf FMTOUT "median  tenure             : %.0f weeks\n", $median_tenure_weeks;
 printf FMTOUT "average time since update  : %.0f weeks\n", $avg_update_weeks;
 printf FMTOUT "median  time since update  : %.0f weeks\n", $median_update_weeks;
 
-print FMTOUT "\n------------------------------------------------------------------------\n";
-print FMTOUT &ctime(time);
+if (!$opt_t)
+{
+    print FMTOUT "</pre><p>\n";
+    print FMTOUT &aid_common_html_ftr(15);
+}
+else
+{
+    print FMTOUT "\n------------------------------------------------------------------------\n";
+    print FMTOUT &ctime(time);
+}
 
 close(FMTOUT);
 dbmclose(%DB);

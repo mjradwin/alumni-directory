@@ -2,7 +2,7 @@
 #     FILE: aid_config.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: configuration variables for Alumni Internet Directory
-#      $Id: aid_config.pl,v 1.28 1999/04/14 02:09:45 mradwin Exp mradwin $
+#      $Id: aid_config.pl,v 1.29 1999/04/14 02:11:45 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -22,7 +22,7 @@
 #
 
 $aid_util'rcsid =
- '$Id: aid_config.pl,v 1.28 1999/04/14 02:09:45 mradwin Exp mradwin $';
+ '$Id: aid_config.pl,v 1.29 1999/04/14 02:11:45 mradwin Exp mradwin $';
 
 # radwin.org (FreeBSD 2.2.2) configuration
 %aid_util'config =   #'#
@@ -155,7 +155,7 @@ $aid_util'body_vlink = '990099'; #'#
  "Links,"      . $aid_util'config{'master_path'} . "etc/links.html",    #'#
  "Download,"   . $aid_util'config{'master_path'} . "download/",        #'#
  "FAQ,"        . $aid_util'config{'master_path'} . "etc/faq.html",     #'#
- "Stats,"      . $aid_util'config{'master_path'} . "etc/stats.txt",    #'#
+ "Stats,"      . $aid_util'config{'master_path'} . "etc/stats.html",    #'#
  "Privacy,"    . $aid_util'config{'master_path'} . "etc/privacy.html", #'#
 );
 
