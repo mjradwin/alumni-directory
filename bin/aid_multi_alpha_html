@@ -2,7 +2,7 @@
 
 #
 # does the html verbose pages
-# $Id: aid_verbose_html,v 2.7 1998/05/17 01:22:53 mradwin Exp $
+# $Id: aid_alpha2_html,v 1.1 1998/05/17 03:27:23 mradwin Exp mradwin $
 #
 
 require 'aid_util.pl';
@@ -27,9 +27,10 @@ while(<DATA>) {
     %rec = &aid_parse($_);
     next unless $rec{'valid'};
 
-    if ($initial ne substr($rec{'last'}, 0, 1)) {
-	
-	$initial = substr($rec{'last'}, 0, 1);
+    $cur_initial = substr($rec{'last'}, 0, 1);
+    $cur_initial = "\U${cur_initial}\E";
+    if ("\U${initial}\E" ne $cur_initial) {
+        $initial = $cur_initial;
 	if ($initial ne 'A') {
 	    print FMTOUT &common_html_ftr(-1);
 	    close(FMTOUT);
