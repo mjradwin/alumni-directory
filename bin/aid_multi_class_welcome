@@ -1,0 +1,93 @@
+#!/usr/bin/perl -w
+
+# $Id: aid_multi_class_txt,v 1.3 1999/04/26 22:21:21 mradwin Exp $
+#
+#   Copyright (c) 1995-1999  Michael John Radwin
+#
+#   This program is free software; you can redistribute it and/or modify
+#   it under the terms of the GNU General Public License as published by
+#   the Free Software Foundation; either version 2 of the License, or
+#   (at your option) any later version.
+#
+#   This program is distributed in the hope that it will be useful,
+#   but WITHOUT ANY WARRANTY; without even the implied warranty of
+#   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#   GNU General Public License for more details.
+#
+#   You should have received a copy of the GNU General Public License
+#   along with this program; if not, write to the Free Software
+#   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+#
+
+require 'aid_util.pl';
+require 'getopts.pl';
+
+$0 =~ s,.*/,,;  # basename
+$usage = "usage: $0 [-hq] infile.db classtxt-dir
+    -h        Display usage information.
+    -q        Quiet.
+";
+
+&Getopts('hq') || die "$usage\n";
+$opt_h && die "$usage\n";
+$ARGV[0] || die "$usage\n";
+$ARGV[1] || die "$usage\n";
+$opt_h = $opt_h;		# avoid warning
+$opt_q = $opt_q;		# avoid warning
+
+$dbmfile = shift;
+$dbmfile =~ s/\.db$//;
+die "$0: ${dbmfile}.db: $!\n" unless -r "${dbmfile}.db";
+
+dbmopen(%DB,$dbmfile,0444) || die "$0: ${dbmfile}.db: $!\n";
+
+die "no _years key!\n" unless defined $DB{'_years'};
+@years = unpack("n*",$DB{'_years'});
+push(@years, 'other');
+
+$dir = shift;
+$dir =~ s,/$,,;
+die "$0: $dir: $!\n" unless -d $dir;
+
+$welcome_exe = &aid_config('aiddir') . 'bin/aid_welcome';
+die "$0: $welcome_exe: $!\n" unless -x $welcome_exe;
+
+($sec,$min,$hour,$mday,$mon,$year,$wday,$yday,$isdst) =
+    localtime(time);
+$date = sprintf("%4d%02d%02d", $year + 1900, $mon + 1, $mday);
+
+foreach (@years)
+{
+    @ids = unpack("n*",$DB{"_$_"});
+    @mail_ids = ();
+
+    foreach $id (@ids)
+    {
+	%rec = &aid_db_unpack_rec($id,$DB{$id});
+	next unless $rec{'v'};
+	next unless $rec{'q'} == 4;
+
+	push(@mail_ids, $id);
+    }
+
+    if (@mail_ids)
+    {
+	print "$welcome_exe -l logs/massmail-$date-4.log -r4 -m ${dir}/${_}.txt ${dbmfile}.db ", join(' ', @mail_ids), "\n"
+	    unless $opt_q;
+
+#	system $welcome_exe,
+#    	    '-qtc', $_,
+#    	    $dbmfile . '.db',
+#    	    $dir . '/' . $_ . '.txt';
+    }
+}
+
+dbmclose(%DB);
+exit 0;
+
+
+if ($^W && 0)
+{
+    ($sec,$min,$hour,$mday,$mon,$year,$wday,$yday,$isdst) =
+	localtime(time);
+}
