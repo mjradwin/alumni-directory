@@ -4,7 +4,7 @@
 #     FILE: mvhsaid.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: Alumni Internet Directory CGI interface
-#      $Id: mvhsaid,v 3.59 1999/02/10 20:06:40 mradwin Exp mradwin $
+#      $Id: mvhsaid,v 3.60 1999/02/10 20:25:05 mradwin Exp mradwin $
 #
 
 require 'aid_util.pl';
@@ -22,7 +22,7 @@ if ($ENV{'SCRIPT_NAME'} =~ m,/nph-,)
 # configuration
 $mailprog = &aid_config('mailprog');
 $dbmfile = &aid_config('wwwdir') . 'master';
-$rcsid = '$Id: mvhsaid,v 3.59 1999/02/10 20:06:40 mradwin Exp mradwin $'; #'fnt
+$rcsid = '$Id: mvhsaid,v 3.60 1999/02/10 20:25:05 mradwin Exp mradwin $'; #'fnt
 
 
 &CgiDie(&aid_config('short_school') . " Alumni: Script Error",
@@ -502,8 +502,9 @@ sub send_upd_notfound {
     print "Content-Type: text/html\015\012\015\012";
     print &common_html_hdr(-1,'Update Your Directory Entry',1);
     print "\n";
-    print "<p>Unable to find existing entry with email address\n";
-    print "<code><strong>$notfound</strong></code>.</p>\n";
+    print "<p>Sorry, an entry with the address\n";
+    print "<code><strong>$notfound</strong></code>\n";
+    print "could not be found in the Directory.</p>\n";
     print "<p>Please check the spelling and <a href=\""
 	. &aid_config('master_path') .  "add/\">try again</a>.</p>\n";
 
