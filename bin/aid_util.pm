@@ -2,11 +2,11 @@
 #     FILE: aid_util.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: perl library routines for the Alumni Internet Directory
-#      $Id: aid_util.pl,v 4.46 1999/03/09 01:48:42 mradwin Exp mradwin $
+#      $Id: aid_util.pl,v 4.47 1999/03/09 01:50:04 mradwin Exp mradwin $
 #
 
 $aid_util'rcsid =
- '$Id: aid_util.pl,v 4.46 1999/03/09 01:48:42 mradwin Exp mradwin $';
+ '$Id: aid_util.pl,v 4.47 1999/03/09 01:50:04 mradwin Exp mradwin $';
 
 # ----------------------------------------------------------------------
 # CONFIGURATION
@@ -131,8 +131,8 @@ $aid_util'ID_INDEX    = 0;     #'# position that the ID key is in datafile
     'time',	'',
     'fresh',	'',
     'school',	'High School',
-    'year',	'Graduation year or affiliation',
-    'email',	'E-mail address',
+    'year',	'Graduation Year or Affiliation',
+    'email',	'E-mail Address',
     'www',	'Personal Web Page',
     'location',	'Location',
     'inethost',	'',
@@ -670,7 +670,7 @@ $instr
 <tr>
   <td valign=top align=right><label
   for=\"first\"><strong>First Name:</strong></label></td>
-  <td>$star</td>
+  <td valign=top>$star</td>
   <td valign=top><input type=text name=\"first\" size=35 
   value=\"$rec{'first'}\" id=\"first\"></td>
 </tr>
@@ -685,7 +685,7 @@ $instr
   <td valign=top align=right><label 
   for=\"last\"><strong>Last Name/Maiden Name:</strong></label><br>
   <small>(your last name in high school)</small></td>
-  <td>$star</td>
+  <td valign=top>$star</td>
   <td valign=top><input type=text name=\"last\" size=35
   value=\"$rec{'last'}\" id=\"last\"></td>
 </tr>
@@ -703,7 +703,7 @@ $instr
 </td></tr>
 <tr>
   <td valign=top align=right><strong>High School Attended:</strong></td>
-  <td>$star</td>
+  <td valign=top>$star</td>
   <td valign=top><input type=radio name=\"school\" id=\"school_$config{'short_school'}\"
   value=\"$config{'short_school'}\"$primary_checked><label
   for=\"school_$config{'short_school'}\">&nbsp;$config{'short_school'}</label>
@@ -720,9 +720,9 @@ $instr
 </tr>
 <tr>
   <td valign=top align=right><label
-  for=\"year\"><strong>Graduation year or affiliation:</strong></label><br>
+  for=\"year\"><strong>Graduation Year or Affiliation:</strong></label><br>
   <small>(such as 1993, 2001, or Teacher)</small></td>
-  <td>$star</td>
+  <td valign=top>$star</td>
   <td valign=top><input type=text name=\"year\" size=35
   value=\"$rec{'year'}\" id=\"year\"><br><br></td>
 </tr>
@@ -732,9 +732,9 @@ $instr
 </td></tr>
 <tr>
   <td valign=top align=right><label
-  for=\"email\"><strong>E-mail address:</strong></label><br>
+  for=\"email\"><strong>E-mail Address:</strong></label><br>
   <small>(such as chester\@aol.com)</small></td>
-  <td>$star</td>
+  <td valign=top>$star</td>
   <td valign=top><input type=text name=\"email\" size=35
   value=\"$rec{'email'}\" id=\"email\"></td>
 </tr>
