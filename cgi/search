@@ -4,7 +4,7 @@
 #     FILE: search.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: Alumni Internet Directory CGI search
-#      $Id: search,v 5.13 2000/04/25 00:42:01 mradwin Exp mradwin $
+#      $Id: search,v 5.14 2000/04/25 01:14:03 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -54,9 +54,10 @@ if (!defined($in{'q'}) || $in{'q'} =~ /^[^\w]*$/)
 defined $DB{'_alpha'} || die "$dbmfile: missing _alpha\n";
 @alpha_ids = unpack("n*",$DB{'_alpha'});
 
-$in{'q'} =~ s/^\s*//;
-$in{'q'} =~ s/\s*$//;
-$query = $in{'q'};
+$query_save = $in{'q'};
+$query_save =~ s/^\s*//;
+$query_save =~ s/\s*$//;
+$query = $query_save;
 $query =~ s/[^\w]/ /g; #'#
 $query =~ s/\band\b//ig;
 $query =~ s/\bor\b//ig;
@@ -92,13 +93,13 @@ print "Content-Type: text/html\015\012\015\012";
 @results = sort keys %results;
 undef %results;
 
-$in{'q'} = &aid_html_entify_str($in{'q'});
+$query_save = &aid_html_entify_str($query_save);
 
 if ($#results == -1)
 {
     print &aid_common_html_hdr(26, 'No matches', 1);
     print "<p>Sorry, no matches were found containing\n";
-    print "<strong>$in{'q'}</strong>";
+    print "<strong>$query_save</strong>";
     print "\nin <strong>Class of $in{'y'}</strong>"
 	if defined $in{'y'} && $in{'y'} =~ /^\d+$/;
     print "\nin <strong>Faculty/Staff</strong>"
@@ -120,7 +121,7 @@ if ($#results == -1)
     print "<a href=\"", &aid_config('master_path');
     print "etc/faq.html#incomplete\">Frequently Asked Questions</a>.</p>\n\n";
 
-    &print_search_form($in{'q'}, defined $in{'y'} ? $in{'y'} : '');
+    &print_search_form($query_save, defined $in{'y'} ? $in{'y'} : '');
     print &aid_common_html_ftr(26);
 
     untie(%DB);
@@ -162,7 +163,7 @@ else
 	print "\n";
     }
     print "</ul>\n";
-    &print_search_form($in{'q'}, defined $in{'y'} ? $in{'y'} : '');
+    &print_search_form($query_save, defined $in{'y'} ? $in{'y'} : '');
     print &aid_common_html_ftr(26);
 }
 
