@@ -1,6 +1,6 @@
 #!/usr/bin/perl -w
 
-# $Id: aid_grep_bounce,v 1.1 1998/11/02 22:34:48 mradwin Exp mradwin $
+# $Id: aid_grep_bounce,v 1.2 1998/11/13 18:50:00 mradwin Exp mradwin $
 
 require 'aid_util.pl';
 
@@ -17,7 +17,7 @@ sub readspool {
     local($_,*SPOOL);
 
     open(SPOOL, $spoolFile) || die "can't open $spoolFile: $!\n";
-    print "reading spool...\n";
+    print STDERR "reading spool...\n";
     while(<SPOOL>) {
 	if (/^\s*----- The following addresses had permanent fatal errors -----\s*$/)
 	{
