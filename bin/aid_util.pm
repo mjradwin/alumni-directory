@@ -2,11 +2,11 @@
 #     FILE: aid_util.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: perl library routines for the Alumni Internet Directory
-#      $Id: aid_util.pl,v 4.54 1999/03/09 20:52:41 mradwin Exp mradwin $
+#      $Id: aid_util.pl,v 4.55 1999/03/09 21:06:30 mradwin Exp mradwin $
 #
 
 $aid_util'rcsid =
- '$Id: aid_util.pl,v 4.54 1999/03/09 20:52:41 mradwin Exp mradwin $';
+ '$Id: aid_util.pl,v 4.55 1999/03/09 21:06:30 mradwin Exp mradwin $';
 
 # ----------------------------------------------------------------------
 # CONFIGURATION
@@ -969,10 +969,10 @@ sub aid_vcard_text {
     $retval  = "Begin:vCard\015\012";
     $retval .= $v_n;
     $retval .= $v_fn;
-    $retval .= "ORG:$school_name[$rec{'sch_id'}];";
+    $retval .= "ORG:$school_name[$rec{'sch_id'}] ";
     if ($rec{'year'} =~ /^\d+$/) {
-	$retval .= "Class of $rec{'year'}\015\012";
-    } else {
+	$retval .= sprintf("'%02d", $rec{'year'} % 100) . "\015\012";
+    } else {	
 	$retval .= "$rec{'year'}\015\012";
     }
     $retval .= "EMAIL;PREF;INTERNET:$rec{'email'}\015\012";
@@ -985,14 +985,14 @@ sub aid_vcard_text {
     $retval .= "REV:" . &main'aid_vdate($rec{'time'}) . "\015\012"; #'#
     $retval .= "VERSION:2.1\015\012";
 
-    if ($rec{'message'} !~ /^\s*$/)
-    {
-	$retval .= "NOTE;BASE64:\015\012";
-	$retval .= "  ";
-	$message = &main'old_encode_base64($rec{'message'}, "\015\012  "); #'#;
-	substr($message,-4) = '';
-	$retval .= $message . "\015\012\015\012";
-    }
+#    if ($rec{'message'} !~ /^\s*$/)
+#    {
+#	$retval .= "NOTE;BASE64:\015\012";
+#	$retval .= "  ";
+#	$message = &main'old_encode_base64($rec{'message'}, "\015\012  "); #'#;
+#	substr($message,-4) = '';
+#	$retval .= $message . "\015\012\015\012";
+#    }
     $retval .= "End:vCard\015\012";
 
     $retval;
