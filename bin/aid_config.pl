@@ -2,7 +2,7 @@
 #     FILE: aid_config.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: configuration variables for Alumni Internet Directory
-#      $Id: aid_config.pl,v 5.7 1999/06/14 17:43:16 mradwin Exp mradwin $
+#      $Id: aid_config.pl,v 5.8 1999/06/22 18:57:47 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -71,13 +71,15 @@ die "NO CONFIG DEFINED!!\n" unless defined %aid_util'config; #'#
  '1',  'Alphabetically',
  '2',  'Graduating Classes',
  '20', 'Join or Modify Your Listing',
+ '26', 'Search',
 );
 
 %aid_util'parent_page_path = #'#
 (
  '1',  $aid_util'config{'master_path'} . 'alpha/', #'#
  '2',  $aid_util'config{'master_path'} . 'class/', #'#
- '20', $aid_util'config{'master_path'} . 'add/', #'#
+ '20', $aid_util'config{'master_path'} . 'add/'  , #'#
+ '26', $aid_util'config{'search_cgi'}            , #'#
 );
 
 $aid_util'copyright_path = $aid_util'config{'master_path'} .
