@@ -2,7 +2,7 @@
 #     FILE: aid_config.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: configuration variables for Alumni Internet Directory
-#      $Id: aid_config.pl,v 1.35 1999/05/04 23:16:31 mradwin Exp mradwin $
+#      $Id: aid_config.pl,v 1.36 1999/05/04 23:50:41 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -22,7 +22,7 @@
 #
 
 $aid_util'rcsid =
- '$Id: aid_config.pl,v 1.35 1999/05/04 23:16:31 mradwin Exp mradwin $';
+ '$Id: aid_config.pl,v 1.36 1999/05/04 23:50:41 mradwin Exp mradwin $';
 
 # radwin.org (FreeBSD 2.2.2) configuration
 %aid_util'config =   #'#
@@ -69,9 +69,9 @@ $aid_util'rcsid =
 <h3>Want to network with other alumni?</h3>
 
 <p>Sign up for the <a
-href=\"http://www.planetall.com/main.asp?cid=1520098&gid=6602\">MVHS
+href=\"http://www.planetall.com/main.asp?cid=1520098&amp;gid=6602\">MVHS
 Group on PlanetAll</a> or <a
-href=\"http://www.planetall.com/main.asp?cid=1520098&gid=77847\">Awalt
+href=\"http://www.planetall.com/main.asp?cid=1520098&amp;gid=77847\">Awalt
 Group on PlanetAll</a> if you want to share more detailed address book
 information (birthdays, phone numbers, etc.) with other alumni.  People
 will only be allowed to access your information with your permission,
