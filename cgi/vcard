@@ -63,8 +63,9 @@ $ENV{'PATH_INFO'} =~ s/</&lt;/g;
 $ENV{'PATH_INFO'} =~ s/>/&gt;/g;
 
 print "Status: 404 Not Found\015\012";
-&CgiDie(&aid_config('short_school') . " Alumni: vCard Not Found",
-	"The vCard $ENV{'PATH_INFO'} you requested could not be found.\n");
+&CgiError(&aid_config('short_school') . " Alumni: vCard Not Found",
+	  "The vCard " . $ENV{'PATH_INFO'} .
+	  " you requested could not be found.\n");
 
 close(STDOUT);
 exit(0);
