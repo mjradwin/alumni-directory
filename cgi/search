@@ -4,7 +4,7 @@
 #     FILE: search.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: Alumni Internet Directory CGI search
-#      $Id: search,v 5.7 1999/06/08 21:08:40 mradwin Exp mradwin $
+#      $Id: search,v 5.8 1999/06/08 22:00:52 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -117,7 +117,7 @@ $in{'q'} = &aid_html_entify_str($in{'q'});
 
 if ($#results == -1)
 {
-    print &aid_common_html_hdr(6, 'No matches', 1);
+    print &aid_common_html_hdr(26, 'No matches', 1);
     print "<p>Sorry, no matches were found containing\n";
     print "<strong>$in{'q'}</strong>";
     print "\nin <strong>Class of $in{'y'}</strong>"
@@ -142,7 +142,7 @@ if ($#results == -1)
     print "etc/faq.html#incomplete\">Frequently Asked Questions</a>.</p>\n\n";
 
     &print_search_form($in{'q'},$in{'y'});
-    print &aid_common_html_ftr(6);
+    print &aid_common_html_ftr(26);
 
     dbmclose(%DB);
     close(STDOUT);
@@ -152,11 +152,11 @@ else
 {
     if ($#results == 0)
     {
-	print &aid_common_html_hdr(6, 'Found 1 match', 1);
+	print &aid_common_html_hdr(26, 'Found 1 match', 1);
     }
     else
     {
-	print &aid_common_html_hdr(6, 'Found ' . ($#results+1) . ' matches', 1);
+	print &aid_common_html_hdr(26, 'Found ' . ($#results+1) . ' matches', 1);
     }
 
     print "\n<ul>\n";
@@ -167,22 +167,24 @@ else
 	$fullname = &aid_inorder_fullname(*rec);
 	($affil,$ign) = &aid_affiliate(*rec,0);
 	
-	print "<li><a href=\"", &aid_config('about_cgi'), 
-	"/", $rec{'id'}, "\">$fullname</a> $affil";
-	
+	print "<li>";
 	if ($rec{'v'})
 	{
+	    print "<a href=\"", &aid_about_path(*rec), 
+	    "\">$fullname</a> $affil";
 	    print " (<code>$rec{'e'}</code>)";
 	}
 	else
 	{
+	    print "<a href=\"", &aid_config('about_cgi'), 
+	    "/", $rec{'id'}, "\">$fullname</a> $affil";
 	    print " <em>(invalid e-mail address)</em>";
 	}
 	print "\n";
     }
     print "</ul>\n";
     &print_search_form($in{'q'},$in{'y'});
-    print &aid_common_html_ftr(6);
+    print &aid_common_html_ftr(26);
 }
 
 
