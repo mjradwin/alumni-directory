@@ -2,7 +2,7 @@
 
 #
 # does the html multi_class pages
-# $Id: aid_multi_class_html,v 6.4 2003/10/30 17:56:04 mradwin Exp mradwin $
+# $Id: aid_multi_class_html,v 6.5 2004/01/22 22:46:08 mradwin Exp mradwin $
 #
 # Copyright (c) 2003  Michael J. Radwin.
 # All rights reserved.
@@ -276,6 +276,24 @@ foreach $year (@years)
     print FMTOUT aid_util::common_html_ftr(2,$time);
     close(FMTOUT);
 #    utime $time, $time, $outFile;
+}
+
+if ($opt_d && !$opt_i)
+{
+    print STDOUT "\nRemoving deleted entries..."
+	unless $opt_q;
+
+    my $max = $DB{'_nextid'};
+    foreach my $id (1 .. $max)
+    {
+	my $out2 = sprintf("%s%s/%06d.html",
+			   aid_util::config('wwwdir'), "detail", $id);
+	if (! defined $DB{$id} && -e $out2)
+	{
+	    print STDOUT " $id" unless $opt_q;
+	    unlink($out2);
+	}
+    }
 }
 
 die "corrupt/missing _t key!" unless defined $DB{'_t'} && $DB{'_t'} ne '';
