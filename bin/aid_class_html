@@ -4,45 +4,60 @@
 
 require 'mv_util.pl';
 require 'tableheader.pl';
+require 'getopts.pl';
 
 $htmlname = "class.html";
 
-die "Usage: mv_grad_html infile.adr outfile.html\n" if !$ARGV[0] || !$ARGV[1];
+$usage = 'usage: mv_class_html [-ht] infile.adr outfile
+    -h        Display usage information.
+    -t        Output text only
+';
+
+&Getopts('ht') || die "$usage\n";
+$opt_h && die "$usage\n";
+$ARGV[0] || die "$usage\n";
+$ARGV[1] || die "$usage\n";
+
+open(MVHSPRE,$ARGV[0]) || die "Can't open $ARGV[0]: $!\n";
 open(FMTOUT,">$ARGV[1]") || die "Can't open $ARGV[1]: $!\n";
 
-print FMTOUT &common_html_hdr(2);
-open(MVHSPRE,$ARGV[0]) || die "Can't open $ARGV[0]: $!\n";
-print FMTOUT "<br>";
-print FMTOUT &tableheader("Alumni Listed by Graduating Class", 1, 'ffff99', 1);
-print FMTOUT "<p>Index: <tt>";
-$lastYear = '00';
-$first_fac_staff = 0;
-while(<MVHSPRE>) {
-    chop;
+if (!$opt_t) {
+    print FMTOUT &common_html_hdr(2);
+    print FMTOUT "<br>";
+    print FMTOUT &tableheader("Alumni Listed by Graduating Class", 1, 'ffff99', 1);
+    print FMTOUT "<p>Index: <tt>";
 
-    ($time,$id,$req,$last,$first,$married,
-     $school,$year,$email,$alias,$homepage,$location) = &mv_parse($_);
+    $lastYear = '00';
+    $first_fac_staff = 0;
+    while(<MVHSPRE>) {
+	chop;
 
-    if ($lastYear ne $year) {
-	$lastYear = $year;
-	if (substr($year, 0, 1) =~ /[A-Za-z]/) {
-	    print FMTOUT "<a href=\"#fac_staff\">Faculty/Staff</a>\n" unless $first_fac_staff;
-	    $first_fac_staff = 1;
-	} else {
-	    $hashYear = 'grad' . $year;
-	    print FMTOUT "<a href=\"#$hashYear\">$lastYear</a>\n";
+	($time,$id,$req,$last,$first,$married,
+	 $school,$year,$email,$alias,$homepage,$location) = &mv_parse($_);
+
+	if ($lastYear ne $year) {
+	    $lastYear = $year;
+	    if (substr($year, 0, 1) =~ /[A-Za-z]/) {
+		print FMTOUT "<a href=\"#fac_staff\">Faculty/Staff</a>\n" 
+		    unless $first_fac_staff;
+		$first_fac_staff = 1;
+	    } else {
+		$hashYear = 'grad' . $year;
+		print FMTOUT "<a href=\"#$hashYear\">$lastYear</a>\n";
+	    }
 	}
     }
+    close(MVHSPRE);
+    print FMTOUT "</tt></p>\n\n<pre>";
 }
-close(MVHSPRE);
 
 $info_gif = "<img src=\"info.gif\" height=12 width=12 hspace=4 border=0 alt=\"[i]\">";
-$blank_gif = "<img src=\"blank.gif\" height=12 width=12 hspace=4 border=0 alt=\"\">";
+$blank_gif = ($opt_t) ? "" :
+    "<img src=\"blank.gif\" height=12 width=12 hspace=4 border=0 alt=\"\">";
 $cgi = &mv_config('cgi_path');
 
-print FMTOUT "</tt></p>\n\n";
-print FMTOUT "<pre>Name$blank_gif                                     Email
----------------------------------------------------------------------------";
+print FMTOUT "Name$blank_gif                                     Email\n";
+print FMTOUT "---------------------------------------------------------------------------";
 
 open(MVHS,$ARGV[0]) || die "Can't open $ARGV[0]: $!\n";
 $lastYear = '00';
@@ -56,15 +71,21 @@ while(<MVHS>) {
 	$lastYear = $year;
 	if (substr($year, 0, 1) =~ /[A-Za-z]/) {
             print FMTOUT "\n";
-	    print FMTOUT "<a name=\"fac_staff\">" unless $first_fac_staff;
+	    $opt_t || print FMTOUT "<a name=\"fac_staff\">" 
+		unless $first_fac_staff;
             print FMTOUT $lastYear;
-            print FMTOUT "</a>" unless $first_fac_staff;
+            $opt_t || print FMTOUT "</a>" unless $first_fac_staff;
             print FMTOUT ' ' x (12 - length($lastYear));
-            print FMTOUT "  (<a href=\"$htmlname\">top</a>)\n";
+            $opt_t || print FMTOUT "  (<a href=\"$htmlname\">top</a>)";
+	    print FMTOUT "\n";
             $first_fac_staff = 1;
 	} else {
 	    $hashYear = 'grad' . $year;
-	    print FMTOUT "\n<a name=\"$hashYear\">Class of '$lastYear</a>  (<a href=\"$htmlname\">top</a>)\n";
+	    print FMTOUT "\n";
+	    $opt_t || print FMTOUT "<a name=\"$hashYear\">";
+	    print FMTOUT "Class of '$lastYear";
+	    $opt_t || print FMTOUT "</a>  (<a href=\"$htmlname\">top</a>)";
+	    print FMTOUT "\n";
 	}
     }
 
@@ -77,20 +98,22 @@ while(<MVHS>) {
     }
 
     print FMTOUT ' ';
-    print FMTOUT "<a href=\"$cgi?about=$id\">$info_gif</a>";
-    print FMTOUT "<a name=\"$alias\"";
-    print FMTOUT " href=\"$homepage\"" if $homepage ne '';
-    print FMTOUT ">";
+    $opt_t || print FMTOUT "<a href=\"$cgi?about=$id\">$info_gif</a>";
+    $opt_t || print FMTOUT "<a name=\"$alias\"";
+    $opt_t || print FMTOUT " href=\"$homepage\"" if $homepage ne '';
+    $opt_t || print FMTOUT ">";
     print FMTOUT $fullname;
-    print FMTOUT "</a>";
+    $opt_t || print FMTOUT "</a>";
     print FMTOUT $affil;
     print FMTOUT ' ' x (40 - (length($fullname) + length($affil)));
-    print FMTOUT "<a href=\"mailto:", $email, "\">", $email, "</a>";
-    print FMTOUT " <img alt=\"[new]\" WIDTH=28 HEIGHT=11 SRC=\"new.gif\">" if &is_new($time);
+    $opt_t || print FMTOUT "<a href=\"mailto:", $email, "\">";
+    print FMTOUT $email;
+    $opt_t || print FMTOUT "</a>";
+    $opt_t || print FMTOUT " <img alt=\"[new]\" WIDTH=28 HEIGHT=11 SRC=\"new.gif\">" if &is_new($time);
     print FMTOUT "\n";
 }
 
-print FMTOUT "</PRE>\n";
-print FMTOUT &common_html_ftr(2);
+$opt_t || print FMTOUT "</pre>\n";
+$opt_t || print FMTOUT &common_html_ftr(2);
 
 exit(0);

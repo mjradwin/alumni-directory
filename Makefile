@@ -2,7 +2,7 @@
 #     FILE: Makefile
 #   AUTHOR: Michael J. Radwin
 #    DESCR: Makefile for building the MVHS Alumni Internet Directory
-#      $Id: Makefile,v 1.14 1997/03/26 05:39:39 mjr Exp $
+#      $Id: Makefile,v 1.15 1997/03/26 18:12:32 mjr Exp mjr $
 #
 
 WWWDIR=/home/divcom/mjr/public_html/mvhs
@@ -12,7 +12,7 @@ TARFILES=Makefile mvhs.adr goners.adr mv_* tableheader.pl \
 	-C $(CGIDIR) $(CGIFILE) cgi-lib.pl \
 	-C $(WWWDIR) .home.include .submit.hdr .submit.ftr
 
-all:	alpha grad new goners pages books adrfile home submit
+all:	alpha class new goners pages books adrfile home submit
 	( cd $(WWWDIR) ; chmod 0644 * )
 
 adrfile:	$(WWWDIR)/mvhs.adr
@@ -22,35 +22,35 @@ $(WWWDIR)/mvhs.adr:	mvhs.adr
 mvhs.txt:	alpha.adr mv_alpha_html
 	./mv_alpha_html -t alpha.adr mvhs.txt
 
-alpha:	$(WWWDIR)/all.html mv_alpha_html
-$(WWWDIR)/all.html:	alpha.adr
+alpha:	$(WWWDIR)/all.html
+$(WWWDIR)/all.html:	alpha.adr mv_alpha_html
 	./mv_alpha_html alpha.adr $(WWWDIR)/all.html
 
-grad:	$(WWWDIR)/class.html mv_grad_html
-$(WWWDIR)/class.html:	class.adr
-	./mv_grad_html class.adr $(WWWDIR)/class.html
+class:	$(WWWDIR)/class.html
+$(WWWDIR)/class.html:	class.adr mv_class_html
+	./mv_class_html class.adr $(WWWDIR)/class.html
 
-new:	$(WWWDIR)/recent.html mv_new_html
-$(WWWDIR)/recent.html:	alpha.adr
+new:	$(WWWDIR)/recent.html
+$(WWWDIR)/recent.html:	alpha.adr mv_new_html
 	./mv_new_html alpha.adr $(WWWDIR)/recent.html
 
-goners:	$(WWWDIR)/invalid.html mv_goners_html
-$(WWWDIR)/invalid.html:	gsort.adr
+goners:	$(WWWDIR)/invalid.html
+$(WWWDIR)/invalid.html:	gsort.adr mv_goners_html
 	./mv_goners_html gsort.adr $(WWWDIR)/invalid.html
 
-pages:	$(WWWDIR)/pages.html mv_www_html
-$(WWWDIR)/pages.html:	alpha.adr
+pages:	$(WWWDIR)/pages.html
+$(WWWDIR)/pages.html:	alpha.adr mv_www_html
 	./mv_www_html alpha.adr $(WWWDIR)/pages.html
 
-home:	$(WWWDIR)/index.html mv_home_html
+home:	$(WWWDIR)/index.html
 $(WWWDIR)/index.html:	$(WWWDIR)/.home.include mv_home_html
 	./mv_home_html -i
 
-submit:	$(WWWDIR)/add.html mv_home_html mv_util.pl
-$(WWWDIR)/add.html:	mv_home_html
+submit:	$(WWWDIR)/add.html
+$(WWWDIR)/add.html:	mv_home_html mv_util.pl
 	./mv_home_html -s
 
-books:	alpha.adr
+books:	alpha.adr mv_book
 	./mv_book -p alpha.adr $(WWWDIR)/pine.txt
 	./mv_book -e alpha.adr $(WWWDIR)/elm.txt
 	./mv_book -b alpha.adr $(WWWDIR)/berkeley.txt
