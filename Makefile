@@ -2,31 +2,32 @@
 #     FILE: Makefile
 #   AUTHOR: Michael J. Radwin
 #    DESCR: Makefile for building the Alumni Internet Directory
-#      $Id: Makefile,v 3.31 1998/10/20 19:30:19 mradwin Exp mradwin $
+#      $Id: Makefile,v 3.32 1998/10/26 22:50:55 mradwin Exp mradwin $
 #
 
 WWWROOT=/home/web/radwin.org
 WWWDIR=$(WWWROOT)/docs/mvhs-alumni
 CGIDIR=$(WWWROOT)/cgi-bin
 AID_UTIL_PL=$(CGIDIR)/aid_util.pl
+MVHSDIR=/home/users/mradwin/mvhs
 
 RM=/bin/rm -f
 
-ADR_MASTER=./data/master.adr
-ADR_ALPHA=./data/alpha.adr
-ADR_CLASS=./data/class.adr
-ADR_AWALT=./data/awalt.adr
-ADR_DATE=./data/date.adr
+ADR_MASTER=$(MVHSDIR)/data/master.adr
+ADR_ALPHA=$(MVHSDIR)/data/alpha.adr
+ADR_CLASS=$(MVHSDIR)/data/class.adr
+ADR_AWALT=$(MVHSDIR)/data/awalt.adr
+ADR_DATE=$(MVHSDIR)/data/date.adr
 
-BIN_MULTI_ALPHA=./bin/aid_multi_alpha_html
-BIN_ALPHA=./bin/aid_alpha_html
-BIN_BOOK=./bin/aid_book
-BIN_CLASS=./bin/aid_class_html
-BIN_GONERS=./bin/aid_goners_html
-BIN_HOME=./bin/aid_home_html
-BIN_RECENT=./bin/aid_shortlist_html
-BIN_MULTI_CLASS=./bin/aid_multi_class_html
-BIN_PAGES=./bin/aid_shortlist_html
+BIN_MULTI_ALPHA=$(MVHSDIR)/bin/aid_multi_alpha_html
+BIN_ALPHA=$(MVHSDIR)/bin/aid_alpha_html
+BIN_BOOK=$(MVHSDIR)/bin/aid_book
+BIN_CLASS=$(MVHSDIR)/bin/aid_class_html
+BIN_GONERS=$(MVHSDIR)/bin/aid_goners_html
+BIN_HOME=$(MVHSDIR)/bin/aid_home_html
+BIN_RECENT=$(MVHSDIR)/bin/aid_shortlist_html
+BIN_MULTI_CLASS=$(MVHSDIR)/bin/aid_multi_class_html
+BIN_PAGES=$(MVHSDIR)/bin/aid_shortlist_html
 
 TARFILES=README \
 	Makefile \
@@ -89,44 +90,45 @@ $(MULTI_CLASS):	$(ADR_CLASS) $(BIN_MULTI_CLASS)
 
 INDEX=$(WWWDIR)/index.html
 index:	$(INDEX)
-$(INDEX):	data/index.include $(BIN_HOME) $(AID_UTIL_PL) $(ADR_MASTER)
-	$(BIN_HOME) -p0 -i data/index.include \
+$(INDEX):	$(MVHSDIR)/data/index.include $(BIN_HOME) $(AID_UTIL_PL) \
+		$(ADR_MASTER)
+	$(BIN_HOME) -p0 -i $(MVHSDIR)/data/index.include \
 		-t 'Welcome to the MVHS Alumni Internet Directory!' \
 		$(INDEX)
 
 REUNIONS=$(WWWDIR)/etc/reunions.html
 reunions:	$(REUNIONS)
-$(REUNIONS):	data/reunions.include $(BIN_HOME)
-	$(BIN_HOME) -p11 -i data/reunions.include \
+$(REUNIONS):	$(MVHSDIR)/data/reunions.include $(BIN_HOME)
+	$(BIN_HOME) -p11 -i $(MVHSDIR)/data/reunions.include \
 		-t 'Reunions' \
 		$(REUNIONS)
 
 LINKS=$(WWWDIR)/etc/links.html
 links:	$(LINKS)
-$(LINKS):	data/links.include $(BIN_HOME)
-	$(BIN_HOME) -p12 -i data/links.include \
+$(LINKS):	$(MVHSDIR)/data/links.include $(BIN_HOME)
+	$(BIN_HOME) -p12 -i $(MVHSDIR)/data/links.include \
 		-t 'Other MVHS and Awalt websites' \
 		$(LINKS)
 
 NICKNAMES=$(WWWDIR)/books/HEADER.html
 nicknames:	$(NICKNAMES)
-$(NICKNAMES):	data/nicknames.include $(BIN_HOME)
+$(NICKNAMES):	$(MVHSDIR)/data/nicknames.include $(BIN_HOME)
 	mkdir -p $(WWWDIR)/books
-	$(BIN_HOME) -p13 -i data/nicknames.include \
+	$(BIN_HOME) -p13 -i $(MVHSDIR)/data/nicknames.include \
 		-t 'Download Nickname and Address Book files' \
 		$(NICKNAMES)
 
 FAQ=$(WWWDIR)/etc/faq.html
 faq:	$(FAQ)
-$(FAQ):	data/faq.include $(BIN_HOME)
-	$(BIN_HOME) -p14 -i data/faq.include \
+$(FAQ):	$(MVHSDIR)/data/faq.include $(BIN_HOME)
+	$(BIN_HOME) -p14 -i $(MVHSDIR)/data/faq.include \
 		-t 'Frequently Asked Questions' \
 		$(FAQ)
 
 COPYRIGHT=$(WWWDIR)/etc/copyright.html
 copyright:	$(COPYRIGHT)
-$(COPYRIGHT):	data/copyright.include $(BIN_HOME)
-	$(BIN_HOME) -p15 -i data/copyright.include \
+$(COPYRIGHT):	$(MVHSDIR)/data/copyright.include $(BIN_HOME)
+	$(BIN_HOME) -p15 -i $(MVHSDIR)/data/copyright.include \
 		-t 'Acceptable Use and Copyright' \
 		$(COPYRIGHT)
 
@@ -139,8 +141,8 @@ $(SUBMIT):	$(BIN_HOME) $(AID_UTIL_PL)
 
 ADDUPDATE=$(WWWDIR)/add/index.html
 addupdate:	$(ADDUPDATE)
-$(ADDUPDATE):	data/add.include $(BIN_HOME)
-	$(BIN_HOME) -p10 -i data/add.include \
+$(ADDUPDATE):	$(MVHSDIR)/data/add.include $(BIN_HOME)
+	$(BIN_HOME) -p10 -i $(MVHSDIR)/data/add.include \
 		-t 'Add or Update an entry' \
 		$(ADDUPDATE)
 
@@ -182,7 +184,7 @@ recent.txt:	$(ADR_CLASS) $(BIN_RECENT)
 	$(BIN_RECENT) -m3 -t $(ADR_CLASS) recent.txt
 
 tar:
-	tar cf $(WWWDIR)/etc/mvhsaid.tar $(TARFILES)
+	( cd $(MVHSDIR) ; tar cf $(WWWDIR)/etc/mvhsaid.tar $(TARFILES) )
 	gzip -f $(WWWDIR)/etc/mvhsaid.tar
 
 snapshot:
