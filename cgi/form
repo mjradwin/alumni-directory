@@ -4,7 +4,7 @@
 #     FILE: mvhsaid.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: MVHS Alumni Internet Directory CGI interface
-#      $Id: mvhsaid,v 1.59 1998/01/03 11:32:52 mradwin Exp $
+#      $Id: mvhsaid,v 1.58 1998/01/03 11:38:28 mjr Exp mjr $
 #
 
 require 'aid_util.pl';
@@ -24,7 +24,7 @@ if (defined($ENV{'PATH_INFO'}) && $ENV{'PATH_INFO'} =~ m,^/vcard/,) {
     $in{'vcard'} =~ s,^/vcard/(\d+).*$,$1,;
 }
 
-$rcsid = '$Id: mvhsaid,v 1.59 1998/01/03 11:32:52 mradwin Exp $'; #'fnt
+$rcsid = '$Id: mvhsaid,v 1.58 1998/01/03 11:38:28 mjr Exp mjr $'; #'fnt
 
 # special flags: version, update, vcard, about
 #
@@ -208,7 +208,9 @@ to edit your entry.  If everything is correct, please hit the
 
     print "<form method=post action=\"$cgi_path\">\n";
     foreach (keys %in) {
-	print "<input type=hidden name=\"$_\" value=\"$in{$_}\">\n";
+	$tmp_val = $in{$_};
+	$tmp_val =~ s/"/&quot;/g;
+	print "<input type=hidden name=\"$_\" value=\"$tmp_val\">\n";
     }
 
     print "<table border=0><tr><td>\n";

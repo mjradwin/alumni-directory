@@ -2,11 +2,11 @@
 #     FILE: aid_util.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: perl library routines for the Alumni Internet Directory
-#      $Id: aid_util.pl,v 1.86 1998/01/03 12:36:16 mjr Exp mjr $
+#      $Id: aid_util.pl,v 1.87 1998/01/03 12:55:49 mjr Exp mjr $
 #
 
 $aid_util'rcsid =
- '$Id: aid_util.pl,v 1.86 1998/01/03 12:36:16 mjr Exp mjr $';
+ '$Id: aid_util.pl,v 1.87 1998/01/03 12:55:49 mjr Exp mjr $';
 
 # ----------------------------------------------------------------------
 # CONFIGURATION
@@ -475,8 +475,13 @@ sub submit_body {
     local($tableh);
     local($star) = "<font color=\"#$star_fg\">*</font>";
     local(*rec,$message,$blankp) = @_;
+    local($first,$last,$married) = ($rec{'first'}, $rec{'last'}, $rec{'married'});
     local($mvhs_checked,$awalt_checked,$other_checked) = ('', '', '');
     local(@reqchk,$i);
+
+    $first =~ s/"/&quot;/g;
+    $last =~ s/"/&quot;/g;
+    $married =~ s/"/&quot;/g;
 
     $rec{'homepage'} = 'http://' if $rec{'homepage'} eq '';
 
@@ -534,19 +539,19 @@ are required.  All other fields are optional.</p>\n\n";
   <td valign=top><font color=\"#$cell_fg\">First Name</font></td>
   <td>$star</td>
   <td valign=top><input type=text name=\"first\" size=35 
-  value=\"$rec{'first'}\"></td>
+  value=\"$first\"></td>
 </tr>
 <tr>
   <td valign=top><font color=\"#$cell_fg\">Last/Maiden Name</font></td>
   <td>$star</td>
   <td valign=top><input type=text name=\"last\" size=35
-  value=\"$rec{'last'}\"></td>
+  value=\"$last\"></td>
 </tr>
 <tr>
   <td colspan=2 valign=top><font color=\"#$cell_fg\">Married Name</font><br>
   <font color=\"#$cell_fg\" size=\"-1\">(if different from Maiden Name)</font></td>
   <td valign=top><input type=text name=\"married\" size=35
-  value=\"$rec{'married'}\"></td>
+  value=\"$married\"></td>
 </tr>
 <tr>
   <td valign=top><font color=\"#$cell_fg\">High School</font></td>
@@ -777,6 +782,8 @@ sub modify_button {
 
     local($id,$name) = @_;
     local($cgi) = $config{'cgi_path'};
+
+    $name =~ s/"/&quot;/g;
 
     "
 <!-- borrowed from gamelan -->
