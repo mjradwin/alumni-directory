@@ -2,11 +2,11 @@
 #     FILE: aid_util.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: perl library routines for the Alumni Internet Directory
-#      $Id: aid_util.pl,v 4.41 1999/03/05 00:05:03 mradwin Exp mradwin $
+#      $Id: aid_util.pl,v 4.42 1999/03/05 00:07:09 mradwin Exp mradwin $
 #
 
 $aid_util'rcsid =
- '$Id: aid_util.pl,v 4.41 1999/03/05 00:05:03 mradwin Exp mradwin $';
+ '$Id: aid_util.pl,v 4.42 1999/03/05 00:07:09 mradwin Exp mradwin $';
 
 # ----------------------------------------------------------------------
 # CONFIGURATION
@@ -589,8 +589,10 @@ sub submit_body {
     local(*rec_arg,$blank_entries) = @_;
     local(%rec) = &main'rec_html_entify(*rec_arg); #'#
     local($primary_checked,$awalt_checked,$other_checked) = ('', '', '');
-    local(@reqchk,$i,$reunion_chk,@blankies);
+    local(@reqchk,$i,$reunion_chk,@blankies,$prev_email);
 
+    $prev_email = defined $rec{'prev_email'} ? 
+	$rec{'prev_email'} : $rec{'email'};
     $rec{'www'} = 'http://' if $rec{'www'} eq '';
 
     for ($i = 0; $i < 5; $i++) {
@@ -793,6 +795,8 @@ $instr
 
   <input type=\"hidden\" name=\"id\" value=\"$rec{'id'}\">
   <input type=\"hidden\" name=\"created\" value=\"$rec{'created'}\">
+  <input type=\"hidden\" name=\"email_upd\" value=\"$rec{'email_upd'}\">
+  <input type=\"hidden\" name=\"prev_email\" value=\"$prev_email\">
   <input type=\"hidden\" name=\"valid\" value=\"1\">
   <br><br>
   </td>
