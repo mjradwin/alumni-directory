@@ -2,7 +2,7 @@
 #     FILE: mv_util.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: perl library routines for the MVHS Alumni Internet Directory
-#      $Id: mv_util.pl,v 1.49 1997/10/17 23:30:02 mjr Exp mjr $
+#      $Id: mv_util.pl,v 1.50 1997/10/17 23:48:09 mjr Exp mjr $
 #
 
 CONFIG: {
@@ -83,10 +83,11 @@ sub mv_config {
 
 
 # is the GMT less than one month ago?
+# 2678400 = 31 days * 24 hrs * 60 mins * 60 secs
 sub is_new {
     package mv_util;
 
-    return ((time - $_[0]) < 2419200) ? 1 : 0;
+    return ((time - $_[0]) < 2678400) ? 1 : 0;
 }
 
 
