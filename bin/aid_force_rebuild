@@ -1,0 +1,84 @@
+#!/usr/bin/perl -w
+
+# $Id: aid_delete_entry,v 1.1 1999/06/01 05:33:53 mradwin Exp $
+#
+#   Copyright (c) 1995-1999  Michael John Radwin
+#
+#   This program is free software; you can redistribute it and/or modify
+#   it under the terms of the GNU General Public License as published by
+#   the Free Software Foundation; either version 2 of the License, or
+#   (at your option) any later version.
+#
+#   This program is distributed in the hope that it will be useful,
+#   but WITHOUT ANY WARRANTY; without even the implied warranty of
+#   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#   GNU General Public License for more details.
+#
+#   You should have received a copy of the GNU General Public License
+#   along with this program; if not, write to the Free Software
+#   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+#
+
+$dirname = $0;
+$dirname =~ s,/[^/]+$,,;
+push(@INC, $dirname);
+
+require 'aid_util.pl';
+require 'getopts.pl';
+
+$0 =~ s,.*/,,;  # basename
+$usage = "usage: $0 [-hd] infile.db
+    -h        Display usage information.
+    -d        Display debug diffs.
+";
+
+&Getopts('hd') || die "$usage\n";
+$opt_h && die "$usage\n";
+$opt_h = $opt_h;		# avoid warning
+$opt_d = $opt_d;		# avoid warning
+defined $ARGV[0] || die "$usage\n";
+
+$dbmfile = shift;
+$dbmfile =~ s/\.db$//;
+die "$0: ${dbmfile}.db: $!\n"
+    unless (-r "${dbmfile}.db" && -w "${dbmfile}.db");
+
+dbmopen(%DB,$dbmfile,0644) || die "$0: ${dbmfile}.db: $!\n";
+
+@old_emails = ();
+%new_emails = ();
+while (($key,$val) = each %DB)
+{
+    if ($key =~ /\@/)
+    {
+	push(@old_emails,$key);
+    }
+    elsif ($key =~ /^\d+/)
+    {
+	%rec = &aid_db_unpack_rec($key,$val);
+	$new_emails{"\L$rec{'e'}\E"} = pack('n',$key);
+    }
+}
+
+foreach (@old_emails)
+{
+    delete $DB{$_};
+}
+while (($key,$val) = each %new_emails)
+{
+    $DB{$key} = $val;
+}
+
+local(@diffs) = &aid_rebuild_secondary_keys(*DB,0);
+if ($opt_d)
+{
+    foreach (@diffs)
+    {
+	print "key $_ changed.\n";
+    }
+}
+
+warn "$0: rebuild successful\n";
+dbmclose(%DB);
+exit 0;
+
