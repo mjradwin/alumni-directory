@@ -2,7 +2,7 @@
 #     FILE: aid_util.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: perl library routines for the Alumni Internet Directory
-#      $Id: aid_util.pl,v 5.86 2001/02/01 21:09:38 mradwin Exp mradwin $
+#      $Id: aid_util.pl,v 5.87 2001/02/01 21:13:35 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -911,33 +911,39 @@ sub aid_book_write_entry {
     my($mi_spc) = $rec{'mi'} ne '' ? " $rec{'mi'}." : '';
 
     $long_last .= " $rec{'mn'}" if $rec{'mn'} ne '';
+    $long_last =~ s/\"/\'/g;
+    $long_last =~ s/[,;\t]/ /g;
 
-    $option eq 'p' && print BOOK "$rec{'a'}\t$long_last, $rec{'gn'}$mi_spc\t$rec{'e'}\t\t$config{'short_school'} $rec{'yr'}\n";
-    $option eq 'e' && print BOOK "$rec{'a'} = $long_last; $rec{'gn'}, $config{'short_school'} $rec{'yr'} = $rec{'e'}\n";
+    my($gn) = $rec{'gn'};
+    $gn =~ s/\"/\'/g;
+    $gn =~ s/[,;\t]/ /g;
+
+    $option eq 'p' && print BOOK "$rec{'a'}\t$long_last, $gn$mi_spc\t$rec{'e'}\t\t$config{'short_school'} $rec{'yr'}\n";
+    $option eq 'e' && print BOOK "$rec{'a'} = $long_last; $gn, $config{'short_school'} $rec{'yr'} = $rec{'e'}\n";
     $option eq 'b' && print BOOK "alias $rec{'a'}\t$rec{'e'}\n";
-    $option eq 'w' && print BOOK "<$rec{'a'}>\015\012>$rec{'gn'}$mi_spc $long_last <$rec{'e'}>\015\012<$rec{'a'}>\015\012>$config{'short_school'} $rec{'yr'}\015\012";
-    $option eq 'm' && print BOOK "alias $rec{'a'} $rec{'e'}\015\012note $rec{'a'} <name:$rec{'gn'}$mi_spc $long_last>$config{'short_school'} $rec{'yr'}\015\012";
+    $option eq 'w' && print BOOK "<$rec{'a'}>\015\012>$gn$mi_spc $long_last <$rec{'e'}>\015\012<$rec{'a'}>\015\012>$config{'short_school'} $rec{'yr'}\015\012";
+    $option eq 'm' && print BOOK "alias $rec{'a'} $rec{'e'}\015\012note $rec{'a'} <name:$gn$mi_spc $long_last>$config{'short_school'} $rec{'yr'}\015\012";
 
     # netscape is a bigger sucker
     if ($option eq 'n') {
 	print BOOK "    <DT><A HREF=\"mailto:$rec{'e'}\" ";
-	print BOOK "NICKNAME=\"$rec{'a'}\">$rec{'gn'}$mi_spc $long_last</A>\n";
+	print BOOK "NICKNAME=\"$rec{'a'}\">$gn$mi_spc $long_last</A>\n";
 	print BOOK "<DD>$config{'short_school'} $rec{'yr'}\n";
     }
 
     elsif ($option eq 'l') {
-        print BOOK "dn: cn=$rec{'gn'}$mi_spc $long_last,mail=$rec{'e'}\015\012";
+        print BOOK "dn: cn=$gn$mi_spc $long_last,mail=$rec{'e'}\015\012";
 	print BOOK "modifytimestamp: ";
 	$vdate = &main::aid_vdate($rec{'u'}); 
 	$vdate =~ s/T//;
 	print BOOK "$vdate\015\012";
-        print BOOK "cn: $rec{'gn'}$mi_spc $long_last\015\012";
+        print BOOK "cn: $gn$mi_spc $long_last\015\012";
 	if ($rec{'mn'} ne '') {
 	    print BOOK "sn: $rec{'mn'}\015\012";
 	} else {
 	    print BOOK "sn: $rec{'sn'}\015\012";
 	}
-        print BOOK "givenname: $rec{'gn'}\015\012";
+        print BOOK "givenname: $gn\015\012";
         print BOOK "objectclass: top\015\012objectclass: person\015\012";
         print BOOK "mail: $rec{'e'}\015\012";
 	if ($rec{'l'} =~ /^(.*),\s+(\w\w)$/) {
