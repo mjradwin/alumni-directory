@@ -1,6 +1,6 @@
 #!/usr/local/bin/perl5 -w
 
-# $Id: aid_addname,v 5.18 2000/05/30 23:58:44 mradwin Exp mradwin $
+# $Id: aid_addname,v 5.19 2000/05/31 00:32:19 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -61,8 +61,6 @@ if (!$opt_m && $status)
     &mail_welcome() unless $opt_w;
 }
 
-print STDOUT "done!\n"
-    unless $opt_q;
 exit(0);
 
 sub readspool
@@ -83,8 +81,6 @@ sub readspool
 	unless (flock (DB_FH, LOCK_EX)) { die "flock: $!" }
     }
 
-    print STDOUT "reading spool...\n"
-	unless $opt_q;
     if (defined $DBS{'_verified'})
     {
 	@key8s = split(/\0/, $DBS{'_verified'});
@@ -118,7 +114,7 @@ sub readspool
 	my(%DB);
 	tie(%DB, 'DB_File', $dbmfile, O_RDWR|O_CREAT, 0644, $DB_File::DB_HASH)
 	    or die "$dbmfile: $!\n";
-	@mod_keys = &aid_rebuild_secondary_keys(*DB,0,0,1);
+	@mod_keys = &aid_rebuild_secondary_keys(*DB,$opt_q,0,1);
 	untie(%DB);
     }
 
