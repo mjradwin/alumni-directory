@@ -2,7 +2,7 @@
 
 #
 # generates address books in several formats
-# $Id: aid_book,v 3.17 1998/11/11 19:09:44 mradwin Exp mradwin $
+# $Id: aid_book,v 3.18 1998/11/11 19:17:29 mradwin Exp mradwin $
 #
 
 require 'aid_util.pl';
@@ -46,43 +46,44 @@ if ($opt_l) { open(BOOKl,">$opt_l") || die "Can't open $opt_l: $!\n"; }
 if ($opt_v) { open(BOOKv,">$opt_v") || die "Can't open $opt_v: $!\n"; }
 if ($opt_o) { open(BOOKo,">$opt_o") || die "Can't open $opt_o: $!\n"; }
 
-$opt_p && &write_prefix(*BOOKp,'p');
-$opt_e && &write_prefix(*BOOKe,'e');
-$opt_b && &write_prefix(*BOOKb,'b');
-$opt_w && &write_prefix(*BOOKw,'w');
-$opt_m && &write_prefix(*BOOKm,'m');
-$opt_n && &write_prefix(*BOOKn,'n');
-$opt_l && &write_prefix(*BOOKl,'l');
-$opt_v && &write_prefix(*BOOKv,'v');
-$opt_o && &write_prefix(*BOOKo,'o');
+$opt_p && &aid_book_write_prefix(*BOOKp,'p');
+$opt_e && &aid_book_write_prefix(*BOOKe,'e');
+$opt_b && &aid_book_write_prefix(*BOOKb,'b');
+$opt_w && &aid_book_write_prefix(*BOOKw,'w');
+$opt_m && &aid_book_write_prefix(*BOOKm,'m');
+$opt_n && &aid_book_write_prefix(*BOOKn,'n');
+$opt_l && &aid_book_write_prefix(*BOOKl,'l');
+$opt_v && &aid_book_write_prefix(*BOOKv,'v');
+$opt_o && &aid_book_write_prefix(*BOOKo,'o');
 
 while(<DATA>) {
     chop;
     %rec = &aid_parse($_);
     next unless $rec{'valid'};
     
-    $opt_p && &write_entry(*BOOKp,'p',*rec);
-    $opt_e && &write_entry(*BOOKe,'e',*rec);
-    $opt_b && &write_entry(*BOOKb,'b',*rec);
-    $opt_w && &write_entry(*BOOKw,'w',*rec);
-    $opt_m && &write_entry(*BOOKm,'m',*rec);
-    $opt_n && &write_entry(*BOOKn,'n',*rec);
-    $opt_l && &write_entry(*BOOKl,'l',*rec);
-    $opt_v && &write_entry(*BOOKv,'v',*rec);
-    $opt_o && &write_entry(*BOOKo,'o',*rec);
+    $opt_p && &aid_book_write_entry(*BOOKp,'p',*rec);
+    $opt_e && &aid_book_write_entry(*BOOKe,'e',*rec);
+    $opt_b && &aid_book_write_entry(*BOOKb,'b',*rec);
+    $opt_w && &aid_book_write_entry(*BOOKw,'w',*rec);
+    $opt_m && &aid_book_write_entry(*BOOKm,'m',*rec);
+    $opt_n && &aid_book_write_entry(*BOOKn,'n',*rec);
+    $opt_l && &aid_book_write_entry(*BOOKl,'l',*rec);
+    $opt_v && &aid_book_write_entry(*BOOKv,'v',*rec);
+    $opt_o && &aid_book_write_entry(*BOOKo,'o',*rec);
+
 }
 
 close(DATA);
 
-$opt_p && &write_suffix(*BOOKp,'p');
-$opt_e && &write_suffix(*BOOKe,'e');
-$opt_b && &write_suffix(*BOOKb,'b');
-$opt_w && &write_suffix(*BOOKw,'w');
-$opt_m && &write_suffix(*BOOKm,'m');
-$opt_n && &write_suffix(*BOOKn,'n');
-$opt_l && &write_suffix(*BOOKl,'l');
-$opt_v && &write_suffix(*BOOKv,'v');
-$opt_o && &write_suffix(*BOOKo,'o');
+$opt_p && &aid_book_write_suffix(*BOOKp,'p');
+$opt_e && &aid_book_write_suffix(*BOOKe,'e');
+$opt_b && &aid_book_write_suffix(*BOOKb,'b');
+$opt_w && &aid_book_write_suffix(*BOOKw,'w');
+$opt_m && &aid_book_write_suffix(*BOOKm,'m');
+$opt_n && &aid_book_write_suffix(*BOOKn,'n');
+$opt_l && &aid_book_write_suffix(*BOOKl,'l');
+$opt_v && &aid_book_write_suffix(*BOOKv,'v');
+$opt_o && &aid_book_write_suffix(*BOOKo,'o');
 
 $opt_p && close(BOOKp);
 $opt_e && close(BOOKe);
@@ -95,116 +96,3 @@ $opt_v && close(BOOKv);
 $opt_o && close(BOOKo);
 
 exit(0);
-
-sub write_prefix {
-    local(*BOOK,$option) = @_;
-    local($school) = &aid_config('school');
-
-    # special case for netscape
-    if ($option eq 'n') {
-	print BOOK "<!DOCTYPE NETSCAPE-Addressbook-file-1>
-<!-- This is an automatically generated file.
-It will be read and overwritten.
-Do Not Edit! -->
-<TITLE>$school Alumni Address book</TITLE>
-<H1>$school Alumni Address book</H1>
-
-<DL><p>\n";
-    }
-
-    elsif ($option eq 'o') {
-	print BOOK
-	    "\"Title\",\"First Name\",\"Middle Name\",\"Last Name\",\"Suffix\",\"Company\",\"Department\",\"Job Title\",\"Business Street\",\"Business Street 2\",\"Business Street 3\",\"Business City\",\"Business State\",\"Business Postal Code\",\"Business Country\",\"Home Street\",\"Home Street 2\",\"Home Street 3\",\"Home City\",\"Home State\",\"Home Postal Code\",\"Home Country\",\"Other Street\",\"Other Street 2\",\"Other Street 3\",\"Other City\",\"Other State\",\"Other Postal Code\",\"Other Country\",\"Assistant's Phone\",\"Business Fax\",\"Business Phone\",\"Business Phone 2\",\"Callback\",\"Car Phone\",\"Company Main Phone\",\"Home Fax\",\"Home Phone\",\"Home Phone 2\",\"ISDN\",\"Mobile Phone\",\"Other Fax\",\"Other Phone\",\"Pager\",\"Primary Phone\",\"Radio Phone\",\"TTY/TDD Phone\",\"Telex\",\"Account\",\"Anniversary\",\"Assistant's Name\",\"Billing Information\",\"Birthday\",\"Categories\",\"Children\",\"E-mail Address\",\"E-mail Display Name\",\"E-mail 2 Address\",\"E-mail 2 Display Name\",\"E-mail 3 Address\",\"E-mail 3 Display Name\",\"Gender\",\"Government ID Number\",\"Hobby\",\"Initials\",\"Keywords\",\"Language\",\"Location\",\"Mileage\",\"Notes\",\"Office Location\",\"Organizational ID Number\",\"PO Box\",\"Private\",\"Profession\",\"Referred By\",\"Spouse\",\"User 1\",\"User 2\",\"User 3\",\"User 4\",\"Web Page\"\r\n";
-    }
-}
-
-sub write_entry {
-    local(*BOOK,$option,*rec) = @_;
-    local($long_last) = $rec{'last'};
-
-    $long_last .= " $rec{'married'}" if $rec{'married'} ne '';
-
-    $option eq 'p' && print BOOK "$rec{'alias'}\t$long_last, $rec{'first'}\t$rec{'email'}\t\t$rec{'school'} $rec{'year'}\n";
-    $option eq 'e' && print BOOK "$rec{'alias'} = $long_last; $rec{'first'}, $rec{'school'} $rec{'year'} = $rec{'email'}\n";
-    $option eq 'b' && print BOOK "alias $rec{'alias'}\t$rec{'email'}\n";
-    $option eq 'w' && print BOOK "<$rec{'alias'}>\r\n>$rec{'first'} $long_last <$rec{'email'}>\r\n<$rec{'alias'}>\r\n>$rec{'school'} $rec{'year'}\r\n";
-    $option eq 'm' && print BOOK "alias $rec{'alias'} $rec{'email'}\r\nnote $rec{'alias'} <name:$rec{'first'} $long_last>$rec{'school'} $rec{'year'}\r\n";
-
-    # netscape is a bigger sucker
-    if ($option eq 'n') {
-	print BOOK "    <DT><A HREF=\"mailto:$rec{'email'}\" ";
-	print BOOK "NICKNAME=\"$rec{'alias'}\">$rec{'first'} $long_last</A>\n";
-	print BOOK "<DD>$rec{'school'} $rec{'year'}\n";
-    }
-
-    elsif ($option eq 'l') {
-        print BOOK "dn: cn=$rec{'first'} $long_last,mail=$rec{'email'}\r\n";
-	print BOOK "modifytimestamp: ";
-	$vdate = &aid_vdate($rec{'time'});
-	$vdate =~ s/T//;
-	print BOOK "$vdate\r\n";
-        print BOOK "cn: $rec{'first'} $long_last\r\n";
-	if ($rec{'married'} ne '') {
-	    print BOOK "sn: $rec{'married'}\r\n";
-	} else {
-	    print BOOK "sn: $rec{'last'}\r\n";
-	}
-        print BOOK "givenname: $rec{'first'}\r\n";
-        print BOOK "objectclass: top\r\nobjectclass: person\r\n";
-        print BOOK "mail: $rec{'email'}\r\n";
-	if ($rec{'location'} =~ /^(.*),\s+(\w\w)$/) {
-	    print BOOK "locality: $1\r\n";
-	    print BOOK "st: $2\r\n";
-	} else {
-	    print BOOK "locality: $rec{'location'}\r\n" if $rec{'location'} ne '';
-	}
-        print BOOK "o: $rec{'school'}\r\n";
-	if ($rec{'year'} =~ /^\d+$/) {
-	    print BOOK "ou: Class of $rec{'year'}\r\n";
-	} else {
-	    print BOOK "ou: $rec{'year'}\r\n";
-	}
-        print BOOK "homeurl: $rec{'www'}\r\n" if $rec{'www'} ne '';
-        print BOOK "xmozillanickname: $rec{'alias'}\r\n";
-        print BOOK "\r\n";
-    }
-    
-    # lots of data for a vCard
-    elsif ($option eq 'v') {
-	print BOOK &aid_vcard_text(*rec), "\r\n";
-    }
-
-    elsif ($option eq 'o') {
-	print BOOK "\"\",\"$rec{'first'}\",";
-	if ($rec{'married'} ne '') {
-	    print BOOK "\"$rec{'last'}\",\"$rec{'married'}\",";
-	} else {
-	    print BOOK "\"\",\"$rec{'last'}\",";
-	}
-
-	print BOOK "\"\",\"$rec{'school'} $rec{'year'}\",\"\",";
-#	print BOOK "\"\",\"$rec{'school'}\",";
-#	if ($rec{'year'} =~ /^\d+$/) {
-#	    print BOOK "\"Class of $rec{'year'}\",";
-#	} else {
-#	    print BOOK "\"$rec{'year'}\",";
-#	}
-
-	print BOOK "\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",";
-
-	if ($rec{'location'} =~ /^(.*),\s+(\w\w)$/) {
-	    print BOOK "\"$1\",\"$2\",";
-	} else {
-	    print BOOK "\"$rec{'location'}\",\"\",";
-	}
-
-	print BOOK "\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"MVHS Alumni\",\"\",\"$rec{'email'}\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"$rec{'www'}\"\n";
-    }
-}
-
-sub write_suffix {
-    local(*BOOK,$option) = @_;
-
-    $option eq 'n' && print BOOK "</DL><p>\n";
-}
-

@@ -2,7 +2,7 @@
 
 #
 # does the html version of just home pages
-# $Id: aid_home_html,v 3.10 1998/05/17 05:18:53 mradwin Exp mradwin $
+# $Id: aid_home_html,v 3.11 1998/11/02 17:56:16 mradwin Exp mradwin $
 #
 
 require 'aid_util.pl';
@@ -11,23 +11,24 @@ require 'getopts.pl';
 $usage = 'usage: aid_home_html [-hs] [-i <infile>] -p <pg> -t <text> <outfile>
  -h            Display usage information.
  -s            Create the submit page.
+ -d            Create the download page.
  -i <infile>   Create an "other" page from html code in <infile>.
  -p <pg>       Use page number <pg> for generating content.  REQUIRED.
  -t <text>     Put a tableheader with "text".  REQUIRED.
 
  <outfile>     Write results to <outfile>.
 
-Either -s or -i must be supplied.  They are mutuallly exclusive.
+Either -s, -d or -i must be supplied.  They are mutuallly exclusive.
 ';
 
-&Getopts('hst:i:p:') || die "$usage\n";
+&Getopts('hst:i:p:d') || die "$usage\n";
 $opt_h && die "$usage\n";
 $opt_h = $opt_h;		# avoid warning
 %blank_entry = %aid_util'blank_entry = %aid_util'blank_entry;
 
 die "$usage\n" unless $ARGV[0];
-die "$usage\n" unless ($opt_s || $opt_i);
-die "$usage\n" if     ($opt_s && $opt_i);
+die "$usage\n"
+    unless ($opt_s ? 1 : 0) + ($opt_i ? 1 : 0) + ($opt_d ? 1 : 0) == 1;
 die "$usage\n" unless defined($opt_p);
 die "$usage\n" unless defined($opt_t);
 
@@ -46,6 +47,69 @@ print OUTFILE &common_html_hdr($opt_p,$opt_t,0);
 
 if ($opt_s) {
     print OUTFILE &submit_body(*blank_entry,'');
+
+} elsif ($opt_d) {
+
+    @class_db = &aid_class_db(&aid_config('aiddir') . 'data/master.adr');
+    @years = ();
+    foreach (@class_db)
+    {
+	next unless defined $_ && $_ ne '';
+	%rec = &aid_split($_);
+	next unless $rec{'valid'};
+	&aid_build_yearlist(*years,$rec{'year'});
+    }
+    print OUTFILE "<p>Download nickname files and address books for your
+favorite email program.</p>
+
+<p>You may need to use the \"import\" feature on your mailreader to
+merge the address book with your own.  Aliases (also called nicknames)
+are of the form <code><strong>flllllll</strong></code> where
+<code><strong>f</strong></code> is first initial and
+<code><strong>l</strong></code> is last name.</p>\n\n";
+
+    print OUTFILE "<p><form method=\"get\" action=\"";
+    print OUTFILE &aid_config('cgi_path') . "/download.txt\">\n";
+    print OUTFILE "<input type=\"hidden\" name=\"download\" value=\"1\">\n\n";
+
+    print OUTFILE "Your email address:&nbsp;\n";
+    print OUTFILE "<input type=\"text\" name=\"email\" size=\"25\" ";
+    print OUTFILE "value=\"\" id=\"email\"> (for logging purposes only)\n";
+
+    print OUTFILE "<br>Year to download:&nbsp;\n<select name=\"year\">\n";
+    foreach (@years)
+    {
+	print OUTFILE "<option";
+	print OUTFILE " selected" if $_ eq '1993';
+	print OUTFILE ">$_\n";
+    }
+    print OUTFILE "</select>\n";
+
+    print OUTFILE "<br>Format:&nbsp;
+<select name=\"format\">
+<option value=\"n\">Netscape 2.x
+<option value=\"n\">Netscape 3.x
+<option value=\"l\">Netscape 4.x
+<option value=\"w\">Eudora 2.x
+<option value=\"m\">Eudora 3.x
+<option value=\"m\">Eudora 4.x
+<option value=\"o\">Outlook Express .CSV
+<option value=\"p\">Pine (Unix)
+<option value=\"e\">Elm (Unix)
+<option value=\"b\">Berkeley Mail (Unix)
+</select>
+
+<br>
+
+<input type=checkbox name=\"plusminus\" id=\"plusminus\" checked><label
+for=\"plusminus\">&nbsp;Also download graduating classes 3 years before and 3
+years after mine.</label>
+
+<br>
+
+<input type=\"submit\" value=\"Download\">
+</form></p>\n\n";
+
 } else { # implicit opt_i
     print OUTFILE @lines;
 }
