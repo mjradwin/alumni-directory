@@ -44,8 +44,8 @@ sub readspool {
 		open(NEWSOUT, ">$newsFile") ||
 		    die "Can't open $newsFile: $!\n";
 		while(<SPOOL>) {
-		    print NEWSOUT $_;
 		    last if /^_MVHSAID_END_MESSAGE_/;
+		    print NEWSOUT $_;
 		}
 		close(NEWSOUT);
 	    }
