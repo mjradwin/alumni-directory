@@ -2,11 +2,11 @@
 #     FILE: aid_util.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: perl library routines for the Alumni Internet Directory
-#      $Id: aid_util.pl,v 3.46 1998/09/18 23:29:59 mradwin Exp mradwin $
+#      $Id: aid_util.pl,v 3.47 1998/09/18 23:36:38 mradwin Exp mradwin $
 #
 
 $aid_util'rcsid =
- '$Id: aid_util.pl,v 3.46 1998/09/18 23:29:59 mradwin Exp mradwin $';
+ '$Id: aid_util.pl,v 3.47 1998/09/18 23:36:38 mradwin Exp mradwin $';
 
 # ----------------------------------------------------------------------
 # CONFIGURATION
@@ -536,8 +536,9 @@ sub submit_body {
 	$rec{'school'} = '' if $rec{'school'} eq 'Other';
     }
 
-    $body = "
-<p>Please update the following information and hit the
+    $body  = "\n<p>Please ";
+    $body .= (($rec{'id'} != -1) ? "update" : "enter");
+    $body .= " the following information and hit the
 <strong>Next&nbsp;&gt;</strong> button.</p>
 
 <p>Fields marked with a $star
