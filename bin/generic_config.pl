@@ -2,7 +2,7 @@
 #     FILE: generic_config.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: configuration variables for Alumni Internet Directory
-#      $Id: generic_config.pl,v 5.7 1999/06/14 22:49:29 mradwin Exp mradwin $
+#      $Id: generic_config.pl,v 5.8 1999/06/14 22:55:31 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -25,7 +25,7 @@
 $ht_empty_close_tag = '>';
 
 $aid_util'rcsid =
- '$Id: generic_config.pl,v 5.7 1999/06/14 22:49:29 mradwin Exp mradwin $';
+ '$Id: generic_config.pl,v 5.8 1999/06/14 22:55:31 mradwin Exp mradwin $';
 
 # Generic HS on bogus-domain.org (FreeBSD 2.2.2) configuration
 %aid_util'config =   #'#
@@ -69,18 +69,18 @@ $aid_util'rcsid =
      );
 
 $aid_util'author_meta = #'#
-"  <meta name=\"author\"  content=\"$aid_util'config{'admin_name'}\"${ht_empty_close_tag}\n  <link rev=\"made\"     href=\"mailto:" . $aid_util'config{'admin_email'} . "\"${ht_empty_close_tag}";
+"<meta name=\"author\" content=\"$aid_util'config{'admin_name'}\"${ht_empty_close_tag}\n<link rev=\"made\" href=\"mailto:" . $aid_util'config{'admin_email'} . "\"${ht_empty_close_tag}";
 
 $aid_util'navigation_meta = #'#
-    "  <link rel=\"start\" href=\"http://" .
+    "<link rel=\"start\" href=\"http://" .
     $aid_util'config{'master_srv'} . #'#
     $aid_util'config{'master_path'} . #'#
-    "\" title=\"" .  $aid_util'config{'short_school'} . #'#
+    "\" title=\"" . $aid_util'config{'short_school'} . #'#
     " Alumni Internet Directory\"${ht_empty_close_tag}";
 
 $aid_util'descr_meta = #'#
-"  <meta name=\"keywords\"    content=\"" . $aid_util'config{'school'} . ", " .
-$aid_util'config{'short_school'} . ", Anytown, California, reunion, alumni, directory\"${ht_empty_close_tag}\n  <meta name=\"description\" content=\"Alumni e-mail and web page directory for " . $aid_util'config{'school'} . " in Anytown, CA. Updated __DATE__.\"${ht_empty_close_tag}"; #'#
+"<meta name=\"keywords\" content=\"" . $aid_util'config{'school'} . ", " .
+$aid_util'config{'short_school'} . ", Anytown, California, reunion, alumni, directory\"${ht_empty_close_tag}\n<meta name=\"description\" content=\"Alumni e-mail and web page directory for " . $aid_util'config{'school'} . " in Anytown, CA. Updated __DATE__.\"${ht_empty_close_tag}"; #'#
 
 $aid_util'disclaimer = #'#
 "<a name=\"disclaimer\">Acceptable use:</a> the Alumni Internet
