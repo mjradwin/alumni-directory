@@ -1,6 +1,6 @@
 #!/usr/bin/perl -w
 
-# $Id: aid_grep_bounce,v 5.3 1999/05/31 23:22:27 mradwin Exp mradwin $
+# $Id: aid_grep_bounce,v 5.4 1999/06/07 18:32:25 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -25,6 +25,7 @@ unshift(@INC, $dirname);
 
 require 'aid_util.pl';
 
+$directory_name = &aid_config('short_school') . ' Alumni Internet Directory';
 $from_pattern = &aid_config('admin_name') .
     ' <' . &aid_config('admin_email') . '>';
 
@@ -44,7 +45,7 @@ sub readspool {
     select(STDOUT); $| = 1;
     print STDOUT "reading spool...\n";
     while(<SPOOL>) {
-	if (/^\s*----- The following addresses had permanent fatal errors -----\s*$/)
+	if (/^\s*-+\s+The following addresses had permanent fatal errors\s+-+\s*$/)
 	{
 
 	    $_ = <SPOOL>;
@@ -56,9 +57,9 @@ sub readspool {
 
 	    $bouncers{"\L$_\E"} = 1;
 	}
-	elsif (/^E-mail             : /)
+	elsif (/^E-mail\s+: /)
 	{
-	    s/^E-mail             : //;
+	    s/^E-mail\s+: //;
 	    s/\s*$//;
 	    $bouncers{"\L$_\E"} = 1;
 	}
@@ -69,6 +70,10 @@ sub readspool {
 	    {
 		$bouncers{"\L$1\E"} = 1;
 	    }
+	}
+	elsif (/^Subject: $directory_name \[.+-(\d+)\]/o)
+	{
+	    $bouncers{$1} = 1;
 	}
     }
 }
