@@ -2,7 +2,7 @@
 #     FILE: aid_config.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: configuration variables for Alumni Internet Directory
-#      $Id: aid_config.pl,v 5.3 1999/06/01 05:42:12 mradwin Exp mradwin $
+#      $Id: aid_config.pl,v 5.4 1999/06/01 17:00:37 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -70,6 +70,20 @@ die "NO CONFIG DEFINED!!\n" unless defined %aid_util'config; #'#
  "FAQ,"        . $aid_util'config{'master_path'} . "etc/faq.html",     #'#
  "Stats,"      . $aid_util'config{'master_path'} . "etc/stats.html",    #'#
  "Privacy,"    . $aid_util'config{'master_path'} . "etc/privacy.html", #'#
+);
+
+%aid_util'parent_page_name = #'#
+(
+ '1',  'Alphabetically',
+ '2',  'Graduating Classes',
+# '12', 'Add/Update',
+);
+
+%aid_util'parent_page_path = #'#
+(
+ '1',  $aid_util'config{'master_path'} . 'alpha/', #'#
+ '2',  $aid_util'config{'master_path'} . 'class/', #'#
+# '12', $aid_util'config{'master_path'} . 'add/', #'#
 );
 
 $aid_util'copyright_path = $aid_util'config{'master_path'} .
@@ -214,6 +228,8 @@ if ($^W && 0)
     @aid_edit_field_names = ();
     $aid_util'EPOCH       = '';
     %aid_util'field_descr = (); #'#
+    %aid_util'parent_page_name = (); #'#
+    %aid_util'parent_page_path = (); #'#
 }
 
 1;

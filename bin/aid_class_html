@@ -2,7 +2,7 @@
 
 #
 # does the html version of the grad-date address list
-# $Id: aid_class_html,v 5.2 1999/06/02 17:07:49 mradwin Exp mradwin $
+# $Id: aid_class_html,v 5.3 1999/06/07 18:32:25 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -138,7 +138,7 @@ foreach $year (@years)
 print STDOUT "\n" unless $opt_q;
 
 $opt_t || print FMTOUT "</pre>\n";
-$opt_t || print FMTOUT &aid_common_html_ftr($pageno);
+$opt_t || print FMTOUT &aid_common_html_ftr($pageno,$time);
 
 dbmclose(%DB);
 close(FMTOUT);

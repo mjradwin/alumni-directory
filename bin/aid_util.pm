@@ -2,7 +2,7 @@
 #     FILE: aid_util.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: perl library routines for the Alumni Internet Directory
-#      $Id: aid_util.pl,v 5.7 1999/06/03 18:45:48 mradwin Exp mradwin $
+#      $Id: aid_util.pl,v 5.8 1999/06/07 17:32:26 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -693,24 +693,26 @@ sub aid_common_link_table
 
 sub aid_common_html_ftr
 {
+    require 'ctime.pl';
+
     package aid_util;
 
     local($[) = 0;
-    local($page) = @_;
+    local($page,$time) = @_;
     local($ftr);
     local($year) = (localtime(time))[5] + 1900;
 
+    $time = time unless (defined $time && $time ne '0');
+
     $ftr  = "\n<hr noshade=\"noshade\" size=\"1\" />\n";
 
-    $ftr .= "\n<div class=\"about\">";
-    $ftr .= &main'aid_common_link_table($page); #'#
-    $ftr .="</div>\n";
-
-    $ftr .= "\n<small>\n" . $disclaimer . "\n<br /><br />\n";
-
+    $ftr .= "<small>\n<!-- hhmts start -->\nLast modified: ";
+    $ftr .= &main'ctime($time); #'#
+    $ftr .= "<!-- hhmts end -->\n<br />\n";
     $ftr .= "<a href=\"" . $copyright_path . "\">" .
-	"Copyright\n&copy; $year " . $config{'admin_name'} . "</a>\n</small>" .
-	"\n\n</body>\n</html>\n";
+	"Copyright\n&copy; $year " . $config{'admin_name'} . 
+	    "</a><br /><br />\n";
+    $ftr .= $disclaimer . "\n</small>\n</body>\n</html>\n";
 
     $ftr;
 }
@@ -718,12 +720,11 @@ sub aid_common_html_ftr
 
 sub aid_common_html_hdr
 {
-    require 'ctime.pl';
     require 'tableheader.pl';
     package aid_util;
 
     local($page,$title,$norobots,$time,$subtitle) = @_;
-    local($hdr,$tablehdr,$timestamp,$titletag);
+    local($hdr,$tablehdr,$timestamp,$titletag,$srv_nowww);
     local($pagetime) = (defined $time && $time ne '') ? $time : time;
 #    local($sec,$min,$hour) = localtime($pagetime);
 #    local($ampm) = $hour >= 12 ? 'pm' : 'am';
@@ -734,12 +735,12 @@ sub aid_common_html_hdr
 #			 &main'aid_caldate($pagetime), $hour, $min, $ampm);
     $timestamp = &main'aid_caldate($pagetime); #'#
 
-    $tablehdr = $title eq '' ? '' :
-	'<strong>' . &main'tableheader_internal($title,1,$cell_fg) . #'#
-	    "</strong>\n";
-    $tablehdr .= "<br />$subtitle\n" if defined $subtitle && $subtitle ne '';
-    $tablehdr .= ($title eq '' ? '' : "<br /><br />");
-    $tablehdr .= "\n";
+#    $tablehdr = $title eq '' ? '' :
+#	'<strong>' . &main'tableheader_internal($title,1,$cell_fg) . #'#
+#	    "</strong>\n";
+#    $tablehdr .= "<br />$subtitle\n" if defined $subtitle && $subtitle ne '';
+#    $tablehdr .= ($title eq '' ? '' : "<br /><br />");
+#    $tablehdr .= "\n";
 
     $titletag = ($page == 0) ?
 	($config{'school'} . " Alumni Internet Directory") :
@@ -769,20 +770,56 @@ sub aid_common_html_hdr
     $hdr .= "\n</head>\n\n";
     
     $hdr .= "<body bgcolor=\"#$body_bg\" text=\"#$body_fg\" link=\"#$body_link\" vlink=\"#$body_vlink\">\n";
+
+    $srv_nowww =  $config{'master_srv'};
+    $srv_nowww =~ s/^www\.//i;
+
+    $hdr .= "<strong><a href=\"/\">$srv_nowww</a> -&gt;\n";
+    $hdr .= "<a href=\"$config{'master_path'}\">" unless $page == 0;
+    $hdr .= $config{'short_school'} . ' Alumni';
+    $hdr .= "</a>" unless $page == 0;
+    if ($page != 0)
+    {
+	if (defined $parent_page_name{$page})
+	{
+	    $hdr .= " -&gt;\n" .
+		'<a href="' . $parent_page_path{$page} . '">' .
+		    $parent_page_name{$page} . '</a>';
+	}
+
+	$hdr .= " -&gt;\n$title\n";
+    }
+    $hdr .= "</strong> ($timestamp)<br /><br />\n\n";
     
-    $hdr .= "
-<table cellspacing=\"0\" cellpadding=\"6\" border=\"0\" width=\"100%\">
+    $hdr .=
+"<table cellspacing=\"0\" cellpadding=\"6\" border=\"0\" width=\"100%\">
 <tr><td bgcolor=\"#$header_bg\">
-<p><a href=\"$config{'master_path'}\"><font color=\"#$header_fg\"
-size=\"+2\"><strong><tt>$config{'school'}
-Alumni Internet Directory</tt></strong></font></a></p>
-<p align=\"right\"><font color=\"#$header_fg\"><small>
-$timestamp</small></font></p>
-</td></tr>
-<tr><td bgcolor=\"#$cell_bg\" align=\"center\">
 ";
-    $hdr .= $tablehdr . &main'aid_common_link_table($page,1,0) . #'#
-	    "</td></tr>\n</table>\n\n<!--BAD-DOG-->\n";
+
+    if ($page == 0)
+    {
+	$hdr .= "<h1><font color=\"#$header_fg\">";
+	$hdr .= "$config{'school'}\n";
+	$hdr .= "Alumni Internet Directory</font></h1>\n";
+    }
+    else
+    {
+	$hdr .= "<p><strong><font color=\"#$header_fg\">";
+	$hdr .= "$config{'school'}\n";
+	$hdr .= "Alumni Internet Directory:</font></strong></p>\n";
+	$hdr .= "<h1><font color=\"#$header_fg\">$title";
+	$hdr .= " - <small>$subtitle</small>"
+	    if defined $subtitle && $subtitle ne '';
+	$hdr .= "</font></h1>\n";
+    }
+
+    $hdr .= "</td></tr></table>\n";
+    $hdr .= "\n";
+
+#    $hdr .= "<div class=\"about\">";
+#    $hdr .= &main'aid_common_link_table($page); #'#
+#    $hdr .="</div>\n";
+    $hdr .="<!--BAD-DOG-->\n";
 
     $hdr;
 }

@@ -4,7 +4,7 @@
 # does a short list, either compact or verbose, sorted by graduating
 # class with a jump bar
 #
-# $Id: aid_shortlist_html,v 5.1 1999/05/31 21:20:48 mradwin Exp mradwin $
+# $Id: aid_shortlist_html,v 5.2 1999/06/07 18:32:25 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -90,7 +90,7 @@ else
 {
     $subtitle = sprintf("%d alumni", $#ids + 1);
 }
-$subtitle = "<strong><font color=\"#000000\">$subtitle</font></strong>";
+#$subtitle = "<strong><font color=\"#000000\">$subtitle</font></strong>";
 
 if (!$opt_t) {
     if ($opt_w) {
@@ -160,7 +160,7 @@ if (!$opt_v) {
     }
 }
 
-$opt_t || print FMTOUT &aid_common_html_ftr(5);
+$opt_t || print FMTOUT &aid_common_html_ftr(5,$time);
 
 dbmclose(%DB);
 close(FMTOUT);

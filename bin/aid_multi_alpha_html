@@ -2,7 +2,7 @@
 
 #
 # does the html verbose pages
-# $Id: aid_multi_alpha_html,v 5.1 1999/05/31 21:20:48 mradwin Exp mradwin $
+# $Id: aid_multi_alpha_html,v 5.2 1999/06/07 18:32:25 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -44,6 +44,13 @@ dbmopen(%DB,$ARGV[0],0444);
 
 die "no _alpha key!\n" unless defined $DB{'_alpha'};
 
+@initials = ();
+for ($initial = 'a'; $initial ne 'aa'; $initial++)
+{
+    push(@initials, $initial) if defined $DB{"_t_${initial}"};
+}
+
+$opened = 0;
 $initial = "Z";
 
 select(STDOUT); $| = 1;
@@ -58,20 +65,23 @@ foreach $id (@alpha_ids)
     if ("\U${initial}\E" ne $cur_initial) {
 	print STDOUT ".";
         $initial = $cur_initial;
-	if ($initial ne 'A') {
+
+	if ($opened)
+	{
 	    print FMTOUT "</pre>\n";
-	    print FMTOUT &aid_common_html_ftr(1);
+	    print FMTOUT &aid_common_html_ftr(1,$time);
 	    close(FMTOUT);
 	    utime $time, $time, $outFile;
 	}
 
 	$outFile = &aid_config('wwwdir') . "alpha/\L${initial}\E-index.html";
 	open(FMTOUT,">$outFile") || die "Can't open $outFile: $!\n";
-	
+	$opened = 1;
+
 	die "no alpha time key!\n" unless defined $DB{"\L_t_${initial}\E"};
 	$time = unpack("N",$DB{"\L_t_${initial}\E"});
 
-	print FMTOUT &aid_common_html_hdr(1,'Listed by Last Name',1,$time),
+	print FMTOUT &aid_common_html_hdr(1,"`$initial' Alumni",1,$time),
 	    &aid_common_intro_para(1),
 	    "<p>\n", &alpha_jump_bar($initial), "</p>\n",
 	    "<hr noshade=\"noshade\" size=\"1\" />\n\n";
@@ -82,12 +92,28 @@ foreach $id (@alpha_ids)
     print FMTOUT &html_pre_entry(*rec,'',1);
 }
 print STDOUT "\n";
-dbmclose(%DB);
 
 print FMTOUT "</pre>\n";
-print FMTOUT &aid_common_html_ftr(1);
+print FMTOUT &aid_common_html_ftr(1,$time);
 close(FMTOUT);
 utime $time, $time, $outFile;
+
+# index page
+die "no _t key!\n" unless defined $DB{'_t'};
+$time = unpack("N",$DB{'_t'});
+$outFile = &aid_config('wwwdir') . "alpha/index.html";
+open(FMTOUT,">$outFile") || die "Can't open $outFile: $!\n";
+
+print FMTOUT &aid_common_html_hdr(-1,'Alphabetically',0,$time);
+
+print FMTOUT "<p align=\"center\"><big>\n";
+print FMTOUT &alpha_jump_bar('');
+print FMTOUT "</big></p>\n\n";
+
+print FMTOUT &aid_common_html_ftr(-1,$time);
+close(FMTOUT);
+utime $time, $time, $outFile;
+dbmclose(%DB);
 
 # touch timestamp
 $now = time;
@@ -138,14 +164,11 @@ sub alpha_jump_bar {
     $initial = 'a';
     $regular = "\L${regular}\E";
 
-    while ($initial ne 'aa') {
-	if ($initial ne 'x')
-	{
+    foreach $initial (@initials)
+    {
 	$retval .= (($regular eq $initial) ?
 		    "\U${initial}\E\n" :
 		    "<a href=\"${initial}-index.html\">\U${initial}\E</a>\n");
-    	}
-	$initial++;
     }
 
     $retval;

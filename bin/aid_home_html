@@ -2,7 +2,7 @@
 
 #
 # does the html version of just home pages
-# $Id: aid_home_html,v 5.3 1999/06/03 17:25:30 mradwin Exp mradwin $
+# $Id: aid_home_html,v 5.4 1999/06/07 18:32:25 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -167,7 +167,7 @@ years after mine.</label>
 } else { # implicit opt_i
     print OUTFILE @lines;
 }
-print OUTFILE &aid_common_html_ftr($opt_p);
+print OUTFILE &aid_common_html_ftr($opt_p,$time);
 
 dbmclose(%DB) unless $opt_i || $opt_s;
 close(OUTFILE);

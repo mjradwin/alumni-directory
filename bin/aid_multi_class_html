@@ -2,7 +2,7 @@
 
 #
 # does the html multi_class pages
-# $Id: aid_multi_class_html,v 5.1 1999/05/31 21:20:48 mradwin Exp mradwin $
+# $Id: aid_multi_class_html,v 5.2 1999/06/07 18:32:25 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -68,7 +68,7 @@ foreach $year (@years)
     {
 	$subtitle = sprintf("%d alumni", $#ids + 1);
     }
-    $subtitle = "<strong><font color=\"#000000\">$subtitle</font></strong>";
+#    $subtitle = "<strong><font color=\"#000000\">$subtitle</font></strong>";
     
     print FMTOUT &aid_common_html_hdr(2,$title,1,$time,$subtitle);
     print FMTOUT &aid_common_intro_para(0);
@@ -97,7 +97,7 @@ foreach $year (@years)
 </center>
 ";
 
-    print FMTOUT &aid_common_html_ftr(2);
+    print FMTOUT &aid_common_html_ftr(2,$time);
     close(FMTOUT);
     utime $time, $time, $outFile;
 }
@@ -110,13 +110,13 @@ print STDOUT "\n";
 $outFile = &aid_config('wwwdir') . "class/index.html";
 open(FMTOUT,">$outFile") || die "Can't open $outFile: $!\n";
 
-print FMTOUT &aid_common_html_hdr(2,'Listed by Graduating Class',0,$time);
+print FMTOUT &aid_common_html_hdr(-2,'Graduating Classes',0,$time);
 
-print FMTOUT "<p align=\"center\"><big>Graduating Classes:<br /><br />\n";
+print FMTOUT "<p align=\"center\"><big>\n";
 print FMTOUT &aid_class_jump_bar('', '.html', *years, 0);
 print FMTOUT "</big></p>\n\n";
 
-print FMTOUT &aid_common_html_ftr(2);
+print FMTOUT &aid_common_html_ftr(-2,$time);
 close(FMTOUT);
 utime $time, $time, $outFile;
 
