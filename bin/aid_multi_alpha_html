@@ -2,7 +2,7 @@
 
 #
 # does the html verbose pages
-# $Id: aid_multi_alpha_html,v 3.18 1998/09/23 21:45:52 mradwin Exp mradwin $
+# $Id: aid_multi_alpha_html,v 3.19 1998/10/17 20:57:33 mradwin Exp mradwin $
 #
 
 require 'aid_util.pl';
@@ -42,7 +42,7 @@ while(<DATA>) {
 	open(FMTOUT,">$outFile") || die "Can't open $outFile: $!\n";
 	
 	print FMTOUT $alpha_header,
-	    "<p>\n", &jump_bar($initial), "<hr noshade size=1>\n\n";
+	    "<p>\n", &alpha_jump_bar($initial), "<hr noshade size=1>\n\n";
 
 	print FMTOUT "<pre>";
     }
@@ -89,7 +89,7 @@ sub html_pre_entry {
 }
 
 # do the funky quick-jump bar
-sub jump_bar {
+sub alpha_jump_bar {
     local($regular) = @_;
     local($initial,$retval);
 
@@ -98,9 +98,12 @@ sub jump_bar {
     $regular = "\L${regular}\E";
 
     while ($initial ne 'aa') {
+	if ($initial ne 'x')
+	{
 	$retval .= (($regular eq $initial) ?
 		    "\U${initial}\E\n" :
 		    "<a href=\"${initial}-index.html\">\U${initial}\E</a>\n");
+    	}
 	$initial++;
     }
 
