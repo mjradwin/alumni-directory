@@ -1,6 +1,6 @@
 #!/usr/local/bin/perl5 -w
 
-# $Id: aid_addname,v 5.27 2000/06/21 22:15:33 mradwin Exp mradwin $
+# $Id: aid_addname,v 5.28 2001/01/08 17:10:59 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -89,16 +89,23 @@ sub readspool
 
 	foreach $key8 (@key8s)
 	{
-	    if (defined $DBS{$key8} && $DBS{$key8} =~ /^(-?\d+)\0/)
+	    if (defined $DBS{$key8} && $DBS{$key8} =~ /^(-?\d+)\0(.+)$/)
 	    {
 		my($id) = $1;
+		my($packed) = $2;
 
 		push(@vals, $DBS{$key8});
 		$DBS{$key8} = "p\0";
 
+		%rec = &aid_db_unpack_rec($id,$packed);
+
 		if ($id != -1 && defined $DBS{$id})
 		{
 		    delete $DBS{$id};
+		}
+		elsif ($id == -1 && defined $DBS{"\L$rec{'e'}\E"})
+		{
+		    delete $DBS{"\L$rec{'e'}\E"};
 		}
 	    }
 	}
