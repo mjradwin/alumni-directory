@@ -2,11 +2,11 @@
 #     FILE: aid_util.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: perl library routines for the Alumni Internet Directory
-#      $Id: aid_util.pl,v 1.98 1998/02/23 21:03:49 mjr Exp mjr $
+#      $Id: aid_util.pl,v 1.99 1998/02/23 21:12:14 mjr Exp mjr $
 #
 
 $aid_util'rcsid =
- '$Id: aid_util.pl,v 1.98 1998/02/23 21:03:49 mjr Exp mjr $';
+ '$Id: aid_util.pl,v 1.99 1998/02/23 21:12:14 mjr Exp mjr $';
 
 # ----------------------------------------------------------------------
 # CONFIGURATION
@@ -115,9 +115,8 @@ $aid_util'caldate = sprintf("%d/%02d/%02d", ($aid_util'yr+1900),
 
 $aid_util'pics_label = #'font-lock
 "<meta http-equiv=\"PICS-Label\" content='(PICS-1.1 \"http://www.rsac.org/ratingsv01.html\" l gen true comment \"RSACi North America Server\" by \"" . 
-$aid_util'config{'admin_email'} . "\" for \"http://" .
-$aid_util'config{'master_srv'} . $aid_util'config{'master_path'} . #'font-lock
-"\" on \"1996.04.04T08:15-0500\" r (n 0 s 0 v 0 l 0))'>";
+$aid_util'config{'admin_email'} . 
+"\" on \"1998.03.10T11:49-0800\" r (n 0 s 0 v 0 l 0))'>";
 
 $aid_util'site_tags = #'font-lock
 "<meta name=\"keywords\" content=\"Mountain View High School, Alumni, MVHS, Awalt High School, Mountain View, Los Altos, California, reunion, Radwin\">\n<meta name=\"description\" content=\"Alumni email and web page directory for Mountain View High School (MVHS) and Awalt High School in Mountain View, CA. Updated $aid_util'caldate.\">";
