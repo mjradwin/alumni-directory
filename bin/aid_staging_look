@@ -1,6 +1,6 @@
 #!/usr/local/bin/perl5 -w
 
-# $Id: aid_dbm_read,v 5.13 2000/02/29 21:55:00 mradwin Exp $
+# $Id: aid_staging_look,v 1.1 2000/06/12 16:56:21 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -52,11 +52,14 @@ while (($key,$val) = each %DB)
 
 	($affil,undef) = &aid_affiliate(*rec,0);
 
-	print "key=$key\tid=$id\n",
+	print &aid_inorder_fullname(*rec), $affil, "\n",
 	&ctime($rec{'u'}),
-	&aid_inorder_fullname(*rec), $affil, "\n\n";
+	"key=$key\tid=$id\n\n";
     }
 }
+
+untie(%DB);
+exit 0;
 
 # avoid warnings
 if ($^W && 0)
