@@ -2,11 +2,11 @@
 #     FILE: aid_util.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: perl library routines for the Alumni Internet Directory
-#      $Id: aid_util.pl,v 3.65 1998/10/26 21:21:51 mradwin Exp mradwin $
+#      $Id: aid_util.pl,v 3.66 1998/10/27 18:53:24 mradwin Exp mradwin $
 #
 
 $aid_util'rcsid =
- '$Id: aid_util.pl,v 3.65 1998/10/26 21:21:51 mradwin Exp mradwin $';
+ '$Id: aid_util.pl,v 3.66 1998/10/27 18:53:24 mradwin Exp mradwin $';
 
 # ----------------------------------------------------------------------
 # CONFIGURATION
@@ -622,7 +622,8 @@ are required.  All other fields are optional.</p>\n\n";
 </tr>
 <tr>
   <td valign=top><font color=\"#$cell_fg\"><label for=\"last\">Last/Maiden
-  Name</label></font></td>
+  Name</label></font><br>
+  <font color=\"#$cell_fg\" size=\"-1\">(your last name in high school)</font></td>
   <td>$star</td>
   <td valign=top><input type=text name=\"last\" size=35
   value=\"$rec{'last'}\" id=\"last\"></td>
@@ -630,7 +631,7 @@ are required.  All other fields are optional.</p>\n\n";
 <tr>
   <td colspan=2 valign=top><font color=\"#$cell_fg\"><label
   for=\"married\">Married Name</label></font><br>
-  <font color=\"#$cell_fg\" size=\"-1\">(if different from Maiden Name)</font></td>
+  <font color=\"#$cell_fg\" size=\"-1\">(if different from maiden name)</font></td>
   <td valign=top><input type=text name=\"married\" size=35
   value=\"$rec{'married'}\" id=\"married\"></td>
 </tr>
@@ -662,7 +663,7 @@ are required.  All other fields are optional.</p>\n\n";
 <tr>
   <td valign=top><font color=\"#$cell_fg\"><label
   for=\"email\">E-mail address</label></font><br>
-  <font color=\"#$cell_fg\" size=\"-1\">(such as albert\@aol.com)</font></td>
+  <font color=\"#$cell_fg\" size=\"-1\">(such as chester\@aol.com)</font></td>
   <td>$star</td>
   <td valign=top><input type=text name=\"email\" size=35
   value=\"$rec{'email'}\" id=\"email\"></td>
