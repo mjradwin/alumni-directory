@@ -2,7 +2,7 @@
 
 #
 # does the html multi_class pages
-# $Id: aid_multi_class_html,v 5.31 2003/05/15 00:30:45 mradwin Exp mradwin $
+# $Id: aid_multi_class_html,v 5.32 2003/05/20 01:09:20 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -37,13 +37,15 @@ $0 =~ s,.*/,,;  # basename
 $usage = "usage: $0 [-hq] [-i <keys>] infile.db [reunions.db]
     -h        Display usage information.
     -q        Quiet.
+    -d        Generate 'detail' pages for each individual.
     -i <keys> Incremental update only for list of keys.
 ";
 
-getopts('hi:q') || die "$usage\n";
+getopts('hi:qd') || die "$usage\n";
 $opt_h && die "$usage\n";
 $ARGV[0] || die "$usage\n";
 $opt_h = $opt_h;		# avoid warning
+$opt_d = $opt_d;		# avoid warning
 
 @incremental = ($opt_i ? split(/[,\s]+/, $opt_i) : ());
 
@@ -227,7 +229,7 @@ foreach $year (@years)
 	print FMTOUT "</ul>\n<hr noshade=\"noshade\" size=\"1\">\n\n";
     }
 
-
+    if ($opt_d) {
     foreach $id (@ids)
     {
 	%rec = &aid_db_unpack_rec($id,$DB{$id});
@@ -246,6 +248,7 @@ foreach $year (@years)
 	print FMTOUT2 &aid_common_html_ftr(-2,$rec{'u'});
 	close(FMTOUT2);
 	utime $rec{'u'}, $rec{'u'}, $out2;
+    }
     }
 
     print FMTOUT &aid_common_html_ftr(2,$time);
