@@ -2,11 +2,11 @@
 #     FILE: aid_util.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: perl library routines for the Alumni Internet Directory
-#      $Id: aid_util.pl,v 3.25 1998/05/27 21:51:32 mradwin Exp mradwin $
+#      $Id: aid_util.pl,v 3.26 1998/05/28 21:53:48 mradwin Exp mradwin $
 #
 
 $aid_util'rcsid =
- '$Id: aid_util.pl,v 3.25 1998/05/27 21:51:32 mradwin Exp mradwin $';
+ '$Id: aid_util.pl,v 3.26 1998/05/28 21:53:48 mradwin Exp mradwin $';
 
 # ----------------------------------------------------------------------
 # CONFIGURATION
@@ -88,11 +88,11 @@ $aid_util'noindex = "<meta name=\"robots\"  content=\"noindex\">"; #'#
 %aid_util'aid_aliases = ();   #'# global alias hash repository 
 
 $aid_util'disclaimer = #'#
-"<blockquote><a name=\"disclaimer\">Acceptable use</a>: this directory
+"<a name=\"disclaimer\">Acceptable use</a>: this directory
 is provided solely for the information of alumni of Mountain View High
 School and Awalt High School.  Any solicitation of business,
 information, contributions or other response from individuals listed in
-this publication is forbidden.</blockquote>";
+this publication is forbidden.";
 
 $aid_util'header_bg  = 'ffff99'; #'#
 $aid_util'header_fg  = '000000'; #'#
@@ -953,11 +953,21 @@ sub common_html_ftr {
     $copyright =~ s/^[^,]+,//;
 
     $ftr  = "\n<!-- begin common_html_ftr -->\n";
-    $ftr .= "<hr noshade size=1>\n";
+    $ftr .=
+"<table cellspacing=0 cellpadding=6 border=1 width=\"100%\">
+  <tr>
+    <td bgcolor=\"#$cell_bg\" valign=middle>
+    <strong>$result</strong>
+";
+#    $ftr .= "<hr noshade size=1>\n";
     $ftr .= &main'common_link_table($page); #'#
-    
-    $ftr .= "\n" . $disclaimer . "\n\n<hr noshade size=1>\n" .
-	"\n<font size=\"-1\"><a href=\"" . $copyright . "\">" .
+    $ftr .= "\n" . $disclaimer . "\n\n";
+    $ftr .= "    </td>
+  </tr>
+</table>
+";
+
+    $ftr .= "\n<br><font size=\"-1\"><a href=\"" . $copyright . "\">" .
 	"Copyright\n&copy; 1998 " . $config{'admin_name'} . "</a></font>\n\n" .
 	"<!-- end common_html_ftr -->\n\n</body>\n</html>\n";
 
