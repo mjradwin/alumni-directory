@@ -2,7 +2,7 @@
 #     FILE: mv_util.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: perl library routines for the MVHS Alumni Internet Directory
-#      $Id: mv_util.pl,v 1.68 1997/12/22 19:29:37 mjr Exp mjr $
+#      $Id: mv_util.pl,v 1.69 1997/12/22 19:40:41 mjr Exp mjr $
 #
 
 CONFIG: {
@@ -95,8 +95,8 @@ sub is_new {
 sub new_gif {
     package mv_util;
 
-    return "<a href=\"" . $config{'master_path'} . "recent.html\"><img\n" .
-	"src=\"" . $config{'master_path'} . "new.gif\" " .
+    return "<a href=\"" . $config{'master_path'} . "recent.html\"><img " .
+	"src=\"" . $config{'master_path'} . "new.gif\" border=0 " .
 	    "width=28 height=11 alt=\"[new]\"></a>";
 }
 
