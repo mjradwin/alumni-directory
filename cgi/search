@@ -57,6 +57,7 @@ foreach (@alpha_ids)
 {
     %rec = &aid_db_unpack_rec($_,$DB{$_});
     $fullname = &inorder_fullname(*rec);
+    $key = "\L$rec{'last'},$rec{'first'},$rec{'married'}\E,$rec{'id'}";
 
     if (defined $in{'y'} && $in{'y'} ne '')
     {
@@ -64,12 +65,12 @@ foreach (@alpha_ids)
 	next unless ($in{'y'} eq $rec{'year'}) || $in{'y'} eq 'other';
     }
 
-    $results{$_} = 1;
+    $results{$key} = 1;
     foreach $term (@search_terms)
     {
 	if ($fullname !~ /$term/i)
 	{
-	    delete $results{$_};
+	    delete $results{$key};
 	    last;
 	}
     }
@@ -78,7 +79,7 @@ undef @alpha_ids;
 
 print "Content-Type: text/html\015\012\015\012";
 
-@results = keys %results;
+@results = sort keys %results;
 undef %results;
 if ($#results == -1)
 {
@@ -111,7 +112,8 @@ else
     print "\n<ul>\n";
     foreach (@results)
     {
-	%rec = &aid_db_unpack_rec($_,$DB{$_});
+	($last,$first,$married,$id) = split(/,/);
+	%rec = &aid_db_unpack_rec($id,$DB{$id});
 	$fullname = &inorder_fullname(*rec);
 	($affil,$len) = &affiliate(*rec,0);
 	
