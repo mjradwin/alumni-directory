@@ -2,7 +2,7 @@
 #     FILE: mv_util.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: perl library routines for the MVHS Alumni Internet Directory
-#      $Id: mv_util.pl,v 1.42 1997/10/08 00:22:08 mjr Exp mjr $
+#      $Id: mv_util.pl,v 1.43 1997/10/14 18:58:27 mjr Exp mjr $
 #
 
 CONFIG: {
@@ -583,9 +583,9 @@ sub common_html_hdr {
 
     $h1 = "<body bgcolor=\"#ffffff\" link=\"#0000cc\" text=\"#000000\" vlink=\"#990099\">
 <hr noshade size=1>
-<table border=0 cellpadding=8 cellspacing=0 width=\"100%\">
+<table border=0 cellpadding=5 cellspacing=0 width=\"100%\">
 <tr>
-  <td bgcolor=\"#ffffcc\" align=left rowspan=2><font size=\"-1\"
+  <td bgcolor=\"#ffffcc\" valign=top align=left rowspan=2><font size=\"-1\"
   face=\"MS Sans Serif, Arial, Helvetica\">";
 
     $h2 = "";
@@ -598,14 +598,26 @@ sub common_html_hdr {
         }
 	$h2 .= "<br>" unless $idx == $#page_idx;
     }
-    $h2 .= "</font>\n  </td>\n";
+    $h2 .= "</font></td>\n";
 
-    $h3 = "  <td align=right valign=top bgcolor=\"#ffffcc\"><a href=\""
+    $h2 .= "  <td bgcolor=\"#ffffcc\" valign=top align=left rowspan=2><font size=\"-1\"
+  face=\"MS Sans Serif, Arial, Helvetica\">";
+    foreach $idx (0 .. $#second_idx) {
+	($name, $url) = split(/,/, $second_idx[$idx]);
+        if ($idx == ($page - 10)) {
+	    $h2 .= "\n  <strong>$name</strong>";
+        } else {
+            $h2 .= "<a\n  href=\"$url\">$name</a>";
+        }
+	$h2 .= "<br>" unless $idx == $#second_idx;
+    }
+    $h2 .= "</font></td>\n";
+
+    $h3 = "  <td align=right valign=top bgcolor=\"#ffffcc\">&nbsp;<a href=\""
   . $config{'master_path'} . "\"><img
   src=\"" . $config{'master_path'} . "title.gif\"
   alt=\"Mountain View High School Alumni Internet Directory\"
-  align=bottom width=398 height=48 border=0></a>
-  </td>
+  align=bottom width=398 height=48 border=0></a></td>
 </tr>
 <tr>
   <td align=right valign=bottom bgcolor=\"#ffffcc\"><font size=\"-1\"
