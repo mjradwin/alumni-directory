@@ -2,11 +2,11 @@
 #     FILE: aid_util.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: perl library routines for the Alumni Internet Directory
-#      $Id: aid_util.pl,v 3.37 1998/08/18 23:14:56 mradwin Exp mradwin $
+#      $Id: aid_util.pl,v 3.38 1998/08/20 21:57:45 mradwin Exp mradwin $
 #
 
 $aid_util'rcsid =
- '$Id: aid_util.pl,v 3.37 1998/08/18 23:14:56 mradwin Exp mradwin $';
+ '$Id: aid_util.pl,v 3.38 1998/08/20 21:57:45 mradwin Exp mradwin $';
 
 # ----------------------------------------------------------------------
 # CONFIGURATION
@@ -211,9 +211,11 @@ sub aid_image_tag {
 sub is_new {
     package aid_util;
 
+    local($time,$months) = @_;
     local($[) = 0;
 
-    (((time - $_[0]) < 2678400) ? 1 : 0);
+    $months = 1 unless $months;
+    (((time - $time) < ($months * 2678400)) ? 1 : 0);
 }
 
 
@@ -703,15 +705,7 @@ To: $toline\
 sub message_footer {
     package aid_util;
 
-    "\n--\n" . 
-	$config{'admin_name'} . "\n" .
-	    $config{'admin_school'};
-
-
-#	$config{'admin_school'} . "\n\n"
-#	"Email     : " . $config{'admin_email'} . "\n" .
-#	"WWW       : " . $config{'admin_url'} . "\n" .
-#	"Phone     : " . $config{'admin_phone'};
+    "\n--\n" .	$config{'admin_name'} . "\n" . $config{'admin_school'};
 }
 
 sub aid_write_verbose_entry {
