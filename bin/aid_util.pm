@@ -2,7 +2,7 @@
 #     FILE: aid_util.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: perl library routines for the Alumni Internet Directory
-#      $Id: aid_util.pl,v 4.92 1999/04/13 21:15:24 mradwin Exp mradwin $
+#      $Id: aid_util.pl,v 4.93 1999/04/14 02:06:42 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -738,13 +738,13 @@ sub aid_common_intro_para
     package aid_util;
 
     local($[) = 0;
-    local($info) = "The " . $image_tag{'info'} .
-	"\nicon lets you get more detailed information about an alumnus.";
+    local($info) = "The <tt>" . $image_tag{'info'} .
+	"</tt>\nicon lets you get more detailed information about an alumnus.";
 
-    "<p>Any alumni marked with\n" . $image_tag{'new'} . 
-    "\nhave been added to the Directory last month.\n" .
-    "Alumni marked with\n" . $image_tag{'updated'} . 
-	"\nhave updated their information within the past month.\n" .
+    "<p>Any alumni marked with\n<small>" . $image_tag{'new'} . 
+    "</small>\nhave been added to the Directory last month.\n" .
+    "Alumni marked with\n<small>" . $image_tag{'updated'} . 
+	"</small>\nhave updated their information within the past month.\n" .
 	($_[0] ? $info : '') .
     "</p>\n" .
     "<p>Were you previously listed but now your name isn't here?  If\n" .

@@ -2,7 +2,7 @@
 #     FILE: aid_config.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: configuration variables for Alumni Internet Directory
-#      $Id: aid_config.pl,v 1.29 1999/04/14 02:11:45 mradwin Exp mradwin $
+#      $Id: aid_config.pl,v 1.30 1999/04/15 21:11:50 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -22,7 +22,7 @@
 #
 
 $aid_util'rcsid =
- '$Id: aid_config.pl,v 1.29 1999/04/14 02:11:45 mradwin Exp mradwin $';
+ '$Id: aid_config.pl,v 1.30 1999/04/15 21:11:50 mradwin Exp mradwin $';
 
 # radwin.org (FreeBSD 2.2.2) configuration
 %aid_util'config =   #'#
@@ -267,26 +267,22 @@ $aid_util'blank_entry{'s'}  = $aid_util'school_default;
 %aid_util'image_tag = #'#
     (
     'new',
-    "<small><strong class=\"newupd\">*NEW*</strong></small>",
+    "<strong class=\"newupd\">*NEW*</strong>",
 
     'new_anchored',
-    "<small><strong class=\"newupd\">*NEW*</strong></small>",
+    "<strong class=\"newupd\">*NEW*</strong>",
 
     'updated',
-    "<small><strong class=\"newupd\">*UPDATED*</strong></small>",
+    "<strong class=\"newupd\">*UPDATED*</strong>",
 
      'vcard',
      'View vCard',
 
      'info',
-     "<img src=\"" . $aid_util'config{'master_path'} . #'#
-     "info.gif\" border=\"0\" hspace=\"4\" width=\"12\" height=\"12\" " .
-     "alt=\"[i]\">",
+     "<strong class=\"newupd\">[i]</strong>",
 
      'blank',
-     "<img src=\"" . $aid_util'config{'master_path'} . #'#
-     "blank.gif\" border=\"0\" hspace=\"4\" width=\"12\" height=\"12\" " .
-     "alt=\"\">",
+     "<strong>&nbsp;&nbsp;&nbsp;</strong>",
      );
 
 sub aid_caldate
