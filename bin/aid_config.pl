@@ -2,7 +2,7 @@
 #     FILE: aid_config.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: configuration for Alumni Internet Directory
-#      $Id: aid_util.pl,v 4.5 1999/02/01 23:42:12 mradwin Exp mradwin $
+#      $Id: aid_config.pl,v 1.1 1999/02/01 23:54:13 mradwin Exp mradwin $
 #
 
 # radwin.org (FreeBSD 2.2.2) configuration
@@ -30,6 +30,19 @@
      'mailsubj',     'MVHSAID',
      'spoolfile',    '/var/mail/mradwin',
      'rcsid',        "$aid_util'rcsid",
+     'html_ad',
+"<p>You might also be interested in joining the 
+<a href=\"http://clubs.yahoo.com/clubs/mountainviewhighschool\">MVHS
+Club on Yahoo!</a> The MVHS Club adds a Chat Room and Message Boards to
+the services currently provided by this Directory.</p>
+
+<p>Sign up for the 
+<a href=\"http://www.planetall.com/main.asp?cid=1520098&gid=6602&s=40\">MVHS
+Group on PlanetAll</a> if you want to share more detailed address book
+information (birthdays, phone numbers, etc.) with other alumni.  People
+will only be allowed to access your information with your permission,
+and you can share as much or as little as you want.</p>
+",
      );
 
 $aid_util'site_tags = #'#
