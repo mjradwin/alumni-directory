@@ -4,7 +4,7 @@
 #     FILE: mvhsaid.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: MVHS Alumni Internet Directory CGI interface
-#      $Id: mvhsaid,v 2.6 1998/05/07 16:54:35 mjr Exp mradwin $
+#      $Id: mvhsaid,v 2.7 1998/05/15 20:06:57 mradwin Exp mradwin $
 #
 
 require 'aid_util.pl';
@@ -24,7 +24,7 @@ if (defined($ENV{'PATH_INFO'}) && $ENV{'PATH_INFO'} =~ m,^/vcard/,) {
     $in{'vcard'} =~ s,^/vcard/(\d+).*$,$1,;
 }
 
-$rcsid = '$Id: mvhsaid,v 2.6 1998/05/07 16:54:35 mjr Exp mradwin $'; #'fnt
+$rcsid = '$Id: mvhsaid,v 2.7 1998/05/15 20:06:57 mradwin Exp mradwin $'; #'fnt
 
 # special flags: version, update, vcard, about
 #
@@ -263,7 +263,7 @@ EOM
     print "added to the Directory yet.\n";
     print "Processing your submission usually takes two days.</p>\n";
 
-    print "<p>Email will be sent to <tt>$in{'email'}</tt> confirming\n";
+    print "<p>Email will be sent to <code>$in{'email'}</code> confirming\n";
     print "receipt of this submission when it it processed.\n";
     print "See the <a href=\"" . &aid_config('master_path') .
 	"tech.html#submit\">";

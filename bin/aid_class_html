@@ -2,7 +2,7 @@
 
 #
 # does the html version of the grad-date address list
-# $Id: aid_class_html,v 2.2 1998/04/02 20:22:44 mjr Exp mradwin $
+# $Id: aid_class_html,v 2.3 1998/05/15 20:06:57 mradwin Exp mradwin $
 #
 
 require 'aid_util.pl';
@@ -32,7 +32,7 @@ if (!$opt_t) {
     $title .= "Alumni Listed by Graduating Class";
     print FMTOUT &common_html_hdr(($opt_a ? 3 : -1),$title,1);
     print FMTOUT &common_intro_para(1);
-    print FMTOUT "<p><a name=\"top\">Index</a>: <tt>";
+    print FMTOUT "<p><a name=\"top\">Index</a>: <code>";
 
     $prevYear = '1900';
     while(<DATAPRE>) {
@@ -52,7 +52,7 @@ if (!$opt_t) {
 	}
     }
     close(DATAPRE);
-    print FMTOUT "</tt></p>\n\n<pre>";
+    print FMTOUT "</code></p>\n\n<pre>";
 }
 
 print FMTOUT "Name$blank_gif                                     Email\n";
