@@ -4,7 +4,7 @@
 #     FILE: msg.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: Alumni Internet Directory update redirector
-#      $Id: msg,v 6.7 2003/08/27 23:25:35 mradwin Exp mradwin $
+#      $Id: msg,v 6.8 2003/09/12 17:39:30 mradwin Exp mradwin $
 #
 #   Copyright (c) 2003  Michael John Radwin
 #
@@ -175,6 +175,8 @@ _EOHTML_
 	or die "$limit: $!\n";
     my $key = POSIX::strftime("%Y%m%d", gmtime(time())) . $ENV{'REMOTE_ADDR'};
     if (defined $LIMIT{$key} && $LIMIT{$key} >= 4) {
+	untie(%LIMIT);
+
 	print "Content-Type: text/html\015\012\015\012";
 	print aid_util::common_html_hdr(9, 'Too many messages today', 1);
 
