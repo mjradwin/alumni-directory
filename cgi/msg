@@ -4,7 +4,7 @@
 #     FILE: msg.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: Alumni Internet Directory update redirector
-#      $Id: msg,v 6.4 2003/08/25 16:13:56 mradwin Exp mradwin $
+#      $Id: msg,v 6.5 2003/08/27 20:23:31 mradwin Exp mradwin $
 #
 #   Copyright (c) 2003  Michael John Radwin
 #
@@ -258,7 +258,11 @@ sub form
 
     $from = aid_util::html_entify_str($from);
     $subject = aid_util::html_entify_str($subject);
-    $message = aid_util::html_entify_str($message);
+
+    # don't use aid_util::html_entify_str() on msg so we can preserve \n
+    $message =~ s/&/&amp;/g;
+    $message =~ s/</&lt;/g;
+    $message =~ s/>/&gt;/g;
 
     print <<_EOHTML_;
 <form method="post" action="$action/post">
