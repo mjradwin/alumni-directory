@@ -4,7 +4,7 @@
 #     FILE: msg.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: Alumni Internet Directory update redirector
-#      $Id: go,v 5.10 2001/09/16 16:58:27 mradwin Exp $
+#      $Id: msg,v 1.1 2003/02/20 01:09:26 mradwin Exp mradwin $
 #
 #   Copyright (c) 2003  Michael John Radwin
 #
@@ -46,8 +46,9 @@ if (defined($in{'to'}) && $in{'to'} =~ /^\d+$/)
     bail() unless $val;
 
     %rec = &aid_db_unpack_rec($id,$val);
-    my $e = aid_protect_email($rec{'e'});
     my $hash = md5_hex($rec{'e'});
+    my $name = email_name();
+    my $e = "$name &lt;" . aid_protect_email($rec{'e'}) . "&gt;";
 
     print "Content-Type: text/html\015\012\015\012";
     print &aid_common_html_hdr(9, 'Send Message', 1);
@@ -97,21 +98,15 @@ elsif (defined($in{'id'}) && $in{'id'} =~ /^\d+$/ && $in{'hash'} &&
 <br>It must be in the form of <code>user\@isp.net</code>.
 _EOHTML_
 
-	my $e = aid_protect_email($rec{'e'});
+	my $name = email_name();
+	my $e = "$name &lt;" . aid_protect_email($rec{'e'}) . "&gt;";
 	form($e,$id,$hash,$from,$subject,$message);
 
 	print &aid_common_html_ftr(9);
 	exit(0);
     }
 
-    my $name = $rec{'gn'};
-    $name .= " $rec{'mi'}."
-	if defined $rec{'mi'} && $rec{'mi'} ne '';
-    $name .= " $rec{'sn'}";
-    $name .= " $rec{'mn'}"
-	if defined $rec{'mn'} && $rec{'mn'} ne '';
-    $name =~ s/\"/\'/g;
-
+    my $name = email_name();
     my $school = &aid_config('short_school');
     my $status = &aid_sendmail_v2
 	(
@@ -136,11 +131,25 @@ else
     bail();
 }
 
+sub email_name
+{
+    my $name = $rec{'gn'};
+    $name .= " $rec{'mi'}."
+	if defined $rec{'mi'} && $rec{'mi'} ne '';
+    $name .= " $rec{'sn'}";
+    $name .= " $rec{'mn'}"
+	if defined $rec{'mn'} && $rec{'mn'} ne '';
+    $name =~ s/\"/\'/g;
+
+    $name;
+}
+
 sub check_blank
 {
     my($name,$val,$id,$hash) = @_;
 
-    my $e = aid_protect_email($rec{'e'});
+    my $name = email_name();
+    my $e = "$name &lt;" . aid_protect_email($rec{'e'}) . "&gt;";
     my $from = $in{'from'};
     my $subject = $in{'subject'};
     my $message = $in{'message'};
