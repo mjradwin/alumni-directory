@@ -4,7 +4,7 @@
 #     FILE: mvhsaid.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: MVHS Alumni Internet Directory CGI interface
-#      $Id: mvhsaid,v 1.11 1997/03/27 01:20:46 mjr Exp mjr $
+#      $Id: mvhsaid,v 1.12 1997/03/29 17:42:23 mjr Exp mjr $
 #
 
 require 'mv_util.pl';
@@ -33,7 +33,7 @@ close(SUBMIT_FTR);
 # debugging: what version is installed?
 if (defined($in{'version'})) {
     print @submit_hdr, "\n";
-    print '<pre>Version: $Id: mvhsaid,v 1.11 1997/03/27 01:20:46 mjr Exp mjr $</pre>', "\n";
+    print '<pre>Version: $Id: mvhsaid,v 1.12 1997/03/29 17:42:23 mjr Exp mjr $</pre>', "\n";
     print @submit_ftr, "\n";
     
     exit(0);
@@ -77,6 +77,10 @@ foreach (@required_headers) {
 
 
 # okay, we've got the right form.  clean up the input.
+foreach $key (keys(%in)) {
+    $in{$key} =~ s/^\s*//;  # get rid of leading and trailing whitespace
+    $in{$key} =~ s/\s*$//;
+}
 
 # remove apostropies and leading year from gradyear field
 # e.g. '93 -> 93, 1993 -> 93
