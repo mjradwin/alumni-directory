@@ -1,6 +1,6 @@
 #!/usr/bin/perl -w
 
-# $Id: aid_multi_class_txt,v 1.1 1999/03/27 02:52:09 mradwin Exp mradwin $
+# $Id: aid_multi_class_txt,v 1.2 1999/04/05 16:26:17 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -39,7 +39,7 @@ $dbmfile = shift;
 $dbmfile =~ s/\.db$//;
 die "$0: ${dbmfile}.db: $!\n" unless -r "${dbmfile}.db";
 
-dbmopen(%DB,$dbmfile,0644) || die "$0: ${dbmfile}.db: $!\n";
+dbmopen(%DB,$dbmfile,0444) || die "$0: ${dbmfile}.db: $!\n";
 
 die "no _years key!\n" unless defined $DB{'_years'};
 @years = unpack("n*",$DB{'_years'});
