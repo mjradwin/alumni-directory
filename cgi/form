@@ -4,7 +4,7 @@
 #     FILE: mvhsaid.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: MVHS Alumni Internet Directory CGI interface
-#      $Id: mvhsaid,v 3.46 1999/01/07 23:28:53 mradwin Exp mradwin $
+#      $Id: mvhsaid,v 3.47 1999/01/14 21:35:55 mradwin Exp mradwin $
 #
 
 require 'aid_util.pl';
@@ -13,7 +13,7 @@ require 'cgi-lib.pl';
 # configuration
 $mailprog = &aid_config('mailprog');
 $dbfile = &aid_config('wwwdir') . "master.adr";
-$rcsid = '$Id: mvhsaid,v 3.46 1999/01/07 23:28:53 mradwin Exp mradwin $'; #'fnt
+$rcsid = '$Id: mvhsaid,v 3.47 1999/01/14 21:35:55 mradwin Exp mradwin $'; #'fnt
 
 @required_headers = ('id', 'first', 'last', 'school', 'year', 'email');
 
@@ -392,7 +392,7 @@ sub send_about {
     print &common_html_hdr(-1,$fullname,1);
     print "<p>Here is more detailed information about $html_name.\n";
     print "To update this entry, please review the information and\n";
-    print "click the button below.\n<p>\n\n";
+    print "click the button below.</p>\n\n";
     print &about_text(*rec,0,1,1), "\n";
     print &modify_button($rec{'id'}, $html_name);
     print &common_html_ftr(-1);
@@ -410,11 +410,12 @@ sub modify_button {
 <input type=submit value=\"Update $name\">
 </form>
 
-To avoid malicious modification by other people passing through, we
-mail the original user about the change (plus the new user if the
-email changes). The honor system has worked for us so far; please
-don't abuse it and force us to install a password door.<p>
+<p>To avoid malicious modification by other people passing through, we
+mail the original user about the change (plus the new user if the email
+changes). The honor system has worked for us so far; please don't abuse
+it and force us to install a password door.</p>
 ";
+
 }
 
 sub send_vcard {
