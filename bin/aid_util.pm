@@ -2,11 +2,11 @@
 #     FILE: aid_util.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: perl library routines for the Alumni Internet Directory
-#      $Id: aid_util.pl,v 1.105 1998/03/25 23:31:55 mjr Exp mjr $
+#      $Id: aid_util.pl,v 1.106 1998/03/25 23:37:07 mjr Exp mjr $
 #
 
 $aid_util'rcsid =
- '$Id: aid_util.pl,v 1.105 1998/03/25 23:31:55 mjr Exp mjr $';
+ '$Id: aid_util.pl,v 1.106 1998/03/25 23:37:07 mjr Exp mjr $';
 
 # ----------------------------------------------------------------------
 # CONFIGURATION
@@ -679,13 +679,15 @@ sub aid_write_verbose_entry {
     require 'ctime.pl';
     package aid_util;
 
-    local(*FMTOUT,*oldrec,$display_year,$suppress_new) = @_;
+    local(*FMTOUT,*rec_arg,$display_year,$suppress_new) = @_;
     local($[) = 0;
     local($_);
-    local($fullname,$message);
+    local($fullname);
     local(*rec);
 
-    %rec = &main'rec_html_entify(*oldrec);
+    $rec_arg{'message'} = &main'aid_get_usertext($rec_arg{'id'});
+    %rec = &main'rec_html_entify(*rec_arg);
+
     $fullname = &main'inorder_fullname(*rec);
 
     print FMTOUT "<dl compact>\n";
@@ -739,10 +741,9 @@ sub aid_write_verbose_entry {
 	print FMTOUT "<strong>$date</strong></dt>\n";
     }
 
-    $message = &main'aid_get_usertext($rec{'id'});
-    if ($message ne '') {
+    if ($rec{'message'} ne '') {
 	print FMTOUT "<dt>What's New?</dt>\n";
-	print FMTOUT "<dd>$message</dd>\n";
+	print FMTOUT "<dd>$rec{'message'}</dd>\n";
     }
     print FMTOUT "</dl>\n\n";
 }
