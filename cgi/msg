@@ -4,7 +4,7 @@
 #     FILE: msg.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: Alumni Internet Directory update redirector
-#      $Id: msg,v 1.4 2003/02/20 19:11:36 mradwin Exp mradwin $
+#      $Id: msg,v 1.5 2003/02/20 19:17:26 mradwin Exp mradwin $
 #
 #   Copyright (c) 2003  Michael John Radwin
 #
@@ -75,6 +75,9 @@ elsif (defined($in{'id'}) && $in{'id'} =~ /^\d+$/ && $in{'hash'} &&
 
     my $subject = $in{'subject'};
     check_blank("subject",$subject,$id,$hash);
+
+    $subject =~ s/[\015\012]/ /g;
+    $subject = substr($subject, 0, 80);
 
     my $message = $in{'message'};
     check_blank("message body",$message,$id,$hash);
