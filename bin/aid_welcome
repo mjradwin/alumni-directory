@@ -2,7 +2,7 @@
 
 #
 # mails a welcome or update note to everyone in targets.adr
-# $Id: aid_welcome,v 3.18 1998/12/30 19:53:49 mradwin Exp mradwin $
+# $Id: aid_welcome,v 3.19 1998/12/30 20:01:19 mradwin Exp mradwin $
 #
 
 require 'aid_util.pl';
@@ -28,13 +28,11 @@ Mutually exclusive optional message types (instead of 'welcome' email):
      'subject',  'Confirming your MVHS Alumni Internet Directory entry',
      'log',      'confirm',
      'intro', 
-"
-You were sent this address verification message because it
+"\nYou were sent this address verification message because it
 has been at least one year since we last confirmed your
 Directory entry.  Please make sure your entry below is still
 current.  If everything you see below is correct, NO ACTION
-IS REQUIRED ON YOUR PART.
-",
+IS REQUIRED ON YOUR PART.\n",
      'textfile', '',
      'closing',  '',
      'sleep',    '0',
@@ -44,7 +42,9 @@ IS REQUIRED ON YOUR PART.
     (
      'subject',  'Welcome to the MVHS Alumni Internet Directory',
      'log',      'welcome',
-     'intro',    '',
+     'intro',    
+"\nWelcome!  This email confirms that you are now listed in the 
+MVHS Alumni Internet Directory.\n",
      'textfile', '',
      'closing',
 "
@@ -72,7 +72,9 @@ you can share as much or as little as you want:
     (
      'subject',  'Your MVHS Alumni Internet Directory entry is updated',
      'log',      'update',
-     'intro',    '',
+     'intro',
+"\nThis email confirms that your contact information has been
+updated and the changes are now visible on the web site.\n",
      'textfile', '',
      'closing',
 "
@@ -86,15 +88,15 @@ all set.
     (
      'subject',  'MVHS Alumni Internet Directory',
      'log',      'massmail',
-     'intro',    '',
+     'intro',
+"\nPer your request, your quarterly digest of the Directory
+appears at the end of this message.  To change your email
+digest preferences, update your entry online at the below
+update URL.\n",
      'textfile', '',
      'closing',
 "
 ============================================================
-
-Per your request, your quarterly digest of the Directory
-follows below.  To change your quarterly digest preference,
-update your entry online at the above URL.
 
 The following information is provided solely for the
 Mountain View High School and Awalt High School communities.
@@ -179,14 +181,12 @@ sub message_body {
 
     return "Dear $rec{'first'},
 
-Your email address is listed in the Mountain View High
-School/Awalt High School Alumni Internet Directory, located
-on the World Wide Web at:\n\n  " .
+This email was generated automatically by the Mountain View
+High School/Awalt High School Alumni Internet Directory:\n\n  " .
 
 $srv_prefix . &aid_config('master_path') . "
 $params{'intro'}
-The Directory (which produced this form letter) shows the
-following information about you:
+The Directory shows the following information about you:
 
 ------------------------------------------------------------
 ${about}------------------------------------------------------------
