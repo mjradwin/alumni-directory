@@ -2,7 +2,7 @@
 #     FILE: aid_util.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: perl library routines for the Alumni Internet Directory
-#      $Id: aid_util.pl,v 5.103 2002/11/05 00:35:07 mradwin Exp mradwin $
+#      $Id: aid_util.pl,v 5.104 2003/02/02 18:36:57 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -796,7 +796,8 @@ sub aid_common_html_hdr
     $srv_nowww =~ s/^www\.//i;
 
     $hdr .=
-	"<table width=\"100%\" class=\"navbar\">
+	"<form method=\"get\" action=\"$config{'search_cgi'}\">
+<table width=\"100%\" class=\"navbar\">
 <tr><td><small>\n<b><a href=\"/\">$srv_nowww</a></b> <tt>-&gt;</tt>\n";
     $hdr .= "<a href=\"$config{'master_path'}\">" unless $page == 0;
     $hdr .= $config{'short_school'} . ' Alumni';
@@ -817,10 +818,9 @@ sub aid_common_html_hdr
 	$hdr .= " <tt>-&gt;</tt>\n$title\n";
     }
 
-    $hdr .= qq{</small></td><td align="right">
-<form method="get" action="$config{'search_cgi'}"><input
-type="text" name="q" size="20"><input
-    type="submit" value="Search"></form></td></tr></table>
+    $hdr .= qq{</small></td><td align="right"><input
+type="text" name="q" size="20">
+<input type="submit" value="Search"></td></tr></table></form>
 };
 
     if ($page == 0)
