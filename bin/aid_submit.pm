@@ -2,7 +2,7 @@
 #     FILE: aid_submit.pm
 #   AUTHOR: Michael J. Radwin
 #    DESCR: submission form for Alumni Internet Directory
-#      $Id: aid_submit.pm,v 6.5 2003/10/30 17:56:04 mradwin Exp mradwin $
+#      $Id: aid_submit.pm,v 6.6 2004/05/12 22:36:43 mradwin Exp mradwin $
 #
 # Copyright (c) 2003  Michael J. Radwin.
 # All rights reserved.
@@ -215,7 +215,7 @@ Contact Info</strong></big></font>
   <small>(such as chester\@aol.com)</small></td>
   <td valign=\"top\">$star</td>
   <td valign=\"top\"><input type=\"text\" name=\"e\" size=\"35\"
-  value=\"$rec{'e'}\" id=\"e\"></td>
+  value=\"\" id=\"e\"></td>
 </tr>
 <tr>
   <td valign=\"top\" align=\"right\"><label
@@ -276,7 +276,6 @@ E-mail Preferences</strong></big></font>
   <input type=\"hidden\" name=\"lm\" value=\"$rec{'lm'}\">
   <input type=\"hidden\" name=\"a\" value=\"$rec{'a'}\">
   <input type=\"hidden\" name=\"iu\" value=\"$rec{'iu'}\">
-  <input type=\"hidden\" name=\"pe\" value=\"$prev_email\">
   <input type=\"hidden\" name=\"v\" value=\"1\">
   <br><br>
   </td>

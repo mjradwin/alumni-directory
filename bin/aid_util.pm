@@ -2,7 +2,7 @@
 #     FILE: aid_util.pm
 #   AUTHOR: Michael J. Radwin
 #    DESCR: perl library routines for the Alumni Internet Directory
-#      $Id: aid_util.pm,v 6.15 2005/01/17 20:13:52 mradwin Exp mradwin $
+#      $Id: aid_util.pm,v 6.16 2005/01/21 20:47:45 mradwin Exp mradwin $
 #
 # Copyright (c) 2005  Michael J. Radwin.
 # All rights reserved.
@@ -60,7 +60,7 @@ use strict;
 
 package aid_util;
 
-my($VERSION) = '$Revision: 6.15 $$';
+my($VERSION) = '$Revision: 6.16 $$';
 if ($VERSION =~ /(\d+)\.(\d+)/) {
     $VERSION = "$1.$2";
 }
@@ -694,21 +694,6 @@ sub verbose_entry
     $retval .= "\n";
     }
 
-    if (! $suppress_links && $rec{'v'})
-    {
-	$retval .= "<dt>Tools: <small>" .
-	    "<a\nhref=\"" .
-	    vcard_path($rec_arg) . "\">" . 
-	    "vCard</a> | " .
-	    "<a\nhref=\"" . $aid_util::config{'about_cgi'} .
-	    "/$rec{'id'}\">modify</a> | <a\n" .
-	    "href=\"" .  $aid_util::config{'yab_cgi'} . "/$rec{'id'}\">" .
-	    "add to Y! address book</a></small>";
-#	$retval .= "</dt>";
-	$retval .= "\n";
-
-    }
-
     if ($rec{'yr'} =~ /^\d+$/) {
 	if ($display_year) {
 	    $retval .= "<dt>Year: <b><a\n" .
@@ -749,6 +734,14 @@ sub verbose_entry
     $retval .= "<b>$date</b>";
 #    $retval .= "</dt>";
     $retval .= "\n";
+
+    if (! $suppress_links && $rec{'v'})
+    {
+	$retval .= "<dt>Tools: <small>" .
+	    "<a\nhref=\"" . $aid_util::config{'about_cgi'} .
+	    "/$rec{'id'}\">modify your entry</a></small>";
+	$retval .= "\n";
+    }
 
     if ($rec{'n'} ne '') {
 	$retval .= "<dt>What's New?\n";
