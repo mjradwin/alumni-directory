@@ -2,7 +2,7 @@
 #     FILE: aid_util.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: perl library routines for the Alumni Internet Directory
-#      $Id: aid_util.pl,v 4.94 1999/04/30 18:24:50 mradwin Exp mradwin $
+#      $Id: aid_util.pl,v 4.95 1999/05/03 17:36:37 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -1167,6 +1167,7 @@ sub aid_rebuild_secondary_keys
     local(@alpha_ids) = ();
     local(%alpha_members) = ();
     local(%alpha_latest) = ();
+    local($maxval) = -1;
 
     # first pass -- gather all names with alpha data
     print STDERR "$0: building index..." unless $quiet;
@@ -1177,6 +1178,7 @@ sub aid_rebuild_secondary_keys
 	    %rec = &main'aid_db_unpack_rec($key,$val); #'#;
 	    push(@datakeys,
 		 "\L$rec{'sn'}\0$rec{'gn'}\0$rec{'mi'}\0$rec{'mn'}\0$rec{'yr'}\E\0" . $key);
+	    $maxval = $key if $key > $maxval;
 	}
 	elsif ($key =~ /^_/)
 	{
@@ -1316,6 +1318,7 @@ sub aid_rebuild_secondary_keys
     $DB{'_t_www'} = pack("N", $latest_www);
     $DB{'_t_awalt'} = pack("N", $latest_awalt);
     $DB{'_t_goner'} = pack("N", $latest_goner);
+    $DB{'_nextid'}  = $maxval + 1;
 
     while (($key,$val) = each(%alpha_members))
     {
@@ -1334,7 +1337,7 @@ sub aid_rebuild_secondary_keys
     $new_db{'_alpha'} =  $new_db{'_years'} =
 	$new_db{'_class'} = $new_db{'_www_years'} = $new_db{'_awalt_years'} =
 	    $new_db{'_t'} = $new_db{'_t_www'} = $new_db{'_t_awalt'} =
-		$new_db{'_t_goner'} = 1;
+		$new_db{'_t_goner'} = $new_db{'_nextid'} = 1;
 
     while (($key,$val) = each(%DB))
     {
