@@ -1,6 +1,6 @@
 #!/usr/bin/perl -w
 
-# $Id: aid_stats,v 5.5 1999/06/21 20:13:43 mradwin Exp mradwin $
+# $Id: aid_stats,v 5.6 1999/06/25 16:39:51 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -33,7 +33,7 @@ $usage = "usage: $0 [-ht] infile.db outfile
     -t        Text only.
 ";
 
-&Getopts('h') || die "$usage\n";
+&Getopts('ht') || die "$usage\n";
 $opt_h && die "$usage\n";
 $ARGV[0] || die "$usage\n";
 $ARGV[1] || die "$usage\n";
