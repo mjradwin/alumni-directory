@@ -2,11 +2,11 @@
 #     FILE: aid_util.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: perl library routines for the Alumni Internet Directory
-#      $Id: aid_util.pl,v 3.86 1998/12/02 21:19:06 mradwin Exp mradwin $
+#      $Id: aid_util.pl,v 3.87 1998/12/14 23:24:54 mradwin Exp mradwin $
 #
 
 $aid_util'rcsid =
- '$Id: aid_util.pl,v 3.86 1998/12/02 21:19:06 mradwin Exp mradwin $';
+ '$Id: aid_util.pl,v 3.87 1998/12/14 23:24:54 mradwin Exp mradwin $';
 
 # ----------------------------------------------------------------------
 # CONFIGURATION
@@ -531,6 +531,19 @@ sub aid_get_usertext {
     $text;
 }
 
+sub aid_html_escape {
+    package aid_util;
+
+    local($_) = @_;
+
+    s/&/&amp;/g;
+    s/</&lt;/g;
+    s/>/&gt;/g;
+    s/"/&quot;/g; #"#
+    s/\s+/ /g;
+
+    $_;
+}
 
 sub rec_html_entify {
     package aid_util;
