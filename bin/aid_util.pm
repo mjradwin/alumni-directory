@@ -2,11 +2,11 @@
 #     FILE: aid_util.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: perl library routines for the Alumni Internet Directory
-#      $Id: aid_util.pl,v 1.85 1998/01/03 11:58:27 mjr Exp mjr $
+#      $Id: aid_util.pl,v 1.86 1998/01/03 12:36:16 mjr Exp mjr $
 #
 
 $aid_util'rcsid =
- '$Id: aid_util.pl,v 1.85 1998/01/03 11:58:27 mjr Exp mjr $';
+ '$Id: aid_util.pl,v 1.86 1998/01/03 12:36:16 mjr Exp mjr $';
 
 # ----------------------------------------------------------------------
 # CONFIGURATION
@@ -753,7 +753,7 @@ sub about_text {
     $message = &main'aid_get_usertext($rec{'id'}) if $message eq '';  #' fnt
     if ($message ne '') {
 	$retval .= "\n";
-	$retval .= "What's New? (beta) :\n";
+	$retval .= "What's New?        :\n";
 	$retval .= "</pre>\n" if $do_html_p;
 	$retval .= $do_html_p ? "<blockquote>\n" : "\"";
 	$retval .= $message;
