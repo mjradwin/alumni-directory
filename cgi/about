@@ -1,10 +1,10 @@
-#!/usr/bin/perl -w
+#!/usr/local/bin/perl5 -w
 
 #
 #     FILE: about.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: Alumni Internet Directory CGI "About" page generation
-#      $Id: about,v 5.9 1999/07/27 20:49:14 mradwin Exp mradwin $
+#      $Id: about,v 5.10 1999/08/04 22:08:48 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #

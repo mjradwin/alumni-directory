@@ -1,6 +1,6 @@
-#!/usr/bin/perl -w
+#!/usr/local/bin/perl5 -w
 
-# $Id: aid_dbm_write,v 5.2 1999/06/07 18:33:10 mradwin Exp mradwin $
+# $Id: aid_dbm_create,v 1.1 1999/08/11 01:38:39 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #

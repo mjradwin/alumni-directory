@@ -1,8 +1,8 @@
-#!/usr/bin/perl -w
+#!/usr/local/bin/perl5 -w
 
 #
 # generates address books in several formats
-# $Id: aid_book,v 5.2 1999/06/07 18:32:25 mradwin Exp mradwin $
+# $Id: aid_book,v 5.3 1999/06/28 23:36:24 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #

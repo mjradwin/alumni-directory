@@ -1,10 +1,10 @@
-#!/usr/bin/perl -w
+#!/usr/local/bin/perl5 -w
 
 #
 #     FILE: form.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: Alumni Internet Directory CGI form-submission interface
-#      $Id: form,v 5.12 1999/07/26 05:14:17 mradwin Exp mradwin $
+#      $Id: form,v 5.13 1999/08/04 18:56:16 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -44,7 +44,7 @@ $mailprog = &aid_config('mailprog');
 $dbmfile = &aid_config('dbmfile');
 $dbmfile =~ s/\.db$//;
 
-$rcsid = '$Id: form,v 5.12 1999/07/26 05:14:17 mradwin Exp mradwin $'; #'fnt
+$rcsid = '$Id: form,v 5.13 1999/08/04 18:56:16 mradwin Exp mradwin $'; #'fnt
 
 $listing_upd_title = 'Modify Your Directory Listing';
 $listing_upl_title = 'Select a Listing to Modify';

@@ -1,8 +1,8 @@
-#!/usr/bin/perl -w
+#!/usr/local/bin/perl5 -w
 
 #
 # mails a welcome, update, confirm, or massmail message to members
-# $Id: aid_welcome,v 5.15 1999/11/29 18:42:19 mradwin Exp mradwin $
+# $Id: aid_welcome,v 5.16 1999/11/29 19:00:29 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -29,6 +29,8 @@ unshift(@INC, $dirname);
 require 'aid_util.pl';
 require 'getopts.pl';
 require 'ctime.pl';
+
+use Net::SMTP; 
 
 $default_sleep = 0;
 $default_massmail_sleep = 5;

@@ -1,8 +1,8 @@
-#!/usr/bin/perl -w
+#!/usr/local/bin/perl5 -w
 
 #
 # does the html version of the alphabetical address list
-# $Id: aid_alpha_html,v 5.3 1999/06/28 23:36:24 mradwin Exp mradwin $
+# $Id: aid_alpha_html,v 5.4 1999/06/29 01:08:09 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #

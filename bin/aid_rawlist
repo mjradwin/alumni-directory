@@ -1,8 +1,8 @@
-#!/usr/bin/perl -w
+#!/usr/local/bin/perl5 -w
 
 #
 # makes a list of e-mail addresses, comma separated.
-# $Id: aid_rawlist,v 5.1 1999/05/31 21:20:48 mradwin Exp mradwin $
+# $Id: aid_rawlist,v 5.2 1999/06/07 18:32:25 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
