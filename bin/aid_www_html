@@ -21,7 +21,8 @@ open(MVHS,$ARGV[0]) || die "Can't open $ARGV[0]: $!\n";
 open(FMTOUT,">$ARGV[1]") || die "Can't open $ARGV[1]: $!\n";
 
 print FMTOUT &common_html_hdr(4);
-print FMTOUT "<pre>Name and Graduation Year\n";
+print FMTOUT "<pre>";
+print FMTOUT "Name and Graduation Year                  Email\n";
 print FMTOUT "---------------------------------------------------------------------------\n";
 
 while(<MVHS>) {
@@ -42,14 +43,18 @@ while(<MVHS>) {
     } else {
 	$affil  = "  [$school $year]";
     }
+    $affil_tmp = $affil;
+    $affil_tmp =~ s/<[^>]+>//g;
+    $affil_len = length($affil_tmp);
 
-    print FMTOUT '  ';
     print FMTOUT "<a name=\"$alias\"";
     print FMTOUT " href=\"$homepage\"";
     print FMTOUT ">";
     print FMTOUT $fullname;
     print FMTOUT "</a>";
     print FMTOUT $affil;
+    print FMTOUT ' ' x (42 - (length($fullname) + $affil_len));
+    print FMTOUT "<a href=\"mailto:", $email, "\">", $email, "</a>";
     print FMTOUT " <img alt=\"[new]\" WIDTH=28 HEIGHT=11 SRC=\"new.gif\">" if &is_new($time);
     print FMTOUT "\n";
 }

@@ -23,7 +23,7 @@ while(<TARGET>) {
     # this is our funky message
     $denied = ($req) ? "" : "\nThis is the only email notice you will receive.\n";
 	
-    $message = &message_body($last, $first, $school, $year, $email, $homepage);
+    $message = &message_body($id,$last,$first,$school,$year,$email,$homepage);
 
     &sendmail($email, 'mjr@cs.brown.edu', 'Michael John Radwin',
 	      'Welcome to the MVHS Alumni Internet Directory', $message);
@@ -55,13 +55,17 @@ To: $toline\
 }
 
 sub message_body {
-    local($last, $first, $school, $year, $email) = @_;
+    local($id,$last,$first,$school,$year,$email) = @_;
     
     return "Dear $first,
 
 Your email address is listed in the Mountain View High School/Awalt High
-School Alumni Internet Directory.  The database (which produced this
-form letter) shows the following information about you:
+School Alumni Internet Directory:
+
+http://www.cs.brown.edu/people/mjr/mvhs/
+
+The database (which produced this form letter) shows the following
+information about you:
 
 Name:           $last, $first
 Email Address:  $email
@@ -72,14 +76,12 @@ $denied
 If you feel as if you have received this email in error or do not want
 to be listed in the database, please let me know and I will remove your
 name from the database.  Or, if any of the above information is
-incorrect or out of date, I'll be happy to fix your entry.
+incorrect or out of date you can update your entry at
 
-If everything you see above is correct, you're all set.  
+http://www.cs.brown.edu/cgi-bin/mjr-mvhs.cgi?update=$id
 
-The complete database is visible from the World Wide Web at:
-http://www.cs.brown.edu/people/mjr/mvhs/
-
-Welcome!
+or email me corrections, and I'll be happy to fix your entry.  If
+everything you see above is correct, you're all set.
 
 --
 Michael J. Radwin

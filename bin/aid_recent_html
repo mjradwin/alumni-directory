@@ -17,8 +17,8 @@ open(FMTOUT,">$ARGV[1]") || die "Can't open $ARGV[1]: $!\n";
 
 print FMTOUT &common_html_hdr(3);
 print FMTOUT "<pre>";
-print FMTOUT "Name                       Email                           Grad. Class/School\n";
-print FMTOUT "-----------------------------------------------------------------------------\n";
+print FMTOUT "Name and Graduation Year                  Email\n";
+print FMTOUT "---------------------------------------------------------------------------\n";
 
 while(<MVHS>) {
     chop;
@@ -30,16 +30,26 @@ while(<MVHS>) {
     } else {
        $fullname = $last;
     }
-#    print FMTOUT '   ';
-    print FMTOUT "<a href=\"$homepage\">" if $homepage ne '';
+
+    if ($year =~ /^\d+$/) {
+	$affil  = "  '$year";
+	$affil .= " $school" 
+	    if $school ne 'MVHS' && $school ne '';
+    } else {
+	$affil  = "  [$school $year]";
+    }
+    $affil_tmp = $affil;
+    $affil_tmp =~ s/<[^>]+>//g;
+    $affil_len = length($affil_tmp);
+
+    print FMTOUT "<a name=\"$alias\"";
+    print FMTOUT " href=\"$homepage\"" if $homepage ne '';
+    print FMTOUT ">";
     print FMTOUT $fullname;
-    print FMTOUT "</a>" if $homepage ne '';
-    print FMTOUT ' ' x (27 - length($fullname));
+    print FMTOUT "</a>";
+    print FMTOUT $affil;
+    print FMTOUT ' ' x (42 - (length($fullname) + $affil_len));
     print FMTOUT "<a href=\"mailto:", $email, "\">", $email, "</a>";
-    print FMTOUT ' ', ' ' x (36 - length($email));
-    print FMTOUT $year;
-    print FMTOUT " $school" if $school ne 'MVHS' && $school ne '';
-#    print FMTOUT " <img alt=\"[new]\" WIDTH=28 HEIGHT=11 SRC=\"new.gif\">";
     print FMTOUT "\n";
 }
 
