@@ -2,7 +2,7 @@
 
 #
 # mails a welcome or update note to everyone in targets.adr
-# $Id: aid_welcome,v 3.21 1999/01/26 22:51:02 mradwin Exp mradwin $
+# $Id: aid_welcome,v 3.22 1999/02/03 00:52:11 mradwin Exp mradwin $
 #
 
 require 'aid_util.pl';
@@ -12,14 +12,14 @@ require 'ctime.pl';
 $pname = 'aid_welcome';
 $usage = "usage: $pname [options] targets.adr
     -h            Display usage information.
-    -d <secs>     Sleep for <secs> seconds between sending email
+    -d <secs>     Sleep for <secs> seconds between sending e-mail
                   (default 10 for -m, 0 for all others).
     -r <reqtype>  Request type (0-3) (only valid with -m and -c).
     -l <logfile>  Log to <logfile> instead of default.
 
-Mutually exclusive optional message types (instead of 'welcome' email):
-    -u            Send 'update' email.
-    -c            Send 'confirmation' email.
+Mutually exclusive optional message types (instead of 'welcome' e-mail):
+    -u            Send 'update' e-mail.
+    -c            Send 'confirmation' e-mail.
     -m <textfile> Massmail the contents of <textfile>.
 ";
 
@@ -43,7 +43,7 @@ IS REQUIRED ON YOUR PART.\n",
      'subject',  'Welcome to the MVHS Alumni Internet Directory',
      'log',      'welcome',
      'intro',    
-"\nWelcome!  This email confirms that you are now listed in the 
+"\nWelcome!  This e-mail confirms that you are now listed in the 
 MVHS Alumni Internet Directory.\n",
      'textfile', '',
      'closing',
@@ -73,7 +73,7 @@ you can share as much or as little as you want:
      'subject',  'Your MVHS Alumni Internet Directory entry is updated',
      'log',      'update',
      'intro',
-"\nThis email confirms that your contact information has been
+"\nThis e-mail confirms that your contact information has been
 updated and the changes are now visible on the web site.\n",
      'textfile', '',
      'closing',
@@ -90,7 +90,7 @@ all set.
      'log',      'massmail',
      'intro',
 "\nPer your request, your quarterly digest of the Directory
-appears at the end of this message.  To change your email
+appears at the end of this message.  To change your e-mail
 digest preferences, update your entry online at the below
 update URL.\n",
      'textfile', '',
@@ -183,7 +183,7 @@ sub message_body {
     local($[) = 0;
     local(%rec) = &aid_split($_[0]);
     local($denied) = $rec{'request'} == 0 ?
-	"\nSince you asked not to receive Directory updates via email,\n" .
+	"\nSince you asked not to receive Directory updates via e-mail,\n" .
 	"you will only receive yearly address verification messages.\n" :
 	 '';
     local($srv_prefix) = "http://" . &aid_config('master_srv');
@@ -191,7 +191,7 @@ sub message_body {
 
     return "Dear $rec{'first'},
 
-This email was generated automatically by the Mountain View
+This e-mail was generated automatically by the Mountain View
 High School/Awalt High School Alumni Internet Directory:\n\n  " .
 
 $srv_prefix . &aid_config('master_path') . "
@@ -206,8 +206,8 @@ update your entry online at:\n\n  " .
 
 $srv_prefix . &aid_config('cgi_path') . "/go?update=$rec{'id'}
 
-If you don't have web access, email me corrections.  If you
-have received this email in error, or you do not want to be
+If you don't have web access, e-mail me corrections.  If you
+have received this e-mail in error, or you do not want to be
 listed in the Directory, please let me know and I will
 remove your entry.
 $params{'closing'}";

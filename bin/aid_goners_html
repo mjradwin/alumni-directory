@@ -2,7 +2,7 @@
 
 #
 # does the html version of the invalid address list
-# $Id: aid_goners_html,v 3.12 1998/05/18 17:22:36 mradwin Exp mradwin $
+# $Id: aid_goners_html,v 3.13 1998/05/26 18:52:00 mradwin Exp mradwin $
 #
 
 require 'aid_util.pl';
@@ -13,9 +13,9 @@ open(FMTOUT,">$ARGV[1]") || die "Can't open $ARGV[1]: $!\n";
 
 print FMTOUT &common_html_hdr(-1,'Alumni with Invalid Addresses',1);
 print FMTOUT "
-<p>The following addresses are invalid because either email to them
+<p>The following addresses are invalid because either e-mail to them
 bounces, or the address is being used by a new owner.  If you know a
-current email address for anyone on this list, please submit it!</p>
+current e-mail address for anyone on this list, please submit it!</p>
 ";
 print FMTOUT "<pre>";
 print FMTOUT "Name and Graduation Year                  Last known whereabouts\n";

@@ -1,6 +1,6 @@
 #!/usr/bin/perl -w
 
-# $Id: aid_bounce,v 3.15 1998/11/03 17:13:10 mradwin Exp mradwin $
+# $Id: aid_bounce,v 3.16 1998/11/03 22:26:28 mradwin Exp mradwin $
 
 require 'getopts.pl';
 require 'aid_util.pl';
@@ -14,7 +14,7 @@ $usage = 'usage: aid_bounce [-hv] [-f <log>] [ids...]
               unless an entry has non-zero bounce or freshness is
               later than time in <log> file.
 
-Bumps up the bounce field for every id or email address listed on the
+Bumps up the bounce field for every id or e-mail address listed on the
 command line.
 ';
 
@@ -141,7 +141,7 @@ sub bounce_argv
 	    if (defined $addrs{$_}) {
 		%rec = &aid_split(@db[$addrs{$_}]);
 	    } else {
-		warn "can't find email addr $_\n";
+		warn "can't find e-mail addr $_\n";
 		next;
 	    }
 	}

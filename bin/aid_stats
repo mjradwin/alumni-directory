@@ -1,6 +1,6 @@
 #!/usr/bin/perl -w
 
-# $Id: aid_stats,v 1.2 1999/01/22 21:08:03 mradwin Exp mradwin $
+# $Id: aid_stats,v 1.3 1999/01/22 21:30:37 mradwin Exp mradwin $
 
 require 'aid_util.pl';
 require 'ctime.pl';
@@ -37,8 +37,8 @@ print "Mountain View High School Alumni Internet Directory\n";
 print "Member Statistics\n";
 print "------------------------------------------------------------------------\n\n";
 
-printf "%4d members w/valid   email address\n", $nvalid;
-printf "%4d members w/invalid email address\n", ($ntotal - $nvalid);
+printf "%4d members w/valid   e-mail address\n", $nvalid;
+printf "%4d members w/invalid e-mail address\n", ($ntotal - $nvalid);
 
 printf "%4d requesting quarterly digests:\n",
     ($nreq[1] + $nreq[2] + $nreq[3] + $nreq[4]);

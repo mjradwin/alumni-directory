@@ -2,7 +2,7 @@
 
 #
 # does the html version of just home pages
-# $Id: aid_home_html,v 3.15 1998/12/02 21:29:16 mradwin Exp mradwin $
+# $Id: aid_home_html,v 3.16 1999/02/01 17:57:10 mradwin Exp mradwin $
 #
 
 require 'aid_util.pl';
@@ -60,7 +60,7 @@ if ($opt_s) {
 	&aid_build_yearlist(*years,$rec{'year'});
     }
     print OUTFILE "<p>Before downloading nickname files and address books
-for your email program, please read the
+for your e-mail program, please read the
 <a href=\"", &aid_config('master_path'), "etc/copyright.html\">Acceptable
 Use Policy</a>.</p>
 
@@ -74,7 +74,7 @@ are of the form <code><strong>flllllll</strong></code> where
     print OUTFILE &aid_config('cgi_path') . "/download.txt\">\n";
     print OUTFILE "<input type=\"hidden\" name=\"download\" value=\"1\">\n\n";
 
-    print OUTFILE "<label for=\"email\">Your email address:&nbsp;</label>\n";
+    print OUTFILE "<label for=\"email\">Your e-mail address:&nbsp;</label>\n";
     print OUTFILE "<input type=\"text\" name=\"email\" size=\"25\" ";
     print OUTFILE "value=\"\" id=\"email\"> (for logging purposes only)\n";
 

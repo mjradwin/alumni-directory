@@ -1,7 +1,7 @@
 #!/usr/bin/perl -w
 
 #
-# makes a list of email addresses, comma separated.
+# makes a list of e-mail addresses, comma separated.
 #
 
 require 'aid_util.pl';

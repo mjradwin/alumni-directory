@@ -2,7 +2,7 @@
 
 #
 # does the html version of the grad-date address list
-# $Id: aid_class_html,v 3.17 1998/10/17 20:57:33 mradwin Exp mradwin $
+# $Id: aid_class_html,v 3.18 1998/11/02 21:43:49 mradwin Exp mradwin $
 #
 
 require 'aid_util.pl';
@@ -46,7 +46,7 @@ if (!$opt_t) {
     print FMTOUT "<pre>";
 }
 
-print FMTOUT "Name$blank_gif                                     Email\n";
+print FMTOUT "Name$blank_gif                                     E-Mail\n";
 print FMTOUT "---------------------------------------------------------------------------";
 
 $prev = '1900';
