@@ -2,7 +2,7 @@
 
 #
 # does the html version of just home pages
-# $Id: aid_home_html,v 3.22 1999/02/16 18:06:07 mradwin Exp mradwin $
+# $Id: aid_home_html,v 3.23 1999/02/24 20:42:19 mradwin Exp mradwin $
 #
 
 require 'aid_util.pl';
@@ -100,7 +100,7 @@ such as John Smith and Jane Smith, then the first one will be
 <option value=\"w\">Eudora 2.x
 <option value=\"m\">Eudora 3.x
 <option value=\"m\">Eudora 4.x
-<option value=\"o\">Outlook Express .CSV
+<option value=\"o\" selected>Outlook Express .CSV
 <option value=\"p\">Pine (Unix)
 <option value=\"e\">Elm (Unix)
 <option value=\"b\">Berkeley Mail (Unix)
