@@ -2,7 +2,7 @@
 #     FILE: Makefile
 #   AUTHOR: Michael J. Radwin
 #    DESCR: Makefile for building the Alumni Internet Directory
-#      $Id: Makefile,v 1.4 2003/10/30 07:31:11 mradwin Exp mradwin $
+#      $Id: Makefile,v 5.31 2003/10/30 17:39:41 mradwin Exp mradwin $
 #
 # Copyright (c) 2003  Michael J. Radwin.
 # All rights reserved.
@@ -73,34 +73,20 @@ all:	index submit \
 	recent multi_class multi_alpha \
 	pages goners download stats pine_book rss db_dump
 
-SYMLINKS=$(AID_SUBMIT_PL) $(AID_UTIL_PL) \
-	$(BINDIR)/school_config.pl
-symlinks:
-	$(MKDIR) logs
-	$(MKDIR) $(WWWDIR)
-	echo 'AddType text/html;charset=ISO-8859-1 html' > $(WWWDIR)/.htaccess
-	echo 'AddType text/xml xml rdf' >> $(WWWDIR)/.htaccess
-	echo 'Options -Indexes' >> $(WWWDIR)/.htaccess
-	$(MKDIR) $(CGIDIR)
-	(cd $(CGIDIR) ; /bin/ln -sf $(SYMLINKS) .; \
-	 $(CP) $(CGISRC)/form $(CGISRC)/search $(CGISRC)/alumni.txt \
-	       $(CGISRC)/vcard $(CGISRC)/about $(CGISRC)/yab \
-	       $(CGISRC)/go . )
-	(cd $(WWWDIR) ; /bin/ln -sf $(CGISRC)/default.css . )
-	echo 'SetHandler cgi-script' > $(CGIDIR)/.htaccess
-
 install:
 	$(MKDIR) logs
 	($(MKDIR) $(WWWDIR) ; /bin/chmod 0755 $(WWWDIR))
 	echo 'AddType text/html;charset=ISO-8859-1 html' > $(WWWDIR)/.htaccess
 	echo 'AddType text/xml xml rdf' >> $(WWWDIR)/.htaccess
 	($(MKDIR) $(CGIDIR) ; /bin/chmod 0755 $(CGIDIR))
-	$(CP) $(SYMLINKS) \
+	$(CP) $(AID_SUBMIT_PL) $(AID_UTIL_PL) $(BINDIR)/school_config.pl \
 	      $(CGISRC)/form $(CGISRC)/search $(CGISRC)/alumni.txt \
 	      $(CGISRC)/vcard $(CGISRC)/about $(CGISRC)/yab \
 	      $(CGISRC)/go $(CGISRC)/msg $(CGISRC)/remove $(CGISRC)/verify \
 	      $(CGIDIR)
 	$(CP) $(CGISRC)/default.css $(WWWDIR)
+	$(MKDIR) $(WWWDIR)/etc
+	$(CP) $(CGISRC)/xml.gif $(WWWDIR)/etc
 	echo 'SetHandler cgi-script' > $(CGIDIR)/.htaccess
 
 WORKING_DB=$(DATADIR)/working.db
