@@ -2,7 +2,7 @@
 #     FILE: aid_submit.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: submission form for Alumni Internet Directory
-#      $Id: aid_submit.pl,v 5.11 2000/04/25 01:31:38 mradwin Exp mradwin $
+#      $Id: aid_submit.pl,v 5.12 2000/04/25 18:22:58 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -123,7 +123,7 @@ instead.</p>
     $body .= "<table border=\"0\" cellspacing=\"7\">
 
 <tr><td colspan=\"3\" bgcolor=\"#$header_bg\">
-<font color=\"#$header_fg\"><strong><big>1.
+<font color=\"#$header_fg\"><big><strong class=\"hl\">1.
 Full Name</strong></big></font>
 </td></tr>
 <tr>
@@ -158,7 +158,7 @@ Full Name</strong></big></font>
 </tr>
 
 <tr><td colspan=\"3\" bgcolor=\"#$header_bg\">
-<font color=\"#$header_fg\"><big><strong>2.
+<font color=\"#$header_fg\"><big><strong class=\"hl\">2.
 Graduating Class while at $config{'short_school'}</strong></big></font>
 </td></tr>
 <tr>
@@ -171,7 +171,7 @@ Graduating Class while at $config{'short_school'}</strong></big></font>
 </tr>
 
 <tr><td colspan=\"3\" bgcolor=\"#$header_bg\">
-<font color=\"#$header_fg\"><big><strong>3.
+<font color=\"#$header_fg\"><big><strong class=\"hl\">3.
 Contact Info</strong></big></font>
 </td></tr>
 <tr>
@@ -199,7 +199,7 @@ Contact Info</strong></big></font>
 </tr>
 
 <tr><td colspan=\"3\" bgcolor=\"#$header_bg\">
-<font color=\"#$header_fg\"><big><strong>4.
+<font color=\"#$header_fg\"><big><strong class=\"hl\">4.
 What's New?</strong></big></font>
 </td></tr>
 <tr>
@@ -214,7 +214,7 @@ What's New?</strong></big></font>
 </tr>
 
 <tr><td colspan=\"3\" bgcolor=\"#$header_bg\">
-<font color=\"#$header_fg\"><big><strong>5.
+<font color=\"#$header_fg\"><big><strong class=\"hl\">5.
 E-mail Preferences</strong></big></font>
 </td></tr>
 <tr>
@@ -247,7 +247,7 @@ E-mail Preferences</strong></big></font>
 </tr>
 
 <tr><td colspan=\"3\" bgcolor=\"#$header_bg\">
-<font color=\"#$header_fg\"><big><strong>6.
+<font color=\"#$header_fg\"><big><strong class=\"hl\">6.
 Preview Listing</strong></big></font>
 </td></tr>
 
