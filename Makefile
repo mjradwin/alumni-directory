@@ -1,40 +1,42 @@
 WWWDIR=/pro/web/web/people/mjr/mvhs
 
-all:	alpha.adr grad new mvhs.txt goners pages books mvhs_db.tar webupdate
-
-webupdate:
-	cp mvhs.adr ${WWWDIR}
+all:	alpha grad new goners pages books dbtar adrfile home submit
 	( cd ${WWWDIR} ; chmod 0644 * ; /usr/local/bin/webupdate )
+
+adrfile:	${WWWDIR}/mvhs.adr
+${WWWDIR}/mvhs.adr:	mvhs.adr
+	cp mvhs.adr ${WWWDIR}
 
 mvhs.txt:	alpha.adr
 	./mv_alpha_html -t alpha.adr mvhs.txt
+
+alpha:	${WWWDIR}/all.html
+${WWWDIR}/all.html:	alpha.adr
 	./mv_alpha_html alpha.adr ${WWWDIR}/all.html
 
-grad:	class.adr
+grad:	${WWWDIR}/class.html
+${WWWDIR}/class.html:	class.adr
 	./mv_grad_html class.adr ${WWWDIR}/class.html
-	touch grad
 
-new:	alpha.adr
+new:	${WWWDIR}/recent.html
+${WWWDIR}/recent.html:	alpha.adr
 	./mv_new_html alpha.adr ${WWWDIR}/recent.html
-	touch new
 
-goners:	goners.adr
+goners:	${WWWDIR}/invalid.html
+${WWWDIR}/invalid.html:	goners.adr
 	./mv_goners_html goners.adr ${WWWDIR}/invalid.html
-	( cd ${WWWDIR} ; chmod 0644 invalid.html ; /usr/local/bin/webupdate invalid.html )
-	touch goners
 
-pages:	alpha.adr
+pages:	${WWWDIR}/pages.html
+${WWWDIR}/pages.html:	alpha.adr
 	./mv_www_html alpha.adr ${WWWDIR}/pages.html
-	touch pages
 
-
-home:	${WWWDIR}/.home.include mv_home_html
+home:	${WWWDIR}/home.html
+${WWWDIR}/home.html:	${WWWDIR}/.home.include mv_home_html
 	./mv_home_html -i
-	( cd ${WWWDIR} ; chmod 0644 home.html ; /usr/local/bin/webupdate home.html )
 
-submit:	mv_util.pl mv_home_html
+submit:	${WWWDIR}/add.html
+${WWWDIR}/add.html:	mv_util.pl mv_home_html
 	./mv_home_html -s
-	( cd ${WWWDIR} ; chmod 0644 add.html ; /usr/local/bin/webupdate add.html )
 
 books:	alpha.adr
 	./mv_book -p alpha.adr ${WWWDIR}/pine.txt
@@ -43,6 +45,7 @@ books:	alpha.adr
 	./mv_book -w alpha.adr ${WWWDIR}/eudora.txt
 	./mv_book -m alpha.adr ${WWWDIR}/eudorapro.txt
 	./mv_book -n alpha.adr ${WWWDIR}/address-book.html
+	./mv_book -v alpha.adr ${WWWDIR}/vcard.vcf
 	touch books
 
 alpha.adr:	mvhs.adr
@@ -51,7 +54,8 @@ alpha.adr:	mvhs.adr
 class.adr:	mvhs.adr
 	sort -t: +6 -7 +3 -5 mvhs.adr > class.adr
 
-mvhs_db.tar:	
+dbtar:	${WWWDIR}/mvhs_db.tar
+${WWWDIR}/mvhs_db.tar:
 	cp /pro/web/cgi-bin/mjr-mvhs.cgi .
-	tar cf mvhs_db.tar mv_* mjr-mvhs.cgi regen
-	cp mvhs_db.tar ${WWWDIR}
+	tar cf ${WWWDIR}/mvhs_db.tar mv_* mjr-mvhs.cgi Makefile
+	rm -f mjr-mvhs.cgi

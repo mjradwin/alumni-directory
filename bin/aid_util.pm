@@ -166,8 +166,10 @@ sub submit_body {
     $homepage = 'http://' if $homepage eq '';
     $req = (req) ? ' checked' : '';
 
-    return "<p>Thanks for adding a name to the MVHS Alumni email address list!
-Please enter the following information and hit the submit button.
+    return "<p>Thanks for adding a name to the MVHS Alumni Internet
+Directory!  To update your entry, please see the <a
+href=\"/cgi-bin/mjr-mvhs.cgi?update\">update page</a>.  To add a new
+entry, please enter the following information and hit the submit button.
 Your submission will be processed in a day or so.</p>
 
 <form method=post action=\"/cgi-bin/mjr-mvhs.cgi\"> 
