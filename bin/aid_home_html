@@ -2,7 +2,7 @@
 
 #
 # does the html version of just home pages
-# $Id: aid_home_html,v 3.24 1999/02/24 21:49:55 mradwin Exp mradwin $
+# $Id: aid_home_html,v 3.25 1999/02/27 00:16:47 mradwin Exp mradwin $
 #
 
 require 'aid_util.pl';
@@ -138,5 +138,6 @@ print OUTFILE &common_html_ftr($opt_p);
 
 dbmclose(DB) unless $opt_i;
 close(OUTFILE);
+utime $time, $time, $outfile;
 
 exit(0);

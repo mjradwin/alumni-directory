@@ -2,7 +2,7 @@
 
 #
 # does the html verbose pages
-# $Id: aid_multi_alpha_html,v 3.23 1999/02/24 20:42:19 mradwin Exp mradwin $
+# $Id: aid_multi_alpha_html,v 3.24 1999/02/27 00:16:47 mradwin Exp mradwin $
 #
 
 require 'aid_util.pl';
@@ -23,10 +23,10 @@ die "can't open $ARGV[0].db\n" unless -r "$ARGV[0].db";
 dbmopen(DB,$ARGV[0],0444);
 
 die "no __alpha__ key!\n" unless defined $DB{'__alpha__'};
+$time = unpack("N",$DB{'__t__'});
 
 $initial = "Z";
-$alpha_header = &common_html_hdr(1,'Listed by Last Name',1,
-				 unpack("N",$DB{'__t__'})) .
+$alpha_header = &common_html_hdr(1,'Listed by Last Name',1,$time) .
     &common_intro_para(1);
 
 @alpha_ids = unpack("n*",$DB{'__alpha__'});
@@ -44,6 +44,7 @@ foreach $id (@alpha_ids)
 	    print FMTOUT "</pre>\n";
 	    print FMTOUT &common_html_ftr(1);
 	    close(FMTOUT);
+	    utime $time, $time, $outFile;
 	}
 
 	$outFile = &aid_config('wwwdir') . "alpha/\L${initial}\E-index.html";

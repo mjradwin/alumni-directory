@@ -2,7 +2,7 @@
 
 #
 # does the html version of the grad-date address list
-# $Id: aid_class_html,v 3.22 1999/02/24 20:43:17 mradwin Exp mradwin $
+# $Id: aid_class_html,v 3.23 1999/02/27 00:16:47 mradwin Exp mradwin $
 #
 
 require 'aid_util.pl';
@@ -125,4 +125,7 @@ $opt_t || print FMTOUT "</pre>\n";
 $opt_t || print FMTOUT &common_html_ftr($opt_a ? 3 : -1);
 
 dbmclose(DB);
+close(FMTOUT);
+utime $time, $time, $ARGV[1] unless $opt_t;
+
 exit(0);

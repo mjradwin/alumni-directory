@@ -2,7 +2,7 @@
 
 #
 # does the html multi_class pages
-# $Id: aid_multi_class_html,v 3.22 1999/02/27 00:32:28 mradwin Exp mradwin $
+# $Id: aid_multi_class_html,v 3.23 1999/02/27 00:43:20 mradwin Exp mradwin $
 #
 
 require 'aid_util.pl';
@@ -54,6 +54,7 @@ foreach $year (@years)
 
     print FMTOUT &common_html_ftr(-1);
     close(FMTOUT);
+    utime $time, $time, $outFile;
 }
 
 $time = unpack("N",$DB{'__t__'});
@@ -79,5 +80,6 @@ print FMTOUT "Awalt&nbsp;Alumni</a> (~ 100 kbytes)</big></p>\n";
 
 print FMTOUT &common_html_ftr(2);
 close(FMTOUT);
+utime $time, $time, $outFile;
 
 exit(0);
