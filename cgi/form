@@ -4,7 +4,7 @@
 #     FILE: form.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: Alumni Internet Directory CGI form-submission interface
-#      $Id: form,v 5.17 2000/02/29 21:02:09 mradwin Exp mradwin $
+#      $Id: form,v 5.18 2000/04/25 00:42:01 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -35,7 +35,7 @@ use CGI::Carp qw(fatalsToBrowser);
 # configuration
 $dbmfile = &aid_config('dbmfile');
 
-$rcsid = '$Id: form,v 5.17 2000/02/29 21:02:09 mradwin Exp mradwin $'; #'fnt
+$rcsid = '$Id: form,v 5.18 2000/04/25 00:42:01 mradwin Exp mradwin $'; #'fnt
 
 $listing_upd_title = 'Modify Your Directory Listing';
 $listing_upl_title = 'Select a Listing to Modify';
@@ -276,7 +276,7 @@ sub confirm_submission
 Final Review</strong></big></font></td></tr></table>
 
 Here is what your listing will look like:
-<br${ht_empty_close_tag}<br${ht_empty_close_tag}
+<br><br>
 
 <table border=\"1\" cellpadding=\"6\"><tr><td>";
 
@@ -285,10 +285,10 @@ Here is what your listing will look like:
 
     print "</td></tr></table>
 <p>Want to change something?
-<input type=submit name=\"revise\" value=\"Edit Listing\"${ht_empty_close_tag}
-<br${ht_empty_close_tag}<br${ht_empty_close_tag}
+<input type=submit name=\"revise\" value=\"Edit Listing\">
+<br><br>
 Everything above is correct?
-<input type=submit name=\"confirmed\" value=\"Submit Listing\"${ht_empty_close_tag}
+<input type=submit name=\"confirmed\" value=\"Submit Listing\">
 </p>
 </form>
 ";

@@ -4,7 +4,7 @@
 #     FILE: about.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: Alumni Internet Directory CGI "About" page generation
-#      $Id: about,v 5.12 2000/02/29 21:02:09 mradwin Exp mradwin $
+#      $Id: about,v 5.13 2000/04/25 00:42:01 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -96,8 +96,8 @@ please don't abuse it and force us to install a password
 door.</small></p>
 
 <form method=\"get\" action=\"" . &aid_config('update_cgi') . "/$rec{'id'}\">
-<input type=\"hidden\" name=\"upd\" value=\"$rec{'id'}\"${ht_empty_close_tag}
-<input type=\"submit\" value=\"Modify $html_name\"${ht_empty_close_tag}
+<input type=\"hidden\" name=\"upd\" value=\"$rec{'id'}\">
+<input type=\"submit\" value=\"Modify $html_name\">
 </form>
 
 ";
