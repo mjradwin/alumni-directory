@@ -2,11 +2,11 @@
 #     FILE: aid_util.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: perl library routines for the Alumni Internet Directory
-#      $Id: aid_util.pl,v 2.6 1998/04/02 21:53:06 mjr Exp mjr $
+#      $Id: aid_util.pl,v 2.7 1998/04/03 17:47:14 mjr Exp mjr $
 #
 
 $aid_util'rcsid =
- '$Id: aid_util.pl,v 2.6 1998/04/02 21:53:06 mjr Exp mjr $';
+ '$Id: aid_util.pl,v 2.7 1998/04/03 17:47:14 mjr Exp mjr $';
 
 # ----------------------------------------------------------------------
 # CONFIGURATION
@@ -705,11 +705,14 @@ sub aid_write_verbose_entry {
     print FMTOUT "</font>\n";
 
     print FMTOUT "&nbsp;<font size=\"-1\">[";
+    print FMTOUT "<a href=\"" . $config{'cgi_path'} . "/vcard/$rec{'id'}.vcf\">";
+    print FMTOUT "vCard</a>";
+    print FMTOUT "&nbsp;|&nbsp;";
     print FMTOUT "<a href=\"" . $config{'cgi_path'} . "?about=$rec{'id'}\">";
     print FMTOUT "details</a>";
     print FMTOUT "&nbsp;|&nbsp;";
-    print FMTOUT "<a href=\"" . $config{'cgi_path'} . "/vcard/$rec{'id'}.vcf\">";
-    print FMTOUT "vCard</a>";
+    print FMTOUT "<a href=\"" . $config{'cgi_path'} . "?about=$rec{'id'}\">";
+    print FMTOUT "update</a>";
     print FMTOUT "]</font>\n";
 
     print FMTOUT $image_tag{'new_anchored'}
