@@ -2,7 +2,7 @@
 
 #
 # does the html multi_class pages
-# $Id: aid_multi_class_html,v 3.15 1998/10/20 18:56:48 mradwin Exp mradwin $
+# $Id: aid_multi_class_html,v 3.16 1998/11/02 21:43:49 mradwin Exp mradwin $
 #
 
 require 'aid_util.pl';
@@ -66,16 +66,16 @@ open(FMTOUT,">$outFile") || die "Can't open $outFile: $!\n";
 
 print FMTOUT &common_html_hdr(2,'Listed by Graduating Class',0);
 
-print FMTOUT "<p align=center><font size=\"+1\">By&nbsp;Class:<br>\n";
+print FMTOUT "<p align=center><big>By&nbsp;Class:<br>\n";
 print FMTOUT &aid_class_jump_bar('', '.html', *years, 0);
-print FMTOUT "</font></p>\n\n";
+print FMTOUT "</big></p>\n\n";
 
-print FMTOUT "<p align=center><font size=\"+1\">";
+print FMTOUT "<p align=center><big>";
 print FMTOUT "Compact&nbsp;Form:<br>\n";
 print FMTOUT "<a href=\"all.html\">";
 print FMTOUT "All&nbsp;Alumni</a> (~ 240 kbytes)<br>\n";
 print FMTOUT "<a href=\"awalt.html\">";
-print FMTOUT "Awalt&nbsp;Alumni</a> (~ 50 kbytes)</font></p>\n";
+print FMTOUT "Awalt&nbsp;Alumni</a> (~ 50 kbytes)</big></p>\n";
 
 print FMTOUT &common_html_ftr(2);
 close(FMTOUT);

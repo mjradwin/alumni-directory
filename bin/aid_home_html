@@ -2,7 +2,7 @@
 
 #
 # does the html version of just home pages
-# $Id: aid_home_html,v 3.14 1998/11/26 03:12:05 mradwin Exp mradwin $
+# $Id: aid_home_html,v 3.15 1998/12/02 21:29:16 mradwin Exp mradwin $
 #
 
 require 'aid_util.pl';
@@ -112,7 +112,7 @@ years after mine.</label>
 <br>
 
 <input type=\"submit\" value=\"Download\">
-</form></p>\n\n";
+</form><p>\n\n";
 
 } else { # implicit opt_i
     print OUTFILE @lines;
