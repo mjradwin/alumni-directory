@@ -65,10 +65,10 @@ while(<MVHS>) {
     
     # lots of data for a vCard
     if ($opt_v) {
-	print BOOK "BEGIN:VCARD\nORG:$school $year;\nFN:$first $last\n";
+	print BOOK "Begin:vCard\nORG:$school $year;\nFN:$first $last\n";
 	print BOOK "N:$last;$first\nEMAIL;PREF;INTERNET:$email\n";
 	print BOOK "URL:$homepage\n" if $homepage ne '';
-	print BOOK "END:VCARD\n";
+	print BOOK "End:vCard\n\n";
     }
 }
 
