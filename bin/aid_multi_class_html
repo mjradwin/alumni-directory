@@ -2,7 +2,7 @@
 
 #
 # does the html verbose pages
-# $Id: mv_verbose_html,v 1.8 1997/12/22 23:37:25 mjr Exp mjr $
+# $Id: mv_verbose_html,v 1.9 1997/12/31 20:37:35 mjr Exp mjr $
 #
 
 require 'mv_util.pl';
@@ -125,7 +125,8 @@ sub write_entry {
     print FMTOUT "<dt>Location: <strong>$location</strong>\n"
 	if $location ne '';
     print FMTOUT "<dt>Updated: ";
-    print FMTOUT "<strong>" . &ctime($time) . "</strong>\n";
+    $date = &ctime($time); chop $date;
+    print FMTOUT "<strong>$date</strong>\n";
 
     $message = &mv_get_usertext($id);
     if ($message ne '') {

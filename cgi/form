@@ -4,7 +4,7 @@
 #     FILE: mvhsaid.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: MVHS Alumni Internet Directory CGI interface
-#      $Id: mvhsaid,v 1.52 1997/12/23 18:04:06 mjr Exp mjr $
+#      $Id: mvhsaid,v 1.53 1997/12/31 20:37:35 mjr Exp mjr $
 #
 
 require 'mv_util.pl';
@@ -22,7 +22,7 @@ $dbfile = &mv_config('wwwdir') . "mvhs.adr";
 if (defined($in{'version'})) {
     select(STDOUT);  $| = 1;
     print "Content-type: text/plain\n\n";
-    print '$Id: mvhsaid,v 1.52 1997/12/23 18:04:06 mjr Exp mjr $', "\n"; #'fnt
+    print '$Id: mvhsaid,v 1.53 1997/12/31 20:37:35 mjr Exp mjr $', "\n"; #'fnt
     exit(0);
 }
 
@@ -241,8 +241,7 @@ Their browser is $ENV{'HTTP_USER_AGENT'}
 
 Love,
 the mvhsaid cgi-bin script
-$date
-";
+$date";
 
     system("$mailprog -s $mailsubj $mailto <<'EOM'
 $message_top
