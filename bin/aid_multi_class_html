@@ -64,7 +64,7 @@ for(;;) {
 $outFile = &mv_config('wwwdir') . "class/index.html";
 open(FMTOUT,">$outFile") || die "Can't open $outFile: $!\n";
 
-print FMTOUT &common_html_hdr(2,1);
+print FMTOUT &common_html_hdr(2,0);
 print FMTOUT "<br>";
 print FMTOUT &tableheader('Alumni Listed by Graduating Class',
 			  1, 'ffff99', '000000', 1);
