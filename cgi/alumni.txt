@@ -4,7 +4,7 @@
 #     FILE: alumni.txt.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: Address Book/Nicknames Downloading module
-#      $Id: alumni.txt,v 5.1 1999/05/31 21:20:15 mradwin Exp mradwin $
+#      $Id: alumni.txt,v 5.2 1999/06/07 18:25:50 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -41,7 +41,10 @@ $dbmfile =~ s/\.db$//;
 
 if (!&ReadParse())
 {
-    &send_upd_real(*aid_util'blank_entry,'');  #')#
+    &CgiError(&aid_config('short_school') . " Alumni: Bad Download Request",
+	      "The download request could not be processed.\n" .
+	      "Please <a href=\"" . &aid_config('master_path') .
+	      "download/\">try again</a>.");
     close(STDOUT);
     exit(0);
 }
