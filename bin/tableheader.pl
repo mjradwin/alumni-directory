@@ -3,7 +3,7 @@
 #   AUTHOR: Michael J. Radwin
 #    DESCR: generates small-caps HTML headers with colored tables
 #     DATE: Mon Nov 11 23:52:52 EST 1996
-#      $Id: tableheader.pl,v 3.10 1998/05/17 05:17:43 mradwin Exp mradwin $
+#      $Id: tableheader.pl,v 3.11 1998/12/28 17:16:49 mradwin Exp mradwin $
 #
 
 
@@ -35,12 +35,12 @@ sub tableheader {
     $result = &main'tableheader_internal($data,$fn_size,$fgcolor); #'
 
     return "
-<!-- tableheader start \"$data\" -->
+<!-- th start -->
 <center>
-<table cellspacing=0 cellpadding=1 border=0$width>
+<table cellspacing=0 cellpadding=1 border=0$width summary=\"$data\">
   <tr>
     <td bgcolor=\"#000000\" align=center>
-    <table cellspacing=0 cellpadding=5 border=0 width=\"100%\">
+    <table cellspacing=0 cellpadding=5 border=0 width=\"100%\" summary=\"\">
       <tr>
         <td $bgcolor align=$align valign=$valign>
         $pretext<strong>$result</strong>$posttext
@@ -51,7 +51,7 @@ sub tableheader {
   </tr>
 </table>
 </center>
-<!-- tableheader end \"$data\" -->
+<!-- th end -->
 
 ";
 }

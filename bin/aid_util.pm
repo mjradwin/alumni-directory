@@ -2,11 +2,11 @@
 #     FILE: aid_util.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: perl library routines for the Alumni Internet Directory
-#      $Id: aid_util.pl,v 3.97 1999/01/22 21:10:18 mradwin Exp mradwin $
+#      $Id: aid_util.pl,v 3.98 1999/01/22 21:31:49 mradwin Exp mradwin $
 #
 
 $aid_util'rcsid =
- '$Id: aid_util.pl,v 3.97 1999/01/22 21:10:18 mradwin Exp mradwin $';
+ '$Id: aid_util.pl,v 3.98 1999/01/22 21:31:49 mradwin Exp mradwin $';
 
 # ----------------------------------------------------------------------
 # CONFIGURATION
@@ -1158,7 +1158,7 @@ sub common_html_hdr {
 		  'Last update to this page: ') . $date;
 
     $tablehdr = $title eq '' ? '' :
-	"    <!-- \"$title\" -->\n    <strong>" .
+	"    <!-- \"$title\" --><strong>" .
 	&main'tableheader_internal($title,1,$header_fg) . #'#
 	    "</strong>\n\n";
 
