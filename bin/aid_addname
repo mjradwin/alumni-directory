@@ -1,6 +1,6 @@
 #!/usr/bin/perl -w
 
-# $Id: aid_addname,v 3.19 1999/03/05 00:48:17 mradwin Exp mradwin $
+# $Id: aid_addname,v 3.20 1999/03/05 00:56:52 mradwin Exp mradwin $
 
 require 'getopts.pl';
 require 'aid_util.pl';
@@ -125,9 +125,10 @@ sub addname {
     local($rawdata) = @_;
     local($[) = 0;
     local($_);
-    local($dbFile,$logFile,@db,%oldrec,%id_by_email);
+    local($dbFile,$logFile,@db,%oldrec);
     local(%rec) = &aid_split($rawdata);
     local($addme,$tmpFile,*LOG,*TMP,*ADR);
+    local($key_name,$key_email,%id_by_email,%id_by_name);
 
     $dbFile = &aid_config('aiddir') . "data/master.adr";
     $logFile = &aid_config('aiddir') . "logs/additions.log";
@@ -136,8 +137,11 @@ sub addname {
     for (@db) {
 	next unless defined($_) && $_ ne '';
 	%oldrec = &aid_split($_);
-	$id_by_email{"\L$oldrec{'email'}$oldrec{'last'}$oldrec{'first'}\E"} =
-	    $oldrec{'id'};
+
+	$key_email = "\L$oldrec{'email'}$oldrec{'last'}$oldrec{'first'}\E";
+	$key_name = "\L$oldrec{'last'}$oldrec{'first'}$oldrec{'middle'}$oldrec{'year'}\E";
+	$id_by_email{$key_email} = $oldrec{'id'};
+	$id_by_name{$key_name} = $oldrec{'id'};
     }
 
     open(LOG, ">>$logFile") || die "Can't open $logFile: $!\n";
@@ -145,14 +149,31 @@ sub addname {
 
     # assign the double-submit newbies the same id if we've seen their
     # email address before
-    if (($rec{'id'} == -1) &&
-	(defined $id_by_email{"\L$rec{'email'}$rec{'last'}$rec{'first'}\E"}))
+    if ($rec{'id'} == -1)
     {
-	$rec{'id'} =
-	    $id_by_email{"\L$rec{'email'}$rec{'last'}$rec{'first'}\E"};
-	%oldrec = &aid_split($db[$rec{'id'}]);
-	$rec{'created'} = $oldrec{'created'};
-	$rawdata = &aid_join(*rec);
+	$key_email = "\L$oldrec{'email'}$oldrec{'last'}$oldrec{'first'}\E";
+	$key_name = "\L$oldrec{'last'}$oldrec{'first'}$oldrec{'middle'}$oldrec{'year'}\E";
+
+	if (defined $id_by_email{$key_email})
+	{
+	    $rec{'id'} = $id_by_email{$key_email};
+	    %oldrec = &aid_split($db[$rec{'id'}]);
+
+	    $rec{'created'} = $oldrec{'created'};
+	    $rec{'email_upd'} = $rec{'time'} if
+		$oldrec{'email'} ne $rec{'email'};
+	    $rawdata = &aid_join(*rec);
+	}
+	elsif (defined $id_by_name{$key_name})
+	{
+	    $rec{'id'} = $id_by_name{$key_name};
+	    %oldrec = &aid_split($db[$rec{'id'}]);
+
+	    $rec{'created'} = $oldrec{'created'};
+	    $rec{'email_upd'} = $rec{'time'} if
+		$oldrec{'email'} ne $rec{'email'};
+	    $rawdata = &aid_join(*rec);
+	}
     }
 
     if ($rec{'id'} == -1) {
