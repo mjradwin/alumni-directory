@@ -4,7 +4,7 @@
 #     FILE: mvhsaid.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: MVHS Alumni Internet Directory CGI interface
-#      $Id: mvhsaid,v 1.7 1997/03/24 18:02:28 mjr Exp mjr $
+#      $Id: mvhsaid,v 1.8 1997/03/24 19:38:26 mjr Exp mjr $
 #
 
 require 'mv_util.pl';
@@ -33,7 +33,7 @@ close(SUBMIT_FTR);
 # debugging: what version is installed?
 if (defined($in{'version'})) {
     print @submit_hdr, "\n";
-    print '<pre>Version: $Id: mvhsaid,v 1.7 1997/03/24 18:02:28 mjr Exp mjr $</pre>', "\n";
+    print '<pre>Version: $Id: mvhsaid,v 1.8 1997/03/24 19:38:26 mjr Exp mjr $</pre>', "\n";
     print @submit_ftr, "\n";
     
     exit(0);
@@ -91,13 +91,13 @@ $in{'school'} = ($in{'school'} eq 'Other' && $in{'sch_other'} ne '') ?
 
 # did they have the required fields?
 if ($in{'school'} eq 'Other') {
-    &send_upd_real(";$in{'id'};$in{'request'};$in{'last'};$in{'first'};$in{'married'};$in{'school'};$in{'grad'};$in{'mail'};$in{'homepage'}",1,1);
+    &send_upd_real(";$in{'id'};$in{'request'};$in{'last'};$in{'first'};$in{'married'};$in{'school'};$in{'grad'};$in{'mail'};$in{'homepage'};$in{'location'}",1,1);
     exit(0);
 }
 
 foreach (@required_headers) {
     if ($in{$_} =~ /^\s*$/) {
-	&send_upd_real(";$in{'id'};$in{'request'};$in{'last'};$in{'first'};$in{'married'};$in{'school'};$in{'grad'};$in{'mail'};$in{'homepage'}",1,1);
+	&send_upd_real(";$in{'id'};$in{'request'};$in{'last'};$in{'first'};$in{'married'};$in{'school'};$in{'grad'};$in{'mail'};$in{'homepage'};$in{'location'}",1,1);
 	exit(0);
     }
 }
@@ -122,7 +122,7 @@ Dear $mailname,
 
 This was submitted to the MVHS address database:
 
-$time;$in{'id'};$in{'request'};$in{'last'};$in{'first'};$in{'married'};$in{'school'};$in{'grad'};$in{'mail'};$in{'homepage'}
+$time;$in{'id'};$in{'request'};$in{'last'};$in{'first'};$in{'married'};$in{'school'};$in{'grad'};$in{'mail'};$in{'homepage'};$in{'location'}
 
 The kind soul who submitted it was using the web from $ENV{'REMOTE_HOST'}
 
@@ -139,7 +139,7 @@ EOM
     print "<p>Thank you!  The following information is queued for submission\n";
     print "in the MVHS Alumni Internet Directory:</p>\n";
 
-    print &about_text(";;$in{'request'};$in{'last'};$in{'first'};$in{'married'};$in{'school'};$in{'grad'};$in{'mail'};$in{'homepage'}",1), "\n";
+    print &about_text(";;$in{'request'};$in{'last'};$in{'first'};$in{'married'};$in{'school'};$in{'grad'};$in{'mail'};$in{'homepage'};$in{'location'}",1), "\n";
 
     print @submit_ftr, "\n";
 }
@@ -150,10 +150,12 @@ sub about_text {
     local($retval);
     local($rawdata,$show_req_p) = @_;
     local($time,$id,$req,$last,$first,$married,
-	  $school,$year,$email,$homepage) = split(/;/, $rawdata);
+	  $school,$year,$email,$homepage,$location) = split(/;/, $rawdata);
 
     $retval = "<pre>\n";
-    $retval .= "First Name        : <strong>$first</strong>\n";
+    $retval .= "First Name        : ";
+    $retval .= ($first eq '') ? "\n" : "<strong>$first</strong>\n";
+
     $retval .= "Last/Maiden Name  : <strong>$last</strong>\n";
     $retval .= "Married Name      : ";
     $retval .= ($married eq '') ? "(same as last name)\n" 
@@ -170,7 +172,11 @@ sub about_text {
     $retval .= ($homepage eq '') ? "(none)\n" 
 	: "<strong><a href=\"$homepage\">$homepage</a></strong>\n";
 
+    $retval .= "Location          : ";
+    $retval .= ($location eq '') ? "\n" : "<strong>$location</strong>\n";
+
     if ($show_req_p) {
+	$retval .= "\n";
 	$retval .= "Send Email Updates: ";
 	$retval .= ($req) ? "yes\n" : "no\n";
     }
@@ -249,7 +255,7 @@ sub send_about {
     local($[) = 0;
     local($_);
     local($time,$id,$req,$last,$first,$married,
-	  $school,$year,$email,$homepage) = split(/;/, $_[0]);
+	  $school,$year,$email,$homepage,$location) = split(/;/, $_[0]);
 
     print @submit_hdr, "\n<br>\n";
     print &tableheader(&inorder_fullname($first,$last,$married),
@@ -266,7 +272,8 @@ sub send_upd_list {
     local($_);
     local(@db) = &mv_alpha_db($dbfile);
     local($fullname);
-    local($time,$req,$id,$last,$first,$married,$school,$year,$email,$homepage);
+    local($time,$req,$id,$last,$first,$married,
+	  $school,$year,$email,$homepage,$location);
 
     local($info_gif) =
 	"<img src=\"/~mjr/mvhs/info.gif\" height=12 width=12 hspace=4 border=0 alt=\"[i]\">";
@@ -286,7 +293,7 @@ sub send_upd_list {
     foreach (@db) {
 	next if $_ eq '';
 	($time,$id,$req,$last,$first,$married,
-	 $school,$year,$email,$homepage) = split(/;/);
+	 $school,$year,$email,$homepage,$location) = split(/;/);
 
 	$fullname = &fullname($first,$last,$married);
 
