@@ -2,7 +2,7 @@
 #     FILE: mv_util.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: perl library routines for the MVHS Alumni Internet Directory
-#      $Id: mv_util.pl,v 1.23 1997/07/02 17:12:21 mjr Exp mjr $
+#      $Id: mv_util.pl,v 1.24 1997/07/02 17:15:26 mjr Exp mjr $
 #
 
 CONFIG: {
@@ -119,9 +119,10 @@ sub affiliate {
     local($affil);
 
     if ($year =~ /^\d+$/) {
-	$affil  = "  '$year";
-	$affil .= " $school"
-	    if $school ne 'MVHS' && $school ne '';
+	$affil  = "  $school '$year";
+	$affil  = "  A'$year" if $school eq 'Awalt';
+	$affil  = "  '$year"  if $school eq 'MVHS' || $school eq '';
+
     } else {
 	$affil  = "  [$school $year]";
     }
