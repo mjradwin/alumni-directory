@@ -3,8 +3,9 @@
 # does the html version of the alphabetical address list
 #
 
-@INC=('/u/mjr/doc/mvhs', '/usr/local/lib/perl');
+push(@INC, '/home/mjr/lib');
 require 'mv_util.pl';
+require 'tableheader.pl';
 require 'getopts.pl';
 
 $htmlname = "all.html";
@@ -26,21 +27,8 @@ open(FMTOUT,">$ARGV[1]") || die "Can't open $ARGV[1]: $!\n";
 
 if (!$opt_t) {
     print FMTOUT &common_html_hdr(1);
-    print FMTOUT "<br>
-<table cellspacing=0 cellpadding=1 border=0 width=\"100%\">
-  <tr>
-    <td bgcolor=\"#000000\" align=center>
-    <table cellspacing=0 cellpadding=5 border=0 width=\"100%\">
-      <tr>
-        <td bgcolor=\"#eeee88\" align=center valign=middle>
-        <strong><font size=\"+1\">A</font>&nbsp;L&nbsp;U&nbsp;M&nbsp;N&nbsp;I&nbsp;&nbsp; <font size=\"+1\">L</font>&nbsp;I&nbsp;S&nbsp;T&nbsp;E&nbsp;D&nbsp;&nbsp; B&nbsp;Y&nbsp;&nbsp; <font size=\"+1\">L</font>&nbsp;A&nbsp;S&nbsp;T&nbsp;&nbsp; <font size=\"+1\">N</font>&nbsp;A&nbsp;M&nbsp;E</strong>
-        </td>
-      </tr>
-    </table>
-    </td>
-  </tr>
-</table>
-";
+    print FMTOUT "<br>";
+    print FMTOUT &tableheader("Alumni Listed by Last Name", 1, 'eeee88', 1);
     print FMTOUT "<p>Index: <tt>";
     # do the funky quick-jump bar
     $lastInitial = 'A';

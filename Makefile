@@ -35,7 +35,8 @@ ${WWWDIR}/home.html:	${WWWDIR}/.home.include mv_home_html
 	./mv_home_html -i
 
 submit:	${WWWDIR}/add.html
-${WWWDIR}/add.html:	mv_util.pl mv_home_html
+# ${WWWDIR}/add.html:	mv_util.pl mv_home_html
+${WWWDIR}/add.html:	mv_home_html
 	./mv_home_html -s
 
 books:	alpha.adr
@@ -57,8 +58,9 @@ class.adr:	mvhs.adr
 dbtar:	${WWWDIR}/mvhs_db.tar
 ${WWWDIR}/mvhs_db.tar:
 	cp /pro/web/cgi-bin/mjr-mvhs.cgi .
-	tar cf ${WWWDIR}/mvhs_db.tar mv_* mjr-mvhs.cgi Makefile
-	rm -f mjr-mvhs.cgi
+	cp /home/mjr/lib/tableheader.pl /home/mjr/lib/mv_util.pl .
+	tar cf ${WWWDIR}/mvhs_db.tar mv_* tableheader.pl mjr-mvhs.cgi Makefile
+	rm -f mjr-mvhs.cgi tableheader.pl mv_util.pl
 
 backup:
 	ci -l mv_* Makefile

@@ -3,7 +3,7 @@
 #
 # mails everyone the nifty mvhs address list
 #
-@INC=('/u/mjr/doc/mvhs', '/usr/local/lib/perl');
+push(@INC, '/home/mjr/lib');
 require 'mv_util.pl';
 
 $today = localtime;
