@@ -2,7 +2,7 @@
 #     FILE: mv_util.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: perl library routines for the MVHS Alumni Internet Directory
-#      $Id: mv_util.pl,v 1.43 1997/10/14 18:58:27 mjr Exp mjr $
+#      $Id: mv_util.pl,v 1.44 1997/10/14 19:31:51 mjr Exp mjr $
 #
 
 CONFIG: {
@@ -601,7 +601,7 @@ sub common_html_hdr {
     $h2 .= "</font></td>\n";
 
     $h2 .= "  <td bgcolor=\"#ffffcc\" valign=top align=left rowspan=2><font size=\"-1\"
-  face=\"MS Sans Serif, Arial, Helvetica\">";
+  face=\"MS Sans Serif, Arial, Helvetica\"><br>";
     foreach $idx (0 .. $#second_idx) {
 	($name, $url) = split(/,/, $second_idx[$idx]);
         if ($idx == ($page - 10)) {
