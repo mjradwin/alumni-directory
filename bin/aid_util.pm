@@ -2,11 +2,11 @@
 #     FILE: aid_util.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: perl library routines for the Alumni Internet Directory
-#      $Id: aid_util.pl,v 3.59 1998/10/14 20:18:15 mradwin Exp mradwin $
+#      $Id: aid_util.pl,v 3.60 1998/10/17 21:01:55 mradwin Exp mradwin $
 #
 
 $aid_util'rcsid =
- '$Id: aid_util.pl,v 3.59 1998/10/14 20:18:15 mradwin Exp mradwin $';
+ '$Id: aid_util.pl,v 3.60 1998/10/17 21:01:55 mradwin Exp mradwin $';
 
 # ----------------------------------------------------------------------
 # CONFIGURATION
@@ -1101,21 +1101,27 @@ sub aid_build_yearlist {
 sub aid_class_jump_bar {
     package aid_util;
 
-    local($href_begin,$href_end,*years,$do_paragraph) = @_;
+    local($href_begin,$href_end,*years,$do_paragraph,$hilite) = @_;
     local($first) = 1;
     local($retval) = $do_paragraph ? '<p>' : '';
     local($year);
 
     foreach $year (@years) {
 	if ($first) {
-	    $first = 0;
-	    $retval .= "<a name=\"top\" ";
+	    $retval .= "<a name=\"top\"";
+	    $retval .= ">" if defined $hilite && $year eq $hilite;
 	} else {
-	    $retval .= " |\n<a ";
+	    $retval .= " |\n";
+	    $retval .= "<a" unless defined $hilite && $year eq $hilite;
 	}
-	$retval .= "href=\"${href_begin}${year}${href_end}\">";
+
+	$retval .= " href=\"${href_begin}${year}${href_end}\">"
+	    unless defined $hilite && $year eq $hilite;
 	$retval .= ($year eq 'other') ? "Faculty/Staff" : $year % 100;
-	$retval .= "</a>";
+	$retval .= "</a>"
+	    unless defined $hilite && $year eq $hilite && !$first;
+
+	$first = 0;
     }
 
     $do_paragraph && $retval .= '</p>';
