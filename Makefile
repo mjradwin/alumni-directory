@@ -2,7 +2,7 @@
 #     FILE: Makefile
 #   AUTHOR: Michael J. Radwin
 #    DESCR: Makefile for building the Alumni Internet Directory
-#      $Id: Makefile,v 3.37 1998/11/03 23:05:59 mradwin Exp mradwin $
+#      $Id: Makefile,v 3.38 1998/11/03 23:08:13 mradwin Exp mradwin $
 #
 
 WWWROOT=/home/web/radwin.org
@@ -42,8 +42,8 @@ SNAPSHOTFILES=mvhs \
 	web/mvhs-alumni/whatsnew
 
 all:	adrfile index submit addupdate reunions links faq copyright \
-	recent pages multi_alpha class awalt goners \
-	multi_class books
+	recent multi_class multi_alpha \
+	pages class awalt goners books
 
 ADRFILE=$(WWWDIR)/master.adr
 adrfile:	$(ADRFILE)
@@ -158,6 +158,7 @@ $(BOOKS):	$(ADR_ALPHA) $(BIN_BOOK)
 		-m $(WWWDIR)/books/eudora3.txt \
 		-n $(WWWDIR)/books/address-book.html \
 		-l $(WWWDIR)/books/address-book.ldif \
+		-o $(WWWDIR)/books/outlook.csv \
 		-v $(BOOKS) \
 		$(ADR_ALPHA)
 	$(RM) $(WWWDIR)/books/pine.txt.lu
