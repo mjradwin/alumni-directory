@@ -2,7 +2,7 @@
 
 #
 # does the html verbose pages
-# $Id: aid_multi_alpha_html,v 3.31 1999/03/23 17:59:05 mradwin Exp mradwin $
+# $Id: aid_multi_alpha_html,v 3.32 1999/03/26 19:41:22 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -55,7 +55,7 @@ foreach $id (@alpha_ids)
         $initial = $cur_initial;
 	if ($initial ne 'A') {
 	    print FMTOUT "</pre>\n";
-	    print FMTOUT &common_html_ftr(1);
+	    print FMTOUT &aid_common_html_ftr(1);
 	    close(FMTOUT);
 	    utime $time, $time, $outFile;
 	}
@@ -66,8 +66,8 @@ foreach $id (@alpha_ids)
 	die "no alpha time key!\n" unless defined $DB{"\L__t_${initial}__\E"};
 	$time = unpack("N",$DB{"\L__t_${initial}__\E"});
 
-	print FMTOUT &common_html_hdr(1,'Listed by Last Name',1,$time),
-	    &common_intro_para(1),
+	print FMTOUT &aid_common_html_hdr(1,'Listed by Last Name',1,$time),
+	    &aid_common_intro_para(1),
 	    "<p>\n", &alpha_jump_bar($initial), "<hr noshade size=1>\n\n";
 
 	print FMTOUT "<pre>";
@@ -79,7 +79,7 @@ print STDERR "\n";
 dbmclose(%DB);
 
 print FMTOUT "</pre>\n";
-print FMTOUT &common_html_ftr(1);
+print FMTOUT &aid_common_html_ftr(1);
 close(FMTOUT);
 utime $time, $time, $outFile;
 
@@ -99,8 +99,8 @@ sub html_pre_entry {
     local($info_gif) = &aid_image_tag('info');
     local($retval);
 
-    $fullname = &fullname(*rec);
-    ($affil,$len) = &affiliate(*rec,1);
+    $fullname = &aid_fullname(*rec);
+    ($affil,$len) = &aid_affiliate(*rec,1);
     $needsanchor = ($do_html_p && (($a_name ne '') ||
 				   ($rec{'www'} ne ''))) ? 1 : 0;
     $retval = '';

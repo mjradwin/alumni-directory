@@ -4,7 +4,7 @@
 # does a short list, either compact or verbose, sorted by graduating
 # class with a jump bar
 #
-# $Id: aid_shortlist_html,v 1.17 1999/03/26 17:02:54 mradwin Exp mradwin $
+# $Id: aid_shortlist_html,v 1.18 1999/03/26 19:41:22 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -66,7 +66,7 @@ for (@class)
 {
     %rec = &aid_db_unpack_rec($_,$DB{$_});
     next unless $rec{'valid'};
-    $opt_m && next unless &is_new($rec{'time'}, $opt_m);
+    $opt_m && next unless &aid_is_new($rec{'time'}, $opt_m);
     $opt_w && next unless $rec{'www'} ne '';
 
     push(@ids,$_);
@@ -86,13 +86,13 @@ $subtitle = "<strong><font color=\"#000000\">$subtitle</font></strong>";
 if (!$opt_t) {
     if ($opt_w) {
 	$time = unpack("N",$DB{'__t_www__'});
-	print FMTOUT &common_html_hdr(4,'Alumni with Web Pages',1,$time,$subtitle);
-	print FMTOUT &common_intro_para(1);
+	print FMTOUT &aid_common_html_hdr(4,'Alumni with Web Pages',1,$time,$subtitle);
+	print FMTOUT &aid_common_intro_para(1);
 
     } elsif ($opt_m) {
 	$opt_M = 'month' unless defined $opt_M;
 	$time = unpack("N",$DB{'__t__'});
-	print FMTOUT &common_html_hdr(5,'Recent Additions and Updates',1,$time,$subtitle);
+	print FMTOUT &aid_common_html_hdr(5,'Recent Additions and Updates',1,$time,$subtitle);
 	print FMTOUT
 "<p>All alumni on this page have been added to the Directory
 or updated their listings within the last $opt_M.</p>\n\n";
@@ -111,8 +111,8 @@ if (!$opt_v) {
     {
 	%rec = &aid_db_unpack_rec($_,$DB{$_});
 
-	$fullname = &fullname(*rec);
-	($affil,$len) = &affiliate(*rec,!$opt_t);
+	$fullname = &aid_fullname(*rec);
+	($affil,$len) = &aid_affiliate(*rec,!$opt_t);
 
 	$opt_t || print FMTOUT "<a href=\"" . &aid_about_path(*rec) . "\">$info_gif</a>";
 	$opt_t || print FMTOUT "<a";
@@ -151,7 +151,7 @@ if (!$opt_v) {
     }
 }
 
-$opt_t || print FMTOUT &common_html_ftr(5);
+$opt_t || print FMTOUT &aid_common_html_ftr(5);
 
 dbmclose(%DB);
 close(FMTOUT);

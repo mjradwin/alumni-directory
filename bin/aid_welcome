@@ -2,7 +2,7 @@
 
 #
 # mails a welcome, update, confirm, or massmail message to members
-# $Id: aid_welcome,v 3.37 1999/03/26 19:41:22 mradwin Exp mradwin $
+# $Id: aid_welcome,v 3.38 1999/03/26 20:23:37 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -173,7 +173,7 @@ $dbmfile = shift;
 $dbmfile =~ s/\.db$//;
 die "can't open ${dbmfile}.db\n" unless -r "${dbmfile}.db";
 
-dbmopen(%DB, $dbmfile, 0444);
+dbmopen(%DB,$dbmfile,0444);
 die "invalid DB: ${dbmfile}.db\n" unless defined $DB{'__class__'};
 
 open(LOG,">>$logfile") || die "$0: Can't open $logfile: $!\n";
@@ -198,7 +198,7 @@ if ($opt_a)
 	    if ($opt_c)
 	    {
 		next unless $rec{'request'} == 0;
-		next unless &is_old($rec{'fresh'});
+		next unless &aid_is_old($rec{'fresh'});
 	    }
 
 	    &mail_user(*rec);
@@ -248,7 +248,9 @@ sub mail_user
 	return 0;
     }
 
-    $message = &message_body(*rec) . $params{'textfile'} . &message_footer;
+    $message = &message_body(*rec) . $params{'textfile'} .
+	"\n-- \n" . &aid_config('admin_name') . "\n" . 
+	    &aid_config('admin_school');
 
     $name  = $rec{'first'};
     $name .= " $rec{'middle'}."
@@ -257,27 +259,27 @@ sub mail_user
     $name .= " $rec{'married'}"
 	if defined $rec{'married'} && $rec{'married'} ne '';
     
-    &sendmail($rec{'email'}, $name,
-	      &aid_config('admin_email'), &aid_config('admin_name'),
-	      $params{'subject'} . " [AID-$rec{'id'}]",
-	      $message);
+    &aid_sendmail($rec{'email'}, $name,
+		  &aid_config('admin_email'), &aid_config('admin_name'),
+		  $params{'subject'} . " [AID-$rec{'id'}]",
+		  $message);
     print LOG time, " - $rec{'id'} - $rec{'email'}\n";
 
     if (defined $rec{'email_old'} &&
 	$rec{'email_old'} ne '' && $rec{'email_old'} ne $rec{'email'})
     {
-	&sendmail($rec{'email_old'}, $name,
-		  &aid_config('admin_email'), &aid_config('admin_name'),
-		  $params{'subject'} . " [AID-$rec{'id'}]",
-		  $message);
+	&aid_sendmail($rec{'email_old'}, $name,
+		      &aid_config('admin_email'), &aid_config('admin_name'),
+		      $params{'subject'} . " [AID-$rec{'id'}]",
+		      $message);
 	print LOG time, " - $rec{'id'} - $rec{'email_old'} - OLD\n";
     }
 
     1;
 } 
 
-
-sub message_body {
+sub message_body
+{
     local($[) = 0;
     local(*rec) = @_;
     local($denied) = $rec{'request'} == 0 ?
@@ -287,7 +289,7 @@ digests via e-mail, you will only receive bi-yearly
 address verification messages.
 " : '';
     local($srv_prefix) = "http://" . &aid_config('master_srv');
-    local($about) = &about_text(*rec,1,0,0);
+    local($about) = &aid_about_text(*rec,1,0,0);
 
     return "Dear $rec{'first'},
 

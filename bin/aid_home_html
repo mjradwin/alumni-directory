@@ -2,7 +2,7 @@
 
 #
 # does the html version of just home pages
-# $Id: aid_home_html,v 3.32 1999/03/26 19:41:22 mradwin Exp mradwin $
+# $Id: aid_home_html,v 3.33 1999/03/26 20:23:37 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -81,10 +81,10 @@ if ($opt_i && $opt_p == 0)
 }
 
 open(OUTFILE,">$outfile") || die "Can't open $outfile: $!\n";
-print OUTFILE &common_html_hdr($opt_p,$opt_t,0,$time);
+print OUTFILE &aid_common_html_hdr($opt_p,$opt_t,0,$time);
 
 if ($opt_s) {
-    print OUTFILE &submit_body(*blank_entry,'');
+    print OUTFILE &aid_submit_body(*blank_entry,'');
 
 } elsif ($opt_d) {
     die "no __years__ key!\n" unless defined $DB{'__years__'};
@@ -157,7 +157,7 @@ years after mine.</label>
 } else { # implicit opt_i
     print OUTFILE @lines;
 }
-print OUTFILE &common_html_ftr($opt_p);
+print OUTFILE &aid_common_html_ftr($opt_p);
 
 dbmclose(%DB) unless $opt_i;
 close(OUTFILE);

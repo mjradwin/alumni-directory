@@ -2,7 +2,7 @@
 
 #
 # does the html version of the invalid address list
-# $Id: aid_goners_html,v 3.22 1999/03/09 20:50:23 mradwin Exp mradwin $
+# $Id: aid_goners_html,v 3.23 1999/03/26 19:41:22 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -35,7 +35,7 @@ die "no __alpha__ key!\n" unless defined $DB{'__alpha__'};
 open(FMTOUT,">$ARGV[1]") || die "Can't open $ARGV[1]: $!\n";
 
 $time = unpack("N",$DB{'__t_goner__'});
-print FMTOUT &common_html_hdr(-1,'Alumni with Invalid Addresses',1,$time);
+print FMTOUT &aid_common_html_hdr(-1,'Alumni with Invalid Addresses',1,$time);
 print FMTOUT "
 <p>The following addresses are invalid because either e-mail to them
 bounces, or the address is being used by a new owner.  If you know a
@@ -53,8 +53,8 @@ foreach $id (@alpha_ids)
 
     $rec{'email'} =~ s/^[^\@]+\@/\@/;
 
-    $fullname = &fullname(*rec);
-    ($affil,$len) = &affiliate(*rec,0);
+    $fullname = &aid_fullname(*rec);
+    ($affil,$len) = &aid_affiliate(*rec,0);
 
     print FMTOUT "<a href=\"", &aid_config('goners_cgi'), "?update=$rec{'id'}\">";
     print FMTOUT $fullname;
@@ -66,7 +66,7 @@ foreach $id (@alpha_ids)
 }
 
 print FMTOUT "</pre>\n";
-print FMTOUT &common_html_ftr(-1, "Invalid&nbsp;Addresses");
+print FMTOUT &aid_common_html_ftr(-1, "Invalid&nbsp;Addresses");
 
 dbmclose(%DB);
 close(FMTOUT);

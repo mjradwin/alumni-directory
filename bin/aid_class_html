@@ -2,7 +2,7 @@
 
 #
 # does the html version of the grad-date address list
-# $Id: aid_class_html,v 3.32 1999/03/26 19:41:22 mradwin Exp mradwin $
+# $Id: aid_class_html,v 3.33 1999/03/27 02:52:51 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -72,8 +72,8 @@ open(FMTOUT,">$ARGV[1]") || die "Can't open $ARGV[1]: $!\n";
 if (!$opt_t) {
     $time = unpack("N",$DB{"__t${affix}__"});
 
-    print FMTOUT &common_html_hdr($pageno,$title,1,$time);
-    print FMTOUT &common_intro_para(1);
+    print FMTOUT &aid_common_html_hdr($pageno,$title,1,$time);
+    print FMTOUT &aid_common_intro_para(1);
     print FMTOUT &aid_class_jump_bar('#grad','',*years,0);
     print FMTOUT "<pre>";
 }
@@ -115,7 +115,7 @@ foreach $year (@years)
 	%rec = &aid_db_unpack_rec($id,$DB{$id});
 	next unless $rec{'valid'};
 
-	$fullname = &fullname(*rec);
+	$fullname = &aid_fullname(*rec);
 	$regschool = ($opt_a) ? $aid_util'school_awalt :
 	    $aid_util'school_default;
 
@@ -147,7 +147,7 @@ foreach $year (@years)
 print STDERR "\n" unless $opt_q;
 
 $opt_t || print FMTOUT "</pre>\n";
-$opt_t || print FMTOUT &common_html_ftr($pageno);
+$opt_t || print FMTOUT &aid_common_html_ftr($pageno);
 
 dbmclose(%DB);
 close(FMTOUT);
