@@ -1,8 +1,8 @@
 #
-#     FILE: awalt_config.pl
+#     FILE: generic_config.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: configuration variables for Alumni Internet Directory
-#      $Id: awalt_config.pl,v 1.7 1999/05/19 17:48:05 mradwin Exp $
+#      $Id: generic_config.pl,v 1.1 1999/05/24 18:13:55 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -22,7 +22,7 @@
 #
 
 $aid_util'rcsid =
- '$Id: awalt_config.pl,v 1.7 1999/05/19 17:48:05 mradwin Exp $';
+ '$Id: generic_config.pl,v 1.1 1999/05/24 18:13:55 mradwin Exp mradwin $';
 
 # Generic HS on bogus-domain.org (FreeBSD 2.2.2) configuration
 %aid_util'config =   #'#
