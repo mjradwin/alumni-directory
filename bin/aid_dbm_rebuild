@@ -1,6 +1,6 @@
 #!/usr/local/bin/perl -w
 
-# $Id: aid_dbm_rebuild,v 1.4 2001/09/16 16:57:51 mradwin Exp mradwin $
+# $Id: aid_dbm_rebuild,v 1.5 2002/03/07 23:29:39 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -29,12 +29,13 @@ require 'aid_util.pl';
 use Getopt::Std;
 
 $0 =~ s,.*/,,;  # basename
-$usage = "usage: $0 [-hq] infile.db outfile.db
+$usage = "usage: $0 [-hqa] infile.db outfile.db
     -h        Display usage information.
+    -a        Rebuild aliases, too.
     -q        Quiet.
 ";
 
-getopts('hq') || die "$usage\n";
+getopts('hqa') || die "$usage\n";
 $opt_h && die "$usage\n";
 defined $ARGV[0] || die "$usage\n";
 defined $ARGV[1] || die "$usage\n";
@@ -54,7 +55,7 @@ while (($key,$val) = each(%OLDDB))
 
     %rec = &aid_db_unpack_rec($key,$val);
 
-    if (defined $rec{'a'} && $rec{'a'} ne '') {
+    if (!$opt_a && defined $rec{'a'} && $rec{'a'} ne '') {
 	$aliases{$key} = $rec{'a'};
     } else {
 	$aliases{$key} = &aid_generate_alias(*rec);
@@ -90,5 +91,6 @@ exit(0);
 if ($^W && 0)
 {
     $opt_h = $opt_h;
+    $opt_a = $opt_a;
     @aid_edit_field_names = ();
 }
