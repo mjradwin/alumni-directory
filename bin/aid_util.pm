@@ -2,11 +2,11 @@
 #     FILE: aid_util.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: perl library routines for the Alumni Internet Directory
-#      $Id: aid_util.pl,v 3.100 1999/01/29 19:37:19 mradwin Exp mradwin $
+#      $Id: aid_util.pl,v 3.101 1999/01/29 19:41:06 mradwin Exp mradwin $
 #
 
 $aid_util'rcsid =
- '$Id: aid_util.pl,v 3.100 1999/01/29 19:37:19 mradwin Exp mradwin $';
+ '$Id: aid_util.pl,v 3.101 1999/01/29 19:41:06 mradwin Exp mradwin $';
 
 # ----------------------------------------------------------------------
 # CONFIGURATION
@@ -1129,16 +1129,13 @@ sub common_html_ftr {
     $copyright =~ s/^[^,]+,//;
 
     $ftr  = "\n<!-- ftr begin -->\n";
-#    $ftr .= "<table cellspacing=0 cellpadding=6 border=1 width=\"100%\">\n" .
-#	"  <tr>\n    <td bgcolor=\"#$cell_bg\" valign=middle>\n";
     $ftr .= "<hr noshade size=\"1\">\n";
 #    $ftr .= &main'common_link_table($page); #'#
     $ftr .= "\n<small>" . $disclaimer . "</small><br>\n\n";
-#    $ftr .= "    </td>\n  </tr>\n</table>\n";
 
     $ftr .= "\n<br><small><a href=\"" . $copyright . "\">" .
-	"Copyright\n&copy; 1999 " . $config{'admin_name'} . "</a></small>\n\n" .
-	"<!-- ftr end -->\n\n</body>\n</html>\n";
+	"Copyright\n&copy; 1999 " . $config{'admin_name'} . "</a></small>\n" .
+	"<!-- ftr end -->\n\n</body> </html>\n";
 
     $ftr;
 }
@@ -1169,8 +1166,7 @@ sub common_html_hdr {
     $hdr  = 
 	"<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0 Transitional//EN\"\n" .
 	"        \"http://www.w3.org/TR/REC-html40/loose.dtd\">\n" .
-	"<!--  " . $config{'rcsid'} . " -->\n" .
-	"<html>\n<head>\n" .
+	"<html> <head>\n" .
 	"  <title>" . $titletag . "</title>\n" . 
 	    $pics_label . "\n" . $site_tags . "\n";
     $hdr .= "$noindex\n" if $norobots;
