@@ -6,8 +6,16 @@ CONFIG: {
 		 'Grad.&nbsp;Class,class.html',
 		 'Recent&nbsp;Additions,recent.html',
 		 'Web&nbsp;Pages,pages.html',
-		 'Add&nbsp;Listing,add.html',
+		 'Get&nbsp;Listed!,add.html',
 		 'Acceptible&nbsp;Use,#disclaimer');
+
+    $pics_label = "<meta http-equiv=\"PICS-Label\" content='(PICS-1.0 \"http://www.rsac.org/ratingsv01.html\" l gen true comment \"RSACi North America Server\" by \"mjr\@cs.brown.edu\" for \"http://www.cs.brown.edu/people/mjr/mvhs/\" on \"1996.04.04T08:15-0500\" exp \"1997.07.01T08:15-0500\" r (n 0 s 0 v 0 l 0))'>";
+
+    $site_tags = "<meta name=\"keywords\" content=\"Mountain View High School, Alumni, MVHS, Awalt High School, Mountain View, Los Altos, California, reunion, Radwin\">\n<meta name=\"description\" content=\"Mountain View High School Internet Directory: email address and web page listing of alumni, students, faculty and staff.  Also Awalt High School\">";
+
+    $html_head = "<html>\n<head>\n" .
+	"<title>Mountain View High School Alumni Internet Directory</title>\n" .
+	$site_tags . "\n" . $pics_label . "\n</head>\n\n";
 
     1;
 }
@@ -81,12 +89,12 @@ sub bydatakeys { $datakeys[$a] cmp $datakeys[$b] }
 sub mv_alpha_db {
     package mv_util;
 
-    local(@db) = &mv_create_db($_[0]);
+    local(@db) = &'mv_create_db($_[0]);
     local(@alpha, @fields);
     @datakeys = ();
 
     foreach (@db) {
-	@fields = &mv_parse($_);
+	@fields = &'mv_parse($_);
 	push(@datakeys, "$fields[3]:$fields[4]");
     }
     @alpha = @db[sort bydatakeys $[..$#db];
@@ -121,7 +129,7 @@ sub submit_body {
     local($[) = 0;
     local($_);
     local($time,$id,$req,$last,$first,$school,$year,$email,$alias,$homepage) 
-	= &mv_parse($_[0]);
+	= &'mv_parse($_[0]); #' font-lock
 
     $homepage = 'http://' if $homepage eq '';
     $req = ($req) ? ' checked' : '';
@@ -213,22 +221,12 @@ sub common_html_hdr {
     $page_name =~ s/&nbsp;/ /g;
     $today = localtime;
 
-    $h1 = "<html>
-<head>
-<title>Mountain View High School Alumni Internet Directory</title>
-<meta name=\"keywords\" content=\"Mountain View High School, Alumni, MVHS, Awalt High School, Mountain View, Los Altos, California, reunion, Radwin\">
-<meta name=\"description\" content=\"Mountain View High School Internet Directory: email address and web page listing of alumni, students, faculty and staff.  Also Awalt High School\">
-<meta http-equiv=\"PICS-Label\" content='(PICS-1.0 \"http://www.rsac.org/ratingsv01.html\" l gen true comment \"RSACi North America Server\" by \"mjr\@cs.brown.edu\" for \"http://www.cs.brown.edu/people/mjr/mvhs/\" on \"1996.04.16T08:15-0500\" exp \"1997.01.01T08:15-0500\" r (n 0 s 0 v 0 l 0))'>
-</head>
-
-<body bgcolor=\"#f0f0f0\" LINK=\"#000080\" TEXT=\"#000000\" VLINK=\"#800080\">
+    $h1 = "<body bgcolor=\"#f0f0f0\" LINK=\"#000080\" TEXT=\"#000000\" VLINK=\"#800080\">
 <hr noshade size=1>
 <table border=0 cellpadding=8 cellspacing=0 width=\"100%\">
 <tr>
   <td bgcolor=\"#eeeecc\" align=left rowspan=2><font size=\"-1\"
   face=\"Arial, Helvetica, MS Sans Serif\">";
-
-#' (unconfuse da font-lock)
 
     $h2 = "";
     foreach $idx (0 .. $#page_idx) {
@@ -257,7 +255,7 @@ sub common_html_hdr {
 
 ";
 
-    return $h1 . $h2 . $h3;
+    return $html_head . $h1 . $h2 . $h3;
 }
 
 
