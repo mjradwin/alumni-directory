@@ -2,7 +2,7 @@
 #     FILE: aid_util.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: perl library routines for the Alumni Internet Directory
-#      $Id: aid_util.pl,v 4.91 1999/04/13 20:58:17 mradwin Exp mradwin $
+#      $Id: aid_util.pl,v 4.92 1999/04/13 21:15:24 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -286,55 +286,52 @@ sub aid_yahoo_abook_path {
     package aid_util;
 
     local(*rec) = @_;
-    local($url) = 'http://address.yahoo.com/yab?A=da&au=a';
+    local($url) = 'http://address.yahoo.com/yab?A=da&amp;au=a';
 
-    $url .= '&fn=' . &main'aid_url_escape($rec{'gn'});
+    $url .= '&amp;fn=' . &main'aid_url_escape($rec{'gn'});
     if ($rec{'mn'} ne '')
     {
-	$url .= '&mn=' . &main'aid_url_escape($rec{'sn'});
-	$url .= '&ln=' . &main'aid_url_escape($rec{'mn'});
+	$url .= '&amp;mn=' . &main'aid_url_escape($rec{'sn'});
+	$url .= '&amp;ln=' . &main'aid_url_escape($rec{'mn'});
     }
     else
     {
-	$url .= '&mn=' . &main'aid_url_escape($rec{'mi'});
-	$url .= '&ln=' . &main'aid_url_escape($rec{'sn'});
+	$url .= '&amp;mn=' . &main'aid_url_escape($rec{'mi'});
+	$url .= '&amp;ln=' . &main'aid_url_escape($rec{'sn'});
     }
-    $url .= '&c=Unfiled';
-    $url .= '&nn=' . &main'aid_url_escape($rec{'a'});
-    $url .= '&e='  . &main'aid_url_escape($rec{'e'});
-    $url .= '&yid=&wp=&pg=&pp=0&ti=';
-    $url .= '&co=' . $school_name[$rec{'s'}];
+    $url .= '&amp;c=Unfiled';
+    $url .= '&amp;nn=' . &main'aid_url_escape($rec{'a'});
+    $url .= '&amp;e='  . &main'aid_url_escape($rec{'e'});
+    $url .= '&amp;pp=0';
+    $url .= '&amp;co=' . $school_name[$rec{'s'}];
     if ($rec{'yr'} =~ /^\d+$/) {
 	$url .= '+Class+of+' . $rec{'yr'};
     } else {
 	$url .= '+' . &main'aid_url_escape($rec{'yr'});
     }
-    $url .= '&f=';
-    $url .= '&pu=' . &main'aid_url_escape($rec{'w'});
-    $url .= '&af=d&wa1=';
+
+    $url .= '&amp;pu=' . &main'aid_url_escape($rec{'w'});
+    $url .= '&amp;af=d';
 
     if ($rec{'l'} =~ /^(.*),\s+(\w\w)$/)
     {
-	$url .= '&hc=' . &main'aid_url_escape($1);
-	$url .= '&hs=' . $2;
-	$url .= '&hz=';
+	$url .= '&amp;hc=' . &main'aid_url_escape($1);
+	$url .= '&amp;hs=' . $2;
     }
     elsif ($rec{'l'} =~ /^(.*),\s+(\w\w)\s+(\d\d\d\d\d)$/)
     {
-	$url .= '&hc=' . &main'aid_url_escape($1);
-	$url .= '&hs=' . $2;
-	$url .= '&hz=' . $3;
+	$url .= '&amp;hc=' . &main'aid_url_escape($1);
+	$url .= '&amp;hs=' . $2;
+	$url .= '&amp;hz=' . $3;
     }
     else
     {
-	$url .= '&hc=' . &main'aid_url_escape($rec{'l'});
-	$url .= '&hs=&hz=';
+	$url .= '&amp;hc=' . &main'aid_url_escape($rec{'l'});
     }
-    $url .= '&hco=&mb=&op=&e1=&c1=';
 
-    $url .= '&.done=';
-    $url .= &main'aid_url_escape('http://' .
-			$config{'master_srv'} . $config{'master_path'});
+    $url .= '&amp;.done=' .
+        &main'aid_url_escape('http://' .
+			     $config{'master_srv'} . $config{'master_path'});
 
     $url;
 }
