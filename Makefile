@@ -2,7 +2,7 @@
 #     FILE: Makefile
 #   AUTHOR: Michael J. Radwin
 #    DESCR: Makefile for building the Alumni Internet Directory
-#      $Id: Makefile,v 5.3 1999/06/01 04:07:04 mradwin Exp mradwin $
+#      $Id: Makefile,v 5.4 1999/06/01 16:54:37 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -219,4 +219,16 @@ chmod:
 	( cd $(WWWDIR) ; chmod -R a+rX * )
 
 clean:
-	$(RM) TAGS class.txt alpha.txt recent.txt
+	$(RM) TAGS class.txt alpha.txt recent.txt \
+	$(MULTI_ALPHA_TS) \
+	$(RECENT_TS) \
+	$(GONERS_TS) \
+	$(PAGES_TS) \
+	$(INDEX_TS) \
+	$(REUNIONS_TS) \
+	$(LINKS_TS) \
+	$(FAQ_TS) \
+	$(COPYRIGHT_TS) \
+	$(SUBMIT_TS) \
+	$(ADDUPDATE_TS) \
+	$(DOWNLOAD_TS)
