@@ -2,21 +2,22 @@
 
 #
 # does the html version of the grad-date address list
-# $Id: aid_class_html,v 3.27 1999/03/02 03:24:17 mradwin Exp mradwin $
+# $Id: aid_class_html,v 3.28 1999/03/03 20:19:06 mradwin Exp mradwin $
 #
 
 require 'aid_util.pl';
 require 'getopts.pl';
 
 $0 =~ s,.*/,,;  # basename
-$usage = "usage: $0 [-hta] [-c class] infile.db outfile
+$usage = "usage: $0 [-htaw] [-c class] infile.db outfile
     -h        Display usage information.
     -t        Output text only.
     -a        Awalt mode.
+    -w        Web page mode.
     -c class  Only people from <class>.
 ";
 
-&Getopts('htac:') || die "$usage\n";
+&Getopts('htawc:') || die "$usage\n";
 $opt_h && die "$usage\n";
 $ARGV[0] || die "$usage\n";
 $ARGV[1] || die "$usage\n";
@@ -29,7 +30,11 @@ $ARGV[0] =~ s/\.db$//;
 die "can't open $ARGV[0].db\n" unless -r "$ARGV[0].db";
 dbmopen(DB,$ARGV[0],0444);
 
-$prefix = $opt_a ? 'awalt_' : '';
+$prefix = $opt_a ? 'awalt_' : ($opt_w ? 'www_' : '');
+$affix = $opt_a ? '_awalt' : ($opt_w ? '_www' : '');
+$title  = $opt_a ? 'Awalt Alumni' : 
+    ($opt_w ? 'Alumni with Web Pages' : 'Listed by Graduating Class');
+$pageno = $opt_a ? 3 : ($opt_w ? 4 : -1);
 
 if ($opt_c)
 {
@@ -48,12 +53,9 @@ else
 open(FMTOUT,">$ARGV[1]") || die "Can't open $ARGV[1]: $!\n";
 
 if (!$opt_t) {
-    $title  = $opt_a ? 'Awalt Alumni' : 'Listed by Graduating Class';
+    $time = unpack("N",$DB{"__t${affix}__"});
 
-    $time   = $opt_a ? unpack("N",$DB{'__t_awalt__'}) :
-	unpack("N",$DB{'__t__'});
-
-    print FMTOUT &common_html_hdr(($opt_a ? 3 : -1),$title,1,$time);
+    print FMTOUT &common_html_hdr($pageno,$title,1,$time);
     print FMTOUT &common_intro_para(1);
     print FMTOUT &aid_class_jump_bar('#grad','',*years,0);
     print FMTOUT "<pre>";
@@ -124,7 +126,7 @@ foreach $year (@years)
 print STDERR "\n";
 
 $opt_t || print FMTOUT "</pre>\n";
-$opt_t || print FMTOUT &common_html_ftr($opt_a ? 3 : -1);
+$opt_t || print FMTOUT &common_html_ftr($pageno);
 
 dbmclose(DB);
 close(FMTOUT);
