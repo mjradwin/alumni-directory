@@ -2,11 +2,11 @@
 #     FILE: aid_util.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: perl library routines for the Alumni Internet Directory
-#      $Id: aid_util.pl,v 3.92 1999/01/11 19:21:01 mradwin Exp mradwin $
+#      $Id: aid_util.pl,v 3.93 1999/01/20 19:04:59 mradwin Exp mradwin $
 #
 
 $aid_util'rcsid =
- '$Id: aid_util.pl,v 3.92 1999/01/11 19:21:01 mradwin Exp mradwin $';
+ '$Id: aid_util.pl,v 3.93 1999/01/20 19:04:59 mradwin Exp mradwin $';
 
 # ----------------------------------------------------------------------
 # CONFIGURATION
@@ -44,7 +44,8 @@ $aid_util'rcsid =
      );
 
 @aid_util'req_descr =   #'#
-    ('only address verification',
+    (
+     'only address verification',
      'yes (sorted by name)',
      'yes (sorted by graduating class)',
      'yes (new and changed entries)',
@@ -1024,7 +1025,7 @@ sub about_text {
 	    "yes\n" : "no\n";
 	$retval .= "Send Email Updates : ";
 	$retval .= defined $req_descr[$rec{'request'}] ?
-	    "$req_descr[$rec{'request'}]\n" : "(none)\n";
+	    "$req_descr[$rec{'request'}]\n" : "(unknown)\n";
     } 
 
     if ($rec{'time'} ne '' && $rec{'time'} != 0 &&
