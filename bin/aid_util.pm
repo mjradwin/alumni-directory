@@ -2,7 +2,7 @@
 #     FILE: aid_util.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: perl library routines for the Alumni Internet Directory
-#      $Id: aid_util.pl,v 5.79 2000/12/06 19:56:28 mradwin Exp mradwin $
+#      $Id: aid_util.pl,v 5.80 2000/12/07 22:24:05 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -30,27 +30,21 @@ use Net::SMTP;
 use Time::Local;
 use POSIX qw(strftime);
 
-@aid_util::MoY = 
-    ('Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec');
 sub aid_caldate
 {
     package aid_util;
 
-    local($[) = 0;
-    local($time) = @_;
-    local($i,$day,$month,$year);
+    my($time) = @_;
 
-    ($i,$i,$i,$day,$month,$year,$i,$i,$i) = localtime($time);
-    sprintf("%02d-%s-%d", $day, $MoY[$month], ($year+1900));
+    &POSIX::strftime("%d-%b-%Y", localtime($time));
 }
 
 sub aid_vdate {
     package aid_util;
 
-    local($time) = @_;
-    local($sec,$min,$hour,$i,$day,$month,$year);
+    my($time) = @_;
 
-    ($sec,$min,$hour,$day,$month,$year,$i,$i,$i) = gmtime($time);
+    my($sec,$min,$hour,$day,$month,$year) = gmtime($time);
     sprintf("%d%02d%02dT%02d%02d%02dZ", $year+1900, $month+1, $day,
 	    $hour, $min, $sec);
 }
@@ -61,7 +55,7 @@ sub aid_is_new
 {
     package aid_util;
 
-    local($time,$months) = @_;
+    my($time,$months) = @_;
 
     $months = 1 unless $months;
     (((time - $time) < ($months * 2678400)) ? 1 : 0);
@@ -74,9 +68,9 @@ sub aid_is_old
 {
     package aid_util;
 
-    local($[) = 0;
+    my($time) = @_;
 
-    (((time - $_[0]) >= 15724800) ? 1 : 0);
+    (((time - $time) >= 15724800) ? 1 : 0);
 }
 
 sub aid_is_new_html
@@ -107,7 +101,7 @@ sub aid_fullname
     package aid_util;
 
     local(*rec) = @_;
-    local($mi) = ($rec{'mi'} ne '') ? " $rec{'mi'}." : '';
+    my($mi) = ($rec{'mi'} ne '') ? " $rec{'mi'}." : '';
 
     if ($rec{'gn'} eq '') {
 	$rec{'sn'};
@@ -126,7 +120,7 @@ sub aid_inorder_fullname
     package aid_util;
 
     local(*rec) = @_;
-    local($mi) = ($rec{'mi'} ne '') ? "$rec{'mi'}. " : '';
+    my($mi) = ($rec{'mi'} ne '') ? "$rec{'mi'}. " : '';
 
     if ($rec{'gn'} eq '') {
 	$rec{'sn'};
@@ -145,7 +139,7 @@ sub aid_affiliate
     package aid_util;
 
     local(*rec,$do_html_p) = @_;
-    local($year,$affil,$len,$tmp);
+    my($year,$affil,$len,$tmp);
 
     $affil = '  ';
     $len   = 2;
@@ -184,7 +178,7 @@ sub aid_mangle
 {
     package aid_util;
 
-    local($name) = @_;
+    my($name) = @_;
 
     $name =~ s/\s//g;
     $name =~ s/\".*\"//g;
@@ -201,7 +195,8 @@ sub aid_ampersand_join
     package aid_util;
 
     local(*rec) = @_;
-    local($key,$val,$retval,$_);
+    my($key,$val,$retval);
+    local($_);
 
     $retval = 'id=' . &main::aid_url_escape($rec{'id'}); 
 
@@ -219,7 +214,7 @@ sub aid_generate_alias
     package aid_util;
 
     local(*rec) = @_;
-    local($mangledLast,$mangledFirst,$alias);
+    my($mangledLast,$mangledFirst,$alias);
 
     $mangledFirst = &main::aid_mangle($rec{'gn'}); 
     if ($rec{'mn'} ne '') {
@@ -256,7 +251,7 @@ sub aid_yahoo_abook_path {
     package aid_util;
 
     local(*rec) = @_;
-    local($url) = 'http://address.yahoo.com/yab?A=da&amp;au=a';
+    my($url) = 'http://address.yahoo.com/yab?A=da&amp;au=a';
 
     $url .= '&amp;fn=' . &main::aid_url_escape($rec{'gn'}); 
     if ($rec{'mn'} ne '')
@@ -312,8 +307,8 @@ sub aid_about_path {
     package aid_util;
 
     local(*rec,$suppress_anchor_p) = @_;
-    local($page) = ($rec{'yr'} =~ /^\d+$/) ? $rec{'yr'} : 'other';
-    local($anchor) = ($suppress_anchor_p) ? '' : "#id-$rec{'id'}";
+    my($page) = ($rec{'yr'} =~ /^\d+$/) ? $rec{'yr'} : 'other';
+    my($anchor) = ($suppress_anchor_p) ? '' : "#id-$rec{'id'}";
 
     "$config{'master_path'}class/${page}.html${anchor}";
 }
@@ -338,7 +333,8 @@ sub aid_html_entify_rec
     package aid_util;
 
     local(*rec_arg) = @_;
-    local(%rec,$_);
+    local($_);
+    my(%rec);
 
     %rec = %rec_arg;
 
@@ -355,7 +351,9 @@ sub aid_html_entify_rec
 
 sub aid_sendmail
 {
-    local($return_path,$from,$subject,$body,@recip) = @_;
+    package aid_util;
+
+    my($return_path,$from,$subject,$body,@recip) = @_;
 
     &main::aid_sendmail_v2($return_path,$from,$subject,'',$body,@recip);
 }
@@ -364,8 +362,8 @@ sub aid_sendmail_v2
 {
     package aid_util;
 
-    local($return_path,$from,$subject,$xtrahead,$body,@recip) = @_;
-    local($message,$i,$to,$cc,@targets);
+    my($return_path,$from,$subject,$xtrahead,$body,@recip) = @_;
+    my($message,$i,$to,$cc,@targets);
 
     my($smtp) = Net::SMTP->new($config{'smtp_svr'}, Timeout => 30);
     unless ($smtp) {
@@ -435,11 +433,10 @@ sub aid_verbose_entry {
 
     local(*rec_arg,$display_year,$suppress_new,$suppress_links) = @_;
     local($_);
-    local($fullname);
-    local(*rec);
-    local($retval) = '';
+    my($fullname);
+    my($retval) = '';
 
-    %rec = &main::aid_html_entify_rec(*rec_arg);
+    local(%rec) = &main::aid_html_entify_rec(*rec_arg);
 
     $fullname = &main::aid_inorder_fullname(*rec); 
 
@@ -510,10 +507,9 @@ sub aid_vcard_text {
     package aid_util;
 
     local(*rec) = @_;
-    local($v_fn,$v_n,$retval);
-#    local($message);
-    local($mi) = ($rec{'mi'} ne '') ? "$rec{'mi'}. " : '';
-    local($v_mi) = ($rec{'mi'} ne '') ? ";$rec{'mi'}" : '';
+    my($v_fn,$v_n,$retval);
+    my($mi) = ($rec{'mi'} ne '') ? "$rec{'mi'}. " : '';
+    my($v_mi) = ($rec{'mi'} ne '') ? ";$rec{'mi'}" : '';
 
     # "N:Public;John;Quinlan;Mr.;Esq." ==> "FN:Mr. John Q. Public, Esq."
     if ($rec{'mn'} ne '') {
@@ -561,9 +557,9 @@ sub aid_about_text
 {
     package aid_util;
 
-    local($retval) = '';
     local(*rec) = @_;
 
+    my($retval) = '';
     $retval .= &main::aid_inorder_fullname(*rec) . "\n";
 
     if ($rec{'yr'} =~ /^\d+$/) {
@@ -603,15 +599,15 @@ sub aid_common_intro_para
 {
     package aid_util;
 
-    local($[) = 0;
-    local($info) = "The <tt>" . $image_tag{'info'} .
+    my($page) = @_;
+    my($info) = "The <tt>" . $image_tag{'info'} .
 	"</tt>\nicon lets you get more detailed information about an alumnus.";
 
     "<p><small>Any alumni marked with\n" . $image_tag{'new'} . 
     "\nhave been added to the Directory last month.\n" .
     "Alumni marked with\n" . $image_tag{'updated'} . 
     "\nhave updated their information within the past month.\n" .
-    ($_[0] ? $info : '') .
+    ($page ? $info : '') .
     "</small></p>\n" .
     "<small>Were you previously listed but now your name isn't here?  If\n" .
     "e-mail to you has failed to reach you for more than 6 months, your\n" .
@@ -626,10 +622,9 @@ sub aid_common_html_ftr
 
     package aid_util;
 
-    local($[) = 0;
-    local($page,$time) = @_;
-    local($ftr);
-    local($year) = (localtime(time))[5] + 1900;
+    my($page,$time) = @_;
+    my($ftr);
+    my($year) = (localtime(time))[5] + 1900;
 
     $time = time unless (defined $time && $time =~ /\d+/ && $time ne '0');
 
@@ -655,9 +650,9 @@ sub aid_common_html_hdr
 {
     package aid_util;
 
-    local($page,$title,$norobots,$time,$subtitle,$extra_meta) = @_;
-    local($hdr,$titletag,$srv_nowww,$descr);
-    local($timestamp) =
+    my($page,$title,$norobots,$time,$subtitle,$extra_meta) = @_;
+    my($hdr,$titletag,$srv_nowww,$descr);
+    my($timestamp) =
 	&main::aid_caldate((defined $time && $time ne '') ? $time : time); 
 
     $title = &main::aid_html_entify_str($title);
@@ -772,8 +767,8 @@ sub aid_class_jump_bar {
     package aid_util;
 
     local($href_begin,$href_end,*years,$do_paragraph,$hilite) = @_;
-    local($retval) = $do_paragraph ? '<p>' : '';
-    local($i);
+    my($retval) = $do_paragraph ? '<p>' : '';
+    my($i);
 
     if (defined @years && defined $years[0])
     {
@@ -815,7 +810,7 @@ sub aid_book_write_prefix {
     package aid_util;
 
     local(*BOOK,$option) = @_;
-    local($school) = $config{'school'};
+    my($school) = $config{'school'};
 
     # special case for netscape
     if ($option eq 'n') {
@@ -839,9 +834,9 @@ sub aid_book_write_entry {
     package aid_util;
 
     local(*BOOK,$option,*rec) = @_;
-    local($long_last) = $rec{'sn'};
-    local($mi) = $rec{'mi'} ne '' ? "$rec{'mi'}." : '';
-    local($mi_spc) = $rec{'mi'} ne '' ? " $rec{'mi'}." : '';
+    my($long_last) = $rec{'sn'};
+    my($mi) = $rec{'mi'} ne '' ? "$rec{'mi'}." : '';
+    my($mi_spc) = $rec{'mi'} ne '' ? " $rec{'mi'}." : '';
 
     $long_last .= " $rec{'mn'}" if $rec{'mn'} ne '';
 
@@ -934,16 +929,9 @@ sub aid_http_date
 {
     package aid_util;
 
-    local($time) = @_;
-    local(@DoW);
-    local($sec,$min,$hour,$mday,$mon,$year,$wday) =
-	gmtime($time);
-
-    @DoW = ('Sun','Mon','Tue','Wed','Thu','Fri','Sat');
-    $year += 1900;
-
-    sprintf("%s, %02d %s %4d %02d:%02d:%02d GMT",
-	    $DoW[$wday],$mday,$MoY[$mon],$year,$hour,$min,$sec);
+    my($time) = @_;
+	
+    &POSIX::strftime("%a, %d %b %Y %H:%M:%S GMT", gmtime($time));
 }
 
 
@@ -987,10 +975,10 @@ sub aid_db_unpack_rec
 {
     package aid_util;
 
-    local($key,$val) = @_;
-    local(*rec,$masked,$ignored);
+    my($key,$val) = @_;
+    my($masked,$ignored);
 
-    %rec = ();
+    my(%rec) = ();
     $rec{'id'} = $key;
 
     (
@@ -1032,22 +1020,22 @@ sub aid_rebuild_secondary_keys
     package aid_util;
 
     local(*DB,$quiet,$debug,$preserve_nextid) = @_;
-    local(%old_db,%new_db);
-    local($key,$val,$id);
-    local(@diffs) = ();
+    my(%old_db,%new_db);
+    my($key,$val,$id);
+    my(@diffs) = ();
 
-    local($latest) = 0;
-    local($latest_www) = 0;
-    local($latest_goner) = 0;
-    local(%class_members) = ();
-    local(%class_latest) = ();
-    local(%www_class_members) = ();
-    local(@datakeys) = ();
-    local(@alpha_ids) = ();
-    local(%alpha_members) = ();
-    local(%alpha_latest) = ();
-    local($maxval) = -1;
-    local($old_nextid) = $DB{'_nextid'};
+    my($latest) = 0;
+    my($latest_www) = 0;
+    my($latest_goner) = 0;
+    my(%class_members) = ();
+    my(%class_latest) = ();
+    my(%www_class_members) = ();
+    my(@datakeys) = ();
+    my(@alpha_ids) = ();
+    my(%alpha_members) = ();
+    my(%alpha_latest) = ();
+    my($maxval) = -1;
+    my($old_nextid) = $DB{'_nextid'};
 
     # first pass -- gather all names with alpha data
     select(STDOUT); $| = 1;
@@ -1240,7 +1228,7 @@ sub aid_cgi_die
 {
     package aid_util;
 
-    local($title,$html) = @_;
+    my($title,$html) = @_;
 
     print "Content-Type: text/html\015\012\015\012";
 
@@ -1261,21 +1249,13 @@ sub aid_write_reunion_hash
     my($key);
     my($first) = 1;
 
-    my(@DoW) = ('Sunday','Monday','Tuesday','Wednesday',
-		'Thursday','Friday','Saturday');
-    my(@MoY) = ('January','February','March','April','May','June',
-		'July','August','September','October','November','December');
-
     foreach $key (sort keys %{$entries})
     {
-	my($sec,$min,$hour,$mday,$mon,$year,$wday,$yday,$isdst);
-
 	my($date,$html) = split(/\0/, $entries->{$key}, 2);
-	($year,$mon,$mday) = split(/\//, $date, 3);
+	my($year,$mon,$mday) = split(/\//, $date, 3);
 
 	my($t) =
 	    &Time::Local::timelocal(59,59,23,$mday,$mon-1,$year-1900,0,0,0);
-	($sec,$min,$hour,$mday,$mon,$year,$wday,$yday,$isdst) = localtime($t);
 
 	if ($first)
 	{
@@ -1307,7 +1287,7 @@ sub aid_write_reunion_hash
 	}
 
 	print FH "</b></dt>\n",
-	"<dd>Date: $DoW[$wday], $MoY[$mon] $mday, ", ($year+1900),
+	"<dd>Date: ", &POSIX::strftime("%A, %B %d, %Y", localtime($t)),
 	"</dd>\n",
 	$html, "\n";
 
@@ -1374,7 +1354,6 @@ if ($^W && 0)
     &aid_generate_alias();
 
     $aid_util::pack_len = '';
-    @aid_util::MoY = ();
     $aid_util::noindex = '';
     $aid_util::disclaimer = $aid_util::copyright_path = '';
     $aid_util::pics_label = '';
