@@ -1,14 +1,14 @@
 #!/usr/bin/perl -w
 
 #
-# does the html verbose pages
-# $Id: aid_verbose_html,v 3.12 1998/08/22 01:59:56 mradwin Exp mradwin $
+# does the html multi_class pages
+# $Id: aid_multi_class_html,v 3.13 1998/10/17 20:57:33 mradwin Exp mradwin $
 #
 
 require 'aid_util.pl';
 require 'getopts.pl';
 
-$usage = 'usage: aid_verbose_html [-h] infile.adr
+$usage = 'usage: aid_multi_class_html [-h] infile.adr
     -h        Display usage information.
 ';
 
@@ -17,49 +17,51 @@ $opt_h && die "$usage\n";
 $ARGV[0] || die "$usage\n";
 $opt_h = $opt_h;		# avoid warning
 
-@years = &get_class_array($ARGV[0]);
-
 open(DATA,$ARGV[0]) || die "Can't open $ARGV[0]: $!\n";
 
-# first valid only
+@years = ();
+@db = ();
+
 while(<DATA>) {
     chop;
-    %rec = &aid_parse($_);
-    last if $rec{'valid'};
+    %rec = &aid_split($_);
+    next unless $rec{'valid'};
+
+    push(@db,$_);
+    &aid_build_yearlist(*years, $rec{'year'});
 }
 
-$verbose_header = &common_intro_para(0) .
-    &aid_class_jump_bar(&aid_config('master_path') . 'class/',
-			'.html', *years, 1) .
-    "<hr noshade size=1>\n\n";
+$prev = '';
+while (defined($_ = shift(@db))) {
+    %rec = &aid_parse($_);
 
-# main loop
-for(;;) {
-    $currentYear = $rec{'year'};
-    $outFile = &aid_config('wwwdir') . "class/" .
-	(($rec{'year'} =~ /^\d+$/) ? $rec{'year'} : "other") . ".html";
-    open(FMTOUT,">$outFile") || die "Can't open $outFile: $!\n";
+    if ($prev ne $rec{'year'} && $prev ne 'other') {
+	if ($prev ne '') {
+	    print FMTOUT &common_html_ftr(-1);
+	    close(FMTOUT);
+	}
 
-    $title  = ($rec{'year'} =~ /^\d+$/) ? "Class of $rec{'year'}" :
-	"Faculty and Staff";
-    print FMTOUT &common_html_hdr(-1,$title,1);
-    print FMTOUT $verbose_header;
+	$prev = ($rec{'year'} =~ /^\d+$/) ? $rec{'year'} : 'other';
+	$outFile = &aid_config('wwwdir') . "class/${prev}.html";
+
+	open(FMTOUT,">$outFile") || die "Can't open $outFile: $!\n";
+
+	$title  = ($rec{'year'} =~ /^\d+$/) ? "Class of $rec{'year'}" :
+	    "Faculty and Staff";
+	print FMTOUT &common_html_hdr(-1,$title,1);
+	print FMTOUT &common_intro_para(0);
+	print FMTOUT &aid_class_jump_bar(&aid_config('master_path') . 'class/',
+					 '.html', *years, 1, $prev);
+	print FMTOUT "<hr noshade size=1>\n\n";
+    }
 
     print FMTOUT &aid_verbose_entry(*rec);
-    while(<DATA>) {
-	chop;
-	%rec = &aid_parse($_);
-	next unless $rec{'valid'};
-	
-	last if (($rec{'year'} ne $currentYear) && ($currentYear =~ /^\d+$/));
-	print FMTOUT &aid_verbose_entry(*rec);
-    }
-    print FMTOUT &common_html_ftr(-1);
-    close(FMTOUT);
-
-    last if eof(DATA);
 }
 
+print FMTOUT &common_html_ftr(-1);
+close(FMTOUT);
+
+# index page
 $outFile = &aid_config('wwwdir') . "class/index.html";
 open(FMTOUT,">$outFile") || die "Can't open $outFile: $!\n";
 
@@ -81,25 +83,3 @@ print FMTOUT &common_html_ftr(2);
 close(FMTOUT);
 
 exit(0);
-
-sub get_class_array {
-    local($inFile) = @_;
-    local(@years);
-    local(*BYCLASS,*rec);
-    local($_);
-
-    @years = ();
-
-    open(BYCLASS,$inFile) || die "Can't open $inFile: $!\n";
-    while(<BYCLASS>) {
-        chop;
-        %rec = &aid_split($_);
-        next unless $rec{'valid'};
- 
-	&aid_build_yearlist(*years, $rec{'year'});
-	last if $rec{'year'} !~ /^\d+$/;
-    }
-    close(BYCLASS);
-    
-    @years;
-}
