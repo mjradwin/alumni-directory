@@ -2,7 +2,7 @@
 
 #
 # does the html multi_class pages
-# $Id: aid_multi_class_html,v 5.14 2000/02/29 21:55:00 mradwin Exp mradwin $
+# $Id: aid_multi_class_html,v 5.15 2000/04/25 01:31:38 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -26,12 +26,13 @@ $dirname =~ s,/[^/]+$,,;
 unshift(@INC, $dirname);
 
 use DB_File;
+use Time::Local;
 
 require 'aid_util.pl';
 require 'getopts.pl';
 
 $0 =~ s,.*/,,;  # basename
-$usage = "usage: $0 [-h] [-i <keys>] infile.db
+$usage = "usage: $0 [-h] [-i <keys>] infile.db [reunions.db]
     -h        Display usage information.
     -i <keys> Incremental update only for list of keys.
 ";
@@ -46,6 +47,14 @@ $opt_h = $opt_h;		# avoid warning
 $dbmfile = shift;
 tie(%DB, 'DB_File', $dbmfile, O_RDONLY, 0444, $DB_File::DB_HASH)
     or die "$dbmfile: $!\n";
+
+my(%RDB);
+if ($ARGV[0])
+{
+    $r_dbmfile = shift;
+    tie(%RDB, 'DB_File', $r_dbmfile, O_RDONLY, 0444, $DB_File::DB_HASH)
+	or die "$r_dbmfile: $!\n";
+}
 
 die "corrupt/missing _years key!"
     unless defined $DB{'_years'} && $DB{'_years'} ne '';
@@ -120,6 +129,22 @@ foreach $year (@years)
     print FMTOUT &aid_class_jump_bar('', '.html', *years, 1, $year);
     print FMTOUT "<hr noshade=\"noshade\" size=\"1\">\n\n";
 
+    if (defined $RDB{$year})
+    {
+	my($date,$html) = split(/\0/, $RDB{$year}, 2);
+	my($yr,$mon,$mday) = split(/\//, $date, 3);
+	my($t) = &Time::Local::timelocal(59,59,23,$mday,$mon-1,$yr-1900,0,0,0);
+
+	if ($t > time)
+	{
+	    my(%r) = ();
+	    $r{$year} = $RDB{$year};
+	    print FMTOUT "<h2>Reunion Info</h2>\n";
+	    &aid_write_reunion_hash(*FMTOUT, \%r);
+	    print FMTOUT "<hr noshade=\"noshade\" size=\"1\">\n\n";
+	}
+    }
+
     foreach $id (@ids)
     {
 	%rec = &aid_db_unpack_rec($id,$DB{$id});
@@ -174,4 +199,5 @@ $ts =~ s,([^/]+)$,\.$1,;
 open(TS,">$ts") && close(TS);
 utime $now, $now, $ts;
 
+untie(%RDB) if defined $r_dbmfile;
 exit(0);

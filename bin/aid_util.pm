@@ -2,7 +2,7 @@
 #     FILE: aid_util.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: perl library routines for the Alumni Internet Directory
-#      $Id: aid_util.pl,v 5.62 2000/05/11 16:35:38 mradwin Exp mradwin $
+#      $Id: aid_util.pl,v 5.64 2000/05/17 21:04:09 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -27,6 +27,7 @@ require 'aid_submit.pl';
 
 use MIME::QuotedPrint;
 use Net::SMTP; 
+use Time::Local;
 
 @aid_util::MoY = 
     ('Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec');
@@ -1272,6 +1273,79 @@ sub aid_cgi_die
 
     close(STDOUT);
     exit(0);
+}
+
+
+sub aid_write_reunion_hash
+{
+    package aid_util;
+
+    local(*FH,$entries) = @_;
+    my($key);
+    my($first) = 1;
+
+    my(@DoW) = ('Sunday','Monday','Tuesday','Wednesday',
+		'Thursday','Friday','Saturday');
+    my(@MoY) = ('January','February','March','April','May','June',
+		'July','August','September','October','November','December');
+
+    foreach $key (sort keys %{$entries})
+    {
+	my($sec,$min,$hour,$mday,$mon,$year,$wday,$yday,$isdst);
+
+	my($date,$html) = split(/\0/, $entries->{$key}, 2);
+	($year,$mon,$mday) = split(/\//, $date, 3);
+
+	my($t) =
+	    &Time::Local::timelocal(59,59,23,$mday,$mon-1,$year-1900,0,0,0);
+	($sec,$min,$hour,$mday,$mon,$year,$wday,$yday,$isdst) = localtime($t);
+
+	if ($first)
+	{
+	    $first = 0;
+	    print FH "<dl>\n<dt><b>";
+	}
+	else
+	{
+	    print FH "<dt><br><b>";
+	}
+
+	print FH &main::aid_config('school');
+
+	if ($key =~ /^\d+$/)
+	{
+	    print FH " <a name=\"r$key\"\nhref=\"", 
+	    &main::aid_config('master_path'),
+	    "class/$key.html\">Class of $key</a>";
+	}
+	else
+	{
+	    print FH " - $key";
+	}
+
+	print FH "</b></dt>\n",
+	"<dd>Date: $DoW[$wday], $MoY[$mon] $mday, ", ($year+1900),
+	"</dd>\n",
+	$html, "\n";
+
+	# y! calendar
+	if ($t > time)
+	{
+	    print FH "<dd><a\n",
+	    "href=\"http://calendar.yahoo.com/?v=60&amp;TITLE=",
+	    &main::aid_url_escape(&main::aid_config('school'));
+
+	    print FH &main::aid_url_escape(" Class of")
+		if ($key =~ /^\d+$/);
+	    print FH &main::aid_url_escape(" $key Reunion");
+	    printf FH "&amp;ST=%4d%02d%02d", ($year+1900), ($mon+1), $mday;
+	    print FH "&amp;VIEW=d\" target=\"_calendar\">Add\n",
+	    "This Event To My Personal Yahoo! Calendar</a></dd>\n";
+	}
+    }
+
+    print FH "</dl>\n\n" unless $first;
+    1;
 }
 
 # We get a whole bunch of warnings about "possible typo" when running
