@@ -2,7 +2,7 @@
 #     FILE: Makefile
 #   AUTHOR: Michael J. Radwin
 #    DESCR: Makefile for building the Alumni Internet Directory
-#      $Id: Makefile,v 5.12 1999/06/11 20:14:53 mradwin Exp mradwin $
+#      $Id: Makefile,v 5.13 1999/06/12 18:50:22 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -22,9 +22,9 @@
 #
 
 SCHOOL=awalt
-WWWROOT=/home/web/radwin.org
-WWWDIR=$(WWWROOT)/docs/$(SCHOOL)
-CGIDIR=$(WWWROOT)/docs/$(SCHOOL)/bin
+WWWROOT=/home/web/radwin.org/docs
+WWWDIR=$(WWWROOT)/$(SCHOOL)
+CGIDIR=$(WWWROOT)/$(SCHOOL)/bin
 DATADIR=$(HOME)/$(SCHOOL)/data
 BINDIR=$(HOME)/$(SCHOOL)/bin
 CGISRC=$(HOME)/$(SCHOOL)/cgi
