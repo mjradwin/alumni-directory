@@ -3,7 +3,7 @@
 #
 # generates reunion info page
 #
-# $Id: aid_reunion_html,v 1.5 2000/05/24 23:34:44 mradwin Exp mradwin $
+# $Id: aid_reunion_html,v 1.6 2000/05/24 23:49:25 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -102,10 +102,10 @@ while (($key,$val) = each(%DB))
 untie(%DB);
 
 print FMTOUT "<h2>Upcoming reunions</h2>\n";
-&writehash(\%upcoming);
+&writehash(\%upcoming, 1);
 
 print FMTOUT "<h2>Past reunions</h2>\n";
-&writehash(\%past);
+&writehash(\%past, 0);
 
 print FMTOUT &aid_common_html_ftr(11,$time);
 
@@ -123,7 +123,7 @@ exit(0);
 
 sub writehash
 {
-    my($entries) = @_;
+    my($entries,$do_ycal) = @_;
     my($key);
     my($first) = 1;
 
@@ -165,6 +165,21 @@ sub writehash
 	"<dd>Date: $DoW[$wday], $MoY[$mon] $mday, ", ($year+1900),
 	"</dd>\n",
 	$html, "\n";
+
+	# y! calendar
+	if ($do_ycal)
+	{
+	    print FMTOUT "<dd><a\n",
+	    "href=\"http://calendar.yahoo.com/?v=60&amp;TITLE=",
+	    &aid_url_escape(&aid_config('school'));
+
+	    print FMTOUT &aid_url_escape(" Class of")
+		if ($key =~ /^\d+$/);
+	    print FMTOUT &aid_url_escape(" $key Reunion");
+	    printf FMTOUT "&amp;ST=%4d%02d%02d", ($year+1900), ($mon+1), $mday;
+	    print FMTOUT "&amp;VIEW=d\" target=\"_calendar\">Add\n",
+	    "This Event To My Personal Yahoo! Calendar</a></dd>\n";
+	}
     }
 
     print FMTOUT "</dl>\n\n" unless $first;
