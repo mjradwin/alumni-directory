@@ -2,11 +2,11 @@
 #     FILE: aid_util.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: perl library routines for the Alumni Internet Directory
-#      $Id: aid_util.pl,v 3.99 1999/01/29 19:18:25 mradwin Exp mradwin $
+#      $Id: aid_util.pl,v 3.100 1999/01/29 19:37:19 mradwin Exp mradwin $
 #
 
 $aid_util'rcsid =
- '$Id: aid_util.pl,v 3.99 1999/01/29 19:18:25 mradwin Exp mradwin $';
+ '$Id: aid_util.pl,v 3.100 1999/01/29 19:37:19 mradwin Exp mradwin $';
 
 # ----------------------------------------------------------------------
 # CONFIGURATION
@@ -1184,11 +1184,13 @@ sub common_html_hdr {
 <center>
 <table cellspacing=0 cellpadding=6 border=0 width=\"100%\">
   <tr>
-    <td bgcolor=\"#$header_bg\" valign=middle><p align=left><font
-    color=\"#$header_fg\"><big><strong><tt>$config{'school'} Alumni
-    Internet Directory</tt></strong></big></font>
-    </p><p align=right><font
-    color=\"#$header_fg\"><small><em>$timestamp</em></small></font></p>
+    <td bgcolor=\"#$header_bg\" valign=middle>
+    <p align=left><font color=\"#$header_fg\" size=\"+2\"><strong><tt>
+    $config{'school'} Alumni Internet Directory
+    </tt></strong></font></p>
+    <p align=right><font color=\"#$header_fg\"><small><em>
+    $timestamp
+    </em></small></font></p>
     </td>
   </tr>
   <tr>
