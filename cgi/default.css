@@ -1,4 +1,5 @@
 H1, H2, H3, H4, H5, H6 { font-family: Tahoma, Verdana, Arial, Helvetica, Geneva, SunSans-Regular, sans-serif; margin-bottom: 0ex }
+.hl { font-family: Tahoma, Verdana, Arial, Helvetica, Geneva, SunSans-Regular, sans-serif }
 .overline { font-family: Tahoma, Verdana, Arial, Helvetica, Geneva, SunSans-Regular, sans-serif; margin-bottom: -2ex ; }
 b.nu, strong.nu { color: black; background: #ffffcc }
 b.i, strong.i { color: black; background: #ffffcc; text-decoration: none }
