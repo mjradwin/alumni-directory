@@ -2,7 +2,7 @@
 #     FILE: Makefile
 #   AUTHOR: Michael J. Radwin
 #    DESCR: Makefile for building the Alumni Internet Directory
-#      $Id: Makefile,v 5.2 1999/05/31 23:00:47 mradwin Exp mradwin $
+#      $Id: Makefile,v 5.3 1999/06/01 04:07:04 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -186,7 +186,7 @@ $(ADDUPDATE_TS):	$(DATADIR)/add.include $(BINDIR)/aid_home_html
 DOWNLOAD=$(WWWDIR)/download/index.html
 DOWNLOAD_TS=$(WWWDIR)/download/.index.html
 download:	$(DOWNLOAD_TS)
-$(DOWNLOAD_TS):	$(BINDIR)/aid_home_html $(AID_UTIL_PL) $(DBFILE)
+$(DOWNLOAD_TS):	$(BINDIR)/aid_home_html $(DBFILE)
 	$(MKDIR) $(WWWDIR)/download
 	$(BINDIR)/aid_home_html -d -p13 \
 		-t 'Download Nickname and Address Book Files' \
