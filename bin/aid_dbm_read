@@ -1,6 +1,6 @@
 #!/usr/local/bin/perl -w
 
-# $Id: aid_dbm_read,v 5.19 2001/11/26 21:55:00 mradwin Exp mradwin $
+# $Id: aid_dbm_read,v 5.20 2002/03/07 23:29:39 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -156,7 +156,7 @@ elsif ($opt_g)
 
 	next unless $rec{'v'};
 	next if $rec{'b'} eq '0';
-	next unless $rec{'b'} < (time - (180 * 24 * 60 * 60));
+	next unless $rec{'b'} < (time - (177 * 24 * 60 * 60));
 	next unless $rec{'f'} > $rec{'b'};
 
 	print $rec{'id'}, ' ';
