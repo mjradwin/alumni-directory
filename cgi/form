@@ -4,7 +4,7 @@
 #     FILE: form.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: Alumni Internet Directory CGI form-submission interface
-#      $Id: form,v 5.29 2000/05/31 16:25:46 mradwin Exp mradwin $
+#      $Id: form,v 5.30 2000/06/05 17:14:53 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -36,7 +36,7 @@ use CGI::Carp qw(fatalsToBrowser);
 # configuration
 $dbmfile = &aid_config('dbmfile');
 
-$rcsid = '$Id: form,v 5.29 2000/05/31 16:25:46 mradwin Exp mradwin $'; #'fnt
+$rcsid = '$Id: form,v 5.30 2000/06/05 17:14:53 mradwin Exp mradwin $'; #'fnt
 
 $listing_upd_title = 'Modify Your Directory Listing';
 $listing_upl_title = 'Select a Listing to Modify';
@@ -432,10 +432,11 @@ Regards,
 " . &aid_config('short_school') . " Alumni Internet Directory
 http://" . &aid_config('master_srv') . &aid_config('master_path') . "\n";
 
-    &aid_sendmail(&aid_config('admin_email'),
+    &aid_sendmail_v2(&aid_config('devnull_email'),
 		  &aid_config('short_school') . ' Alumni Robot',
 		  &aid_config('short_school') .
 		  " Alumni Internet Directory Verification [$randkey]",
+		  "Reply-To: " . &aid_config('admin_email'),
 		  $mailbody,$name,$cgi{'e'})
 	|| &aid_cgi_die('aid_sendmail failed',
 			"Unable to process form submission.\n" .
