@@ -2,11 +2,11 @@
 #     FILE: aid_util.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: perl library routines for the Alumni Internet Directory
-#      $Id: aid_util.pl,v 3.72 1998/11/03 22:57:33 mradwin Exp mradwin $
+#      $Id: aid_util.pl,v 3.73 1998/11/04 18:41:28 mradwin Exp mradwin $
 #
 
 $aid_util'rcsid =
- '$Id: aid_util.pl,v 3.72 1998/11/03 22:57:33 mradwin Exp mradwin $';
+ '$Id: aid_util.pl,v 3.73 1998/11/04 18:41:28 mradwin Exp mradwin $';
 
 # ----------------------------------------------------------------------
 # CONFIGURATION
@@ -608,7 +608,7 @@ are required.  All other fields are optional.</p>\n\n";
     $body . "
 <form method=post action=\"" . $config{'cgi_path'} . "/sub\"> 
 <table border=0>
-<tr><td align=right><input type=\"submit\" value=\"Next &gt;\">
+<tr><td align=right><input type=\"submit\" value=\"Next&nbsp;&gt;\">
 &nbsp;
 <input type=\"reset\" value=\"Start Over\">
 </td></tr>
@@ -719,7 +719,7 @@ are required.  All other fields are optional.</p>\n\n";
 </tr>
 </table>
 </td></tr></table></td></tr>
-<tr><td align=right><input type=\"submit\" value=\"Next &gt;\">
+<tr><td align=right><input type=\"submit\" value=\"Next&nbsp;&gt;\">
 &nbsp;
 <input type=\"reset\" value=\"Start Over\">
 </td></tr>

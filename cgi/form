@@ -4,7 +4,7 @@
 #     FILE: mvhsaid.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: MVHS Alumni Internet Directory CGI interface
-#      $Id: mvhsaid,v 3.33 1998/10/26 21:26:04 mradwin Exp mradwin $
+#      $Id: mvhsaid,v 3.34 1998/11/03 01:28:01 mradwin Exp mradwin $
 #
 
 require 'aid_util.pl';
@@ -24,7 +24,7 @@ if (defined($ENV{'PATH_INFO'}) && $ENV{'PATH_INFO'} =~ m,^/vcard/,) {
     $in{'vcard'} =~ s,^/vcard/(\d+).*$,$1,;
 }
 
-$rcsid = '$Id: mvhsaid,v 3.33 1998/10/26 21:26:04 mradwin Exp mradwin $'; #'fnt
+$rcsid = '$Id: mvhsaid,v 3.34 1998/11/03 01:28:01 mradwin Exp mradwin $'; #'fnt
 
 # special flags: version, update, vcard, about
 #
@@ -226,7 +226,7 @@ correct.</font></strong></p>
 
 <p>If you have made any mistakes, select the <strong>&lt;&nbsp;Back</strong>
 button to edit your entry.  If everything is correct, please hit the
-<strong>Finish</strong> button.</p>\n";
+<strong>Finish&nbsp;&gt;</strong> button.</p>\n";
 
     print "<form method=post action=\"$cgi_path/cnf\">\n";
     %newrec = &rec_html_entify(*in);
@@ -236,17 +236,17 @@ button to edit your entry.  If everything is correct, please hit the
 
     print "<table border=0>\n";
     print "<tr><td align=right>\n";
-    print "<input type=submit name=\"revise\" value=\"&lt; Back\">\n";
+    print "<input type=submit name=\"revise\" value=\"&lt;&nbsp;Back\">\n";
     print "&nbsp;\n";
-    print "<input type=submit name=\"confirmed\" value=\"Finish\">\n";
+    print "<input type=submit name=\"confirmed\" value=\"Finish&nbsp;&gt;\">\n";
     print "</td></tr>\n";
     print "<tr><td>\n";
     print &about_text(*in,1,1,0), "\n";
     print "</td></tr>\n";
     print "<tr><td align=right>\n";
-    print "<input type=submit name=\"revise\" value=\"&lt; Back\">\n";
+    print "<input type=submit name=\"revise\" value=\"&lt;&nbsp;Back\">\n";
     print "&nbsp;\n";
-    print "<input type=submit name=\"confirmed\" value=\"Finish\">\n";
+    print "<input type=submit name=\"confirmed\" value=\"Finish&nbsp;&gt;\">\n";
     print "</td></tr>\n";
     print "</table>\n</form>\n";
     print &common_html_ftr(-1);
