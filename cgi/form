@@ -4,7 +4,7 @@
 #     FILE: mvhsaid.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: MVHS Alumni Internet Directory CGI interface
-#      $Id: mvhsaid,v 3.14 1998/05/26 18:34:37 mradwin Exp mradwin $
+#      $Id: mvhsaid,v 3.15 1998/05/26 18:49:37 mradwin Exp mradwin $
 #
 
 require 'aid_util.pl';
@@ -24,7 +24,7 @@ if (defined($ENV{'PATH_INFO'}) && $ENV{'PATH_INFO'} =~ m,^/vcard/,) {
     $in{'vcard'} =~ s,^/vcard/(\d+).*$,$1,;
 }
 
-$rcsid = '$Id: mvhsaid,v 3.14 1998/05/26 18:34:37 mradwin Exp mradwin $'; #'fnt
+$rcsid = '$Id: mvhsaid,v 3.15 1998/05/26 18:49:37 mradwin Exp mradwin $'; #'fnt
 
 # special flags: version, update, vcard, about
 #
@@ -200,7 +200,7 @@ If you have made any mistakes, select the <strong>&lt;&nbsp;Back</strong>
 button to edit your entry.  If everything is correct, please hit the
 <strong>Finish</strong> button.</p>\n";
 
-    print "<form method=post action=\"$cgi_path/conf\">\n";
+    print "<form method=post action=\"$cgi_path/sub\">\n";
     %newrec = &rec_html_entify(*in);
     foreach (keys %newrec) {
 	print "<input type=hidden name=\"$_\" value=\"$newrec{$_}\">\n";

@@ -2,7 +2,7 @@
 
 #
 # does the html version of the invalid address list
-# $Id: aid_goners_html,v 3.11 1998/05/18 17:17:31 mradwin Exp mradwin $
+# $Id: aid_goners_html,v 3.12 1998/05/18 17:22:36 mradwin Exp mradwin $
 #
 
 require 'aid_util.pl';
@@ -31,7 +31,7 @@ while(<DATA>) {
     $fullname = &fullname(*rec);
     ($affil,$len) = &affiliate(*rec,0);
 
-    print FMTOUT "<a href=\"", &aid_config('cgi_path'), "?update=$rec{'id'}\">";
+    print FMTOUT "<a href=\"", &aid_config('cgi_path'), "/gone?update=$rec{'id'}\">";
     print FMTOUT $fullname;
     print FMTOUT "</a>";
     print FMTOUT $affil;
