@@ -1,6 +1,6 @@
 #!/usr/bin/perl -w
 
-# $Id: aid_write_vcards,v 1.5 1999/04/05 16:26:17 mradwin Exp mradwin $
+# $Id: aid_write_vcards,v 1.6 1999/04/09 02:27:43 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -23,7 +23,7 @@ require 'aid_util.pl';
 require 'getopts.pl';
 
 $0 =~ s,.*/,,;  # basename
-$usage = "usage: $0 [-h] infile.db path-to-create-in
+$usage = "usage: $0 [-h] infile.db path-to-create-in [ids...]
     -h        Display usage information.
 ";
 
@@ -34,26 +34,48 @@ $opt_h = $opt_h;		# avoid warning
 $ARGV[0] || die "$usage\n";
 $ARGV[1] || die "$usage\n";
 
-$ARGV[0] =~ s/\.db$//;
-die "can't open $ARGV[0].db\n" unless -r "$ARGV[0].db";
+$dbmfile = shift;
+$dbmfile =~ s/\.db$//;
+die "$0: ${dbmfile}.db: $!\n" unless -r "${dbmfile}.db";
 
-dbmopen(%DB, $ARGV[0], 0444);
+dbmopen(%DB,$dbmfile,0444) || die "$0: ${dbmfile}.db: $!\n";
+
+$pathname = shift;
 
 print STDERR "vcards...";
-$i = 0;
-while (($key,$val) = each %DB)
+if (@ARGV)
 {
-    next unless $key =~ /^\d+$/;
-    %rec = &aid_db_unpack_rec($key,$val);
-    next unless $rec{'v'};
-    $filename = "$ARGV[1]/$rec{'id'}.vcf";
+    foreach (@ARGV)
+    {
+	next unless defined $DB{$_};
+	%rec = &aid_db_unpack_rec($_,$DB{$_});
+	$filename = "${pathname}/$rec{'id'}.vcf";
 
-    open(VCARD,">$filename") || die "can't open $filename: $!\n";
-    print VCARD &aid_vcard_text(*rec);
-    close(VCARD);
+	open(VCARD,">$filename") || die "can't open $filename: $!\n";
+	print VCARD &aid_vcard_text(*rec);
+	close(VCARD);
 
-    utime $rec{'u'}, $rec{'u'}, $filename;
-    print STDERR "." if ($i++ % 100) == 0;
+	utime $rec{'u'}, $rec{'u'}, $filename;
+	print STDERR ' ', $_;
+    }
+}
+else
+{
+    $i = 0;
+    while (($key,$val) = each %DB)
+    {
+	next unless $key =~ /^\d+$/;
+	%rec = &aid_db_unpack_rec($key,$val);
+	next unless $rec{'v'};
+	$filename = "${pathname}/$rec{'id'}.vcf";
+
+	open(VCARD,">$filename") || die "can't open $filename: $!\n";
+	print VCARD &aid_vcard_text(*rec);
+	close(VCARD);
+
+	utime $rec{'u'}, $rec{'u'}, $filename;
+	print STDERR "." if ($i++ % 100) == 0;
+    }
 }
 print STDERR "\n";
 
@@ -61,7 +83,7 @@ dbmclose(%DB);
 
 # touch timestamp
 $now = time;
-$ts = "$ARGV[1]/.created";
+$ts = "${pathname}/.created";
 open(TS,">$ts") && close(TS);
 utime $now, $now, $ts;
 
