@@ -1,6 +1,6 @@
 #!/usr/local/bin/perl -w
 
-# $Id: aid_addname,v 1.12 1998/01/05 23:55:44 mjr Exp mjr $
+# $Id: aid_addname,v 1.13 1998/01/07 18:59:23 mjr Exp mjr $
 
 require 'getopts.pl';
 require 'aid_util.pl';
@@ -21,6 +21,11 @@ $echo = &aid_config('echo');
 $cat  = &aid_config('cat');
 $cp   = &aid_config('cp');
 $make = &aid_config('make');
+
+-x $echo || die "$echo is not executable!";
+-x $cat  || die "$cat  is not executable!";
+-x $cp   || die "$cp   is not executable!";
+-x $make || die "$make is not executable!";
 
 &readspool(($ARGV[0]) ? $ARGV[0] : &aid_config('spoolfile'));
 &rebuild() unless $opt_m;

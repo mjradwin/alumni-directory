@@ -2,7 +2,7 @@
 
 #
 # mails a welcome or update note to everyone in targets.adr
-# $Id: aid_welcome,v 1.27 1998/01/03 11:46:50 mjr Exp mjr $
+# $Id: aid_welcome,v 1.28 1998/01/07 18:59:23 mjr Exp mjr $
 #
 
 require 'aid_util.pl';
@@ -27,6 +27,7 @@ $subject = ($opt_c) ? 'Confirming your MVHS Alumni Internet Directory entry' :
     'Welcome to the MVHS Alumni Internet Directory';
 
 $today = &ctime(time);
+chop $today;
 open(LOG,">>$logfile") || die "Can't open $logfile: $!\n";
 open(TARGET,$ARGV[0]) || die "Can't open $ARGV[0]: $!\n";
 
