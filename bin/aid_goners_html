@@ -2,7 +2,7 @@
 
 #
 # does the html version of the invalid address list
-# $Id: aid_goners_html,v 1.27 1998/01/03 11:38:28 mjr Exp mjr $
+# $Id: aid_goners_html,v 1.28 1998/03/20 18:27:37 mjr Exp mjr $
 #
 
 require 'aid_util.pl';
@@ -36,7 +36,7 @@ while(<DATA>) {
     $rec{'first'} =~ s/[ \t]/+/g;
     $rec{'last'} =~ s/[ \t]/+/g;
     $rec{'married'} =~ s/[ \t]/+/g;
-    $rec{'location} =~ s/[ \t]/+/g;
+    $rec{'location'} =~ s/[ \t]/+/g;
     $rec{'year'} =~ s/[ \t]/+/g;
 
     print FMTOUT "<a href=\"", &aid_config('cgi_path'), "?revise";
