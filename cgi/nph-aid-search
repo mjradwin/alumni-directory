@@ -152,7 +152,7 @@ else
 	($affil,$ign) = &aid_affiliate(*rec,0);
 	
 	print "<li><a href=\"", &aid_config('about_cgi'), 
-	"?about=", $rec{'id'}, "\">$fullname</a> $affil";
+	"/", $rec{'id'}, "\">$fullname</a> $affil";
 	
 	if ($rec{'v'})
 	{
