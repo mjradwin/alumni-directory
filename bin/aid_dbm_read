@@ -1,6 +1,6 @@
 #!/usr/bin/perl -w
 
-# $Id: aid_dbm_read,v 1.17 1999/04/05 16:26:17 mradwin Exp mradwin $
+# $Id: aid_dbm_read,v 1.18 1999/04/05 23:07:12 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -24,16 +24,17 @@ require 'getopts.pl';
 require 'ctime.pl';
 
 $0 =~ s,.*/,,;  # basename
-$usage = "usage: $0 [-houfac] [-t adr] infile.db [key]
+$usage = "usage: $0 [-hofac] [-t adr | -u file] infile.db [key]
     -h        Display usage information.
     -o        Display old users (fresh < 6 months ago).
     -f        Display users whose upd time is within 2 weeks of creation time.
     -a        Display all valid, sorted by alpha.
     -c        Display all valid, sorted by class.
     -t adr    Write text address file to <adr>.
+    -u file   Write url file to <file>.
 ";
 
-&Getopts('hofact:') || die "$usage\n";
+&Getopts('hofact:u:') || die "$usage\n";
 $opt_h && die "$usage\n";
 $ARGV[0] || die "$usage\n";
 $opt_h = $opt_h;		# avoid warning
@@ -65,6 +66,30 @@ if ($opt_t)
 	print DATA ';', &old_encode_base64($rec{'n'},'')
 	    if ($rec{'n'} ne '');
 	print DATA "\n";
+    } 
+    close(DATA);
+}
+elsif ($opt_u)
+{
+    open(DATA,">$opt_u") || die "can't open $opt_u: $!\n";
+
+    # sort the numeric keys by id
+    @ids = ();
+    while (($key,$val) = each %DB)
+    {
+	push(@ids,$key) if $key =~ /^\d+$/;
+    }
+
+    foreach (sort { $a <=> $b } @ids)
+    {
+	%rec = &aid_db_unpack_rec($_,$DB{$_});
+	print DATA "http://", &aid_config('master_srv'),
+	    &aid_config('confirm_cgi'), '?confirmed=1';
+	while (($key,$val) = each %rec)
+	{
+	    print DATA '&', $key, '=', &aid_url_escape($val);
+	}
+	print DATA '&pe=', &aid_url_escape($rec{'e'}), "\n";
     } 
     close(DATA);
 }
@@ -134,9 +159,6 @@ else
 
 dbmclose(%DB);
 exit 0;
-
-# ugh. touch these variables so we don't get "possible typo" warnings.
-$a = $b if ($^W && 0);
 
 sub display_key_val
 {
