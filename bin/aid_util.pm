@@ -2,7 +2,7 @@
 #     FILE: aid_util.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: perl library routines for the Alumni Internet Directory
-#      $Id: aid_util.pl,v 5.15 1999/06/10 21:27:54 mradwin Exp mradwin $
+#      $Id: aid_util.pl,v 5.16 1999/06/11 00:02:00 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -767,7 +767,7 @@ sub aid_common_html_hdr
     $srv_nowww =  $config{'master_srv'};
     $srv_nowww =~ s/^www\.//i;
 
-    $hdr .= "<strong><a href=\"/\">$srv_nowww</a> -&gt;\n";
+    $hdr .= "<strong class=\"navbar\"><a href=\"/\">$srv_nowww</a> -&gt;\n";
     $hdr .= "<a href=\"$config{'master_path'}\">" unless $page == 0;
     $hdr .= $config{'short_school'} . ' Alumni';
     $hdr .= "</a>" unless $page == 0;
@@ -797,9 +797,9 @@ sub aid_common_html_hdr
     }
     else
     {
-	$hdr .= "<p><strong><font color=\"#$header_fg\">";
+	$hdr .= "<strong class=\"overline\"><font color=\"#$header_fg\">";
 	$hdr .= "$config{'school'}\n";
-	$hdr .= "Alumni Internet Directory:</font></strong></p>\n";
+	$hdr .= "Alumni Internet Directory:</font></strong>\n";
 	$hdr .= "<h1><font color=\"#$header_fg\">$title";
 	$hdr .= " - <small>$subtitle</small>"
 	    if defined $subtitle && $subtitle ne '';
