@@ -2,7 +2,7 @@
 
 #
 # does the html version of just home pages
-# $Id: aid_home_html,v 3.36 1999/04/07 16:53:45 mradwin Exp mradwin $
+# $Id: aid_home_html,v 3.37 1999/04/07 16:55:20 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -100,7 +100,8 @@ for your e-mail program, please read the
 <a href=\"", &aid_config('master_path'), "etc/copyright.html\">Acceptable
 Use Policy</a>.</p>
 
-<p>You may need to use the \"import\" feature to merge the address book
+<p>This feature is recommended for expert users only.
+You may need to use the \"import\" feature to merge the address book
 with your own.  Aliases (also called nicknames) are of the form
 <code><strong>flllllll</strong></code> where
 <code><strong>f</strong></code> is first initial and
