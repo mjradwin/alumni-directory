@@ -2,7 +2,7 @@
 
 #
 # mails a welcome or update note to everyone in targets.adr
-# $Id: aid_welcome,v 1.32 1998/03/24 23:30:07 mjr Exp mjr $
+# $Id: aid_welcome,v 1.33 1998/03/24 23:33:08 mjr Exp mjr $
 #
 
 require 'aid_util.pl';

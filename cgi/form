@@ -4,7 +4,7 @@
 #     FILE: mvhsaid.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: MVHS Alumni Internet Directory CGI interface
-#      $Id: mvhsaid,v 1.64 1998/03/20 04:12:58 mjr Exp mjr $
+#      $Id: mvhsaid,v 1.65 1998/03/25 23:15:19 mjr Exp mjr $
 #
 
 require 'aid_util.pl';
@@ -24,7 +24,7 @@ if (defined($ENV{'PATH_INFO'}) && $ENV{'PATH_INFO'} =~ m,^/vcard/,) {
     $in{'vcard'} =~ s,^/vcard/(\d+).*$,$1,;
 }
 
-$rcsid = '$Id: mvhsaid,v 1.64 1998/03/20 04:12:58 mjr Exp mjr $'; #'fnt
+$rcsid = '$Id: mvhsaid,v 1.65 1998/03/25 23:15:19 mjr Exp mjr $'; #'fnt
 
 # special flags: version, update, vcard, about
 #

@@ -1,6 +1,6 @@
 #!/usr/local/bin/perl -w
 
-# $Id: aid_addname,v 1.14 1998/01/12 17:32:35 mjr Exp mjr $
+# $Id: aid_addname,v 1.15 1998/02/26 19:38:21 mjr Exp mjr $
 
 require 'getopts.pl';
 require 'aid_util.pl';

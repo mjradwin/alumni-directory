@@ -2,7 +2,7 @@
 
 #
 # does the html version of just home pages
-# $Id: aid_home_html,v 1.17 1998/01/03 11:38:28 mjr Exp mjr $
+# $Id: aid_home_html,v 1.18 1998/01/07 18:59:23 mjr Exp mjr $
 #
 
 require 'aid_util.pl';

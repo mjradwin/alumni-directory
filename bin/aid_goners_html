@@ -2,7 +2,7 @@
 
 #
 # does the html version of the invalid address list
-# $Id: aid_goners_html,v 1.28 1998/03/20 18:27:37 mjr Exp mjr $
+# $Id: aid_goners_html,v 1.29 1998/03/20 18:29:25 mjr Exp mjr $
 #
 
 require 'aid_util.pl';

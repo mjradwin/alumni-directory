@@ -2,11 +2,11 @@
 #     FILE: aid_util.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: perl library routines for the Alumni Internet Directory
-#      $Id: aid_util.pl,v 1.107 1998/03/25 23:41:19 mjr Exp mjr $
+#      $Id: aid_util.pl,v 1.108 1998/03/30 20:23:30 mjr Exp mjr $
 #
 
 $aid_util'rcsid =
- '$Id: aid_util.pl,v 1.107 1998/03/25 23:41:19 mjr Exp mjr $';
+ '$Id: aid_util.pl,v 1.108 1998/03/30 20:23:30 mjr Exp mjr $';
 
 # ----------------------------------------------------------------------
 # CONFIGURATION

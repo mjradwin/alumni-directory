@@ -2,7 +2,7 @@
 
 #
 # does the html version of the alphabetical address list
-# $Id: aid_alpha_html,v 1.31 1998/01/03 11:32:52 mradwin Exp $
+# $Id: aid_alpha_html,v 1.30 1998/01/03 11:38:28 mjr Exp mjr $
 #
 
 require 'aid_util.pl';
