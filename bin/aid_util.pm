@@ -2,11 +2,11 @@
 #     FILE: aid_util.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: perl library routines for the Alumni Internet Directory
-#      $Id: aid_util.pl,v 1.90 1998/01/05 20:59:07 mjr Exp mjr $
+#      $Id: aid_util.pl,v 1.91 1998/01/05 23:56:23 mjr Exp mjr $
 #
 
 $aid_util'rcsid =
- '$Id: aid_util.pl,v 1.90 1998/01/05 20:59:07 mjr Exp mjr $';
+ '$Id: aid_util.pl,v 1.91 1998/01/05 23:56:23 mjr Exp mjr $';
 
 # ----------------------------------------------------------------------
 # CONFIGURATION
@@ -37,7 +37,7 @@ $aid_util'rcsid =
      'cat',          '/usr/local/gnu/bin/cat',
      'cp',           '/usr/local/gnu/bin/cp',
      'make',         '/usr/local/gnu/bin/make',
-     'mailto',       "mjr\@localhost",
+     'mailto',       "mjr\@divcom",
      'mailsubj',     'MVHSAID',
      'spoolfile',    '/var/spool/mail/mjr',
      'rcsid',        "$aid_util'rcsid",
