@@ -116,8 +116,8 @@ sub write_entry {
 	if $school ne 'MVHS';
     print FMTOUT "<dt>Affiliation:  <strong>$year</strong>\n" 
 	unless ($year =~ /^\d+$/);
-    print FMTOUT "<dt>Email: <strong><a href=\"mailto:$email\">$email</a></strong>\n";
-    print FMTOUT "<dt>Web Page: <strong><a href=\"$homepage\">$homepage</a></strong>\n"
+    print FMTOUT "<dt>Email: <tt><strong><a href=\"mailto:$email\">$email</a></strong></tt>\n";
+    print FMTOUT "<dt>Web Page: <tt><strong><a href=\"$homepage\">$homepage</a></strong></tt>\n"
 	if $homepage ne '';
     print FMTOUT "<dt>Location: <strong>$location</strong>\n"
 	if $location ne '';
