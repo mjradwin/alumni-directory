@@ -14,6 +14,7 @@ strong.newupd {
 div.about {
   border: none;
   color: black;
+  width: 100%;
   background-color: #ffc;
 }
 
@@ -21,4 +22,8 @@ pre.about {
   color: black;
   margin-left: 1em;
   margin-right: 1em;
+}
+
+.alert {
+  color: red;
 }
