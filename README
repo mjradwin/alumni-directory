@@ -1,5 +1,5 @@
 Alumni Internet Directory README file
-$Id: README,v 1.2 1999/05/31 19:13:23 mradwin Exp mradwin $
+$Id: README,v 5.1 1999/05/31 21:19:10 mradwin Exp mradwin $
 
 ------------------------------------------------------------------------
  Copyright (c) 1995-1999  Michael John Radwin
@@ -26,9 +26,6 @@ twiddle a few things, and you're off and using it.
 To set up the Alumni Internet Directory, you'll need to edit the
 following things (and probably several more):
 
-cgi-bin/cgi-lib.pl:
-  download a copy of cgi-lib.pl from http://cgi-lib.stanford.edu/cgi-lib/
-
 bin/generic_config.pl:
   copy this file to customize for your high school (change all GHS
   and Generic High School references to your own school)
@@ -42,18 +39,26 @@ Makefile:
 data/*.include:
   [all text]
 
-data/master.adr:
-  create a one-line file that looks like this:
-1;1;Smith;;Jane;4;1;0;815137658;920508844;920508844;1;1993;jsmith@bogus-domain.org;;;;;0;
-
+data/working.db:
+  You'll need to create this file, but there's no script to do it
+  automatically.  I'd suggest you do a 'touch data/working.db' and then
+  './bin/aid_edit_entry data/working.db -1' and edit yourself an entry
+  (be sure to put non-blank values in the 4 required keys -- sn
+  [surname], gn [given name], e [email address], yr [graduation year] or
+  it won't work).
 
 After editing Makefile and the .pl configuration files appropriately, do
 a 'make symlinks' to set up symbolic links from the web's cgi-bin
 directory to the bin directory.
 
-If you're using Apache and a directory other than cgi-bin for your
-binaries, you'll also need to create a .htaccess file in your web's bin
-directory with this directive:
+If you've successfully created a working.db file and done a 'make
+symlinks', you should be able to do a 'make all' and actually get
+something to work.
+
+'make symlinks' will do this, but you should be aware of it -- if you're
+using Apache and a directory other than cgi-bin for your binaries,
+you'll also need to create a .htaccess file in your web's bin directory
+with this directive:
 
   SetHandler cgi-script
 
