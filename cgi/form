@@ -4,7 +4,7 @@
 #     FILE: mvhsaid.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: MVHS Alumni Internet Directory CGI interface
-#      $Id: mvhsaid,v 2.1 1998/03/31 19:55:13 mjr Exp mradwin $
+#      $Id: mvhsaid,v 2.2 1998/04/02 20:22:44 mjr Exp mjr $
 #
 
 require 'aid_util.pl';
@@ -24,7 +24,7 @@ if (defined($ENV{'PATH_INFO'}) && $ENV{'PATH_INFO'} =~ m,^/vcard/,) {
     $in{'vcard'} =~ s,^/vcard/(\d+).*$,$1,;
 }
 
-$rcsid = '$Id: mvhsaid,v 2.1 1998/03/31 19:55:13 mjr Exp mradwin $'; #'fnt
+$rcsid = '$Id: mvhsaid,v 2.2 1998/04/02 20:22:44 mjr Exp mjr $'; #'fnt
 
 # special flags: version, update, vcard, about
 #
@@ -257,16 +257,17 @@ EOM
     print "Content-type: text/html\n\n";
     print &common_html_hdr(-1,'Your submission is confirmed and queued',1);
 
-    print "<br>\n";
     $fullname = &inorder_fullname(*in);
     print "<p>The entry for <strong>$fullname</strong> has been\n";
-    print "added to the submission queue.\n";
-    print "Email will be sent to <tt>$in{'email'}</tt> confirming\n";
-    print "receipt of this submission when it it processed.</p>\n";
+    print "added to the submission queue, but it has <em>not</em> been\n";
+    print "added to the Directory yet.\n";
+    print "Processing your submission usually takes two days.</p>\n";
 
-    print "<p>Processing your sumbission might take a day or two.\n";
-    print "See <a href=\"" . &aid_config('master_path') . "tech.html#submit\">";
-    print "tech notes</a> for behind-the-scenes details.</p>\n";
+    print "<p>Email will be sent to <tt>$in{'email'}</tt> confirming\n";
+    print "receipt of this submission when it it processed.\n";
+    print "See the <a href=\"" . &aid_config('master_path') .
+	"tech.html#submit\">";
+    print "submission tech note</a> for behind-the-scenes details.</p>\n";
 
     print &common_html_ftr(-1);
 }
