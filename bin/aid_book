@@ -2,7 +2,7 @@
 
 #
 # generates address books in several formats
-# $Id: aid_book,v 3.10 1998/05/17 05:18:53 mradwin Exp mradwin $
+# $Id: aid_book,v 3.11 1998/06/10 16:14:57 mradwin Exp mradwin $
 #
 
 require 'aid_util.pl';
@@ -109,41 +109,40 @@ Do Not Edit! -->
 
 sub write_entry {
     local(*BOOK,$option,%rec) = @_;
-    
-    $rec{'last'} = "$rec{'last'} $rec{'married'}" if $rec{'married'} ne '';
+    local($long_last) = $rec{'last'};
 
-    $option eq 'p' && print BOOK "$rec{'alias'}\t$rec{'last'}, $rec{'first'}\t$rec{'email'}\t\t$rec{'school'} $rec{'year'}\n";
-    $option eq 'e' && print BOOK "$rec{'alias'} = $rec{'last'}; $rec{'first'}, $rec{'school'} $rec{'year'} = $rec{'email'}\n";
+    $long_last .= " $rec{'married'}" if $rec{'married'} ne '';
+
+    $option eq 'p' && print BOOK "$rec{'alias'}\t$long_last, $rec{'first'}\t$rec{'email'}\t\t$rec{'school'} $rec{'year'}\n";
+    $option eq 'e' && print BOOK "$rec{'alias'} = $long_last; $rec{'first'}, $rec{'school'} $rec{'year'} = $rec{'email'}\n";
     $option eq 'b' && print BOOK "alias $rec{'alias'}\t$rec{'email'}\n";
-    $option eq 'w' && print BOOK "<$rec{'alias'}>\r\n>$rec{'first'} $rec{'last'} <$rec{'email'}>\r\n<$rec{'alias'}>\r\n>$rec{'school'} $rec{'year'}\r\n";
-    $option eq 'm' && print BOOK "alias $rec{'alias'} $rec{'email'}\r\nnote $rec{'alias'} <name:$rec{'first'} $rec{'last'}>$rec{'school'} $rec{'year'}\r\n";
+    $option eq 'w' && print BOOK "<$rec{'alias'}>\r\n>$rec{'first'} $long_last <$rec{'email'}>\r\n<$rec{'alias'}>\r\n>$rec{'school'} $rec{'year'}\r\n";
+    $option eq 'm' && print BOOK "alias $rec{'alias'} $rec{'email'}\r\nnote $rec{'alias'} <name:$rec{'first'} $long_last>$rec{'school'} $rec{'year'}\r\n";
 
     # netscape is a bigger sucker
     if ($option eq 'n') {
 	print BOOK "    <DT><A HREF=\"mailto:$rec{'email'}\" ";
-	print BOOK "NICKNAME=\"$rec{'alias'}\">$rec{'first'} $rec{'last'}</A>\n";
+	print BOOK "NICKNAME=\"$rec{'alias'}\">$rec{'first'} $long_last</A>\n";
 	print BOOK "<DD>$rec{'school'} $rec{'year'}\n";
     }
 
     elsif ($option eq 'l') {
-        print BOOK "dn: cn=$rec{'first'} $rec{'last'},mail=$rec{'email'}\n";
-        print BOOK "cn: $rec{'first'} $rec{'last'}\n";
-        print BOOK "sn: $rec{'last'}\n";
-        print BOOK "givenname: $rec{'first'}\n";
-        print BOOK "objectclass: top\nobjectclass: person\n";
-        print BOOK "mail: $rec{'email'}\n";
-        print BOOK "locality: $rec{'location'}\n" if $rec{'location'} ne '';
-        print BOOK "o: $rec{'school'} $rec{'year'}\n";
-        print BOOK "xmozillanickname: $rec{'alias'}\n";
-        print BOOK "\n";
+        print BOOK "dn: cn=$rec{'first'} $long_last,mail=$rec{'email'}\r\n";
+        print BOOK "cn: $rec{'first'} $long_last\r\n";
+        print BOOK "sn: $long_last\r\n";
+        print BOOK "givenname: $rec{'first'}\r\n";
+        print BOOK "objectclass: top\r\nobjectclass: person\r\n";
+        print BOOK "mail: $rec{'email'}\r\n";
+        print BOOK "locality: $rec{'location'}\r\n" if $rec{'location'} ne '';
+        print BOOK "o: $rec{'school'}\r\n";
+	print BOOK "ou: $rec{'year'}\r\n";
+        print BOOK "xmozillanickname: $rec{'alias'}\r\n";
+        print BOOK "\r\n";
     }
     
     # lots of data for a vCard
     elsif ($option eq 'v') {
-	print BOOK "Begin:vCard\nORG:$rec{'school'} $rec{'year'};\nFN:$rec{'first'} $rec{'last'}\n";
-	print BOOK "N:$rec{'last'};$rec{'first'}\nEMAIL;PREF;INTERNET:$rec{'email'}\n";
-	print BOOK "URL:$rec{'homepage'}\n" if $rec{'homepage'} ne '';
-	print BOOK "End:vCard\n\n";
+	print BOOK &aid_vcard_text(*rec), "\r\n";
     }
 }
 
