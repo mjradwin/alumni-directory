@@ -2,7 +2,7 @@
 
 #
 # does the html verbose pages
-# $Id: aid_multi_alpha_html,v 5.4 1999/06/08 19:33:12 mradwin Exp mradwin $
+# $Id: aid_multi_alpha_html,v 5.5 1999/06/08 21:54:43 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -175,4 +175,10 @@ sub alpha_jump_bar {
     }
 
     $retval;
+}
+
+
+if ($^W && 0)
+{
+    $ht_empty_close_tag = '';
 }
