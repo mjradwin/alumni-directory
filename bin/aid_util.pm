@@ -2,7 +2,7 @@
 #     FILE: aid_util.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: perl library routines for the Alumni Internet Directory
-#      $Id: aid_util.pl,v 5.53 2000/01/18 17:12:09 mradwin Exp mradwin $
+#      $Id: aid_util.pl,v 5.54 2000/01/23 21:55:00 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -150,7 +150,8 @@ sub aid_affiliate
 
     if ($rec{'yr'} =~ /^\d+$/)
     {
-	$affil .= "<a href=\"" . &main'aid_about_path(*rec,1) . "\">" #'#
+	$affil .= "<a target=\"_top\" href=\"" .
+	    &main'aid_about_path(*rec,1) . "\">" #'#
 	    if $do_html_p;
 	$year = sprintf("%02d", $rec{'yr'} % 100);
 
@@ -163,7 +164,8 @@ sub aid_affiliate
     }
     else
     {
-	$affil .= "<a href=\"" . &main'aid_about_path(*rec,1) . "\">" #'#
+	$affil .= "<a target=\"_top\" href=\"" .
+	    &main'aid_about_path(*rec,1) . "\">" #'#
 	    if $do_html_p;
 	$tmp    = '[' . $config{'short_school'} . ' ' . $rec{'yr'} . ']';
 	$affil .= $tmp;
@@ -437,44 +439,38 @@ sub aid_verbose_entry {
 
     if (! $suppress_links && $rec{'v'})
     {
-	$retval .= "<dt>Tools: <small>";
-	$retval .= "<a href=\"" . &main'aid_vcard_path(*rec_arg) . "\">"; #'#
-	$retval .= "vCard</a>";
-	$retval .= "&nbsp;|&nbsp;";
-	$retval .= "<a\nhref=\"" . $config{'about_cgi'} . "/$rec{'id'}\">";
-	$retval .= "modify</a>";
-	$retval .= "&nbsp;|&nbsp;";
-	$retval .= "<a\nhref=\"" .
-	    $config{'yab_cgi'} . "/$rec{'id'}\">"; #'#
-	$retval .= 'add to Y! address book';
-	$retval .= "</a>";
-	$retval .= "</small></dt>\n";
+	$retval .= "<dt>Tools: <small>" .
+	    "<a target=\"_top\"\nhref=\"" .
+	    &main'aid_vcard_path(*rec_arg) . "\">" . #'#
+	    "vCard</a>&nbsp;|&nbsp;" .
+	    "<a target=\"_top\"\nhref=\"" . $config{'about_cgi'} .
+	    "/$rec{'id'}\">modify</a>&nbsp;|&nbsp;<a target=\"_top\"\n" .
+	    "href=\"" .  $config{'yab_cgi'} . "/$rec{'id'}\">" .
+	    "add to Y! address book</a></small></dt>\n";
     }
 
     if ($rec{'yr'} =~ /^\d+$/) {
 	if ($display_year) {
-	    $retval .= "<dt>Year:  <strong>";
-	    $retval .= 
-		"<a href=\"" . &main'aid_about_path(*rec,1) . "\">"; #'#
-	    $retval .= $rec{'yr'};
-	    $retval .= "</a></strong></dt>\n";
+	    $retval .= "<dt>Year: <strong><a target=\"_top\"\n" .
+		"href=\"" . &main'aid_about_path(*rec,1) . "\">" . #'#
+		    $rec{'yr'} . "</a></strong></dt>\n";
 	}
     } else {
-	$retval .= "<dt>Affiliation:  <strong>";
-	$retval .= "<a href=\"" . &main'aid_about_path(*rec,1) . "\">"; #'#
-	$retval .= $rec{'yr'};
-	$retval .= "</a></strong></dt>\n";
+	$retval .= "<dt>Affiliation: <strong><a target=\"_top\"\n" .
+	    "href=\"" . &main'aid_about_path(*rec,1) . "\">" . #'#
+		$rec{'yr'} . "</a></strong></dt>\n";
     }
 
     $retval .= "<dt>E-mail: <code><strong>";
-    $retval .= "<a href=\"mailto:$rec{'e'}\">" if $rec{'v'};
+    $retval .= "<a target=\"_top\"\nhref=\"mailto:$rec{'e'}\">" if $rec{'v'};
     $retval .= $rec{'e'};
-    $retval .= "</a>\n" if $rec{'v'};
-    $retval .= " <em>(invalid address)</em>" unless $rec{'v'};
+    $retval .= "</a>" if $rec{'v'};
+    $retval .= "\n<em>(invalid address)</em>" unless $rec{'v'};
     $retval .= "</strong></code></dt>\n";
 
-    $retval .= "<dt>Web Page: <code><strong><a href=\"$rec{'w'}\">$rec{'w'}</a></strong></code></dt>\n"
-	if $rec{'w'} ne '';
+    $retval .= "<dt>Web Page: <code><strong><a target=\"_top\"\n" . 
+	"href=\"$rec{'w'}\">$rec{'w'}</a></strong></code></dt>\n"
+	    if $rec{'w'} ne '';
     $retval .= "<dt>Location: <strong>$rec{'l'}</strong></dt>\n"
 	if $rec{'l'} ne '';
     $retval .= "<dt>Updated: ";
@@ -598,7 +594,7 @@ sub aid_about_text
 	$retval .= "Affiliation        : ";
     }
     $retval .= "<strong>" if $do_html_p;
-    $retval .= "<a href=\"" . &main'aid_about_path(*rec) . "\">" #'#
+    $retval .= "<a target=\"_top\" href=\"" . &main'aid_about_path(*rec) . "\">" #'#
 	    if $do_html_p && !$show_req_p;
     $retval .= $rec{'yr'};
     $retval .= "</a>" if $do_html_p && !$show_req_p;
@@ -608,7 +604,7 @@ sub aid_about_text
     $retval .= "\n";
     $retval .= "E-mail             : ";
     $retval .= "<strong>" if $do_html_p;
-    $retval .= "<a href=\"mailto:$rec{'e'}\">"
+    $retval .= "<a target=\"_top\" href=\"mailto:$rec{'e'}\">"
 	if $do_html_p && !$show_req_p && $rec{'v'};
     $retval .= $rec{'e'};
     $retval .= "</a>" if $do_html_p && !$show_req_p && $rec{'v'};
@@ -624,7 +620,7 @@ sub aid_about_text
 
     $retval .= "Personal Web Page  : ";
     $retval .= ($rec{'w'} eq '') ? "(none)\n" :
-	((($do_html_p) ? "<strong><a href=\"$rec{'w'}\">" : "") .
+	((($do_html_p) ? "<strong><a target=\"_top\" href=\"$rec{'w'}\">" : "") .
 	 $rec{'w'} . 
 	 (($do_html_p) ? "</a></strong>" : "") .
 	 "\n");
@@ -638,12 +634,12 @@ sub aid_about_text
 
     if ($do_vcard_p && $do_html_p && $rec{'v'}) {
 	$retval .= "vCard              : ";
-	$retval .= "<a href=\"" . &main'aid_vcard_path(*rec_arg) . "\">"; #'#
+	$retval .= "<a target=\"_top\" href=\"" . &main'aid_vcard_path(*rec_arg) . "\">"; #'#
 	$retval .= $image_tag{'vcard'};
 	$retval .= "</a>\n";
 
 	$retval .= "Yahoo! Address Book: ";
-	$retval .= "<a href=\"" .
+	$retval .= "<a target=\"_top\" href=\"" .
 	    $config{'yab_cgi'} . "/$rec{'id'}\">"; #'#
 	$retval .= 'Add to My Personal Address Book';
 	$retval .= "</a>\n";
@@ -704,7 +700,7 @@ sub aid_common_intro_para
     "<small>Were you previously listed but now your name isn't here?  If\n" .
     "e-mail to you has failed to reach you for more than 6 months, your\n" .
     "listing has been moved to the\n" .
-    "<a href=\"" . $config{'master_path'} . "invalid.html\">invalid\n" .
+    "<a target=\"_top\" href=\"" . $config{'master_path'} . "invalid.html\">invalid\n" .
     "e-mail addresses</a> page.\n</small>\n\n";
 }
 
@@ -725,7 +721,7 @@ sub aid_common_link_table
         if ($idx == $page) {
 	    $html .= "\n<strong>$name</strong>";
         } else {
-            $html .= "<a\nhref=\"$url\">$name</a>";
+            $html .= "<a target=\"_top\"\nhref=\"$url\">$name</a>";
         }
 	$html .= ' - ' unless $idx == $#page_idx;
     }
@@ -735,7 +731,7 @@ sub aid_common_link_table
         if ($idx == ($page - 10)) {
 	    $html .= "\n<strong>$name</strong>";
         } else {
-            $html .= "<a\nhref=\"$url\">$name</a>";
+            $html .= "<a target=\"_top\"\nhref=\"$url\">$name</a>";
         }
 	$html .= ' - ' unless $idx == $#second_idx;
     }
@@ -765,12 +761,12 @@ sub aid_common_html_ftr
     $ftr .= "<small>\n<!-- hhmts start -->\nLast modified: ";
     $ftr .= &main'ctime($time); #'#
     $ftr .= "<!-- hhmts end -->\n<br${main'ht_empty_close_tag}\n";
-    $ftr .= "<a href=\"" . $copyright_path . "\">" .
-	"Copyright</a>\n&copy; 1995-$year " . $config{'admin_name'} . 
+    $ftr .= "<a target=\"_top\" href=\"" . $copyright_path . "\">" .
+	"Copyright</a>\n&copy; $year " . $config{'admin_name'} . 
 	".  All rights reserved.\n" .
 	"<br${main'ht_empty_close_tag}<br${main'ht_empty_close_tag}\n";
-    $ftr .= $disclaimer . "\n" . 
-	"<a href=\"" . $copyright_path . "\">More info on privacy</a>." .
+    $ftr .= $disclaimer . "\n" .
+	"<a target=\"_top\" href=\"" . $config{'master_path'} . "etc/privacy.html\">More info on privacy</a>." .
 	"</small>\n</body>\n</html>\n";
 
     $ftr;
@@ -830,8 +826,8 @@ sub aid_common_html_hdr
 
     $hdr .=
 	"<table border=\"0\" width=\"100%\" cellpadding=\"0\" class=\"navbar\">
-<tr valign=\"top\"><td><small>\n<a href=\"/\">$srv_nowww</a> <tt>-&gt;</tt>\n";
-    $hdr .= "<a href=\"$config{'master_path'}\">" unless $page == 0;
+<tr valign=\"top\"><td><small>\n<a target=\"_top\" href=\"/\">$srv_nowww</a> <tt>-&gt;</tt>\n";
+    $hdr .= "<a target=\"_top\" href=\"$config{'master_path'}\">" unless $page == 0;
     $hdr .= $config{'short_school'} . ' Alumni';
     if ($page == 0)
     {
@@ -843,7 +839,7 @@ sub aid_common_html_hdr
 	if (defined $parent_page_name{$page})
 	{
 	    $hdr .= " <tt>-&gt;</tt>\n" .
-		'<a href="' . $parent_page_path{$page} . '">' .
+		'<a target="_top" href="' . $parent_page_path{$page} . '">' .
 		    $parent_page_name{$page} . '</a>';
 	}
 
@@ -853,7 +849,8 @@ sub aid_common_html_hdr
     $hdr .=
 "($timestamp)<br${main'ht_empty_close_tag}<br${main'ht_empty_close_tag}
 </small></td><td align=\"right\"><small>
-<a href=\"$config{'search_cgi'}\">Search</a></small></td></tr></table>
+<a target=\"_top\"
+href=\"$config{'search_cgi'}\">Search</a></small></td></tr></table>
 <table cellspacing=\"0\" cellpadding=\"6\" border=\"0\"
 width=\"100%\"><tr><td
 bgcolor=\"#$header_bg\">";
@@ -929,7 +926,7 @@ sub aid_class_jump_bar {
 	foreach $i (1 .. $#years)
 	{
 	    $retval .= " |\n";
-	    $retval .= "<a href=\"${href_begin}$years[$i]${href_end}\">"
+	    $retval .= "<a target=\"_top\" href=\"${href_begin}$years[$i]${href_end}\">"
 		unless defined $hilite && $years[$i] eq $hilite;
 	    $retval .= ($years[$i] eq 'other') ? "Faculty/Staff" :
 		sprintf("%02d", $years[$i] % 100);
