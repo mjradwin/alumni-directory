@@ -2,7 +2,7 @@
 #     FILE: aid_util.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: perl library routines for the Alumni Internet Directory
-#      $Id: aid_util.pl,v 4.96 1999/05/03 23:32:50 mradwin Exp mradwin $
+#      $Id: aid_util.pl,v 4.97 1999/05/04 17:00:08 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -520,7 +520,7 @@ sub aid_verbose_entry {
 
     if ($rec{'n'} ne '') {
 	$retval .= "<dt>What's New?</dt>\n";
-	$rec{'n'} =~ s/\n/<br>\n/g;
+	$rec{'n'} =~ s/\n/<br \/>\n/g;
 	$retval .= "<dd>$rec{'n'}</dd>\n";
     }
     $retval .= "</dl>\n\n";
@@ -719,7 +719,7 @@ sub aid_about_text
 	$retval .= "What's New?        :\n";
 	$retval .= "</pre>\n" if $do_html_p;
 	$retval .= $do_html_p ? "<blockquote class=\"about\">\n" : "";
-	$rec{'n'} =~ s/\n/<br>\n/g if $do_html_p;
+	$rec{'n'} =~ s/\n/<br \/>\n/g if $do_html_p;
 	$retval .= $rec{'n'};
 	$retval .= $do_html_p ? "</blockquote>\n" : "";
     } else {
@@ -807,7 +807,7 @@ sub aid_common_html_ftr
     $ftr .= &main'aid_common_link_table($page); #'#
     $ftr .="</div>\n";
 
-    $ftr .= "\n<small>\n" . $disclaimer . "\n<br><br>\n";
+    $ftr .= "\n<small>\n" . $disclaimer . "\n<br /><br />\n";
 
     $ftr .= "<a href=\"" . $copyright_path . "\">" .
 	"Copyright\n&copy; $year " . $config{'admin_name'} . "</a>\n</small>\n" .
@@ -838,7 +838,7 @@ sub aid_common_html_hdr
 	"    <!-- \"$title\" --><strong>" .
 	&main'tableheader_internal($title,1,$header_fg) . #'#
 	    "</strong>\n";
-    $tablehdr .= "    <br>$subtitle\n" if defined $subtitle && $subtitle ne '';
+    $tablehdr .= "    <br />$subtitle\n" if defined $subtitle && $subtitle ne '';
     $tablehdr .= "\n";
 
     $titletag = ($page == 0) ?

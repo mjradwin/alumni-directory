@@ -2,7 +2,7 @@
 #     FILE: aid_submit.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: submission form for Alumni Internet Directory
-#      $Id: aid_submit.pl,v 1.3 1999/04/07 16:27:43 mradwin Exp mradwin $
+#      $Id: aid_submit.pl,v 1.4 1999/04/07 16:46:21 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -50,7 +50,7 @@ sub aid_submit_body
 	$reqradio[$i] = "
   &nbsp;&nbsp;&nbsp;&nbsp;<input type=\"radio\" name=\"q\" id=\"q$i\"
   value=\"$i\"" . (($rec{'q'} == $i) ? ' checked' : '') .
-  "><label for=\"q$i\">&nbsp;\n  $req_descr_long[$i]</label><br>\n";
+  " /><label for=\"q$i\">&nbsp;\n  $req_descr_long[$i]\n  </label><br />\n";
     }
 
     $reunion_chk = ($rec{'r'} == 1) ? ' checked' : '';
@@ -65,7 +65,7 @@ sub aid_submit_body
 	    $body .= "<p><strong><span class=\"alert\">Your e-mail address\n";
 	    $body .= "(<code>" . $rec{'e'} . "</code>)\n";
 	    $body .= "appears to be invalid.</span>\n";
-	    $body .= "<br>It must be in the form of ";
+	    $body .= "<br />It must be in the form of ";
 	    $body .= "<code>user\@isp.net</code>.\n";
 	    if ($rec{'e'} !~ /\@/)
 	    {
@@ -86,14 +86,14 @@ sub aid_submit_body
 
 	    foreach(@empty_fields)
 	    {
-		$body .= "<li>" . $field_descr{$_} . "\n";
+		$body .= "<li>" . $field_descr{$_} . "</li>\n";
 	    }
 	    $body .= "</ul>\n\n";
 	}
     }
 
     $instr = "<p>Please " . (($rec{'id'} != -1) ? "update" : "enter") .
-    " the following information about yourself.<br>
+    " the following information about yourself.<br />
 Fields marked with a $star
 are required.  All other fields are optional.</p>
 ";
@@ -113,30 +113,30 @@ are required.  All other fields are optional.</p>
   for=\"gn\"><strong>First Name:</strong></label></td>
   <td valign=\"top\">$star</td>
   <td valign=\"top\"><input type=\"text\" name=\"gn\" size=\"35\" 
-  value=\"$rec{'gn'}\" id=\"gn\"></td>
+  value=\"$rec{'gn'}\" id=\"gn\" /></td>
 </tr>
 <tr>
   <td valign=\"top\" align=\"right\"><label
   for=\"mi\"><strong>Middle Initial:</strong></label></td>
   <td>&nbsp;</td>
   <td valign=\"top\"><input type=\"text\" name=\"mi\" size=\"1\" maxlength=\"1\"
-  value=\"$rec{'mi'}\" id=\"mi\"></td>
+  value=\"$rec{'mi'}\" id=\"mi\" /></td>
 </tr>
 <tr>
   <td valign=\"top\" align=\"right\"><label 
-  for=\"sn\"><strong>Last Name/Maiden Name:</strong></label><br>
+  for=\"sn\"><strong>Last Name/Maiden Name:</strong></label><br />
   <small>(your last name in high school)</small></td>
   <td valign=\"top\">$star</td>
   <td valign=\"top\"><input type=\"text\" name=\"sn\" size=\"35\"
-  value=\"$rec{'sn'}\" id=\"sn\"></td>
+  value=\"$rec{'sn'}\" id=\"sn\" /></td>
 </tr>
 <tr>
   <td valign=\"top\" align=\"right\"><label
-  for=\"mn\"><strong>Married Last Name:</strong></label><br>
+  for=\"mn\"><strong>Married Last Name:</strong></label><br />
   <small>(if different from maiden name)</small></td>
   <td>&nbsp;</td>
   <td valign=\"top\"><input type=\"text\" name=\"mn\" size=\"35\"
-  value=\"$rec{'mn'}\" id=\"mn\"><br><br></td>
+  value=\"$rec{'mn'}\" id=\"mn\" /><br /><br /></td>
 </tr>
 
 <tr><td colspan=\"3\" bgcolor=\"#$header_bg\">
@@ -146,26 +146,26 @@ are required.  All other fields are optional.</p>
   <td valign=\"top\" align=\"right\"><strong>High School Attended:</strong></td>
   <td valign=\"top\">$star</td>
   <td valign=\"top\"><input type=\"radio\" name=\"s\" id=\"school_default\"
-  value=\"$school_default\"$school_checked[$school_default]><label
+  value=\"$school_default\"$school_checked[$school_default] /><label
   for=\"school_default\">&nbsp;$school_name[$school_default]</label>
   &nbsp;&nbsp;&nbsp;&nbsp;<input type=\"radio\" name=\"s\" id=\"school_awalt\"
-  value=\"$school_awalt\"$school_checked[$school_awalt]><label
+  value=\"$school_awalt\"$school_checked[$school_awalt] /><label
   for=\"school_awalt\">&nbsp;$school_name[$school_awalt]</label>
   &nbsp;&nbsp;&nbsp;&nbsp;<input type=\"radio\" name=\"s\" id=\"school_both\"
-  value=\"$school_both\"$school_checked[$school_both]><label
+  value=\"$school_both\"$school_checked[$school_both] /><label
   for=\"school_both\">&nbsp;Both&nbsp;$school_name[$school_default]&nbsp;&amp;&nbsp;$school_name[$school_awalt]</label>
-  <br>
+  <br />
   <small>(Did you attend/graduate from another school such as
   Shoreline or Los Altos HS?  Write about it below in the <strong>What's
   New?</strong> section.)</small></td>
 </tr>
 <tr>
   <td valign=\"top\" align=\"right\"><label
-  for=\"yr\"><strong>Graduation Year or Affiliation:</strong></label><br>
+  for=\"yr\"><strong>Graduation Year or Affiliation:</strong></label><br />
   <small>(such as 1993, 2001, or Teacher)</small></td>
   <td valign=\"top\">$star</td>
   <td valign=\"top\"><input type=\"text\" name=\"yr\" size=\"35\"
-  value=\"$rec{'yr'}\" id=\"yr\"><br><br></td>
+  value=\"$rec{'yr'}\" id=\"yr\" /><br /><br /></td>
 </tr>
 
 <tr><td colspan=\"3\" bgcolor=\"#$header_bg\">
@@ -173,26 +173,26 @@ are required.  All other fields are optional.</p>
 </td></tr>
 <tr>
   <td valign=\"top\" align=\"right\"><label
-  for=\"e\"><strong>E-mail Address:</strong></label><br>
+  for=\"e\"><strong>E-mail Address:</strong></label><br />
   <small>(such as chester\@aol.com)</small></td>
   <td valign=\"top\">$star</td>
   <td valign=\"top\"><input type=\"text\" name=\"e\" size=\"35\"
-  value=\"$rec{'e'}\" id=\"e\"></td>
+  value=\"$rec{'e'}\" id=\"e\" /></td>
 </tr>
 <tr>
   <td valign=\"top\" align=\"right\"><label
   for=\"w\"><strong>Personal Web Page:</strong></label></td>
   <td>&nbsp;</td>
   <td valign=\"top\"><input type=\"text\" name=\"w\" size=\"35\"
-  value=\"$rec{'w'}\" id=\"w\"></td>
+  value=\"$rec{'w'}\" id=\"w\" /></td>
 </tr>
 <tr>
   <td valign=\"top\" align=\"right\"><label
-  for=\"l\"><strong>Location:</strong></label><br>
+  for=\"l\"><strong>Location:</strong></label><br />
   <small>(your city, school, or company)</small></td>
   <td>&nbsp;</td>
   <td valign=\"top\"><input type=\"text\" name=\"l\" size=\"35\"
-  value=\"$rec{'l'}\" id=\"l\"><br><br></td>
+  value=\"$rec{'l'}\" id=\"l\" /><br /><br /></td>
 </tr>
 
 <tr><td colspan=\"3\" bgcolor=\"#$header_bg\">
@@ -201,10 +201,11 @@ are required.  All other fields are optional.</p>
 <tr>
   <td colspan=\"3\">
   <label for=\"n\">
-  Let your classmates know what you've been doing since<br>graduation,
-  or any important bits of news you'd like to share.</label><br>
+  Let your classmates know what you've been doing since<br />
+  graduation, or any important bits of news you'd like to share.
+  </label><br />
   <textarea name=\"n\" rows=\"10\" cols=\"55\" wrap=\"hard\"
-  id=\"n\">$rec{'n'}</textarea><br><br>
+  id=\"n\">$rec{'n'}</textarea><br /><br />
   </td>
 </tr>
 
@@ -213,11 +214,11 @@ are required.  All other fields are optional.</p>
 </td></tr>
 <tr>
   <td colspan=\"3\"><input type=\"checkbox\"
-  name=\"r\" id=\"r\" $reunion_chk><label
+  name=\"r\" id=\"r\" $reunion_chk /><label
   for=\"r\">&nbsp;My class officers may notify me of
-  reunion information via e-mail.</label><br><br>Would you like to
-  receive a digest of the Directory every quarter<br>
-  (beginning of February, May, August and November) via e-mail?<br>
+  reunion information via e-mail.</label><br /><br />
+  Would you like to receive a digest of the Directory every quarter<br />
+  (beginning of February, May, August and November) via e-mail?<br />
 ";
 
     $body .= $reqradio[4];
@@ -227,12 +228,12 @@ are required.  All other fields are optional.</p>
     $body .= $reqradio[0];
 
     $body . "
-  <input type=\"hidden\" name=\"id\" value=\"$rec{'id'}\">
-  <input type=\"hidden\" name=\"c\" value=\"$rec{'c'}\">
-  <input type=\"hidden\" name=\"eu\" value=\"$rec{'eu'}\">
-  <input type=\"hidden\" name=\"pe\" value=\"$prev_email\">
-  <input type=\"hidden\" name=\"v\" value=\"1\">
-  <br><br>
+  <input type=\"hidden\" name=\"id\" value=\"$rec{'id'}\" />
+  <input type=\"hidden\" name=\"c\" value=\"$rec{'c'}\" />
+  <input type=\"hidden\" name=\"eu\" value=\"$rec{'eu'}\" />
+  <input type=\"hidden\" name=\"pe\" value=\"$prev_email\" />
+  <input type=\"hidden\" name=\"v\" value=\"1\" />
+  <br /><br />
   </td>
 </tr>
 
@@ -244,7 +245,7 @@ are required.  All other fields are optional.</p>
 <td colspan=\"3\">
 Please review the above information and click the
 <strong>Next&nbsp;&gt;</strong> button to continue.
-<br><input type=\"submit\" value=\"Next&nbsp;&gt;\">
+<br /><input type=\"submit\" value=\"Next&nbsp;&gt;\" />
 </td>
 </tr>
 
