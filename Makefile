@@ -2,7 +2,7 @@
 #     FILE: Makefile
 #   AUTHOR: Michael J. Radwin
 #    DESCR: Makefile for building the Alumni Internet Directory
-#      $Id: Makefile,v 3.83 1999/05/19 01:01:37 mradwin Exp mradwin $
+#      $Id: Makefile,v 3.84 1999/05/19 01:35:58 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -21,17 +21,18 @@
 #   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #
 
+SCHOOL=mvhs
 WWWROOT=/home/web/radwin.org
-WWWDIR=$(WWWROOT)/docs/mvhs-alumni
+WWWDIR=$(WWWROOT)/docs/$(SCHOOL)-alumni
 CGIDIR=$(WWWROOT)/cgi-bin
-DATADIR=$(HOME)/mvhs/data
-BINDIR=$(HOME)/mvhs/bin
+DATADIR=$(HOME)/$(SCHOOL)/data
+BINDIR=$(HOME)/$(SCHOOL)/bin
 AID_UTIL_PL=$(BINDIR)/aid_util.pl
 AID_SUBMIT_PL=$(BINDIR)/aid_submit.pl
 
-TAR_AIDDIR=mvhs
+TAR_AIDDIR=$(SCHOOL)
 TAR_IMGDIR=web/images
-TAR_WWWDIR=web/mvhs-alumni
+TAR_WWWDIR=web/$(SCHOOL)-alumni
 
 MKDIR=/bin/mkdir -p
 RM=/bin/rm -f
@@ -45,8 +46,8 @@ TARFILES= \
 	$(TAR_AIDDIR)/COPYING \
 	$(TAR_AIDDIR)/Makefile \
 	$(TAR_AIDDIR)/bin/aid_* \
-	$(TAR_AIDDIR)/bin/mvhs_config.pl \
-	$(TAR_AIDDIR)/bin/mvhsaid \
+	$(TAR_AIDDIR)/bin/$(SCHOOL)_config.pl \
+	$(TAR_AIDDIR)/bin/$(SCHOOL)aid \
 	$(TAR_AIDDIR)/bin/nph-aid-search \
 	$(TAR_AIDDIR)/bin/tableheader.pl \
 	$(TAR_AIDDIR)/data/test.adr \
@@ -67,9 +68,9 @@ all:	index submit \
 	stats vcard pine_book
 
 SYMLINKS=$(AID_SUBMIT_PL) $(AID_UTIL_PL) $(BINDIR)/aid_config.pl \
-	$(BINDIR)/mvhs_config.pl $(BINDIR)/tableheader.pl
+	$(BINDIR)/$(SCHOOL)_config.pl $(BINDIR)/tableheader.pl
 symlinks:
-	(cd $(CGIDIR) ; /bin/ln -sf $(SYMLINKS) .; $(CP) $(BINDIR)/mvhsaid .)
+	(cd $(CGIDIR) ; /bin/ln -sf $(SYMLINKS) .; $(CP) $(BINDIR)/$(SCHOOL)aid .)
 
 DBFILE=$(WWWDIR)/master.db
 dbfile:	$(DBFILE)
@@ -203,7 +204,7 @@ $(DOWNLOAD_TS):	$(BINDIR)/aid_home_html $(AID_UTIL_PL) $(DBFILE)
 		-t 'Download Nickname and Address Book Files' \
 		$(DOWNLOAD)
 
-PINE_BOOK=$(HOME)/.addressbook-mvhs
+PINE_BOOK=$(HOME)/.addressbook-$(SCHOOL)
 pine_book:	$(PINE_BOOK)
 $(PINE_BOOK):	$(DBFILE) $(BINDIR)/aid_book
 	$(BINDIR)/aid_book -p $(PINE_BOOK) $(DBFILE)
@@ -220,7 +221,7 @@ recent.txt:	$(DBFILE) $(BINDIR)/aid_shortlist_html
 
 tar:
 	$(MKDIR) $(WWWDIR)/etc
-	( cd $(HOME) ; tar cfz $(WWWDIR)/etc/mvhsaid.tar.gz $(TARFILES) )
+	( cd $(HOME) ; tar cfz $(WWWDIR)/etc/$(SCHOOL)aid.tar.gz $(TARFILES) )
 
 snapshot:
 	$(MKDIR) $(WWWDIR)/etc
