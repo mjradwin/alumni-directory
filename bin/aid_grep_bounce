@@ -1,6 +1,6 @@
 #!/usr/bin/perl -w
 
-# $Id: aid_grep_bounce,v 1.7 1999/05/24 18:55:52 mradwin Exp mradwin $
+# $Id: aid_grep_bounce,v 5.1 1999/05/31 21:20:48 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -24,6 +24,9 @@ $dirname =~ s,/[^/]+$,,;
 push(@INC, $dirname);
 
 require 'aid_util.pl';
+
+$from_pattern = &aid_config('admin_name') .
+    ' <' . &aid_config('admin_email') . '>';
 
 %bouncers = ();
 &readspool(($ARGV[0]) ? $ARGV[0] : &aid_config('spoolfile'));
@@ -59,7 +62,7 @@ sub readspool {
 	    s/\s*$//;
 	    $bouncers{"\L$_\E"} = 1;
 	}
-	elsif (/^From: Michael John Radwin <mvhs-alumni\@radwin.org>/)
+	elsif (/^From: $from_pattern/o)
 	{
 	    $_ = <SPOOL>;
 	    if (/To:.*<([^>]+)>/)
