@@ -1,0 +1,162 @@
+#!/usr/local/bin/perl5 -w
+
+#
+# generates reunion info page
+#
+# $Id$
+#
+#   Copyright (c) 1995-1999  Michael John Radwin
+#
+#   This program is free software; you can redistribute it and/or modify
+#   it under the terms of the GNU General Public License as published by
+#   the Free Software Foundation; either version 2 of the License, or
+#   (at your option) any later version.
+#
+#   This program is distributed in the hope that it will be useful,
+#   but WITHOUT ANY WARRANTY; without even the implied warranty of
+#   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#   GNU General Public License for more details.
+#
+#   You should have received a copy of the GNU General Public License
+#   along with this program; if not, write to the Free Software
+#   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+#
+
+$dirname = $0;
+$dirname =~ s,/[^/]+$,,;
+unshift(@INC, $dirname);
+
+use DB_File;
+use Time::Local;
+
+require 'aid_util.pl';
+require 'getopts.pl';
+
+@DoW = ('Sunday','Monday','Tuesday','Wednesday',
+	'Thursday','Friday','Saturday');
+@MoY = ('January','February','March','April','May','June',
+	'July','August','September','October','November','December');
+
+$0 =~ s,.*/,,;  # basename
+$usage = "usage: $0 [-h] reunions.db outfile
+    -h        Display usage information.
+";
+
+&Getopts('h') || die "$usage\n";
+$opt_h && die "$usage\n";
+$ARGV[0] || die "$usage\n";
+$ARGV[1] || die "$usage\n";
+$opt_h = $opt_h;		# avoid warning
+
+$dbmfile = shift;
+tie(%DB, 'DB_File', $dbmfile, O_RDONLY, 0444, $DB_File::DB_HASH)
+    or die "$dbmfile: $!\n";
+
+$outfile = shift;
+open(FMTOUT,">$outfile") || die "Can't open $outfile: $!\n";
+
+die "corrupt/missing _t key!" unless defined $DB{'_t'} && $DB{'_t'} ne '';
+$time = unpack("N",$DB{'_t'});
+
+print FMTOUT &aid_common_html_hdr(11,'Reunion Information',0,$time);
+
+print FMTOUT <<END_OF_HTML;
+<h2>Alumni: help keep this page up-to-date!</h2>
+
+<p>If you know the details about a reunion that isn't listed on this page,
+please send e-mail to Michael (<code><a
+href="mailto:mvhs-alumni\@radwin.org">mvhs-alumni\@radwin.org</a></code>).</p>
+
+<p>If your class reunion isn't listed here, contact your Senior year
+class officers (see your yearbook).  Failing that, try the Activities
+Office of Mountain View High School, at 650-940-4600.  Their U.S. mail
+address is 3535 Truman Avenue, Mountain View, CA 94040-4598.</p>
+
+<p>If you are a class officer and would like to send e-mail to members
+of your graduating class, please contact Michael to get a list of people
+who have asked not to receive such mail.</p>
+
+END_OF_HTML
+
+%upcoming = ();
+%past = ();
+while (($key,$val) = each(%DB))
+{
+    next if $key =~ /^_/;
+    my($date,$html) = split(/\0/, $val, 2);
+    my($year,$mon,$mday) = split(/\//, $date, 3);
+
+    my($t) = &Time::Local::timelocal(59,59,23,$mday,$mon-1,$year-1900,0,0,0);
+    if ($t > time)
+    {
+	$upcoming{$key} = $val;
+    }
+    else
+    {
+	$past{$key} = $val;
+    }
+}
+untie(%DB);
+
+print FMTOUT "<h2>Upcoming reunions</h2>\n";
+&writehash(\%upcoming);
+
+print FMTOUT "<h2>Past reunions</h2>\n";
+&writehash(\%past);
+
+print FMTOUT &aid_common_html_ftr(11,$time);
+
+close(FMTOUT);
+utime $time, $time, $outfile;
+
+# touch timestamp
+$now = time;
+$ts = $outfile;
+$ts =~ s,([^/]+)$,\.$1,;
+open(TS,">$ts") && close(TS);
+utime $now, $now, $ts;
+
+exit(0);
+
+sub writehash
+{
+    my($entries) = @_;
+    my($key);
+    my($first) = 1;
+
+    foreach $key (sort keys %{$entries})
+    {
+	my($sec,$min,$hour,$mday,$mon,$year,$wday,$yday,$isdst);
+
+	my($date,$html) = split(/\0/, $entries->{$key}, 2);
+	($year,$mon,$mday) = split(/\//, $date, 3);
+
+	my($t) =
+	    &Time::Local::timelocal(59,59,23,$mday,$mon-1,$year-1900,0,0,0);
+	($sec,$min,$hour,$mday,$mon,$year,$wday,$yday,$isdst) = localtime($t);
+
+	if ($first)
+	{
+	    $first = 0;
+	    print FMTOUT "<dl>\n<dt><b>";
+	}
+	else
+	{
+	    print FMTOUT "<dt><br><b>";
+	}
+
+	my($page) = ($key =~ /^\d+$/) ? $key : 'other';
+
+	print FMTOUT &aid_config('school'),
+	" <a name=\"r$key\"\nhref=\"", &aid_config('master_path'),
+	"class/$page.html\">", ($key =~ /^\d+$/) ? "Class of $key" : $key,
+	"</a></b></dt>\n";
+
+	print FMTOUT "<dd>Date: $DoW[$wday], $MoY[$mon] $mday, ", ($year+1900),
+	"</dd>\n";
+	print FMTOUT $html, "\n";
+    }
+
+    print FMTOUT "</dl>\n" unless $first;
+    1;
+}
