@@ -2,7 +2,7 @@
 
 #
 # mails a welcome, update, confirm, or massmail message to members
-# $Id: aid_welcome,v 3.36 1999/03/26 02:55:02 mradwin Exp mradwin $
+# $Id: aid_welcome,v 3.37 1999/03/26 19:41:22 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -169,12 +169,12 @@ if ($opt_m) {
 
 $params{'sleep'} = $opt_d if defined $opt_d;
 
-$dbfile = shift;
-$dbfile =~ s/\.db$//;
-die "can't open ${dbfile}.db\n" unless -r "${dbfile}.db";
+$dbmfile = shift;
+$dbmfile =~ s/\.db$//;
+die "can't open ${dbmfile}.db\n" unless -r "${dbmfile}.db";
 
-dbmopen(%DB, $dbfile, 0444);
-die "invalid DB: ${dbfile}.db\n" unless defined $DB{'__class__'};
+dbmopen(%DB, $dbmfile, 0444);
+die "invalid DB: ${dbmfile}.db\n" unless defined $DB{'__class__'};
 
 open(LOG,">>$logfile") || die "$0: Can't open $logfile: $!\n";
 select(LOG); $| = 1; select(STDOUT);
@@ -217,7 +217,7 @@ else
     
 	unless (defined $DB{$_})
 	{
-	    warn "$0: skipping target `$_' (missing from ${dbfile}.db)\n";
+	    warn "$0: skipping target `$_' (missing from ${dbmfile}.db)\n";
 	    next;
 	}
 
