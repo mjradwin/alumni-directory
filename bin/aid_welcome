@@ -2,7 +2,7 @@
 
 #
 # mails a welcome, update, confirm, or massmail message to members
-# $Id: aid_welcome,v 5.25 2000/08/01 17:48:53 mradwin Exp mradwin $
+# $Id: aid_welcome,v 5.26 2000/08/01 17:52:19 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -27,6 +27,7 @@ $dirname =~ s,/[^/]+$,,;
 unshift(@INC, $dirname);
 
 use DB_File;
+use Fcntl qw(:DEFAULT :flock);
 
 require 'aid_util.pl';
 require 'getopts.pl';
@@ -155,14 +156,22 @@ $params{'sleep'} = $opt_d if defined $opt_d;
 
 $dbmfile = shift;
 die "$0: $dbmfile: $!\n" unless -r $dbmfile;
-if (-w $dbmfile) {
-    tie(%DB, 'DB_File', $dbmfile, O_RDWR|O_CREAT, 0644, $DB_File::DB_HASH)
-	or die "$dbmfile: $!\n";
-} else {
-    warn "$0: warning: $dbmfile not writeable\n";
-    tie(%DB, 'DB_File', $dbmfile, O_RDONLY, 0444, $DB_File::DB_HASH)
+my($db,$fd);
+if (-w $dbmfile) 
+{
+    $db = tie(%DB, 'DB_File', $dbmfile, O_CREAT|O_RDWR, 0644,
+	      $DB_File::DB_HASH)
 	or die "$dbmfile: $!\n";
 }
+else
+{
+    warn "$0: warning: $dbmfile not writeable\n";
+    $db = tie(%DB, 'DB_File', $dbmfile, O_RDONLY, 0444,
+	      $DB_File::DB_HASH)
+	or die "$dbmfile: $!\n";
+}
+$fd = $db->fd;
+open(DB_FH, "+<&=$fd") || die "dup $!";
 
 die "invalid DB: $dbmfile\n" unless defined $DB{'_class'};
 
@@ -177,6 +186,7 @@ print LOG "# [$today] - $0 ", join(' ', @args), "\n";
 if ($opt_a)
 {
     @ARGV = ();
+    unless (flock (DB_FH, LOCK_SH)) { die "flock: $!" }
     while (($key,$val) = each(%DB))
     {
 	if ($key =~ /^\d+$/)
@@ -195,6 +205,7 @@ if ($opt_a)
 	    push(@ARGV, $rec{'id'});
 	}
     }
+    flock(DB_FH, LOCK_UN);
 
     @ARGV = sort { $a <=> $b } @ARGV;
 }
@@ -207,27 +218,41 @@ foreach (@ARGV)
 	next;
     }
     
+    unless (flock (DB_FH, LOCK_SH)) { die "flock: $!" }
     unless (defined $DB{$_})
     {
 	warn "$0: skipping target `$_' (missing from $dbmfile)\n";
+	flock(DB_FH, LOCK_UN);
 	next;
     }
 
     %rec = &aid_db_unpack_rec($_,$DB{$_});
+    flock(DB_FH, LOCK_UN);
+
     $time = time;
     if (&mail_user($time, *rec))
     {
 	# sucessful mailing; update timestamp
 	$rec{'lm'} = $time;
-	$DB{$rec{'id'}} = &aid_db_pack_rec(*rec) 
-	    if -w $dbmfile;
+
+	if (-w $dbmfile)
+	{
+	    unless (flock (DB_FH, LOCK_EX)) { die "flock: $!" }
+	    $DB{$rec{'id'}} = &aid_db_pack_rec(*rec);
+	    $db->sync;
+	    flock(DB_FH, LOCK_UN);
+	}
 
 	sleep($params{'sleep'}) if $params{'sleep'} > 0;
     }
 }
 
 close(LOG);
+
+undef $db;
 untie(%DB);
+close(DB_FH);
+
 exit(0);
 
 
