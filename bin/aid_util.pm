@@ -2,11 +2,11 @@
 #     FILE: aid_util.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: perl library routines for the Alumni Internet Directory
-#      $Id: aid_util.pl,v 2.9 1998/04/21 17:15:59 mjr Exp mjr $
+#      $Id: aid_util.pl,v 2.10 1998/05/07 16:42:40 mjr Exp mjr $
 #
 
 $aid_util'rcsid =
- '$Id: aid_util.pl,v 2.9 1998/04/21 17:15:59 mjr Exp mjr $';
+ '$Id: aid_util.pl,v 2.10 1998/05/07 16:42:40 mjr Exp mjr $';
 
 # ----------------------------------------------------------------------
 # CONFIGURATION
@@ -187,7 +187,7 @@ $aid_util'blank_entry{'school'}  = $aid_util'config{'short_school'};
      'new_anchored',
      "<a href=\"" . $aid_util'config{'master_path'} . "recent.html\">" .
      "<img src=\"" . $aid_util'config{'master_path'} .
-     "new.gif\" border=0 width=28 height=11 " .
+     "new.gif\" border=0 width=28 height=10 " .
      "alt=\"[new]\"></a>",
 
      'title',
