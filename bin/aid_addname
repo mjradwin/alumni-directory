@@ -1,6 +1,6 @@
 #!/usr/local/bin/perl5 -w
 
-# $Id: aid_addname,v 5.19 2000/05/31 00:32:19 mradwin Exp mradwin $
+# $Id: aid_addname,v 5.20 2000/05/31 00:33:54 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -70,6 +70,7 @@ sub readspool
     my($staging) = &aid_config('staging');
     die "$staging: $!\n" unless -r $staging;
 
+    my(%DBS);
     my($db) = tie(%DBS, 'DB_File', $staging, O_CREAT|O_RDWR, 0644,
 		  $DB_File::DB_HASH)
 	or die "$staging: $!\n";
@@ -111,11 +112,24 @@ sub readspool
 
     if ($success)
     {
-	my(%DB);
-	tie(%DB, 'DB_File', $dbmfile, O_RDWR|O_CREAT, 0644, $DB_File::DB_HASH)
+	my($db) = tie(%DB, 'DB_File', $dbmfile, O_CREAT|O_RDWR, 0644,
+		      $DB_File::DB_HASH)
 	    or die "$dbmfile: $!\n";
+
+	my($fd) = $db->fd;
+	open(DB_FH, "+<&=$fd") || die "dup $!";
+
+	unless (flock (DB_FH, LOCK_EX | LOCK_NB)) {
+	    unless (flock (DB_FH, LOCK_EX)) { die "flock: $!" }
+	}
+
 	@mod_keys = &aid_rebuild_secondary_keys(*DB,$opt_q,0,1);
+	$db->sync;
+
+	flock(DB_FH, LOCK_UN);
+	undef $db;
 	untie(%DB);
+	close(DB_FH);
     }
 
     $success;
@@ -170,8 +184,17 @@ sub addname
 
     $logFile = &aid_config('aiddir') . "logs/additions.log";
 
-    tie(%DB, 'DB_File', $dbmfile, O_RDWR|O_CREAT, 0644, $DB_File::DB_HASH)
+    my($db) = tie(%DB, 'DB_File', $dbmfile, O_CREAT|O_RDWR, 0644,
+		  $DB_File::DB_HASH)
 	or die "$dbmfile: $!\n";
+
+    my($fd) = $db->fd;
+    open(DB_FH2, "+<&=$fd") || die "dup $!";
+
+    unless (flock (DB_FH2, LOCK_EX | LOCK_NB)) {
+	unless (flock (DB_FH2, LOCK_EX)) { die "flock: $!" }
+    }
+
     while (($key,$val) = each %DB)
     {
 	next unless $key =~ /^\d+$/;
@@ -266,7 +289,13 @@ sub addname
     $DB{$rec{'id'}} = &aid_db_pack_rec(*rec);
     $email = $rec{'e'};
     $DB{"\L$email\E"} = pack('n', $rec{'id'});
+
+    $db->sync;
+
+    flock(DB_FH2, LOCK_UN);
+    undef $db;
     untie(%DB);
+    close(DB_FH2);
 
     local($joined) = &aid_ampersand_join(*rec);
     print     $joined, "\n"
