@@ -2,7 +2,7 @@
 #     FILE: aid_util.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: perl library routines for the Alumni Internet Directory
-#      $Id: aid_util.pl,v 5.14 1999/06/10 21:22:56 mradwin Exp mradwin $
+#      $Id: aid_util.pl,v 5.15 1999/06/10 21:27:54 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -782,7 +782,7 @@ sub aid_common_html_hdr
 
 	$hdr .= " -&gt;\n$title\n";
     }
-    $hdr .= "</strong> ($timestamp)<br${main'ht_empty_close_tag}<br${main'ht_empty_close_tag}\n\n";
+    $hdr .= "</strong> <small>($timestamp)</small><br${main'ht_empty_close_tag}<br${main'ht_empty_close_tag}\n\n";
     
     $hdr .=
 "<table cellspacing=\"0\" cellpadding=\"6\" border=\"0\" width=\"100%\">
