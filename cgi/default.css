@@ -12,7 +12,6 @@ strong.newupd {
 }
 
 div.about {
-  width: 100%;
   border: none;
   color: black;
   background-color: #ffc;
@@ -21,4 +20,5 @@ div.about {
 pre.about {
   color: black;
   margin-left: 1em;
+  margin-right: 1em;
 }
