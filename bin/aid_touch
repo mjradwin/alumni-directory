@@ -1,0 +1,28 @@
+#!/usr/local/bin/perl -w
+
+use strict;
+use DB_File;
+use Fcntl qw(:DEFAULT :flock);
+
+my $dbmfile = shift;
+die "$0: $dbmfile: $!\n" unless -r $dbmfile;
+my($db,$fd,%DB);
+$db = tie(%DB, 'DB_File', $dbmfile, O_CREAT|O_RDWR, 0644,
+	  $DB_File::DB_HASH)
+    or die "$dbmfile: $!\n";
+$fd = $db->fd;
+open(DB_FH, "+<&=$fd") || die "dup $!";
+
+die "invalid DB: $dbmfile\n" unless defined $DB{'_t'};
+
+unless (flock (DB_FH, LOCK_SH)) { die "flock: $!" }
+
+$DB{'_t'} = pack("N", time());
+
+flock(DB_FH, LOCK_UN);
+
+undef $db;
+untie(%DB);
+close(DB_FH);
+
+exit(0);
