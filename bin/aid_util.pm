@@ -2,11 +2,11 @@
 #     FILE: aid_util.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: perl library routines for the Alumni Internet Directory
-#      $Id: aid_util.pl,v 2.24 1998/05/17 00:43:10 mradwin Exp mradwin $
+#      $Id: aid_util.pl,v 3.10 1998/05/17 05:16:37 mradwin Exp mradwin $
 #
 
 $aid_util'rcsid =
- '$Id: aid_util.pl,v 2.24 1998/05/17 00:43:10 mradwin Exp mradwin $';
+ '$Id: aid_util.pl,v 3.10 1998/05/17 05:16:37 mradwin Exp mradwin $';
 
 # ----------------------------------------------------------------------
 # CONFIGURATION
@@ -112,7 +112,7 @@ $aid_util'rcsid =
      "Links,"               . $aid_util'config{'master_path'} . "links.html",    #'#
      "Nicknames,"           . $aid_util'config{'master_path'} . "books/",        #'#
      "Tech&nbsp;Notes,"     . $aid_util'config{'master_path'} . "tech.html",     #'#
-     "Acceptable&nbsp;Use," . "#disclaimer",
+     "Acceptable&nbsp;Use," . $aid_util'config{'master_path'} . "copyright.html", #'#
      );
 
 ($i,$i,$i,$aid_util'mday,$aid_util'mon,$aid_util'yr,$i,$i,$i) #')#
@@ -126,7 +126,7 @@ $aid_util'config{'admin_email'} .
 "\" on \"1998.03.10T11:49-0800\" r (n 0 s 0 v 0 l 0))'>"; #"#
 
 $aid_util'site_tags = #'#
-"<meta name=\"keywords\" content=\"Mountain View High School, Alumni, MVHS, Awalt High School, Mountain View, Los Altos, California, reunion, Radwin\">\n<meta name=\"description\" content=\"Alumni email and web page directory for Mountain View High School (MVHS) and Awalt High School in Mountain View, CA. Updated $aid_util'caldate.\">\n<link rev=made href=\"mailto:" . $aid_util'config{'admin_email'} . "\">";
+"<meta name=\"keywords\" content=\"Mountain View High School, Alumni, MVHS, Awalt High School, Mountain View, Los Altos, California, reunion, Radwin\">\n<meta name=\"description\" content=\"Alumni email and web page directory for Mountain View High School (MVHS) and Awalt High School in Mountain View, CA. Updated $aid_util'caldate.\">\n<link rev=made href=\"mailto:" . $aid_util'config{'admin_email'} . "\">\n<link rel=start href=\"http://" . $aid_util'config{'master_srv'} . $aid_util'config{'master_path'} . "\">\n<link rel=contents href=\"http://" . $aid_util'config{'master_srv'} . $aid_util'config{'master_path'} . "\">";
 
 $aid_util'noindex = "<meta name=\"robots\" content=\"noindex\">"; #'#
 %aid_util'aid_aliases = ();   #'# global alias hash repository 
@@ -461,7 +461,7 @@ sub aid_alpha_db {
 
     foreach (@db) {
 	%rec = &main'aid_split($_);  #'#
-	push(@datakeys, "$rec{'last'},$rec{'married'},$rec{'first'}");
+	push(@datakeys, "\L$rec{'last'},$rec{'married'},$rec{'first'}\E");
     }
 
     @alpha = @db[sort bydatakeys $[..$#db];
@@ -968,17 +968,18 @@ sub common_html_ftr {
     package aid_util;
 
     local($page) = @_;
-    local($ftr);
+    local($ftr,$copyright);
+
+    $copyright = $second_idx[5];
+    $copyright =~ s/^[^,]+,//;
 
     $ftr  = "\n<!-- begin common_html_ftr -->\n";
     $ftr .= "<hr noshade size=1>\n";
     $ftr .= &main'common_link_table($page); #'#
     
     $ftr .= "\n" . $disclaimer . "\n\n<hr noshade size=1>\n" .
-	"\n<font size=\"-1\">" .
-	"Copyright &copy; 1998 " . $config{'admin_name'} . " &lt;" .
-	"<a\nhref=\"mailto:" . $config{'admin_email'} . 
-	"\"><code>" . $config{'admin_email'} . "</code></a>&gt;</font>\n\n" .
+	"\n<font size=\"-1\"><a href=\"" . $copyright . "\">" .
+	"Copyright\n&copy; 1998 " . $config{'admin_name'} . "</a></font>\n\n" .
 	"<!-- end common_html_ftr -->\n\n</body>\n</html>\n";
 
     $ftr;

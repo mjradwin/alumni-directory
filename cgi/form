@@ -4,7 +4,7 @@
 #     FILE: mvhsaid.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: MVHS Alumni Internet Directory CGI interface
-#      $Id: mvhsaid,v 2.12 1998/05/17 00:49:19 mradwin Exp mradwin $
+#      $Id: mvhsaid,v 3.10 1998/05/17 05:17:43 mradwin Exp mradwin $
 #
 
 require 'aid_util.pl';
@@ -24,7 +24,7 @@ if (defined($ENV{'PATH_INFO'}) && $ENV{'PATH_INFO'} =~ m,^/vcard/,) {
     $in{'vcard'} =~ s,^/vcard/(\d+).*$,$1,;
 }
 
-$rcsid = '$Id: mvhsaid,v 2.12 1998/05/17 00:49:19 mradwin Exp mradwin $'; #'fnt
+$rcsid = '$Id: mvhsaid,v 3.10 1998/05/17 05:17:43 mradwin Exp mradwin $'; #'fnt
 
 # special flags: version, update, vcard, about
 #
@@ -361,25 +361,37 @@ sub send_upd_list {
     local($_);
     local(@db) = &aid_alpha_db($dbfile);
     local($fullname,$affil,$len);
+    local($initial,$last_initial,$anchor);
     local(%rec);
 
     select(STDOUT);  $| = 1;
     print "Content-type: text/html\n\n";
     print &common_html_hdr(-1,'Update Your Directory Entry',1);
     print "\n";
-    print "<p>Please select an entry to update from the list below.<p>\n";
+    print "<p>Please select an entry to update from the list below.</p>\n";
+    print "<p>\n", &jump_bar(), "</p>\n\n";
     print "<pre>";
     print "Name and Graduation Year                  Email\n";
     print "---------------------------------------------------------------------------\n";
 
+    $initial = "z";
     foreach (@db) {
 	next if $_ eq '';
 	%rec = &aid_split($_);
 
+	$cur_initial = substr($rec{'last'}, 0, 1);
+	$cur_initial = "\L${cur_initial}\E";
+	if ("\L${initial}\E" ne $cur_initial) {
+	    $initial = $cur_initial;
+	    $anchor = " name=\"${initial}-last\"";
+	} else {
+	    $anchor = '';
+	}
+
 	$fullname = &fullname(*rec);
 	($affil,$len) = &affiliate(*rec,0);
 
-	print "<a href=\"", &aid_config('cgi_path'), "?update=$rec{'id'}\">";
+	print "<a$anchor href=\"", &aid_config('cgi_path'), "?update=$rec{'id'}\">";
 	print $fullname;
 	print "</a>";
 	print $affil;
@@ -389,6 +401,20 @@ sub send_upd_list {
     }
     print "</pre>\n\n";
     print &common_html_ftr(-1);
+}
+
+sub jump_bar {
+    local($initial,$retval);
+ 
+    $retval = '';
+    $initial = 'a';
+ 
+    while ($initial ne 'aa') {
+        $retval .= "<a href=\"#${initial}-last\">\U${initial}\E</a>\n";
+        $initial++;
+    }
+ 
+    $retval;
 }
 
 sub panic {
