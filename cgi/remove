@@ -4,7 +4,7 @@
 #     FILE: remove.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: CGI for removal of e-mail address from staging DB
-#      $Id: remove,v 1.1 2000/05/30 23:09:04 mradwin Exp mradwin $
+#      $Id: remove,v 1.2 2000/05/30 23:50:55 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-2000  Michael John Radwin
 #
@@ -73,7 +73,7 @@ if (defined $key)
 
 	if (defined($in{'confirm'}))
 	{
-	    delete $DB{$key};
+	    $DB{$key} = "\0";
 	    $db->sync;
 
 	    flock(DB_FH, LOCK_UN);
