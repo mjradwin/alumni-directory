@@ -2,7 +2,7 @@
 #     FILE: aid_submit.pm
 #   AUTHOR: Michael J. Radwin
 #    DESCR: submission form for Alumni Internet Directory
-#      $Id: aid_submit.pm,v 6.4 2003/08/27 23:12:49 mradwin Exp mradwin $
+#      $Id: aid_submit.pm,v 6.5 2003/10/30 17:56:04 mradwin Exp mradwin $
 #
 # Copyright (c) 2003  Michael J. Radwin.
 # All rights reserved.
@@ -201,7 +201,7 @@ Graduating Class while at $ss</strong></big></font>
   for=\"yr\"><strong>Graduation Year or Affiliation:</strong></label><br>
   <small>(such as 1993, 2001, or Teacher)</small></td>
   <td valign=\"top\">$star</td>
-  <td valign=\"top\"><input type=\"text\" name=\"yr\" size=\"35\"
+  <td valign=\"top\"><input type=\"text\" name=\"yr\" size=\"4\"
   value=\"$rec{'yr'}\" id=\"yr\"><br><br></td>
 </tr>
 
