@@ -2,11 +2,11 @@
 #     FILE: aid_util.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: perl library routines for the Alumni Internet Directory
-#      $Id: aid_util.pl,v 3.31 1998/06/05 21:46:57 mradwin Exp mradwin $
+#      $Id: aid_util.pl,v 3.32 1998/06/08 22:38:02 mradwin Exp mradwin $
 #
 
 $aid_util'rcsid =
- '$Id: aid_util.pl,v 3.31 1998/06/05 21:46:57 mradwin Exp mradwin $';
+ '$Id: aid_util.pl,v 3.32 1998/06/08 22:38:02 mradwin Exp mradwin $';
 
 # ----------------------------------------------------------------------
 # CONFIGURATION
@@ -753,7 +753,7 @@ sub aid_write_verbose_entry {
     }
 
     print FMTOUT "<dt>Email: <code><strong><a href=\"mailto:$rec{'email'}\">$rec{'email'}</a></strong></code></dt>\n";
-    print FMTOUT "<dt>Personal Web Page: <code><strong><a href=\"$rec{'homepage'}\">$rec{'homepage'}</a></strong></code></dt>\n"
+    print FMTOUT "<dt>Web Page: <code><strong><a href=\"$rec{'homepage'}\">$rec{'homepage'}</a></strong></code></dt>\n"
 	if $rec{'homepage'} ne '';
     print FMTOUT "<dt>Location: <strong>$rec{'location'}</strong></dt>\n"
 	if $rec{'location'} ne '';
