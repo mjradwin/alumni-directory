@@ -252,7 +252,7 @@ sub submit_body {
     local($_);
     local($tableh);
     local($star) = "<font color=\"#ff0000\">*</font>";
-    local($rawdata,$interactivep,$blank) = @_;
+    local($rawdata,$message,$interactivep,$blank) = @_;
     local($mvhs_checked,$awalt_checked,$other_checked) = ('', '', '');
     local($time,$id,$req,$last,$first,$married,
 	  $school,$year,$email,$homepage,$location) = split(/;/, $rawdata);
@@ -370,6 +370,13 @@ All other fields are optional.";
   <font color=\"#000000\" size=\"-1\">(city, school, or company)</font></td>
   <td valign=top><input type=text name=\"location\" size=35
   value=\"$location\"></td>
+</tr>
+<tr>
+  <td colspan=3><font color=\"#000000\">
+  <br><strong>What's New?</strong> Tell us, in 100 words or less, what
+  you've been up to recently.  HTML tags will be removed.</font><p>
+  <textarea name=\"message\" rows=10 cols=40 wrap>$message</textarea>
+  </td>
 </tr>
 <tr>
   <td colspan=3><font color=\"#000000\"><br>Please 

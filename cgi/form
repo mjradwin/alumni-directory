@@ -22,7 +22,7 @@ $dbfile = &mv_config('wwwdir') . "mvhs.adr";
 if (defined($in{'version'})) {
     select(STDOUT);  $| = 1;
     print "Content-type: text/plain\n\n";
-    print '$Id: mvhsaid,v 1.42 1997/12/03 00:49:08 mjr Exp $', "\n";
+    print '$Id: mvhsaid,v 1.42 1997/12/03 00:49:08 mjr Exp $', "\n"; #'fnt
     exit(0);
 }
 
@@ -31,7 +31,8 @@ if (defined($in{'update'})) {
     if ($in{'update'} =~ /^\d+$/) {
 	@db = &mv_create_db($dbfile);
 	if (defined($db[$in{'update'}])) {
-	    &send_upd_real($db[$in{'update'}],1,0);
+	    &send_upd_real($db[$in{'update'}],
+			   &mv_get_usertext($in{'update'}),1,0);
 	} else {
 	    &send_blank_submit;
 	}
@@ -102,10 +103,13 @@ $in{'school'} = ($in{'school'} eq 'Other' && $in{'sch_other'} ne '') ?
     $in{'sch_other'} : $in{'school'};
 
 # lowercase the hostname portion of the email address
-($mail_user, $mail_addr) = split(/\@/, $in{'mail'});
-$mail_addr = 'aol.com' if $mail_addr eq '';
-$mail_user = "\L$mail_user\E" if $mail_user eq "\U$mail_user\E";
-$in{'mail'} = $mail_user . '@' . "\L$mail_addr\E";
+if (!($in{'mail'} =~ /^\s*$/)) {
+    ($mail_user, $mail_addr) = split(/\@/, $in{'mail'});
+    $mail_addr = 'aol.com' if $mail_addr eq '';
+    $mail_user = "\L$mail_user\E" if $mail_user eq "\U$mail_user\E";
+    $mail_user = "\L$mail_user\E" if $mail_user eq "\u$mail_user";
+    $in{'mail'} = $mail_user . '@' . "\L$mail_addr\E";
+}
 
 # uncapitalize those overzealous capslock names
 $in{'first'} = "\L$in{'first'}\E" 
@@ -120,21 +124,28 @@ $in{'first'} = "\u$in{'first'}";
 $in{'last'} = "\u$in{'last'}";
 $in{'married'} = "\u$in{'married'}";
 
+# their personal message
+$in{'message'} =~ s/<[^>]*>//g;        # ignore HTML tags
+$in{'message'} =~ s/^\s*//;
+$in{'message'} =~ s/\s*$//;
+$in{'message'} =~ s/\s+/ /g;           # make multiple spaces a single space
+
+
 # did they have the required fields?
 if ($in{'school'} eq 'Other') {
-    &send_upd_real(";$in{'id'};$in{'request'};$in{'last'};$in{'first'};$in{'married'};$in{'school'};$in{'grad'};$in{'mail'};$in{'homepage'};$in{'location'}",1,1);
+    &send_upd_real(";$in{'id'};$in{'request'};$in{'last'};$in{'first'};$in{'married'};$in{'school'};$in{'grad'};$in{'mail'};$in{'homepage'};$in{'location'}",$in{'message'},1,1);
     exit(0);
 }
 
 foreach (@required_headers) {
     if ($in{$_} =~ /^\s*$/) {
-	&send_upd_real(";$in{'id'};$in{'request'};$in{'last'};$in{'first'};$in{'married'};$in{'school'};$in{'grad'};$in{'mail'};$in{'homepage'};$in{'location'}",1,1);
+	&send_upd_real(";$in{'id'};$in{'request'};$in{'last'};$in{'first'};$in{'married'};$in{'school'};$in{'grad'};$in{'mail'};$in{'homepage'};$in{'location'}",$in{'message'},1,1);
 	exit(0);
     }
 }
 
 if (defined($in{'revise'})) {
-    &send_upd_real(";$in{'id'};$in{'request'};$in{'last'};$in{'first'};$in{'married'};$in{'school'};$in{'grad'};$in{'mail'};$in{'homepage'};$in{'location'}",1,0);
+    &send_upd_real(";$in{'id'};$in{'request'};$in{'last'};$in{'first'};$in{'married'};$in{'school'};$in{'grad'};$in{'mail'};$in{'homepage'};$in{'location'}",$in{'message'},1,0);
 } elsif (defined($in{'confirmed'})) {
     &queue_submission;
 } else {
@@ -193,19 +204,31 @@ sub queue_submission {
     $mailsubj = &mv_config('mailsubj');
     $mailname = &mv_config('admin_name');
 
-    system("$mailprog -s $mailsubj $mailto <<'EOM'
-Dear $mailname,
+    $message_top = 
+"Dear $mailname,
 
 This was submitted to the MVHS address database:
 
 $time;$in{'id'};$in{'request'};$in{'last'};$in{'first'};$in{'married'};$in{'school'};$in{'grad'};$in{'mail'};$in{'homepage'};$in{'location'}
+";
 
-The kind soul who submitted it was using the web from $ENV{'REMOTE_HOST'}
+    $message_mid =
+	(($in{'message'} eq '') ? '' :
+	 "_MVHSAID_BEGIN_MESSAGE_\n$in{'message'}_MVHSAID_END_MESSAGE_\n");
+    
+    $message_bot =
+"The kind soul who submitted it was using the web from $ENV{'REMOTE_HOST'}
 Their browser is $ENV{'HTTP_USER_AGENT'}
 
 Love,
 the mvhsaid cgi-bin script
 $date
+";
+
+    system("$mailprog -s $mailsubj $mailto <<'EOM'
+$message_top
+$message_mid
+$message_bot
 EOM
 ");
 
@@ -248,18 +271,18 @@ sub mv_alpha_db {
 }
 
 sub send_blank_submit {
-    &send_upd_real(";-1;2;;;;MVHS;;;",0,0);
+    &send_upd_real(";-1;2;;;;MVHS;;;",'',0,0);
 }
 
 sub send_upd_real {
     local($[) = 0;
-    local($rawdata,$interactivep,$blank) = @_;
+    local($rawdata,$message,$interactivep,$blank) = @_;
 
     select(STDOUT);  $| = 1;
     print "Content-type: text/html\n\n";
 
     print &common_html_hdr(-1,1);
-    print &submit_body($rawdata,$interactivep,$blank);
+    print &submit_body($rawdata,$message,$interactivep,$blank);
     print &common_html_ftr(-1);
 }
 
