@@ -2,7 +2,7 @@
 #     FILE: mv_util.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: perl library routines for the MVHS Alumni Internet Directory
-#      $Id: mv_util.pl,v 1.31 1997/08/25 23:57:14 mjr Exp mjr $
+#      $Id: mv_util.pl,v 1.32 1997/09/20 00:29:48 mjr Exp mjr $
 #
 
 CONFIG: {
@@ -28,13 +28,21 @@ CONFIG: {
 	 'mailsubj',	 "MVHSAID"
 	  );
 
-    @page_idx = ("Home," . $config{'master_path'},
-		 "Alphabetically," . $config{'master_path'} . "all.html",
-		 "Grad.&nbsp;Class," . $config{'master_path'} . "class.html",
-		 "Recent&nbsp;Additions," . $config{'master_path'} . "recent.html",
-		 "Web&nbsp;Pages," . $config{'master_path'} . "pages.html",
-		 "Get&nbsp;Listed!," . $config{'master_path'} . "add.html",
-		 "Acceptable&nbsp;Use,#disclaimer");
+    @page_idx = 
+	("Home,"                  . $config{'master_path'},
+	 "Alphabetically,"        . $config{'master_path'} . "all.html",
+	 "Grad.&nbsp;Class,"      . $config{'master_path'} . "class.html",
+	 "Recent&nbsp;Additions," . $config{'master_path'} . "recent.html",
+	 "Web&nbsp;Pages,"        . $config{'master_path'} . "pages.html",
+	 "Get&nbsp;Listed!,"      . $config{'master_path'} . "add.html",
+	 "Acceptable&nbsp;Use,#disclaimer");
+
+    @second_idx = 
+	("Listings,"              . $config{'master_path'} . "listings.html",
+	 "Reunions,"              . $config{'master_path'} . "reunions.html",
+	 "Links,"                 . $config{'master_path'} . "links.html",
+	 "Nicknames,"             . $config{'master_path'} . "nicknames.html",
+	 "Tech&nbsp;Notes,"       . $config{'master_path'} . "tech.html");
 
     $pics_label = "<meta http-equiv=\"PICS-Label\" content='(PICS-1.1 \"http://www.rsac.org/ratingsv01.html\" l gen true comment \"RSACi North America Server\" by \"" . $config{'admin_email'} . "\" for \"" . $config{'master_url'} . "\" on \"1996.04.04T08:15-0500\" r (n 0 s 0 v 0 l 0))'>";
 
@@ -491,8 +499,7 @@ sub common_html_ftr {
 
     $ftr = "
 <hr noshade size=1>
-<p align=center>[ <font size=\"-1\" 
-  face=\"MS Sans Serif, Arial, Helvetica\">";
+<p align=center><font size=\"-1\">";
 
     foreach $idx (0 .. $#page_idx) {
 	($name, $url) = split(/,/, $page_idx[$idx]);
@@ -501,9 +508,19 @@ sub common_html_ftr {
         } else {
             $ftr .= "<a\n  href=\"$url\">$name</a>";
         }
-	$ftr .= " | " unless $idx == $#page_idx;
+	$ftr .= " || " unless $idx == $#page_idx;
     }
-    $ftr .= "</font> ]</p>\n";
+    $ftr .= "<br>\n";
+    foreach $idx (0 .. $#second_idx) {
+	($name, $url) = split(/,/, $second_idx[$idx]);
+        if ($idx == ($page - 10)) {
+	    $ftr .= "\n  <strong>$name</strong>";
+        } else {
+            $ftr .= "<a\n  href=\"$url\">$name</a>";
+        }
+	$ftr .= " || " unless $idx == $#second_idx;
+    }
+    $ftr .= "</font></p>\n";
     
     return $ftr . "
 
