@@ -4,7 +4,7 @@
 #     FILE: search.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: Alumni Internet Directory CGI search
-#      $Id: search,v 5.14 2000/04/25 01:14:03 mradwin Exp mradwin $
+#      $Id: search,v 5.15 2000/04/25 17:09:56 mradwin Exp mradwin $
 #
 #   Copyright (c) 1995-1999  Michael John Radwin
 #
@@ -183,7 +183,7 @@ sub print_search_form
     print "<center>\n",
       "<form method=\"get\" action=\"" . &aid_config('search_cgi') . "\">\n",
       "<input type=\"text\" name=\"q\" id=\"q\" size=\"25\" value=\"$q\">\n",
-    print "<select name=\"y\" id=\"y\">\n";
+      "<select name=\"y\" id=\"y\">\n";
     print "<option";
     print " selected=\"selected\"" if '' eq $y;
     print " value=\"\">all years</option>\n";
