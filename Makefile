@@ -2,7 +2,7 @@
 #     FILE: Makefile
 #   AUTHOR: Michael J. Radwin
 #    DESCR: Makefile for building the Alumni Internet Directory
-#      $Id: Makefile,v 1.52 1998/04/02 20:23:18 mjr Exp mjr $
+#      $Id: Makefile,v 1.53 1998/04/02 20:51:08 mjr Exp mjr $
 #
 
 HOMEDIR=/home/divcom/mjr
@@ -15,7 +15,7 @@ SNAPSHOTFILES=bin/aid_make mvhs public_html/mvhs/*.gif \
 	public_html/mvhs/whatsnew public_html/cgi-bin
 
 all:	adrfile home submit reunions links nicknames tech \
-	recent alpha class awalt goners pages \
+	recent pages alpha class awalt goners \
 	verbose books
 
 ADRFILE=$(WWWDIR)/master.adr
