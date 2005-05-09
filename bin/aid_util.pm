@@ -2,7 +2,7 @@
 #     FILE: aid_util.pm
 #   AUTHOR: Michael J. Radwin
 #    DESCR: perl library routines for the Alumni Internet Directory
-#      $Id: aid_util.pm,v 6.16 2005/01/21 20:47:45 mradwin Exp mradwin $
+#      $Id: aid_util.pm,v 6.17 2005/02/21 20:10:44 mradwin Exp mradwin $
 #
 # Copyright (c) 2005  Michael J. Radwin.
 # All rights reserved.
@@ -60,7 +60,7 @@ use strict;
 
 package aid_util;
 
-my($VERSION) = '$Revision: 6.16 $$';
+my($VERSION) = '$Revision: 6.17 $$';
 if ($VERSION =~ /(\d+)\.(\d+)/) {
     $VERSION = "$1.$2";
 }
@@ -986,7 +986,7 @@ type="text" name="q" size="20">
 	$hdr .= "</h1>";
     }
 
-    $hdr .= "\n<!--BAD-DOG-->\n";
+    $hdr .= "\n";
 
     $hdr;
 }
