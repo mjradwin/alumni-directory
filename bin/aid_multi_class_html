@@ -2,7 +2,7 @@
 
 #
 # does the html multi_class pages
-# $Id: aid_multi_class_html,v 6.10 2005/01/17 20:18:05 mradwin Exp mradwin $
+# $Id: aid_multi_class_html,v 6.11 2005/01/17 20:20:58 mradwin Exp mradwin $
 #
 # Copyright (c) 2003  Michael J. Radwin.
 # All rights reserved.
@@ -295,8 +295,8 @@ maxlength="128" value=""></td></tr>
 <td><input type="text" name="subject" size="60" 
 maxlength="80" value="$subject"></td></tr>
 </table>
-<textarea name="message" rows="20" cols="70"
-wrap="hard"></textarea>
+<textarea name="message" rows="20" cols="70">
+</textarea>
 <br><input type="submit" name="send" value="Send">
 </form>
 _EOHTML_
