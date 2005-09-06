@@ -4,7 +4,7 @@
 #     FILE: msg.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: Alumni Internet Directory update redirector
-#      $Id: msg,v 6.18 2005/06/10 23:21:05 mradwin Exp mradwin $
+#      $Id: msg,v 6.19 2005/06/10 23:27:47 mradwin Exp mradwin $
 #
 # Copyright (c) 2005  Michael J. Radwin.
 # All rights reserved.
@@ -162,6 +162,11 @@ _EOHTML_
     my $key = POSIX::strftime("%Y%m%d.", gmtime(time())) . $ENV{'REMOTE_ADDR'};
     my $count = $LIMIT{$key};
     untie(%LIMIT);
+
+    # hack for Greg McCarthy
+    if (lc($from) eq 'lovenandlight@aol.com' && $id eq "3282") {
+	$count = 999;
+    }
 
     if (defined $count && $count >= 5) {
 	print "Content-Type: text/html\015\012\015\012";
