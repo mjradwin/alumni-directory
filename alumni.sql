@@ -1,4 +1,4 @@
--- $Id: alumni.sql,v 1.1 2006/02/15 18:53:44 mradwin Exp mradwin $
+-- $Id: alumni.sql,v 1.2 2006/02/20 03:48:20 mradwin Exp mradwin $
 
 DROP TABLE IF EXISTS aid_alumnus;
 DROP TABLE IF EXISTS aid_entry;
@@ -47,6 +47,7 @@ verify_code VARCHAR(24) NOT NULL,
 verify_time TIMESTAMP NOT NULL,
 verify_staging_id INT NOT NULL,
 verify_id INT,
+verify_completed DATETIME,
 PRIMARY KEY verify_code (verify_code)
 );
 
