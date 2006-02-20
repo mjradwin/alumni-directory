@@ -1,47 +1,38 @@
--- $Id: alumni.sql,v 1.2 2006/02/07 17:05:27 mradwin Exp mradwin $
+-- $Id: alumni.sql,v 1.1 2006/02/15 18:53:44 mradwin Exp mradwin $
 
 DROP TABLE IF EXISTS aid_alumnus;
-DROP TABLE IF EXISTS aid_alumnus_s;
-DROP TABLE IF EXISTS aid_note;
-DROP TABLE IF EXISTS aid_note_s;
+DROP TABLE IF EXISTS aid_entry;
 DROP TABLE IF EXISTS aid_reunion;
 DROP TABLE IF EXISTS aid_verify;
 DROP TABLE IF EXISTS aid_bounce;
 DROP TABLE IF EXISTS aid_limit;
 
 CREATE TABLE aid_alumnus (
-al_id INT NOT NULL auto_increment,
-al_status TINYINT(4) NOT NULL, -- valid bit describing status
-al_name_surname VARCHAR(100) NOT NULL,	-- Last Name/Maiden Name
-al_name_married VARCHAR(100),	-- Married Last Name
-al_name_given VARCHAR(100) NOT NULL,	-- First Name
-al_name_mi VARCHAR(1),	-- Middle Initial
-al_email VARCHAR(200) NOT NULL,	-- E-mail Address
-al_gradclass YEAR(4),	-- Graduation Year or NULL for Other
-al_affil_other VARCHAR(40), -- "Teacher" or some non-gradyear affiliation
-al_web_page VARCHAR(1024),	-- Personal Web Page
-al_location VARCHAR(100),	-- Location
-al_email_old VARCHAR(200),	-- Previous E-mail Address
-al_host VARCHAR(200),	-- REMOTE_HOST of last update
-al_quarterly TINYINT(4) NOT NULL,	-- type of quarterly emailing
-al_reunion TINYINT(1) NOT NULL,	-- bit for reunion email request
-al_alias VARCHAR(8),	-- alias (a.k.a. nickname)
-al_ts_bounce DATETIME,	-- unix time - first bounce (0 if none)
-al_ts_create DATETIME NOT NULL,	-- unix time - record creation
-al_ts_update TIMESTAMP NOT NULL,	-- unix time - last update
-al_ts_fresh DATETIME,	-- unix time - last successful verification
-al_ts_emailupd DATETIME,	-- unix time - last update to email
-PRIMARY KEY (al_id),
-KEY al_email (al_email),
-KEY al_status (al_status),
-KEY al_gradclass (al_gradclass),
-FULLTEXT (al_name_surname,al_name_married,al_name_given)
+alumnus_id INT NOT NULL auto_increment,
+alumnus_status TINYINT(4) NOT NULL,
+alumnus_entry_id INT NOT NULL,
+alumnus_create DATETIME NOT NULL,
+alumnus_update TIMESTAMP NOT NULL,
+PRIMARY KEY (alumnus_id)
 );
 
-CREATE TABLE aid_note (
-note_id INT NOT NULL,
-note_text TEXT NOT NULL,
-PRIMARY KEY (note_id)
+CREATE TABLE aid_entry (
+entry_id INT NOT NULL auto_increment,
+entry_name_surname VARCHAR(100) NOT NULL,	-- Last Name/Maiden Name
+entry_name_married VARCHAR(100),	-- Married Last Name
+entry_name_given VARCHAR(100) NOT NULL,	-- First Name
+entry_name_mi VARCHAR(1),	-- Middle Initial
+entry_email VARCHAR(200) NOT NULL,	-- E-mail Address
+entry_gradclass YEAR(4),	-- Graduation Year or NULL for Other
+entry_affil_other VARCHAR(40), -- "Teacher" or some non-gradyear affiliation
+entry_web_page VARCHAR(1024),	-- Personal Web Page
+entry_location VARCHAR(100),	-- Location
+entry_note TEXT,
+entry_reunion TINYINT(1) NOT NULL,	-- bit for reunion email request
+PRIMARY KEY (entry_id),
+KEY entry_email (entry_email),
+KEY entry_gradclass (entry_gradclass),
+FULLTEXT (entry_name_surname,entry_name_married,entry_name_given)
 );
 
 CREATE TABLE aid_reunion (
@@ -72,9 +63,6 @@ limit_name VARCHAR(30),
 limit_count TINYINT,
 PRIMARY KEY (limit_name)
 );
-
-CREATE TABLE aid_alumnus_s LIKE aid_alumnus;
-CREATE TABLE aid_note_s LIKE aid_note;
 
 /*
 CREATE TABLE aid_timestamps (
