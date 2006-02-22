@@ -1,4 +1,4 @@
--- $Id: alumni.sql,v 1.4 2006/02/20 05:52:44 mradwin Exp mradwin $
+-- $Id: alumni.sql,v 1.5 2006/02/22 03:53:41 mradwin Exp mradwin $
 
 DROP TABLE IF EXISTS aid_alumnus;
 DROP TABLE IF EXISTS aid_entry;
@@ -11,6 +11,7 @@ CREATE TABLE aid_alumnus (
 alumnus_id INT NOT NULL auto_increment,
 alumnus_status TINYINT(4) NOT NULL,
 alumnus_entry_id INT NOT NULL,
+alumnus_old_id INT,
 alumnus_create DATETIME NOT NULL,
 alumnus_update TIMESTAMP NOT NULL,
 PRIMARY KEY (alumnus_id)
