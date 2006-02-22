@@ -1,4 +1,4 @@
--- $Id: alumni.sql,v 1.3 2006/02/20 05:14:48 mradwin Exp mradwin $
+-- $Id: alumni.sql,v 1.4 2006/02/20 05:52:44 mradwin Exp mradwin $
 
 DROP TABLE IF EXISTS aid_alumnus;
 DROP TABLE IF EXISTS aid_entry;
@@ -46,7 +46,7 @@ CREATE TABLE aid_verify (
 verify_code VARCHAR(24) NOT NULL,
 verify_staging_id INT NOT NULL,
 verify_alumnus_id INT,
-verify_created TIMESTAMP NOT NULL,
+verify_created DATETIME NOT NULL,
 verify_confirmed DATETIME,
 verify_published DATETIME,
 PRIMARY KEY verify_code (verify_code)
