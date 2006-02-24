@@ -1,0 +1,215 @@
+#!/usr/local/bin/perl -w
+
+# $Id: aid_mysql_load,v 1.6 2006/02/20 04:33:23 mradwin Exp $
+#
+# Copyright (c) 2006  Michael J. Radwin.
+# All rights reserved.
+#
+# Redistribution and use in source and binary forms, with or
+# without modification, are permitted provided that the following
+# conditions are met:
+#
+#  * Redistributions of source code must retain the above
+#    copyright notice, this list of conditions and the following
+#    disclaimer.
+#
+#  * Redistributions in binary form must reproduce the above
+#    copyright notice, this list of conditions and the following
+#    disclaimer in the documentation and/or other materials
+#    provided with the distribution.
+#
+#  * Neither the name of the High School Alumni Internet Directory
+#    nor the names of its contributors may be used to endorse or
+#    promote products derived from this software without specific
+#    prior written permission.
+#
+# THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND
+# CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES,
+# INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF
+# MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+# DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR
+# CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+# SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT
+# NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+# LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+# HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+# CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR
+# OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+# SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+BEGIN {
+  if ($0 =~ m,(.*[/\\]),) {
+    unshift @INC, $1;
+  } else {
+    unshift @INC, ".";
+  }
+}
+
+use strict;
+use DBI ();
+use Config::IniFiles;
+use Getopt::Std;
+use aid_util;
+
+$0 =~ s,.*/,,;  # basename
+my $usage = "usage: $0 [-hq] infile.ini
+    -h        Display usage information.
+    -q        Quiet.
+";
+
+my %opts;
+getopts("hq", \%opts) || die "$usage\n";
+$opts{"h"} && die "$usage\n";
+@ARGV == 1 || die "$usage\n";
+
+unless ($opts{"q"})
+{
+    select(STDOUT); $| = 1;
+}
+
+my $infile = shift;
+
+print STDOUT "$0: loading $infile..." unless $opts{"q"};
+my $data = new Config::IniFiles(-file => $infile);
+print STDOUT "done.\n" unless $opts{"q"};
+
+my $dbname = aid_util::config("dbname");
+my $dbhost = aid_util::config("dbhost");
+my $dsn = "DBI:mysql:database=$dbname;host=$dbhost";
+my $dbh = DBI->connect($dsn,
+		       aid_util::config("dbuser"),
+		       aid_util::config("dbpass"))
+    or die $DBI::errstr;
+
+if ($data)
+{
+    print STDOUT "$0: writing data to MySQL..." unless $opts{"q"};
+
+    my $sql = qq{TRUNCATE TABLE aid_alumnus};
+    print $sql, "\n" if $opts{"v"};
+    $dbh->do($sql) or die $dbh->errstr;
+
+    $sql = qq{TRUNCATE TABLE aid_entry};
+    print $sql, "\n" if $opts{"v"};
+    $dbh->do($sql) or die $dbh->errstr;
+
+    my $j = 0;
+    foreach my $section ($data->Sections())
+    {
+	my %rec;
+
+	foreach my $key (@aid_util::edit_field_names)
+	{
+	    my $val = $data->val($section, $key);
+	    if (defined $val)
+	    {
+		$rec{$key} = $val;
+	    }
+	    else
+	    {
+		$rec{$key} = "";
+	    }
+	}
+
+	my $note = $data->val($section, "n");
+	if (defined $note)
+	{
+	    $rec{"n"} = aid_util::url_unescape($note);
+	}
+	else
+	{
+	    $rec{"n"} = "";
+	}
+
+	if (! defined $rec{"id"})
+	{
+	    warn "$infile:$section: missing id\n";
+	    next;
+	}
+
+	$rec{"a"} = aid_util::generate_alias(\%rec)
+	    unless (defined $rec{"a"} && $rec{"a"} ne "");
+
+	db_load_rec($dbh, \%rec);
+
+	print STDOUT "." if !$opts{"q"} && ($j++ % 20) == 0;
+    }
+}
+
+print STDOUT "\n" unless $opts{"q"};
+
+$dbh->disconnect;
+
+print STDOUT "$0: build successful\n" unless $opts{"q"};
+exit(0);
+
+sub val_or_null
+{
+    my($dbh,$rec,$key) = @_;
+
+    if ($rec->{$key}) {
+	$dbh->quote($rec->{$key});
+    } else {
+	"NULL";
+    }
+}
+
+sub ts_or_null
+{
+    my($rec,$key) = @_;
+
+    $rec->{$key} ? "FROM_UNIXTIME($rec->{$key})" : "NULL";
+}
+
+sub db_load_rec
+{
+    my($dbh, $rec) = @_;
+
+    my $sn = $dbh->quote($rec->{"sn"});
+    my $gn = $dbh->quote($rec->{"gn"});
+    my $e = $dbh->quote($rec->{"e"});
+
+    my $mn = val_or_null($dbh,$rec,"mn");
+    my $mi = val_or_null($dbh,$rec,"mi");
+    my $w = val_or_null($dbh,$rec,"w");
+    my $l = val_or_null($dbh,$rec,"l");
+    my $n = val_or_null($dbh,$rec,"n");
+
+    my $create = ts_or_null($rec,"c");
+    my $update = ts_or_null($rec,"u");
+
+    my $gradclass;
+    my $affil_other;
+    if ($rec->{"yr"} =~ /^\d{4}$/) {
+	$gradclass = $rec->{"yr"};
+	$affil_other = "NULL";
+    } else {
+	$affil_other = $dbh->quote($rec->{"yr"});
+	$gradclass = "NULL";
+    }
+
+    my $sql = qq{INSERT INTO aid_entry
+		     (entry_name_surname,entry_name_married,
+		      entry_name_given,entry_name_mi,
+		      entry_email,entry_gradclass,entry_affil_other,
+		      entry_web_page,entry_location,entry_note,entry_reunion)
+		     VALUES ($sn,$mn,$gn,$mi,
+			     $e,$gradclass,$affil_other,
+			     $w,$l,$n,$rec->{r})
+		 };
+
+    print $sql, "\n" if $opts{"v"};
+    $dbh->do($sql) or die $dbh->errstr;
+
+    my $entry_id = $dbh->last_insert_id(undef, undef, undef, undef);
+
+    $sql = qq{REPLACE INTO aid_alumnus
+		  (alumnus_id,alumnus_status,alumnus_entry_id,
+		   alumnus_create,alumnus_update)
+		  VALUES ($rec->{id},$rec->{v},$entry_id,
+			  $create,$update)
+	      };
+
+    print $sql, "\n" if $opts{"v"};
+    $dbh->do($sql) or die $dbh->errstr;
+}
