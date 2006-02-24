@@ -4,7 +4,7 @@
 #     FILE: search.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: Alumni Internet Directory CGI search
-#      $Id: search,v 1.2 2006/02/23 22:33:38 mradwin Exp $
+#      $Id: search,v 6.5 2006/02/24 00:17:40 mradwin Exp mradwin $
 #
 # Copyright (c) 2006  Michael J. Radwin.
 # All rights reserved.
@@ -198,7 +198,7 @@ else
 	my($affil,undef) = aid_util::affiliate($recp,0);
 	
 	print "<li>";
-	if (!$recp->{"v"} || $in{"upd"})
+	if ($in{"upd"})
 	{
 	    print "<a href=\"", aid_util::config("about_cgi"), 
 	    "/", $recp->{"id"}, "\">$fullname</a> $affil";
@@ -211,7 +211,7 @@ else
 
 	if (! $recp->{"v"})
 	{
-	    print " <em>(invalid e-mail address)</em>";
+	    print " <em>(e-mail bouncing)</em>";
 	}
 	print "\n";
     }
