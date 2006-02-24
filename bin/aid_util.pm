@@ -2,7 +2,7 @@
 #     FILE: aid_util.pm
 #   AUTHOR: Michael J. Radwin
 #    DESCR: perl library routines for the Alumni Internet Directory
-#      $Id: aid_util.pm,v 6.18 2005/05/09 03:50:34 mradwin Exp mradwin $
+#      $Id: aid_util.pm,v 6.19 2006/02/24 00:40:23 mradwin Exp mradwin $
 #
 # Copyright (c) 2005  Michael J. Radwin.
 # All rights reserved.
@@ -60,7 +60,7 @@ use strict;
 
 package aid_util;
 
-my($VERSION) = '$Revision: 6.18 $$';
+my($VERSION) = '$Revision: 6.19 $$';
 if ($VERSION =~ /(\d+)\.(\d+)/) {
     $VERSION = "$1.$2";
 }
@@ -529,40 +529,25 @@ sub verification_message
 
     $body = inorder_fullname($rec) . ",
 
-You recently were asked to verify your e-mail address
-with the " . $aid_util::config{'short_school'} . " Alumni Internet Directory.
+You recently submitted a profile on the " 
+    . $aid_util::config{'short_school'} . " Alumni
+Internet Directory website. Please follow the instructions
+below to publish your profile online.
 
-Please follow the instructions below to complete the
-verification process.
-
-TO VERIFY YOUR ADDRESS:
-
-1. If your email reader will allow you to click on
+If your email reader will allow you to click on
 links, click the following link.  If not, enter the URL
 into your browser:
 
 http://" . $aid_util::config{'master_srv'} . $aid_util::config{'verify_cgi'} . "?$randkey
 
-2. If the page asks you to enter your 8-letter
-verification code, please enter this code:
-
-$randkey
-
-3. Then click on the \"Submit verification code\" button.
-
+Then click on the \"Submit verification code\" button.
 
 WAS THIS EMAIL SENT TO THE WRONG ADDRESS?
 
-If you did not request this confirmation, you can
-remove your e-mail address from our database by
-clicking on the following link:
-
-http://" . $aid_util::config{'master_srv'} . $aid_util::config{'remove_cgi'} . "?$randkey
-
-If this link does not work for you, please reply to
-this message with the word REMOVE in the subject line
-(and be sure to include the full text of this email in
-your reply).
+If you did not request a profile on the "
+    . $aid_util::config{'short_school'} . " Alumni
+Internet Directory website, please ignore this message
+with our apologies.
 
 Regards,
 
@@ -572,7 +557,7 @@ http://" . $aid_util::config{'master_srv'} . $aid_util::config{'master_path'} . 
     $return_path = $aid_util::config{'devnull_email'};
     $from = $aid_util::config{'short_school'} . ' Alumni Robot';
     $subject = $aid_util::config{'short_school'} .
-	" Alumni Internet Directory Verification [$randkey]";
+	" Alumni Internet Directory";
     $xtrahead = "Reply-To: " . $aid_util::config{'admin_email'};
 
     ($return_path,$from,$subject,$xtrahead,$body,$name,$rec->{'e'});
