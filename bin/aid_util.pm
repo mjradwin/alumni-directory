@@ -2,9 +2,9 @@
 #     FILE: aid_util.pm
 #   AUTHOR: Michael J. Radwin
 #    DESCR: perl library routines for the Alumni Internet Directory
-#      $Id: aid_util.pm,v 6.19 2006/02/24 00:40:23 mradwin Exp mradwin $
+#      $Id: aid_util.pm,v 6.20 2006/02/24 00:54:55 mradwin Exp mradwin $
 #
-# Copyright (c) 2005  Michael J. Radwin.
+# Copyright (c) 2006  Michael J. Radwin.
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or
@@ -60,7 +60,7 @@ use strict;
 
 package aid_util;
 
-my($VERSION) = '$Revision: 6.19 $$';
+my($VERSION) = '$Revision: 6.20 $$';
 if ($VERSION =~ /(\d+)\.(\d+)/) {
     $VERSION = "$1.$2";
 }
@@ -113,8 +113,6 @@ $aid_util::pics_label =
 
 %aid_util::aid_aliases = ();   # global alias hash repository 
 
-$aid_util::EPOCH       = 815130000; # Tue Oct 31 09:00:00 GMT 1995
-
 %aid_util::field_descr =
     (
     'id' =>	'[numerical userid]',
@@ -154,9 +152,6 @@ $aid_util::EPOCH       = 815130000; # Tue Oct 31 09:00:00 GMT 1995
      'eu', 'eo',
      'h',
     );
-
-my $pack_format = 'C3N6';
-my $pack_len    = 27;    
 
 # ------------------------------------------------------------
 # %aid_util::blank_entry -- a prototypical blank entry to clone
@@ -411,61 +406,6 @@ sub vcard_path
 	    mangle($rec->{'mn'}) . '.vcf';
 }
 
-sub yahoo_abook_path
-{
-    my($rec) = @_;
-    my($url) = 'http://address.yahoo.com/yab?A=da&amp;au=a';
-
-    $url .= '&amp;fn=' . url_escape($rec->{'gn'}); 
-    if ($rec->{'mn'} ne '')
-    {
-	$url .= '&amp;mn=' . url_escape($rec->{'sn'}); 
-	$url .= '&amp;ln=' . url_escape($rec->{'mn'}); 
-    }
-    else
-    {
-	$url .= '&amp;mn=' . url_escape($rec->{'mi'}); 
-	$url .= '&amp;ln=' . url_escape($rec->{'sn'}); 
-    }
-    $url .= '&amp;c=Unfiled';
-    $url .= '&amp;nn=' . url_escape($rec->{'a'}); 
-    $url .= '&amp;e='  . url_escape($rec->{'e'}); 
-    $url .= '&amp;pp=0';
-    $url .= '&amp;co=' . $aid_util::config{'short_school'};
-    if ($rec->{'yr'} =~ /^\d+$/) {
-	$url .= '+Class+of+' . $rec->{'yr'};
-    } else {
-	$url .= '+' . url_escape($rec->{'yr'}); 
-    }
-
-    $url .= '&amp;pu=' . url_escape($rec->{'w'}); 
-    $url .= '&amp;af=d';
-
-    if ($rec->{'l'} =~ /^(.*),\s+(\w\w)$/)
-    {
-	$url .= '&amp;hc=' . url_escape($1); 
-	$url .= '&amp;hs=' . $2;
-    }
-    elsif ($rec->{'l'} =~ /^(.*),\s+(\w\w)\s+(\d\d\d\d\d)$/)
-    {
-	$url .= '&amp;hc=' . url_escape($1); 
-	$url .= '&amp;hs=' . $2;
-	$url .= '&amp;hz=' . $3;
-    }
-    else
-    {
-	$url .= '&amp;hc=' . url_escape($rec->{'l'}); 
-    }
-
-    $url .= '&amp;.done=' .
-	url_escape('http://' . $aid_util::config{'master_srv'} . 
-	    $aid_util::config{'master_path'});
-
-    $url;
-}
-
-
-
 sub about_path
 {
     my($rec,$class_page) = @_;
@@ -704,7 +644,7 @@ sub verbose_entry
 	if $rec{'v'} && $rec{'id'} > 0;
     $retval .= protect_email($rec{'e'});
     $retval .= "</a>" if $rec{'v'};
-    $retval .= "\n<em>(invalid address)</em>" unless $rec{'v'};
+    $retval .= "\n<em>(e-mail bouncing)</em>" unless $rec{'v'};
     $retval .= "</b></tt>";
 #    $retval .= "</dt>";
     $retval .= "\n";
@@ -720,7 +660,7 @@ sub verbose_entry
 #    $retval .= "</dt>";
     $retval .= "\n";
 
-    if (! $suppress_links && $rec{'v'})
+    if (! $suppress_links)
     {
 	$retval .= "<dt>Tools: <small>" .
 	    "<a\nhref=\"" . $aid_util::config{'about_cgi'} .
@@ -971,27 +911,6 @@ type="text" name="q" size="20">
     $hdr;
 }
 
-sub build_yearlist
-{
-    my($years,$year) = @_;
-
-    if (!defined @{$years})
-    {
-	@{$years} = ();
-	push(@{$years}, ($year =~ /^\d+$/) ? $year : 'other');
-    }
-    else
-    {
-	my $count = scalar(@{$years}) - 1;
-	if ($years->[$count] ne $year && $years->[$count] ne 'other')
-	{
-	    push(@{$years}, ($year =~ /^\d+$/) ? $year : 'other');
-	}
-    }
-
-    1;
-}
-
 sub class_jump_bar
 {
     my($href_begin,$href_end,$years,$do_paragraph,$hilite) = @_;
@@ -1156,286 +1075,6 @@ sub book_write_suffix
     $option eq 'n' && print $BOOKfh "</DL><p>\n";
 }
 
-sub http_date
-{
-    my($time) = @_;
-	
-    &POSIX::strftime("%a, %d %b %Y %H:%M:%S GMT", gmtime($time));
-}
-
-sub db_pack_rec
-{
-    my($rec) = @_;
-
-    pack($pack_format,
-	 (($rec->{'v'} ? 1 : 0) |
-	  (($rec->{'r'} ? 1 : 0) << 1)),
-	 $rec->{'q'},
-	 0,
-	 $rec->{'b'},
-	 $rec->{'c'},
-	 $rec->{'u'},
-	 $rec->{'f'},
-	 $rec->{'eu'},
-	 $rec->{'lm'}
-	 ) .
-    join("\0",
-	 $rec->{'sn'},
-	 $rec->{'mn'},
-	 $rec->{'gn'},
-	 $rec->{'mi'},
-	 $rec->{'yr'},
-	 $rec->{'e'},
-	 $rec->{'w'},
-	 $rec->{'l'},
-	 $rec->{'h'},
-	 $rec->{'a'},
-	 $rec->{'n'},
-	 $rec->{'eo'},
-	 $rec->{'iu'}
-	 );
-};
-
-
-sub db_unpack_rec
-{
-    my($key,$val) = @_;
-    my($masked,$ignored);
-
-    my(%rec) = ();
-    $rec{'id'} = $key;
-
-    (
-     $masked,
-     $rec{'q'},
-     $ignored,
-     $rec{'b'},
-     $rec{'c'},
-     $rec{'u'},
-     $rec{'f'},
-     $rec{'eu'},
-     $rec{'lm'}
-     ) = unpack($pack_format, $val);
-
-    $rec{'v'} = ( $masked       & 1) ? 1 : 0;
-    $rec{'r'} = (($masked >> 1) & 1) ? 1 : 0;
-
-    (
-     $rec{'sn'},
-     $rec{'mn'},
-     $rec{'gn'},
-     $rec{'mi'},
-     $rec{'yr'},
-     $rec{'e'},
-     $rec{'w'},
-     $rec{'l'},
-     $rec{'h'},
-     $rec{'a'},
-     $rec{'n'},
-     $rec{'eo'},
-     $rec{'iu'}
-     ) = split(/\0/, substr($val, $pack_len));
-
-    %rec;
-}
-
-sub rebuild_secondary_keys
-{
-    my($DB,$quiet,$debug,$preserve_nextid) = @_;
-    my(%old_db,%new_db);
-    my($key,$val,$id);
-    my(@diffs) = ();
-
-    my($latest) = 0;
-    my($latest_www) = 0;
-    my($latest_goner) = 0;
-    my(%class_members) = ();
-    my(%class_latest) = ();
-    my(%www_class_members) = ();
-    my(@datakeys) = ();
-    my(@alpha_ids) = ();
-    my(%alpha_members) = ();
-    my(%alpha_latest) = ();
-    my($maxval) = -1;
-    my($old_nextid) = $DB->{'_nextid'};
-
-    # first pass -- gather all names with alpha data
-    select(STDOUT); $| = 1;
-    print STDOUT "$0: building index..." unless $quiet;
-    while(($key,$val) = each(%{$DB}))
-    {
-	if ($key =~ /^\d+$/)
-	{
-	    my %rec = db_unpack_rec($key,$val);
-	    push(@datakeys,
-		 lc(join("\0",
-			 $rec{'sn'},$rec{'gn'},$rec{'mi'},$rec{'mn'},
-			 $rec{'yr'})) .
-		 "\0" . $key);
-	    $maxval = $key if $key > $maxval;
-	}
-	elsif ($key =~ /^_/)
-	{
-	    $old_db{$key} = $val;
-	}
-    }
-    print STDOUT "." unless $quiet;
-    
-    # can't delete while iterating, so do it now
-    while(($key,$val) = each(%old_db))
-    {
-	delete $DB->{$key};
-    }
-
-    # now sort by alpha
-    foreach my $k (sort { $a cmp $b } @datakeys)
-    {
-	$id = (split(/\0/, $k))[5];
-	die "split failed: id $id invalid: $k" unless $id =~ /^\d+$/;
-	push(@alpha_ids,$id);
-    }
-    undef(@datakeys);		# garbage-collect
-    print STDOUT "." unless $quiet;
-
-    # second pass - timestamps and lists
-    foreach $id (@alpha_ids)
-    {
-	my %rec = db_unpack_rec($id,$DB->{$id});
-
-	if ($rec{'v'})
-	{
-	    $latest = $rec{'u'} if $rec{'u'} > $latest;
-
-	    my $ln_key = lc(substr($rec{'sn'},0,1));
-	    if (defined $alpha_members{$ln_key})
-	    {
-		$alpha_members{$ln_key} .= ' ' . $rec{'id'};
-		$alpha_latest{$ln_key}   = $rec{'u'} if
-		    $rec{'u'} > $alpha_latest{$ln_key};
-	    }
-	    else
-	    {
-		$alpha_members{$ln_key}  =       $rec{'id'};
-		$alpha_latest{$ln_key}   =       $rec{'u'};
-	    }
-
-	    my $ykey = ($rec{'yr'} =~ /^\d+$/) ? $rec{'yr'} : 'other';
-	    if (defined $class_members{$ykey})
-	    {
-		$class_members{$ykey} .= ' ' . $rec{'id'};
-		$class_latest{$ykey}   =       $rec{'u'} if
-		    $rec{'u'} > $class_latest{$ykey};
-	    }
-	    else
-	    {
-		$class_members{$ykey}  =       $rec{'id'};
-		$class_latest{$ykey}   =       $rec{'u'};
-	    }
-
-	    if ($rec{'w'} ne '')
-	    {
-		$latest_www = $rec{'u'} if $rec{'u'} > $latest_www;
-		if (defined $www_class_members{$ykey})
-		{
-		    $www_class_members{$ykey} .= ' ' . $rec{'id'};
-		}
-		else
-		{
-		    $www_class_members{$ykey}  =       $rec{'id'};
-		}
-	    }
-	}
-	else
-	{
-	    $latest_goner = $rec{'b'} if $rec{'b'} > $latest_goner;
-	    $latest_goner = $rec{'f'} if $rec{'f'} > $latest_goner;
-	}
-
-    }
-    print STDOUT "." unless $quiet;
-
-    $DB->{'_alpha'} = pack("n*", @alpha_ids);
-
-    my @class_ids = ();
-    my @years = sort keys %class_members;
-    $DB->{'_years'} = pack("n*",grep(/\d+/,@years));
-
-    foreach my $ykey (@years)
-    {
-	@alpha_ids = split(/ /, $class_members{$ykey});
-	$DB->{"_${ykey}"} = pack("n*", @alpha_ids);
-	$DB->{"_t_${ykey}"} = pack("N", $class_latest{$ykey});
-	$new_db{"_${ykey}"} = $new_db{"_t_${ykey}"} = 1;
-	push(@class_ids, @alpha_ids);
-    }
-    print STDOUT "." unless $quiet;
-
-    $DB->{'_class'} = pack("n*", @class_ids);
-
-    # now do years, but only for www
-    @years = sort keys %www_class_members;
-    $DB->{'_www_years'} = pack("n*",grep(/\d+/,@years));
-    foreach my $ykey (@years)
-    {
-	$DB->{"_www_${ykey}"} = pack("n*", split(/ /, $www_class_members{$ykey}));
-	$new_db{"_www_${ykey}"} = 1;
-    }
-    print STDOUT "." unless $quiet;
-
-    $DB->{'_t'} = pack("N", $latest);
-    $DB->{'_t_www'} = pack("N", $latest_www);
-    $DB->{'_t_goner'} = pack("N", $latest_goner);
-    $DB->{'_nextid'}  = $preserve_nextid ? $old_nextid: $maxval + 1;
-
-    while (($key,$val) = each(%alpha_members))
-    {
-	$DB->{"_a_${key}"} = pack("n*", split(/ /, $val));
-	$new_db{"_a_${key}"} = 1;
-    }
-
-    while (($key,$val) = each(%alpha_latest))
-    {
-	$DB->{"_t_${key}"} = pack("N", $val);
-	$new_db{"_t_${key}"} = 1;
-    }
-    print STDOUT ".\n" unless $quiet;
-
-    # static keys (always present)
-    $new_db{'_alpha'} =  $new_db{'_years'} =
-	$new_db{'_class'} = $new_db{'_www_years'} =
-	    $new_db{'_t'} = $new_db{'_t_www'} =
-		$new_db{'_t_goner'} = $new_db{'_nextid'} = 1;
-
-    while (($key,$val) = each(%{$DB}))
-    {
-	next unless $key =~ /^_/;
-	die "invariant failed: key=$key in DB but not in new_db"
-	    unless defined $new_db{$key};
-
-	if (! defined $old_db{$key})
-	{
-	    warn "$key: new\n" if $debug;
-	    push(@diffs,$key);
-	}
-	elsif ($val ne $old_db{$key})
-	{
-	    warn "$key: changed\n" if $debug;
-	    push(@diffs,$key);
-	}
-    }
-
-    while (($key,$val) = each(%old_db))
-    {
-	if (! defined $new_db{$key})
-	{
-	    warn "$key: del\n" if $debug;
-	    push(@diffs,$key);
-	}
-    }
-
-    @diffs;
-}
-
 sub url_unescape
 {
     my($u) = @_;
@@ -1562,43 +1201,6 @@ sub die_if_failure
     die "Exited with $exit_value\n" if $exit_value;
 
     1;
-}
-
-# We get a whole bunch of warnings about "possible typo" when running
-# with the -w switch.  Touch them all once to get rid of the warnings.
-# This is ugly and I hate it.
-if ($^W && 0)
-{
-    http_date();
-    book_write_suffix();
-    book_write_entry();
-    book_write_prefix();
-    class_jump_bar();
-    build_yearlist();
-    about_text();
-    verbose_entry();
-    html_entify_str();
-    ampersand_join();
-    affiliate();
-    common_html_hdr();
-    common_html_ftr();
-    common_intro_para();
-    fullname();
-    is_old();
-    sendmail_v2();
-    sendmail();
-    db_unpack_rec();
-    db_pack_rec();
-    yahoo_abook_path();
-    url_escape();
-    rebuild_secondary_keys();
-    generate_alias();
-
-    $aid_util::author_meta = $aid_util::navigation_meta = $aid_util::descr_meta;
-    $aid_util::EPOCH = 0;
-    $aid_util::field_descr{'foo'} = 1;
-    $aid_util::req_descr_long[0] = 1;
-    $aid_util::disclaimer = 1;
 }
 
 1;
