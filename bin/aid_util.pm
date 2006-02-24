@@ -2,7 +2,7 @@
 #     FILE: aid_util.pm
 #   AUTHOR: Michael J. Radwin
 #    DESCR: perl library routines for the Alumni Internet Directory
-#      $Id: aid_util.pm,v 6.17 2005/02/21 20:10:44 mradwin Exp mradwin $
+#      $Id: aid_util.pm,v 6.18 2005/05/09 03:50:34 mradwin Exp mradwin $
 #
 # Copyright (c) 2005  Michael J. Radwin.
 # All rights reserved.
@@ -60,7 +60,7 @@ use strict;
 
 package aid_util;
 
-my($VERSION) = '$Revision: 6.17 $$';
+my($VERSION) = '$Revision: 6.18 $$';
 if ($VERSION =~ /(\d+)\.(\d+)/) {
     $VERSION = "$1.$2";
 }
@@ -854,12 +854,7 @@ sub common_intro_para
     "Alumni marked with\n" . $image_tag{'updated'} . 
     "\nhave updated their information within the past month.\n" .
     ($page ? $info : '') .
-    "</small></p>\n" .
-    "<small>Were you previously listed but now your name isn't here?  If\n" .
-    "e-mail to you has failed to reach you for more than 6 months, your\n" .
-    "listing has been moved to the\n" .
-    "<a href=\"" . $aid_util::config{'master_path'} . "invalid.html\">invalid\n" .
-    "e-mail addresses</a> page.\n</small>\n\n";
+    "</small></p>\n";
 }
 
 sub common_html_ftr
