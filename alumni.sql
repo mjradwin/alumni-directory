@@ -1,4 +1,4 @@
--- $Id: alumni.sql,v 1.5 2006/02/22 03:53:41 mradwin Exp mradwin $
+-- $Id: alumni.sql,v 1.6 2006/02/22 06:47:08 mradwin Exp mradwin $
 
 DROP TABLE IF EXISTS aid_alumnus;
 DROP TABLE IF EXISTS aid_entry;
@@ -15,7 +15,7 @@ alumnus_old_id INT,
 alumnus_create DATETIME NOT NULL,
 alumnus_update TIMESTAMP NOT NULL,
 PRIMARY KEY (alumnus_id)
-);
+) CHARACTER SET latin1;
 
 CREATE TABLE aid_entry (
 entry_id INT NOT NULL auto_increment,
@@ -34,14 +34,14 @@ PRIMARY KEY (entry_id),
 KEY entry_email (entry_email),
 KEY entry_gradclass (entry_gradclass),
 FULLTEXT (entry_name_surname,entry_name_married,entry_name_given)
-);
+) CHARACTER SET latin1;
 
 CREATE TABLE aid_reunion (
 reunion_gradclass VARCHAR(100) NOT NULL,
 reunion_date DATE,
 reunion_text TEXT NOT NULL,
 PRIMARY KEY (reunion_gradclass)
-);
+) CHARACTER SET latin1;
 
 CREATE TABLE aid_verify (
 verify_code VARCHAR(24) NOT NULL,
@@ -51,7 +51,7 @@ verify_created DATETIME NOT NULL,
 verify_confirmed DATETIME,
 verify_published DATETIME,
 PRIMARY KEY verify_code (verify_code)
-);
+) CHARACTER SET latin1;
 
 CREATE TABLE aid_bounce (
 bounce_email VARCHAR(200) NOT NULL,
@@ -59,18 +59,18 @@ bounce_time TIMESTAMP NOT NULL,
 bounce_reason TEXT,
 bounce_std_reason VARCHAR(16),
 KEY bounce_email (bounce_email)
-);
+) CHARACTER SET latin1;
 
 CREATE TABLE aid_limit (
 limit_name VARCHAR(30),
 limit_count TINYINT,
 PRIMARY KEY (limit_name)
-);
+) CHARACTER SET latin1;
 
 /*
 CREATE TABLE aid_timestamps (
 ts_name varchar(20),
 ts_time TIMESTAMP NOT NULL,
 PRIMARY KEY (ts_name)
-);
+) CHARACTER SET latin1;
 */
