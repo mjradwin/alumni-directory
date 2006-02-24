@@ -1,81 +1,135 @@
-#!/usr/bin/perl -w
+#!/usr/local/bin/perl -w
 
 #
-# does the html version of the recent address list
-# $Id: aid_recent_html,v 3.15 1998/10/15 22:51:57 mradwin Exp mradwin $
+# does a short list, either compact or verbose, sorted by graduating
+# class with a jump bar
 #
+# $Id: aid_recent_html,v 1.2 2006/02/20 04:13:45 mradwin Exp $
+#
+# Copyright (c) 2006  Michael J. Radwin.
+# All rights reserved.
+#
+# Redistribution and use in source and binary forms, with or
+# without modification, are permitted provided that the following
+# conditions are met:
+#
+#  * Redistributions of source code must retain the above
+#    copyright notice, this list of conditions and the following
+#    disclaimer.
+#
+#  * Redistributions in binary form must reproduce the above
+#    copyright notice, this list of conditions and the following
+#    disclaimer in the documentation and/or other materials
+#    provided with the distribution.
+#
+#  * Neither the name of the High School Alumni Internet Directory
+#    nor the names of its contributors may be used to endorse or
+#    promote products derived from this software without specific
+#    prior written permission.
+#
+# THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND
+# CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES,
+# INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF
+# MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+# DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR
+# CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+# SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT
+# NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+# LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+# HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+# CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR
+# OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+# SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-require 'aid_util.pl';
-require 'getopts.pl';
+BEGIN {
+  if ($0 =~ m,(.*[/\\]),) {
+    unshift @INC, $1;
+  } else {
+    unshift @INC, '.';
+  }
+}
 
-$usage = 'usage: aid_recent_html [-ht] [-m <mos>] infile.adr outfile
+use strict;
+use Getopt::Std;
+use aid_util;
+use aid_newutil;
+use DBI ();
+
+$0 =~ s,.*/,,;  # basename
+my $usage = "usage: $0 [-h] [-d <days>] outfile
     -h        Display usage information.
-    -t        Output text only.
-    -m <mos>  Define "recent" to mean <mos> months (default 1).
-';
+    -d <d>    Updated entries in the last <d> days
+";
 
-&Getopts('htm:') || die "$usage\n";
-$opt_h && die "$usage\n";
-$ARGV[0] || die "$usage\n";
-$ARGV[1] || die "$usage\n";
-$opt_h = $opt_h;		# avoid warning
+my %opts;
+getopts("hd:", \%opts) || die "$usage\n";
+$opts{"h"} && die "$usage\n";
 
-open(DATA,$ARGV[0]) || die "Can't open $ARGV[0]: $!\n";
-open(FMTOUT,">$ARGV[1]") || die "Can't open $ARGV[1]: $!\n";
+die "$usage\n" unless @ARGV == 1;
 
-if (!$opt_t) {
-print FMTOUT &common_html_hdr(5,'Recent Additions to the Directory',1);
+my $outfile = shift;
+open(FMTOUT,">$outfile") || die "Can't open $outfile: $!\n";
+
+my $days = $opts{"d"} && $opts{"d"} =~ /^\d+$/ ? $opts{"d"} : 14;
+my $dbh = aid_newutil::db_connect();
+my $DB = aid_newutil::load_records($dbh, 
+     "AND DATE_SUB(CURDATE(),INTERVAL $days DAY) <= a.alumnus_update");
+
+my %years;
+my $time = 0;
+my $count = 0;
+foreach my $recp (values %{$DB})
+{
+    my $k = ($recp->{"yr"} =~ /^\d+$/) ? $recp->{"yr"} : "other";
+    $years{$k} = 1;
+    $time = $recp->{"u"} if $recp->{"u"} > $time;
+    $count++;
+}
+my @years = sort keys %years;
+undef %years;
+
+my $subtitle;
+if ($count == 1)
+{
+    $subtitle = "1 alumnus";
+}
+else
+{
+    $subtitle = sprintf("%d alumni", $count);
+}
+
+
+print FMTOUT aid_util::common_html_hdr(5,"Recent Additions and Updates",
+				       1,$time,$subtitle);
 print FMTOUT
-"<p>All entries on this page have been added to the Directory within the
-last month.</p>\n\n";
-}
+"<p>All alumni on this page have been added to the Directory
+or updated their listings within the last $days days.</p>\n\n";
 
-$opt_m = 1 unless $opt_m;
+print FMTOUT aid_util::class_jump_bar("#grad","",\@years,1);
 
-@years = ();
-@newbies = ();
-
-while(<DATA>) {
-    chop;
-    %rec = &aid_split($_);
-    next unless $rec{'valid'};
-    next unless &is_new($rec{'time'}, $opt_m);
-
-    push(@newbies,$_);
-    &aid_build_yearlist(*years, $rec{'year'});
-}
-
-if ($opt_t) {
-    print FMTOUT "Name and Graduation Year                 Email\n";
-    print FMTOUT "---------------------------------------------------------------------------\n";
-
-    while (defined($_ = shift(@newbies))) {
-	%rec = &aid_parse($_);
-
-	$fullname = &fullname(*rec);
-	($affil,$len) = &affiliate(*rec,0);
-
-	print FMTOUT $fullname, $affil, ' ';
-	print FMTOUT ' ' x (40 - (length($fullname) + $len));
-	print FMTOUT $rec{'email'}, "\n";
+my $prev = "1900";
+foreach my $recp (sort { $a->{"yr"} cmp $b->{"yr"}
+			 || $a->{"sn"} cmp $b->{"sn"}
+			 || $a->{"gn"} cmp $b->{"gn"}
+		     } values %{$DB})
+{
+    if ($prev ne $recp->{"yr"} && $prev ne "other") {
+	$prev = ($recp->{"yr"} =~ /^\d+$/) ? $recp->{"yr"} : "other";
+	print FMTOUT "<a name=\"grad${prev}\">&nbsp;</a>\n";
     }
 
-} else {
-    print FMTOUT &aid_class_jump_bar('#grad','',*years,1);
-
-    $prev = '1900';
-    while (defined($_ = shift(@newbies))) {
-	%rec = &aid_parse($_);
-
-	if ($prev ne $rec{'year'} && $prev ne 'other') {
-	    $prev = ($rec{'year'} =~ /^\d+$/) ? $rec{'year'} : 'other';
-	    print FMTOUT "<a name=\"grad${prev}\"> </a>\n";
-	}
-
-	&aid_write_verbose_entry(*FMTOUT,*rec,1,1);
-    }
+    print FMTOUT aid_util::verbose_entry($recp,1,1);
 }
 
-$opt_t || print FMTOUT &common_html_ftr(5);
+print FMTOUT aid_util::common_html_ftr(5,$time);
+close(FMTOUT);
+utime $time, $time, $outfile unless $opts{"t"};
+
+# touch timestamp
+my $now = time;
+my $ts = $outfile;
+$ts =~ s,([^/]+)$,\.$1,;
+open(TS,">$ts") && close(TS);
+utime $now, $now, $ts;
 
 exit(0);
