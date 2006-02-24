@@ -4,9 +4,9 @@
 #     FILE: form.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: Alumni Internet Directory CGI form-submission interface
-#      $Id: form,v 6.4 2005/02/21 20:51:30 mradwin Exp $
+#      $Id: form,v 1.7 2006/02/22 06:20:05 mradwin Exp $
 #
-# Copyright (c) 2005  Michael J. Radwin.
+# Copyright (c) 2006  Michael J. Radwin.
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or
@@ -45,44 +45,38 @@ BEGIN {
     if ($0 =~ m,(.*[/\\]),) {
 	unshift @INC, $1;
     } else {
-	unshift @INC, '.';
+	unshift @INC, ".";
     }
 }
-use lib "/home/mradwin/local/share/perl";
 
+use strict;
 use CGI qw(-no_xhtml);
 use CGI::Carp qw(fatalsToBrowser);
-use DB_File::Lock;
 use Email::Valid;
 use aid_util;
+use aid_newutil;
 use aid_submit;
-use strict;
+use DBI ();
 
 # configuration
-my $dbmfile = aid_util::config('dbmfile');
+my $rcsid = '$Id: form,v 1.7 2006/02/22 06:20:05 mradwin Exp $'; #'fnt
 
-my $rcsid = '$Id: form,v 6.4 2005/02/21 20:51:30 mradwin Exp $'; #'fnt
-
-my $listing_upd_title = 'Modify Your Directory Listing';
-my $listing_add_title = 'Join the Directory';
-my $listing_sub_title = 'Review and Confirm Your Listing';
-
-die "$dbmfile: $!\n" unless -r $dbmfile;
-
-my @form_required = ('id', 'gn', 'sn', 'yr', 'e');
+my $listing_upd_title = "Modify Your Directory Listing";
+my $listing_add_title = "Join the Directory";
+my $listing_sub_title = "Review and Confirm Your Listing";
 
 my %cgi;
 my($q) = new CGI;
 foreach my $key ($q->param())
 {
     my($val) = $q->param($key);
-    $val = '' unless defined $val;
+    $val = "" unless defined $val;
     $cgi{$key} = $val;
 }
 
 if (! keys %cgi)
 {
-    send_upd_real(\%aid_util::blank_entry,'');
+    send_upd_real(\%aid_util::blank_entry,"");
     close(STDOUT);
     exit(0);
 }
@@ -91,33 +85,32 @@ if (! keys %cgi)
 #
 # if any of these flags is set, we're sending back a dynamic page
 # instead of processing a form request.
-if (defined($cgi{'version'})) {
+if (defined($cgi{"version"})) {
     print "Content-Type: text/plain\015\012\015\012$rcsid\015\012";
-    print aid_util::config('rcsid'), "\015\012";
+    print aid_util::config("rcsid"), "\015\012";
     close(STDOUT);
     exit(0);
 
 }
-elsif (defined($cgi{'update'}) || defined($cgi{'upd'}))
+
+my $dbh = aid_newutil::db_connect();
+
+if (defined($cgi{"update"}) || defined($cgi{"upd"}))
 {
-    my $key = defined($cgi{'update'}) ? $cgi{'update'} : $cgi{'upd'};
+    my $key = defined($cgi{"update"}) ? $cgi{"update"} : $cgi{"upd"};
 
     if ($key =~ /^\d+$/)
     {
-	my(%DB);
-	tie(%DB, 'DB_File::Lock', $dbmfile, O_RDONLY, 0444, $DB_HASH, 'read')
-	    or die "$dbmfile: $!\n";
-	my $val = $DB{$key};
-	untie(%DB);
+	my $DB = aid_newutil::load_records($dbh, "AND a.alumnus_id = $key");
 
-	if (defined $val)
+	my @recs = values %{$DB};
+	if (@recs)
 	{
-	    my %updateme = aid_util::db_unpack_rec($key,$val);
-	    send_upd_real(\%updateme,'');
+	    send_upd_real($recs[0],"");
 	}
 	else
 	{
-	    send_upd_real(\%aid_util::blank_entry,'');
+	    send_upd_real(\%aid_util::blank_entry,"");
 	}
     }
     elsif ($key =~ /^\s*[^@]+@[^\.]+\./) 
@@ -126,27 +119,22 @@ elsif (defined($cgi{'update'}) || defined($cgi{'upd'}))
 	$key =~ s/\s*$//;
 	$key = lc($key);
 
-	my(%DB);
-	tie(%DB, 'DB_File::Lock', $dbmfile, O_RDONLY, 0444, $DB_HASH, 'read')
-	    or die "$dbmfile: $!\n";
+	my $qkey = $dbh->quote($key);
+	my $DB = aid_newutil::load_records($dbh, "AND e.entry_email = $qkey");
 
-	if (defined $DB{$key})
+	my @recs = values %{$DB};
+	if (@recs)
 	{
-	    my $id = unpack("n",$DB{$key});
+	    my $id = $recs[0]->{"id"};
 	    if ($id > 0)
 	    {
-		my %updateme = aid_util::db_unpack_rec($id,$DB{$id});
-
-		untie(%DB);
-
-		send_upd_real(\%updateme,'');
+		send_upd_real($recs[0],"");
 		close(STDOUT);
+		$dbh->disconnect;
 		exit(0);
 	    }
 	}
 	send_upd_notfound($key);
-
-	untie(%DB);
     }
     else
     {
@@ -154,88 +142,91 @@ elsif (defined($cgi{'update'}) || defined($cgi{'upd'}))
     }
 
     close(STDOUT);
+    $dbh->disconnect;
     exit(0);
 }
 
 
 # no special flags, so this should be a submission-processing request.
 # did they access this with the right form?
+my @form_required = ("id", "gn", "sn", "yr", "e");
 foreach (@form_required) {
-    aid_util::cgi_die('Form Data Missing',
-		 "The required form data was not present or something\n" .
-		 "is awry. Please <a href=\"" . 
-		 aid_util::config('master_path') . "add/\">try again</a>.")
-	unless defined($cgi{$_});
+    unless (defined($cgi{$_})) {
+	$dbh->disconnect;
+	aid_util::cgi_die("Form Data Missing",
+			  "The required form data was not present or something\n" .
+			  "is awry. Please <a href=\"" . 
+			  aid_util::config("master_path") . "add/\">try again</a>.");
+    }
 }
-
 
 # okay, we've got the right form.  clean up the input.
 foreach my $key (keys(%cgi)) {
     $cgi{$key} =~ s/^\s*//;  # get rid of leading and trailing whitespace
     $cgi{$key} =~ s/\s*$//;
 
-    $cgi{$key} = '' if $cgi{$key} =~ m|^n/a$|i;
-    $cgi{$key} = '' if $cgi{$key} =~ m|^none$|i;
-    $cgi{$key} = '' if $cgi{$key} =~ m|^\(none\)$|i;
-    $cgi{$key} = '' if $cgi{$key} =~ m|^\(blank\)$|i;
+    $cgi{$key} = "" if $cgi{$key} =~ m|^n/a$|i;
+    $cgi{$key} = "" if $cgi{$key} =~ m|^none$|i;
+    $cgi{$key} = "" if $cgi{$key} =~ m|^\(none\)$|i;
+    $cgi{$key} = "" if $cgi{$key} =~ m|^\(blank\)$|i;
 }
 
 foreach my $key (keys(%cgi)) {
-    next if $key eq 'n';
+    next if $key eq "n";
     $cgi{$key} =~ s/;/,/g;   # can't handle ; because it's field delim
 }
 
 # remove apostropies and add a leading year to gradyear field
-$cgi{'yr'} =~ s/^class\s+of\s*//i;
-$cgi{'yr'} =~ s/^\'(\d\d)$/$1/;
-$cgi{'yr'} = '0' . $cgi{'yr'} if $cgi{'yr'} =~ /^\d$/;
+$cgi{"yr"} =~ s/^class\s+of\s*//i;
+$cgi{"yr"} =~ s/^\'(\d\d)$/$1/;
+$cgi{"yr"} = "0" . $cgi{"yr"} if $cgi{"yr"} =~ /^\d$/;
 
 # find the right century for a 2-digit year
-if ($cgi{'yr'} =~ /^\d\d$/) {
+if ($cgi{"yr"} =~ /^\d\d$/) {
     # localtime() returns number of years since 1900
     my $this_year = (localtime(time))[5] + 1900;
 
-    my $fourdigit = substr($this_year,0,2) . $cgi{'yr'};
-    $fourdigit = ((substr($this_year,0,2) - 1) . $cgi{'yr'})
+    my $fourdigit = substr($this_year,0,2) . $cgi{"yr"};
+    $fourdigit = ((substr($this_year,0,2) - 1) . $cgi{"yr"})
 	if ($fourdigit > $this_year + 4);
 
-    $cgi{'yr'} = $fourdigit;
+    $cgi{"yr"} = $fourdigit;
 }
 
-$cgi{'r'} = (defined $cgi{'r'} && 
-	    ($cgi{'r'} eq 'on' || $cgi{'r'} == 1)) ? 1 : 0;
+$cgi{"r"} = (defined $cgi{"r"} && 
+	    ($cgi{"r"} eq "on" || $cgi{"r"} == 1)) ? 1 : 0;
 
 # uncapitalize those overzealous capslock names
-$cgi{'gn'} = lc($cgi{'gn'})
-    if ($cgi{'gn'} eq uc($cgi{'gn'})) && $cgi{'gn'} !~ /\./;
-$cgi{'sn'} = lc($cgi{'sn'})
-    if ($cgi{'sn'} eq uc($cgi{'sn'}));
-$cgi{'mn'} = lc($cgi{'mn'})
-    if ($cgi{'mn'} eq uc($cgi{'mn'}));
+$cgi{"gn"} = lc($cgi{"gn"})
+    if ($cgi{"gn"} eq uc($cgi{"gn"})) && $cgi{"gn"} !~ /\./;
+$cgi{"sn"} = lc($cgi{"sn"})
+    if ($cgi{"sn"} eq uc($cgi{"sn"}));
+$cgi{"mn"} = lc($cgi{"mn"})
+    if ($cgi{"mn"} eq uc($cgi{"mn"}));
 
 # initial capitalize those lazy names
-$cgi{'gn'} = "\u$cgi{'gn'}";
-$cgi{'sn'} = "\u$cgi{'sn'}"
-    unless $cgi{'sn'} =~ /^(van|d[ie]) /;
-$cgi{'mn'} = "\u$cgi{'mn'}"
-    unless $cgi{'mn'} =~ /^(van|d[ie]) /;
+$cgi{"gn"} = "\u$cgi{'gn'}";
+$cgi{"sn"} = "\u$cgi{'sn'}"
+    unless $cgi{"sn"} =~ /^(van|d[ie]) /;
+$cgi{"mn"} = "\u$cgi{'mn'}"
+    unless $cgi{"mn"} =~ /^(van|d[ie]) /;
 
-$cgi{'mi'} = "\u$cgi{'mi'}";
+$cgi{"mi"} = "\u$cgi{'mi'}";
 
-$cgi{'w'} = '' if $cgi{'w'} eq 'http://';
-$cgi{'w'} = 'http://' . $cgi{'w'}
-    if ($cgi{'w'} ne '' && $cgi{'w'} !~ m,^http://,i);
+$cgi{"w"} = "" if $cgi{"w"} eq "http://";
+$cgi{"w"} = "http://" . $cgi{"w"}
+    if ($cgi{"w"} ne "" && $cgi{"w"} !~ m,^http://,i);
 
-$cgi{'sn'} =~ s/^$cgi{'gn'}\s+//i;
-$cgi{'mn'} =~ s/^$cgi{'gn'}\s+//i;
+$cgi{"sn"} =~ s/^$cgi{"gn"}\s+//i;
+$cgi{"mn"} =~ s/^$cgi{"gn"}\s+//i;
      
-$cgi{'mn'} = '' if defined $cgi{'mn'} &&
-    ($cgi{'mn'} =~ /\(?\s*same\s+as\s+last\s+name\s*\)?/i ||
-     $cgi{'mn'} =~ /\(?\s*same\s*\)?/i ||
-     $cgi{'mn'} eq $cgi{'sn'});
+$cgi{"mn"} = "" if defined $cgi{"mn"} &&
+    ($cgi{"mn"} =~ /\(?\s*same\s+as\s+last\s+name\s*\)?/i ||
+     $cgi{"mn"} =~ /\(?\s*same\s*\)?/i ||
+     $cgi{"mn"} eq $cgi{"sn"});
 
 # did they have non-empty entries for all the required fields?
-my $empty_fields = '';
+my $empty_fields = "";
 foreach (@form_required) 
 {
     $empty_fields .= $_ . "\t"
@@ -243,7 +234,7 @@ foreach (@form_required)
 }
 
 # lowercase the hostname portion of the email address
-my $mangled_e = $cgi{'e'};
+my $mangled_e = $cgi{"e"};
 $mangled_e =~ s/\s//g;
 if (is_email_okay($mangled_e))
 {
@@ -256,24 +247,25 @@ if (is_email_okay($mangled_e))
     # test for all-caps user
     $mail_user = $lower_user if $mail_user eq uc($mail_user);
 
-    $cgi{'e'} = $mail_user . '@' . lc($mail_addr);
+    $cgi{"e"} = $mail_user . '@' . lc($mail_addr);
 }
 elsif ($empty_fields !~ /\be\b/)
 {
     $empty_fields .= "e\t";
 }
 
-if ($cgi{'yr'} =~ /^\d+$/ &&
-    $cgi{'yr'} > aid_util::config('max_gradyear'))
+if ($cgi{"yr"} =~ /^\d+$/ &&
+    $cgi{"yr"} > aid_util::config("max_gradyear"))
 {
     $empty_fields .= "yr\t";
 }
 
-if ($empty_fields ne '')
+if ($empty_fields ne "")
 {
-    delete $cgi{'u'};
+    delete $cgi{"u"};
     send_upd_real(\%cgi,$empty_fields);
     close(STDOUT);
+    $dbh->disconnect;
     exit(0);
 }
 
@@ -285,16 +277,14 @@ if ($cgi{"id"} && $cgi{"id"} eq "3066") {
 # now that the input is cleaned up, decide whether we're going to enter
 # the confirmation phase or the queueing phase.
 
-if (defined($cgi{'revise'})) {
-    delete $cgi{'u'};
-    send_upd_real(\%cgi,'');
-} elsif (defined($cgi{'confirmed'})) {
-    &queue_submission();
+if (defined($cgi{"confirmed"})) {
+    queue_submission();
 } else {
-    &confirm_submission();
+    confirm_submission();
 }
 
 close(STDOUT);
+$dbh->disconnect;
 exit(0);
 
 
@@ -303,14 +293,14 @@ sub confirm_submission
     print "Content-Type: text/html\015\012\015\012";
     print aid_util::common_html_hdr(20,$listing_sub_title,1);
 
-    print "<form method=\"post\" action=\"", aid_util::config('confirm_cgi');
-    print "/$cgi{'id'}" if $cgi{'id'} != -1;
-    print "/new" if $cgi{'id'} == -1;
+    print "<form method=\"post\" action=\"", aid_util::config("confirm_cgi");
+    print "/$cgi{'id'}" if $cgi{"id"} != -1;
+    print "/new" if $cgi{"id"} == -1;
     print "\">\n";
     my %newrec = aid_util::html_entify_rec(\%cgi);
     foreach (keys %newrec) {
 	print "<input type=\"hidden\" name=\"$_\"";
-	print "\n" if $_ eq 'n';
+	print "\n" if $_ eq "n";
 	print " value=\"$newrec{$_}\">\n";
     }
 
@@ -320,15 +310,17 @@ Here is what your listing will look like:
 
 <table border=\"1\" cellpadding=\"6\"><tr><td>";
 
-    $cgi{'u'} = time unless defined $cgi{'u'};
+    $cgi{"u"} = time unless defined $cgi{"u"};
     print aid_util::verbose_entry(\%cgi,1,1,1);
 
     print "</td></tr></table>
 <p>Want to change something?
-<input type=submit name=\"revise\" value=\"Edit Listing\">
+<input type=button value=\"Edit Listing\" onClick=\"history.go(-1)\">
 <br><br>
 Everything above is correct?
-<input type=submit name=\"confirmed\" value=\"Submit Listing\">
+<input type=\"hidden\" name=\"confirmed\" value=\"1\">
+<input type=submit name=\"submit\" value=\"Submit Listing\"
+onclick=\"this.value='Please wait...';this.disabled=true;this.form.submit();\">
 </p>
 </form>
 ";
@@ -336,177 +328,50 @@ Everything above is correct?
 }
 
 sub queue_submission {
-    require 'ctime.pl';
-
     # set the times and then update the db.
-    $cgi{'f'} = $cgi{'u'} = time;
-    $cgi{'c'} = $cgi{'u'}
-	unless defined $cgi{'c'} && $cgi{'c'} =~ /^\d+$/;
-    $cgi{'h'} = &remote_host() unless defined $cgi{'h'};
-    $cgi{'lm'} = $cgi{'b'} = 0;
-    $cgi{'n'} =~ s/\015\012/\n/g;
-    $cgi{'n'} =~ s/\015/\n/g;
-    $cgi{'n'} =~ s/[ \t]+\n/\n/g;
+    $cgi{"f"} = $cgi{"u"} = time;
+    $cgi{"c"} = $cgi{"u"}
+	unless defined $cgi{"c"} && $cgi{"c"} =~ /^\d+$/;
+    $cgi{"lm"} = $cgi{"b"} = 0;
+    $cgi{"n"} =~ s/\015\012/\n/g;
+    $cgi{"n"} =~ s/\015/\n/g;
+    $cgi{"n"} =~ s/[ \t]+\n/\n/g;
 
-    if ($cgi{'id'} != -1)
-    {
-	my(%DB);
-	tie(%DB, 'DB_File::Lock', $dbmfile, O_RDONLY, 0444, $DB_HASH, 'read')
-	    or die "$dbmfile: $!\n";
-	my $oldval = $DB{$cgi{'id'}};
-	untie(%DB);
-
-	my %oldrec = aid_util::db_unpack_rec($cgi{'id'}, $oldval);
-	$cgi{'pe'} = $oldrec{'e'};
-
-	if (lc($cgi{'pe'}) ne lc($cgi{'e'}))
-	{
-	    $cgi{'eu'} = $cgi{'u'};
-	    $cgi{'eo'} = $cgi{'pe'};
-	}
-    }
-    else
-    {
-	$cgi{'eo'} = '';
-    }
-
-    my($dbmfilew) = aid_util::config('staging');
-
-    my(%DBW);
-    tie(%DBW, 'DB_File::Lock', $dbmfilew, O_CREAT|O_RDWR, 0644,
-	$DB_HASH, 'write') or die "$dbmfilew: $!\n";
-
-    my($randkey);
-
-    if (($cgi{'id'} != -1) && defined $DBW{$cgi{'id'}}) {
-	$randkey = $DBW{$cgi{'id'}};
-    } elsif (($cgi{'id'} == -1) && defined $DBW{lc($cgi{'e'})}) {
-	$randkey = $DBW{lc($cgi{'e'})};
-    } else {
-	NEWKEY:
-	for (;;) {
-	    $randkey = &encode_key(int(rand(0x7FFFFFFF)));
-	    last NEWKEY unless defined $DBW{$randkey};
-	}
-    }
-	
-    $DBW{$randkey} = $cgi{'id'} . "\0" . aid_util::db_pack_rec(\%cgi);
-    if ($cgi{'id'} != -1) {
-	$DBW{$cgi{'id'}} = $randkey;
-    } else {
-	$DBW{lc($cgi{'e'})} = $randkey;
-    }
-
-    if (($cgi{'id'} != -1) && (lc($cgi{'pe'}) eq lc($cgi{'e'})))
-    {
-	if (defined $DBW{'_verified'})
-	{
-	    $DBW{'_verified'} .= "\0" . $randkey
-		unless $DBW{'_verified'} =~ /\b$randkey\b/;
-	}
-	else
-	{
-	    $DBW{'_verified'} = $randkey;
-	}
-
-	untie(%DBW);
-
-	my $fullname = aid_util::inorder_fullname(\%cgi);
-
-	print "Content-Type: text/html\015\012\015\012";
-	print aid_util::common_html_hdr(20,'Submission Queued',1);
-
-	$fullname = aid_util::html_entify_str($fullname);
-	print "
-
-<p>The listing for <strong>$fullname</strong> has been
-accepted into the submission queue, and it will be processed
-within 5 minutes. E-mail will be sent to
-<b>$cgi{'e'}</b>
-confirming receipt of this submission when it it processed.</p>
-
-Here is what your listing will look like:
-<br><br>
-
-<table border=\"1\" cellpadding=\"6\"><tr><td>";
-
-	print aid_util::verbose_entry(\%cgi,1,1,1);
-
-	print "</td></tr></table>\n";
-	print aid_util::config('html_ad');
-	print aid_util::common_html_ftr(20);
-    }
-    else
-    {
-	untie(%DBW);
-
-	&send_verify_email($randkey);
-    }
-
-    1;
-}
-
-sub send_verify_email {
-    my($randkey) = @_;
+    my $randkey = create_key();
+    staging_store_rec($dbh, \%cgi, $randkey);
 
     my($return_path,$from,$subject,$body,@recip) =
 	aid_util::verification_message($randkey, \%cgi);
 
-    my($i);
-    my($status) = 0;
-
-    for ($i = 0; $status == 0 && $i < 3; $i++)
-    {
+    my $status = 0;
+    for (my $i = 0; $status == 0 && $i < 3; $i++) {
 	$status = aid_util::sendmail_v2($return_path,$from,$subject,$body,@recip);
     }
 
-    aid_util::cgi_die('ERROR: Unable to send confirmation e-mail',
-		 "We're sorry, we were unable to send e-mail to\n" .
-		 "<b>$cgi{'e'}</b>.<p>This may be a problem with our\n" .
-		 "server or perhaps with your e-mail address.\n" .
-		 "Please try again in a few minutes.<p>If you continue\n" .
-		 "to get this error, please send e-mail to <a\n" .
-		 "href=\"mailto:" . aid_util::config('admin_email') .
-		 "\">" . aid_util::config('admin_email') . "</a>\n" .
-		 "with error code <b>$randkey</b>.")
+    aid_util::cgi_die("ERROR: Unable to send confirmation e-mail",
+		      "We're sorry, we were unable to send e-mail to\n" .
+		      "<b>$cgi{'e'}</b>.<p>This may be a problem with our\n" .
+		      "server or perhaps with your e-mail address.\n" .
+		      "Please try again in a few minutes.<p>If you continue\n" .
+		      "to get this error, please send e-mail to <a\n" .
+		      "href=\"mailto:" . aid_util::config("admin_email") .
+		      "\">" . aid_util::config("admin_email") . "</a>\n" .
+		      "with error code <b>$randkey</b>.")
 	if $status == 0;
 
-    # success sending email; update last-mail timestamp
-    my($dbmfilew) = aid_util::config('staging');
-
-    my(%DBW);
-    tie(%DBW, 'DB_File::Lock', $dbmfilew, O_CREAT|O_RDWR, 0644,
-	$DB_HASH, 'write') or die "$dbmfilew: $!\n";
-
-    $cgi{'lm'} = time;
-    $DBW{$randkey} = $cgi{'id'} . "\0" . aid_util::db_pack_rec(\%cgi);
-
-    untie(%DBW);
-
     print "Content-Type: text/html\015\012\015\012";
-    print aid_util::common_html_hdr(20,'Final Step: verify e-mail address',1);
+    print aid_util::common_html_hdr(20,"Final Step: verify e-mail address",1);
 
     print "
-<p>Our e-mail robot
-(<tt>", aid_util::config('admin_email'), "</tt>)
+<p>Our e-mail robot (<tt>", aid_util::config("admin_email"), "</tt>)
 just sent a verification message to
 <b>$cgi{'e'}</b>.
 It may take 2 or 3 minutes for it to arrive.</p>
 
-<p>Please check your e-mail and find the 8-letter
-verification code that was sent to you by the ",
-aid_util::config('short_school'), "
-Alumni Robot and enter it below.</p>
-
-<form method=\"get\" action=\"" . aid_util::config('verify_cgi') . "\">
-<label for=\"k\">Enter 8-letter code:</label>
-&nbsp;
-<input id=\"k\" type=\"text\" size=\"8\" maxlength=\"8\" name=\"k\">
-&nbsp;
-<input id=\"e\" type=\"hidden\" name=\"e\" value=\"$cgi{'e'}\">
-<input id=\"id\" type=\"hidden\" name=\"id\" value=\"$cgi{'id'}\">
-<input type=\"submit\" value=\"Submit verification code\">
-</form>
+<p>Please check your e-mail and find the
+verification URL that was sent to you by the ",
+aid_util::config("short_school"), "
+Alumni Robot and click on it to activate your account.</p>
 ";
 
     print aid_util::common_html_ftr(20);
@@ -518,16 +383,16 @@ sub send_upd_real {
     print "Content-Type: text/html\015\012\015\012";
 
     print aid_util::common_html_hdr(20,
-			   (($recp->{'id'} == -1) ? 
+			   (($recp->{"id"} == -1) ? 
 			    $listing_add_title :
-			    'Modify listing for ' .
+			    "Modify listing for " .
 			    aid_util::inorder_fullname($recp)),
 			   1,
-			   defined $recp->{'u'} ? $recp->{'u'} : undef);
+			   defined $recp->{"u"} ? $recp->{"u"} : undef);
 
     print aid_submit::submit_body($recp,$empty_fields);
     print aid_util::common_html_ftr(20,
-			       defined $recp->{'u'} ? $recp->{'u'} : undef);
+			       defined $recp->{"u"} ? $recp->{"u"} : undef);
 }
 
 sub send_upd_notfound {
@@ -546,7 +411,7 @@ sub send_upd_notfound {
   <dt><h3>I am currently listed in the Directory and want to
       modify my listing.</h3>
   <dd><br>
-      <form method=\"get\" action=\"" . aid_util::config('update_cgi') . "\">
+      <form method=\"get\" action=\"" . aid_util::config("update_cgi") . "\">
       <label for=\"upd\">My e-mail address is </label>
       <input type=\"text\" name=\"upd\" size=\"20\" id=\"upd\">
       <input type=\"submit\" value=\"Sign In\">
@@ -554,7 +419,7 @@ sub send_upd_notfound {
   <dt><dd><strong>If you don't remember the e-mail address you used
   before, search for your listing:</strong>
   <dd><br>
-      <form method=\"get\" action=\"" . aid_util::config('search_cgi') . "/upd\">
+      <form method=\"get\" action=\"" . aid_util::config("search_cgi") . "/upd\">
       <label for=\"q\">My last name is </label>
       <input type=\"text\" name=\"q\" size=\"20\" id=\"q\">
       <input type=\"hidden\" name=\"upd\" value=\"1\">
@@ -563,7 +428,7 @@ sub send_upd_notfound {
 
   <dt><br><h3>I want to join the Directory.</h3>
   <dd><br><a
-href=\"" . aid_util::config('master_path') . "add/new.html\">Fill
+href=\"" . aid_util::config("master_path") . "add/new.html\">Fill
 out this form with your contact information</a>.
       
 </dl>
@@ -571,18 +436,6 @@ out this form with your contact information</a>.
 ";
 
     print aid_util::common_html_ftr(20);
-}
-
-sub jump_bar {
-    my $retval = '';
-    my $initial = 'a';
- 
-    while ($initial ne 'aa') {
-        $retval .= "<a href=\"#${initial}-last\">\U${initial}\E</a>\n";
-        $initial++;
-    }
- 
-    $retval;
 }
 
 sub is_email_okay
@@ -599,37 +452,74 @@ sub is_email_okay
     Email::Valid->address($e);
 }
 
-sub remote_host
+sub create_key
 {
-    my($ip) = defined($ENV{'REMOTE_HOST'}) ? $ENV{'REMOTE_HOST'} :
-	defined($ENV{'REMOTE_ADDR'}) ? $ENV{'REMOTE_ADDR'} : '[unknown]';
+    my $now = time();
 
-    if ($ip =~ /^\d+\.\d+\.\d+\.\d+$/)
-    {
-	my $ipnum = pack('C4', split(/\./, $ip));
-	my $host = (gethostbyaddr($ipnum, 2))[0];
+    my $rand = pack("N", $now);
 
-	$ip = $host if defined $host;
+    if ($ENV{"REMOTE_ADDR"}) {
+	$rand .= pack("CCCC", split(/\./, $ENV{"REMOTE_ADDR"}));
     }
 
-    $ip;
+    $rand .= pack("N", int(rand(0xFFFFFFFF)));
+
+    unpack("H*", $rand);
 }
 
-sub encode_key
+sub val_or_null
 {
-    my($key) = @_;
-    my($retval) = '';
-    my(@encode) = 
-	(
-	 'A','B','C','D','E','G','H','J',
-	 'K','P','Q','R','T','X','Y','Z'
-	 );
+    my($dbh,$rec,$key) = @_;
 
-    my($i);
-    for($i=7; $i>=0; $i--) {
-	$retval .= $encode[$key & 0x0000000F];
-	$key >>= 4; # Shift for next position
+    if ($rec->{$key}) {
+	$dbh->quote($rec->{$key});
+    } else {
+	"NULL";
+    }
+}
+
+sub staging_store_rec
+{
+    my($dbh,$rec,$randkey) = @_;
+
+    my $sn = $dbh->quote($rec->{"sn"});
+    my $gn = $dbh->quote($rec->{"gn"});
+    my $e = $dbh->quote($rec->{"e"});
+
+    my $mn = val_or_null($dbh,$rec,"mn");
+    my $mi = val_or_null($dbh,$rec,"mi");
+    my $w = val_or_null($dbh,$rec,"w");
+    my $l = val_or_null($dbh,$rec,"l");
+    my $n = val_or_null($dbh,$rec,"n");
+
+    my $gradclass;
+    my $affil_other;
+    if ($rec->{"yr"} =~ /^\d{4}$/) {
+	$gradclass = $rec->{"yr"};
+	$affil_other = "NULL";
+    } else {
+	$affil_other = $dbh->quote($rec->{"yr"});
+	$gradclass = "NULL";
     }
 
-    $retval;
+    my $sql = qq{INSERT INTO aid_entry
+		     (entry_name_surname,entry_name_married,
+		      entry_name_given,entry_name_mi,
+		      entry_email,entry_gradclass,entry_affil_other,
+		      entry_web_page,entry_location,entry_note,entry_reunion)
+		     VALUES ($sn,$mn,$gn,$mi,
+			     $e,$gradclass,$affil_other,
+			     $w,$l,$n,$rec->{r})
+		 };
+
+    $dbh->do($sql) or aid_util::cgi_die("Database Error", $dbh->errstr);
+    my $entry_id = $dbh->last_insert_id(undef, undef, undef, undef);
+
+    $sql = "INSERT INTO aid_verify"
+	. " (verify_code,verify_staging_id,verify_alumnus_id,verify_created)"
+	. " VALUES (?,?,?,NOW())";
+    my $sth = $dbh->prepare($sql);
+    $sth->execute($randkey, $entry_id,
+		  ($rec->{"id"} && $rec->{"id"} > 0) ? $rec->{"id"} : undef)
+	or aid_util::cgi_die("Database Error", $sth->errstr);
 }

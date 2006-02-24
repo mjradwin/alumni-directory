@@ -4,9 +4,9 @@
 #     FILE: go.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: Alumni Internet Directory update redirector
-#      $Id: go,v 6.3 2003/10/30 07:28:07 mradwin Exp mradwin $
+#      $Id: go,v 1.2 2006/02/20 04:28:22 mradwin Exp $
 #
-# Copyright (c) 2005  Michael J. Radwin.
+# Copyright (c) 2006  Michael J. Radwin.
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or
@@ -48,14 +48,14 @@ BEGIN {
 	unshift @INC, '.';
     }
 }
-use lib "/home/mradwin/local/share/perl";
 
-use DB_File::Lock;
+use strict;
 use CGI qw(-no_xhtml);
 use CGI::Carp qw(fatalsToBrowser);
 use aid_util;
+use aid_newutil;
 use aid_submit;
-use strict;
+use DBI ();
 
 aid_util::cgi_die('$PATH_INFO Missing', "This URL is bogus.")
     unless defined $ENV{'PATH_INFO'};
@@ -67,29 +67,23 @@ if ($ENV{'PATH_INFO'} =~ m,/(\d+)$,)
 {
     my $id = $1;
 
-    my $dbmfile = aid_util::config('dbmfile');
-    die "$dbmfile: $!\n" unless -r $dbmfile;
+    my $dbh = aid_newutil::db_connect();
+    my $DB = aid_newutil::load_records($dbh, "AND a.alumnus_id = $id");
+    $dbh->disconnect;
 
-    my(%DB);
-    tie(%DB, 'DB_File::Lock', $dbmfile, O_RDONLY, 0444, $DB_HASH, 'read')
-	or die "$dbmfile: $!\n";
-
-    my $val = $DB{$id};
-
-    untie(%DB);
-
-    if (defined $val)
+    my @recs = values %{$DB};
+    if (@recs)
     {
-	my %rec = aid_util::db_unpack_rec($id,$val);
+	my $recp = $recs[0];
 
 	print "Content-Type: text/html\015\012\015\012";
 
 	print aid_util::common_html_hdr(20,
 				   'Modify listing for ' .
-				   aid_util::inorder_fullname(\%rec),
-				   1,$rec{'u'});
-	print aid_submit::submit_body(\%rec,'');
-	print aid_util::common_html_ftr(20,$rec{'u'});
+				   aid_util::inorder_fullname($recp),
+				   1,$recp->{'u'});
+	print aid_submit::submit_body($recp,'');
+	print aid_util::common_html_ftr(20,$recp->{'u'});
 
 	close(STDOUT);
 	exit(0);

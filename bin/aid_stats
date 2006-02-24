@@ -1,8 +1,8 @@
 #!/usr/local/bin/perl -w
 
-# $Id: aid_stats,v 6.4 2003/10/30 07:28:18 mradwin Exp mradwin $
+# $Id: aid_stats,v 1.1 2006/02/09 04:17:12 mradwin Exp $
 #
-# Copyright (c) 2003  Michael J. Radwin.
+# Copyright (c) 2006  Michael J. Radwin.
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or
@@ -41,65 +41,59 @@ BEGIN {
   if ($0 =~ m,(.*[/\\]),) {
     unshift @INC, $1;
   } else {
-    unshift @INC, '.';
+    unshift @INC, ".";
   }
 }
-use lib "/home/mradwin/local/share/perl";
 
-use DB_File::Lock;
+use strict;
 use Getopt::Std;
 use aid_util;
+use aid_newutil;
+use DBI ();
 
 $0 =~ s,.*/,,;  # basename
-my $usage = "usage: $0 [-ht] infile.db outfile
+my $usage = "usage: $0 [-ht] outfile
     -h        Display usage information.
     -t        Text only.
 ";
 
-getopts('ht') || die "$usage\n";
-$opt_h && die "$usage\n";
-$ARGV[0] || die "$usage\n";
-$ARGV[1] || die "$usage\n";
-$opt_h = $opt_h;		# avoid warning
+my %opts;
+getopts("ht", \%opts) || die "$usage\n";
+$opts{"h"} && die "$usage\n";
+@ARGV == 1 || die "$usage\n";
 
-$dbmfile = shift;
-tie(%DB, 'DB_File::Lock', $dbmfile, O_RDONLY, 0444, $DB_HASH, 'read')
-    or die "$dbmfile: $!\n";
-
-die "corrupt/missing _class key!"
-    unless defined $DB{'_class'} && $DB{'_class'} ne '';
-
-$outfile = shift;
+my $outfile = shift;
 open(FMTOUT,">$outfile") || die "Can't open $outfile: $!\n";
 
-$nvalid = 0;
-$ndubious = 0;
-$ntotal = 0;
-@nreq = (0, 0, 0, 0, 0);
-$nreunion = 0;
-$nlocation = 0;
-$nweb = 0;
-$nnews = 0;
+my $nvalid = 0;
+my $ndubious = 0;
+my $ntotal = 0;
+my @nreq = (0, 0, 0, 0, 0);
+my $nreunion = 0;
+my $nlocation = 0;
+my $nweb = 0;
+my $nnews = 0;
 
-$update_time_sum = 0;
-@update_times = ();
+my $update_time_sum = 0;
+my @update_times = ();
 
-$join_time_sum = 0;
-@join_times = ();
+my $join_time_sum = 0;
+my @join_times = ();
 
+my($nnever_updated,$nweek,$nmonth,$n3month,$n13month);
 $nnever_updated = $nweek = $nmonth = $n3month = $n13month = 0;
 
-while (my($key,$val) = each %DB)
+my $dbh = aid_newutil::db_connect();
+my $DB = aid_newutil::load_records($dbh, "");
+$dbh->disconnect;
+
+foreach my $recp (values %{$DB})
 {
-    next unless $key =~ /^\d+$/;
-
-    my %rec = aid_util::db_unpack_rec($key,$val);
-
     $ntotal++;
 
-    next unless $rec{'v'};
+    next unless $recp->{"v"};
 
-    if ($rec{'b'} ne '0')
+    if ($recp->{"b"})
     {
 	$ndubious++;
     }
@@ -108,44 +102,46 @@ while (my($key,$val) = each %DB)
 	$nvalid++;
     }
 
-    $nreq[$rec{'q'}]++;
+    $nreq[$recp->{"q"}]++;
 
-    $nreunion++ if $rec{'r'};
-    $nlocation++ if $rec{'l'} ne '';
-    $nweb++ if $rec{'w'} ne '';
-    $nnews++ if $rec{'n'} !~ /^\s*$/;
+    $nreunion++ if $recp->{"r"};
+    $nlocation++ if $recp->{"l"} ne "";
+    $nweb++ if $recp->{"w"} ne "";
+    $nnews++ if $recp->{"n"} !~ /^\s*$/;
 
-    $update_time_sum += $rec{'u'};
-    push(@update_times, $rec{'u'});
+    $update_time_sum += $recp->{"u"};
+    push(@update_times, $recp->{"u"});
 
-    $join_time_sum += $rec{'c'};
-    push(@join_times, $rec{'c'});
+    $join_time_sum += $recp->{"c"};
+    push(@join_times, $recp->{"c"});
 
-    $nnever_updated++ if $rec{'u'} == $rec{'c'};
-    $nweek++ if aid_util::is_new($rec{'c'}, 0.25);
-    $nmonth++ if aid_util::is_new($rec{'c'}, 1);
-    $n3month++ if aid_util::is_new($rec{'c'}, 3);
-    $n13month++ if aid_util::is_new($rec{'c'}, 13);
+    $nnever_updated++ if $recp->{"u"} == $recp->{"c"};
+    $nweek++ if aid_util::is_new($recp->{"c"}, 0.25);
+    $nmonth++ if aid_util::is_new($recp->{"c"}, 1);
+    $n3month++ if aid_util::is_new($recp->{"c"}, 3);
+    $n13month++ if aid_util::is_new($recp->{"c"}, 13);
 }
 
-$nlegit = $nvalid + $ndubious;
+undef $DB;
+
+my $nlegit = $nvalid + $ndubious;
 
 # time-based statistics
-$avg_update_time = $update_time_sum / $nlegit;
-$median_update_time = (sort @update_times)[$nlegit / 2];
-$avg_join_time = $join_time_sum / $nlegit;
-$median_join_time = (sort @join_times)[$nlegit / 2];
-$now = time;
+my $avg_update_time = $update_time_sum / $nlegit;
+my $median_update_time = (sort @update_times)[$nlegit / 2];
+my $avg_join_time = $join_time_sum / $nlegit;
+my $median_join_time = (sort @join_times)[$nlegit / 2];
+my $now = time;
 
-$avg_update_weeks = ($now - $avg_update_time) / (60 * 60 * 24 * 7);
-$median_update_weeks = ($now - $median_update_time) / (60 * 60 * 24 * 7);
-$avg_tenure_weeks = ($now - $avg_join_time) / (60 * 60 * 24 * 7);
-$median_tenure_weeks = ($now - $median_join_time) / (60 * 60 * 24 * 7);
+my $avg_update_weeks = ($now - $avg_update_time) / (60 * 60 * 24 * 7);
+my $median_update_weeks = ($now - $median_update_time) / (60 * 60 * 24 * 7);
+my $avg_tenure_weeks = ($now - $avg_join_time) / (60 * 60 * 24 * 7);
+my $median_tenure_weeks = ($now - $median_join_time) / (60 * 60 * 24 * 7);
 
-$time = time;
-if (!$opt_t)
+my $time = $now;
+if (!$opts{"t"})
 {
-    print FMTOUT aid_util::common_html_hdr(15,'Member Statistics',0,$time);
+    print FMTOUT aid_util::common_html_hdr(15,"Member Statistics",0,$time);
     print FMTOUT "<pre>";
 }
 else
@@ -216,7 +212,7 @@ printf FMTOUT "average time since modify  : %3.0f weeks\n",
 printf FMTOUT "median  time since modify  : %3.0f weeks\n",
     $median_update_weeks;
 
-if (!$opt_t)
+if (!$opts{"t"})
 {
     print FMTOUT "</pre>\n";
     print FMTOUT aid_util::common_html_ftr(15,$time);
@@ -228,5 +224,4 @@ else
 }
 
 close(FMTOUT);
-untie(%DB);
 exit(0);

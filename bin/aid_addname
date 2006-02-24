@@ -1,8 +1,8 @@
 #!/usr/local/bin/perl -w
 
-# $Id: aid_addname,v 6.5 2003/10/30 17:56:04 mradwin Exp mradwin $
+# $Id: aid_addname,v 1.5 2006/02/22 06:45:14 mradwin Exp $
 #
-# Copyright (c) 2003  Michael J. Radwin.
+# Copyright (c) 2006  Michael J. Radwin.
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or
@@ -41,15 +41,15 @@ BEGIN {
   if ($0 =~ m,(.*[/\\]),) {
     unshift @INC, $1;
   } else {
-    unshift @INC, '.';
+    unshift @INC, ".";
   }
 }
-use lib "/home/mradwin/local/share/perl";
 
-use Getopt::Std;
-use DB_File::Lock;
-use aid_util;
 use strict;
+use Getopt::Std ();
+use aid_util;
+use aid_newutil ();
+use DBI ();
 
 $0 =~ s,.*/,,;  # basename
 my $usage = "usage: $0 [-hwm]
@@ -59,149 +59,135 @@ my $usage = "usage: $0 [-hwm]
     -q        Quiet mode (no error messages).
 ";
 
-my(%opts);
-getopts('hmwq', \%opts) || die "$usage\n";
-$opts{'h'} && die "$usage\n";
+my %opts;
+Getopt::Std::getopts("hmwq", \%opts) || die "$usage\n";
+$opts{"h"} && die "$usage\n";
 
-my $dbmfile = aid_util::config('aiddir') . "data/working.db";
-
-my $make = aid_util::config('make');
+my $make = aid_util::config("make");
 -x $make || die "$0: $make is not executable!";
-$make .= " -s QUIET=-q" if $opts{'q'};
-
-my @new_ids = ();
-my @upd_ids = ();
-my @mod_keys = ();
+$make .= " -s QUIET=-q" if $opts{"q"};
 
 select(STDOUT); $| = 1;
+
+my %new_ids;
+my %upd_ids;
+
+my %verified;
+my $timestamp = 0;
+my $dbh = aid_newutil::db_connect();
+my $DB;
+
 my $status = readspool();
-if (!$opts{'m'} && $status)
+if (!$opts{"m"} && $status)
 {
+    if ($timestamp) {
+	my $ts = aid_util::config("aiddir") . "data/db.timestamp";
+	open(TS,">$ts") && close(TS);
+	utime $timestamp, $timestamp, $ts;
+    }
+
     rebuild();
-    mail_welcome() unless $opts{'w'};
+    mail_welcome() unless $opts{"w"};
 }
 
+$dbh->disconnect;
 exit(0);
 
 sub readspool
 {
-    my($success) = 0;
+    my $sql = qq{
+SELECT
+verify_code,verify_alumnus_id,UNIX_TIMESTAMP(verify_confirmed)
+FROM aid_verify
+WHERE verify_confirmed IS NOT NULL
+AND verify_published IS NULL
+};
+    my $sth = $dbh->prepare($sql);
+    $sth->execute or die $sth->errstr;
+    my $count = 0;
+    while (my($code,$id,$time) = $sth->fetchrow_array) {
+	$verified{$id} = $code;
+	$timestamp = $time if $time > $timestamp;
+	$count++;
+    }
 
-    my($staging) = aid_util::config('staging');
-    die "$staging: $!\n" unless -r $staging;
+    return 0 if $count == 0;
 
-    my(%DBS);
-    tie(%DBS, 'DB_File::Lock', $staging, O_CREAT|O_RDWR, 0644,
-	$DB_HASH, 'write')
-	or die "$staging: $!\n";
+    # set global var
+    $DB = aid_newutil::load_records($dbh, "");
 
-    if (defined $DBS{'_verified'})
+    foreach my $id (keys %verified)
     {
-	my(@key8s) = split(/\0/, $DBS{'_verified'});
-
-	foreach my $key8 (@key8s)
+	my $recp = $DB->{$id};
+	if ($recp)
 	{
-	    print STDOUT "checking key8 $key8\n"
-		unless $opts{'q'};
+	    print STDOUT "addname - ", aid_util::inorder_fullname($recp), "\n"
+		unless $opts{"q"};
 
-	    if (defined $DBS{$key8} && $DBS{$key8} =~ /^-?\d+\0/)
-	    {
-		my($id,$packed) = split(/\0/, $DBS{$key8}, 2);
+	    addname($recp)
+		|| die "$0: can't add $recp->{'id'} $recp->{'e'}";
 
-		my %rec = aid_util::db_unpack_rec($id,$packed);
-		$rec{'f'} = $rec{'u'} = time;
-
-		print STDOUT "addname - ", aid_util::inorder_fullname(\%rec), "\n"
-		    unless $opts{'q'};
-
-		addname(\%rec) || die "$0: can't add $rec{'id'} $rec{'e'}!\n";
-
-		print STDOUT "OK key8 $key8 - ",
-		aid_util::inorder_fullname(\%rec), "\n"
-		    unless $opts{'q'};
-
-		# success, so clear entry from staging DB
-		$DBS{$key8} = "p\0";
-		if ($id != -1 && defined $DBS{$id})
-		{
-		    delete $DBS{$id};
-		}
-		elsif ($id == -1 && defined $DBS{lc($rec{'e'})})
-		{
-		    delete $DBS{lc($rec{'e'})};
-		}
-
-		$success = 1;
-	    }
-	    else
-	    {
-		warn "key8 $key8 was _verified, but invalid in staging.db\n";
-		$success = 0;
-		last;
-	    }
+	    print STDOUT "OK $verified{$id} - ",
+	    aid_util::inorder_fullname($recp), "\n"
+		unless $opts{"q"};
+	}
+	else
+	{
+	    warn "key $verified{$id} was verified, but $id is missing from aid_alumnus table";
+#	    last;
 	}
     }
-    else
-    {
-	print STDOUT "nothing to do (no _verified in DB)\n"
-	    unless $opts{'q'};
-	$success = 0;
-    }
 
-    delete $DBS{'_verified'} if $success;
-    untie(%DBS);
-
-    if ($success)
-    {
-	my(%DB);
-	tie(%DB, 'DB_File::Lock', $dbmfile, O_CREAT|O_RDWR, 0644,
-	    $DB_HASH, 'write')
-	    or die "$dbmfile: $!\n";
-
-	@mod_keys = aid_util::rebuild_secondary_keys(\%DB,$opts{'q'},0,1);
-
-	untie(%DB);
-    }
-
-    $success;
+    $count;
 }
 
 
 sub rebuild
 {
-    sleep(2);	# dreamhost has problems with filesystem sync
+    sleep(5);	# dreamhost has problems with filesystem sync
 
-    chdir aid_util::config('aiddir') || die "$0: can't chdir: $!\n";
+    chdir aid_util::config("aiddir") || die "$0: can't chdir: $!\n";
 
-    my $cmd = $make . ' MOD_IDS="' . join(' ', @new_ids, @upd_ids) . '"' .
-	' MOD_KEYS="' . join(' ', @mod_keys) . '"';
-    print STDOUT "cd ", aid_util::config('aiddir'), "; $cmd\n"
-	unless $opts{'q'};
+    my $cmd = $make .
+	' MOD_IDS="' . join(" ", keys %new_ids, keys %upd_ids) . '"';
+    print STDOUT "cd ", aid_util::config("aiddir"), "; $cmd\n"
+	unless $opts{"q"};
 
     system $cmd;
     aid_util::die_if_failure();
+
+    my $sql = "UPDATE aid_verify SET verify_published = NOW()"
+	. " WHERE verify_code = ?";
+    my $sth = $dbh->prepare($sql);
+
+    foreach my $id (keys %new_ids, keys %upd_ids)
+    {
+	my $code = $verified{$id};
+	next unless $code;
+	$sth->execute($code) or die $sth->errstr;
+    }
 }
 
 sub mail_welcome
 {
     my $cmd;
 
-    chdir aid_util::config('aiddir') || die "$0: can't chdir: $!\n";
+    chdir aid_util::config("aiddir") || die "$0: can't chdir: $!\n";
 
-    if (@new_ids)
+    if (keys %new_ids)
     {
-	$cmd = "./bin/aid_welcome $dbmfile " . join(' ', @new_ids);
+	$cmd = "./bin/aid_welcome " . join(" ", keys %new_ids);
 	print STDOUT $cmd, "\n"
-	    unless $opts{'q'};
+	    unless $opts{"q"};
 	system $cmd;
 	aid_util::die_if_failure();
     }
 
-    if (@upd_ids)
+    if (keys %upd_ids)
     {
-	$cmd = "./bin/aid_welcome -u $dbmfile " . join(' ', @upd_ids);
+	$cmd = "./bin/aid_welcome -u " . join(" ", keys %upd_ids);
 	print STDOUT $cmd, "\n"
-	    unless $opts{'q'};
+	    unless $opts{"q"};
 	system $cmd;
 	aid_util::die_if_failure();
     }
@@ -211,123 +197,37 @@ sub mail_welcome
 sub addname
 {
     my($recp) = @_;
-    my(%id_by_email,%id_by_name);
 
-    %aid_util::aliases = ();   # reset global alias hash repository 
-
-    my $logFile = aid_util::config('aiddir') . "logs/additions.log";
-
-    my(%DB);
-    tie(%DB, 'DB_File::Lock', $dbmfile, O_CREAT|O_RDWR, 0644, $DB_HASH, 'write')
-	or die "$dbmfile: $!\n";
-
-    while (my($key,$val) = each %DB)
-    {
-	next unless $key =~ /^\d+$/;
-	my %oldrec = aid_util::db_unpack_rec($key,$val);
-
-	my $key_email = lc($oldrec{'e'}) .
-	    aid_util::mangle(lc($oldrec{'sn'})) .
-	    aid_util::mangle(lc($oldrec{'gn'}));
-	my $key_name = aid_util::mangle(lc($oldrec{'sn'})) .
-	    aid_util::mangle(lc($oldrec{'gn'})) . $oldrec{'yr'};
-	$id_by_email{$key_email} = $oldrec{'id'};
-	$id_by_name{$key_name} = $oldrec{'id'};
-
-	aid_util::generate_alias(\%oldrec);
-    }
-
+    my $logFile = aid_util::config("aiddir") . "logs/additions.log";
     my $LOG;
     open($LOG, ">>$logFile") || die "$0: can't open $logFile: $!\n";
     select($LOG); $| = 1; select(STDOUT);
 
-    # assign the double-submit newbies the same id if we've seen their
-    # email address before
-    if ($recp->{'id'} == -1)
+    my $sql = "SELECT alumnus_old_id FROM aid_alumnus WHERE alumnus_id = ?";
+    my $sth = $dbh->prepare($sql);
+    $sth->execute($recp->{"id"}) or die $sth->errstr;
+    my($old_id) = $sth->fetchrow_array;
+
+    if (defined $old_id)
     {
-	my $key_email = lc($recp->{'e'}) .
-	    aid_util::mangle(lc($recp->{'sn'})) .
-	    aid_util::mangle(lc($recp->{'gn'}));
-	my $key_name = aid_util::mangle(lc($recp->{'sn'})) .
-	    aid_util::mangle(lc($recp->{'gn'})) . $recp->{'yr'};
-
-	if (defined $id_by_email{$key_email})
-	{
-	    $recp->{'id'} = $id_by_email{$key_email};
-	    my %oldrec = aid_util::db_unpack_rec($recp->{'id'}, $DB{$recp->{'id'}});
-
-	    $recp->{'c'} = $oldrec{'c'};
-	}
-	elsif (defined $id_by_name{$key_name})
-	{
-	    $recp->{'id'} = $id_by_name{$key_name};
-	    my %oldrec = aid_util::db_unpack_rec($recp->{'id'}, $DB{$recp->{'id'}});
-
-	    $recp->{'c'} = $oldrec{'c'};
-	    $recp->{'eu'} = $recp->{'u'} if
-		$oldrec{'e'} ne $recp->{'e'};
-	    $recp->{'eo'} = $oldrec{'e'} if
-		$oldrec{'e'} ne $recp->{'e'};
-	}
-    }
-
-    if ($recp->{'id'} == -1)
-    {
-	$recp->{'id'} = $DB{'_nextid'};
-	$DB{'_nextid'} = $DB{'_nextid'} + 1;
-
-	push(@new_ids, $recp->{'id'});
-	print     "new - "
-	    unless $opts{'q'};
-	print $LOG "new - ";
-    }
-    elsif (defined $DB{$recp->{'id'}})
-    {
-	my %oldrec = aid_util::db_unpack_rec($recp->{'id'},$DB{$recp->{'id'}});
-
-	push(@upd_ids, $recp->{'id'})
-	     unless ((grep(/\b$recp->{'id'}\b/, @new_ids)) ||
-		     (grep(/\b$recp->{'id'}\b/, @upd_ids)));
-
-	if ($recp->{'e'} ne $oldrec{'e'})
-	{
-	    my $email = $oldrec{'e'};
-	    delete $DB{lc($email)};
-	}
-
-	print     "upd ", $oldrec{'e'}, " "
-	    unless $opts{'q'};
-	print $LOG "upd ", $oldrec{'e'}, " ";
+	$upd_ids{$recp->{"id"}} = 1;
+	print     "upd ", $recp->{"e"}, " "
+	    unless $opts{"q"};
+	print $LOG "upd ", $recp->{"e"}, " ";
     }
     else
     {
-	warn "$recp->{'id'} doesn't appear to be new, but not in DB.\n";
-	push(@new_ids, $recp->{'id'});
+	$new_ids{$recp->{"id"}} = 1;
 	print     "new - "
-	    unless $opts{'q'};
+	    unless $opts{"q"};
 	print $LOG "new - ";
     }
 
-    $recp->{'a'} = aid_util::generate_alias($recp)
-	unless defined $recp->{'a'} && $recp->{'a'} ne '';
-
-    $DB{$recp->{'id'}} = aid_util::db_pack_rec($recp);
-    my $email = $recp->{'e'};
-    $DB{lc($email)} = pack('n', $recp->{'id'});
-
-    untie(%DB);
-
     my $joined = aid_util::ampersand_join($recp);
     print     $joined, "\n"
-	unless $opts{'q'};
+	unless $opts{"q"};
     print $LOG $joined, "\n";
     close($LOG);
 
-    $recp->{'id'};
-}
-
-
-if ($^W && 0)
-{
-    %aid_util::aliases = ();   # reset global alias hash repository 
+    $recp->{"id"};
 }

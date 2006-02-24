@@ -4,9 +4,9 @@
 #     FILE: msg.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: Alumni Internet Directory update redirector
-#      $Id: msg,v 6.19 2005/06/10 23:27:47 mradwin Exp mradwin $
+#      $Id: msg,v 1.5 2006/02/24 00:00:15 mradwin Exp $
 #
-# Copyright (c) 2005  Michael J. Radwin.
+# Copyright (c) 2006  Michael J. Radwin.
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or
@@ -48,15 +48,15 @@ BEGIN {
 	unshift @INC, '.';
     }
 }
-use lib "/home/mradwin/local/share/perl";
 
-use DB_File::Lock;
+use strict;
 use Digest::MD5  qw(md5_hex);
 use Email::Valid;
 use CGI qw(-no_xhtml);
 use CGI::Carp qw(fatalsToBrowser);
 use aid_util;
-use strict;
+use aid_newutil;
+use DBI ();
 
 my %in;
 my($q) = new CGI;
@@ -67,25 +67,21 @@ foreach my $key ($q->param())
     $in{$key} = $val;
 }
 
-my $dbmfile = aid_util::config('dbmfile');
-die "$dbmfile: $!\n" unless -r $dbmfile;
-
 if (defined($in{'to'}) && $in{'to'} =~ /^\d+$/)
 {
     my $id = $in{'to'};
 
-    my(%DB);
-    tie(%DB, 'DB_File::Lock', $dbmfile, O_RDONLY, 0444, $DB_HASH, 'read')
-	or die "$dbmfile: $!\n";
-    my $val = $DB{$id};
-    untie(%DB);
+    my $dbh = aid_newutil::db_connect(); 
+    my $DB = aid_newutil::load_records($dbh, "AND a.alumnus_id = $id");
+    $dbh->disconnect;
 
-    bail() unless $val;
+    my @recs = values %{$DB};
+    bail() unless @recs;
 
-    my %rec = aid_util::db_unpack_rec($id,$val);
-    my $hash = md5_hex($rec{'e'});
-    my $name = email_name(\%rec);
-    my $e = "$name &lt;" . aid_util::protect_email($rec{'e'}) . "&gt;";
+    my $recp = $recs[0];
+    my $hash = md5_hex($recp->{'e'});
+    my $name = email_name($recp);
+    my $e = "$name &lt;" . aid_util::protect_email($recp->{'e'}) . "&gt;";
 
     print "Content-Type: text/html\015\012\015\012";
     print aid_util::common_html_hdr(9, 'Send Message', 1);
@@ -101,30 +97,29 @@ elsif (defined($in{'id'}) && $in{'id'} =~ /^\d+$/ && $in{'hash'} &&
 {
     my $id = $in{'id'};
 
-    my(%DB);
-    tie(%DB, 'DB_File::Lock', $dbmfile, O_RDONLY, 0444, $DB_HASH, 'read')
-	or die "$dbmfile: $!\n";
-    my $val = $DB{$id};
-    untie(%DB);
+    my $dbh = aid_newutil::db_connect();
+    my $DB = aid_newutil::load_records($dbh, "AND a.alumnus_id = $id");
+    #$dbh->disconnect;
 
-    bail() unless $val;
+    my @recs = values %{$DB};
+    bail() unless @recs;
 
-    my %rec = aid_util::db_unpack_rec($id,$val);
-    my $hash = md5_hex($rec{'e'});
+    my $recp = $recs[0];
+    my $hash = md5_hex($recp->{'e'});
     bail() unless ($hash eq $in{'hash'});
 
     my $from = $in{'from'};
-    check_blank(\%rec,"e-mail address",$from,$id,$hash);
+    check_blank($recp,"e-mail address",$from,$id,$hash);
 
     my $subject = $in{'subject'};
-    check_blank(\%rec,"subject",$subject,$id,$hash);
+    check_blank($recp,"subject",$subject,$id,$hash);
 
     $subject =~ s/[\015\012]/ /g;
     $subject = substr($subject, 0, 80);
 
     my $message = $in{'message'};
     $message =~ s/\r\n/\n/g;
-    check_blank(\%rec,"message body",$message,$id,$hash);
+    check_blank($recp,"message body",$message,$id,$hash);
 
     chomp($from);
     if ($from =~ /^[^<]*<([^>]+)>/) {
@@ -145,30 +140,30 @@ elsif (defined($in{'id'}) && $in{'id'} =~ /^\d+$/ && $in{'hash'} &&
 <br>It must be in the form of <code>user\@example.com</code>.
 _EOHTML_
 
-	my $name = email_name(\%rec);
-	my $e = "$name &lt;" . aid_util::protect_email($rec{'e'}) . "&gt;";
+	my $name = email_name($recp);
+	my $e = "$name &lt;" . aid_util::protect_email($recp->{'e'}) . "&gt;";
 	form($e,$id,$hash,$from,$subject,$message);
 
 	print aid_util::common_html_ftr(9);
 	exit(0);
     }
 
-    my $limit = aid_util::config('limit');
-    die "$limit: $!\n" unless -w $limit;
-
-    my(%LIMIT);
-    tie(%LIMIT, 'DB_File::Lock', $limit, O_RDWR|O_CREAT, 0644, $DB_HASH, 'write')
-	or die "$limit: $!\n";
     my $key = POSIX::strftime("%Y%m%d.", gmtime(time())) . $ENV{'REMOTE_ADDR'};
-    my $count = $LIMIT{$key};
-    untie(%LIMIT);
+    my $qkey = $dbh->quote($key);
+    my $sql = "SELECT limit_count FROM aid_limit "
+	. "WHERE limit_name = $qkey";
+    my $sth = $dbh->prepare($sql);
+    $sth->execute
+	or aid_util::cgi_die("Database Error", $dbh->errstr);
+    my($count) = $sth->fetchrow_array;
 
     # hack for Greg McCarthy
     if (lc($from) eq 'lovenandlight@aol.com' && $id eq "3282") {
 	$count = 999;
     }
 
-    if (defined $count && $count >= 5) {
+    my $maxcount = 5;
+    if (defined $count && $count >= $maxcount) {
 	print "Content-Type: text/html\015\012\015\012";
 	print aid_util::common_html_hdr(9, 'Too many messages today', 1);
 
@@ -178,21 +173,21 @@ _EOHTML_
 	print <<_EOHTML_;
 <p><font color=\"red\">Sorry, you have sent too many messages today.</font>
 <br>In order to prevent abuse, you may only email up to
-4 messages a day via this form. If you are really a member of the
+$maxcount messages a day via this form. If you are really a member of the
 $school alumni community and think you are getting this message in
 error, please contact <a
 href="mailto:$admin">$admin</a></p>
 _EOHTML_
 
-	my $name = email_name(\%rec);
-	my $e = "$name &lt;" . aid_util::protect_email($rec{'e'}) . "&gt;";
+	my $name = email_name($recp);
+	my $e = "$name &lt;" . aid_util::protect_email($recp->{'e'}) . "&gt;";
 	form($e,$id,$hash,$from,$subject,$message);
 
 	print aid_util::common_html_ftr(9);
 	exit(0);
     }
 
-    if (check_spam($rec{'e'}, $from, $subject, $message)) {
+    if (check_spam($recp->{'e'}, $from, $subject, $message)) {
 	print "Content-Type: text/html\015\012\015\012";
 	print aid_util::common_html_hdr(9, 'Your message looks like SPAM', 1);
 
@@ -208,8 +203,8 @@ think you are getting this message in error, please contact <a
 href="mailto:$admin">$admin</a></p>
 _EOHTML_
 
-	my $name = email_name(\%rec);
-	my $e = "$name &lt;" . aid_util::protect_email($rec{'e'}) . "&gt;";
+	my $name = email_name($recp);
+	my $e = "$name &lt;" . aid_util::protect_email($recp->{'e'}) . "&gt;";
 	form($e,$id,$hash,$from,$subject,$message);
 
 	print aid_util::common_html_ftr(9);
@@ -217,23 +212,27 @@ _EOHTML_
     }
 
     # message not spam and not over limit
-    tie(%LIMIT, 'DB_File::Lock', $limit, O_RDWR|O_CREAT, 0644, $DB_HASH, 'write')
-	or die "$limit: $!\n";
-    if (defined $LIMIT{$key}) {
-	$LIMIT{$key}++;
-    } else {
-	$LIMIT{$key} = 1;
-    }
-    untie(%LIMIT);
+    $count = $count ? $count + 1 : 1;
+    $sql = "REPLACE INTO aid_limit (limit_name,limit_count)"
+	. " VALUES ($qkey,$count)";
+    $dbh->do($sql)
+	or aid_util::cgi_die("Database Error", $dbh->errstr);
 
-    my $name = email_name(\%rec);
+    my $name = email_name($recp);
     my $school = aid_util::config('short_school');
 
-    $message .= "
+    my $disclaimer =
+"#####################################################################
+  Sent via $school Web Form from IP address $ENV{'REMOTE_ADDR'}
 
-----
-Sent via $school Web Form from IP address $ENV{'REMOTE_ADDR'}
-Please report abuse to " . aid_util::config('admin_email') . "\n";
+  Please read our email advisory page before replying to this message:
+  http://" . aid_util::config('master_srv') . aid_util::config('master_path')
+      . "etc/email.html
+
+  Please report abuse to " . aid_util::config('admin_email') . "
+#####################################################################
+
+";
 
     my $status = 0;
     for (my $i = 0; $status == 0 && $i < 3; $i++) {
@@ -242,15 +241,15 @@ Please report abuse to " . aid_util::config('admin_email') . "\n";
 	 "\"$from via $school Web Form\"",
 	 $subject,
 	 "Reply-To: $from\nX-Originating-IP: $ENV{'REMOTE_ADDR'}",
-	 $message,
+	 $disclaimer . $message,
 	 $name,
-	 $rec{'e'});
+	 $recp->{'e'});
     }
 
     if ($status == 0) {
         aid_util::cgi_die('ERROR: Unable to send e-mail',
 		 "We're sorry, we were unable to send e-mail to\n" .
-		 "<b>" . aid_util::protect_email($rec{'e'}) . "</b>.\n" .
+		 "<b>" . aid_util::protect_email($recp->{'e'}) . "</b>.\n" .
 		 "<p>This may be a problem with our\n" .
 		 "server or perhaps with the target e-mail address.\n" .
 		 "Please try again in a few minutes.<p>If you continue\n" .
@@ -284,7 +283,7 @@ sub check_spam
 
     my $spam_test = Mail::SpamAssassin->new({
 	'local_tests_only' => 1,
-	'rules_filename' => '/pub/m/r/mradwin/private/share/spamassassin',
+	'rules_filename' => '/home/mradwin/local/share/spamassassin',
     });
 
     # avoid waring "Failed to create default user preference file
@@ -326,7 +325,7 @@ sub check_blank
 	print aid_util::common_html_hdr(9, "Missing $title", 1);
 
 	print <<_EOHTML_;
-<p><font color=\"red\">Missing $title (can't be blank).  Please
+<p><font color=\"red\">Missing $title (can\'t be blank).  Please
 include your $title in the text area below.</font>
 _EOHTML_
 

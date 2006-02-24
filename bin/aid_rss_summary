@@ -4,9 +4,9 @@
 #     FILE: aid_rss_summary.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: creates an RDF Site Summary for the Directory
-#      $Id: aid_rss_summary,v 6.4 2003/10/30 17:56:04 mradwin Exp mradwin $
+#      $Id: aid_rss_summary,v 1.4 2006/02/23 22:52:05 mradwin Exp $
 #
-# Copyright (c) 2003  Michael J. Radwin.
+# Copyright (c) 2006  Michael J. Radwin.
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or
@@ -45,88 +45,69 @@ BEGIN {
   if ($0 =~ m,(.*[/\\]),) {
     unshift @INC, $1;
   } else {
-    unshift @INC, '.';
+    unshift @INC, ".";
   }
 }
-use lib "/home/mradwin/local/share/perl";
 
-use DB_File::Lock;
+use strict;
 use Getopt::Std;
+use POSIX qw(strftime);
 use aid_util;
+use aid_newutil;
 
 $0 =~ s,.*/,,;  # basename
-my $usage = "usage: $0 [-h] infile.db outfile.rdf
+my $usage = "usage: $0 [-h] outfile.rdf
     -h        Display usage information.
 ";
 
-getopts('h') || die "$usage\n";
-$opt_h && die "$usage\n";
-$ARGV[0] || die "$usage\n";
-$ARGV[1] || die "$usage\n";
-$opt_h = $opt_h;		# avoid warning
-
-my $dbmfile = shift;
-my %DB;
-tie(%DB, 'DB_File::Lock', $dbmfile, O_RDONLY, 0444, $DB_HASH, 'read')
-    or die "$dbmfile: $!\n";
-
-die "corrupt/missing _t key!" unless defined $DB{'_t'} && $DB{'_t'} ne '';
-my $time = unpack("N",$DB{'_t'});
-
-die "corrupt/missing _nextid key!"
-    unless defined $DB{'_nextid'} && $DB{'_nextid'} ne '';
-
-my %id_by_ts;
-for (my $i = $DB{'_nextid'} - 1; $i > 0; $i--)
-{
-    if (defined $DB{$i})
-    {
-	my %rec = aid_util::db_unpack_rec($i,$DB{$i});
-	next unless $rec{'v'};
-	$id_by_ts{$i} = $rec{'u'};
-    }
-}
+my %opts;
+getopts("h", \%opts) || die "$usage\n";
+$opts{"h"} && die "$usage\n";
+@ARGV == 1 || die "$usage\n";
 
 my $outfile = shift;
-open(FMTOUT,">$outfile") || die "Can't open $outfile: $!\n";
+open(FMTOUT,">$outfile.$$") || die "Can't open $outfile.$$: $!\n";
+
+my $dbh = aid_newutil::db_connect();
+my $DB = aid_newutil::load_records($dbh,
+	 "ORDER BY a.alumnus_update DESC LIMIT 0, 20");
+$dbh->disconnect;
+
+my $lastBuildDate = strftime("%a, %d %b %Y %H:%M:%S GMT", gmtime(time()));
 
 print FMTOUT
 "<?xml version=\"1.0\" encoding=\"iso-8859-1\"?>
-<rss version=\"0.91\">
+<rss version=\"2.0\">
 <channel>
-
-<title>" . aid_util::config('short_school') . " Alumni Internet Directory</title>
-<link>http://" . aid_util::config('master_srv') . aid_util::config('master_path') .
+<title>" . aid_util::config("short_school") . " Alumni Internet Directory</title>
+<link>http://" . aid_util::config("master_srv") . aid_util::config("master_path") .
     "recent.html</link>
-<description>" . aid_util::config('descr_long') . "</description>
+<description>" . aid_util::config("descr_long") . "</description>
 <language>en-us</language>
-
+<lastBuildDate>$lastBuildDate</lastBuildDate>
 ";
 
-my @ids;
-foreach my $i (sort {$id_by_ts{$b} <=> $id_by_ts{$a}} keys %id_by_ts)
+foreach my $id (sort { $DB->{$b}->{"u"} <=> $DB->{$a}->{"u"} } keys %{$DB})
 {
-    push(@ids, $i);
-    last if scalar(@ids) == 10;
-}
+    my $recp = $DB->{$id};
+    my($affil,$len) = aid_util::affiliate($recp, 0);
+    my $pubDate = strftime("%a, %d %b %Y %H:%M:%S GMT", gmtime($recp->{"u"}));
 
-foreach my $i (@ids) {
-    my %rec = aid_util::db_unpack_rec($i,$DB{$i});
-    my($affil) = aid_util::affiliate(\%rec, 0);
     print FMTOUT
 "<item>
-<title>" . aid_util::html_entify_str(aid_util::inorder_fullname(\%rec)) . 
+<title>" . aid_util::html_entify_str(aid_util::inorder_fullname($recp)) . 
 aid_util::html_entify_str($affil) .
 "</title>
-<link>http://" . aid_util::config('master_srv') .
-    aid_util::about_path(\%rec,0) . "</link>
-<description>Updated " . aid_util::caldate($rec{'u'}), ".";
+<link>http://" . aid_util::config("master_srv") .
+    aid_util::about_path($recp,0) . "</link>
+<pubDate>$pubDate</pubDate>
+<description>Updated " . aid_util::caldate($recp->{"u"}), ".";
 
-    if ($rec{'n'}) {
-	print FMTOUT " ", aid_util::html_entify_str($rec{'n'});
+    if ($recp->{"n"}) {
+	print FMTOUT " ", aid_util::html_entify_str($recp->{"n"});
     }
 
-    print FMTOUT "</description>\n</item>\n\n";
+    print FMTOUT "</description>\n</item>\n";
 }
 
 print FMTOUT
@@ -134,10 +115,8 @@ print FMTOUT
 </rss>
 ";
 
-untie(%DB);
-
 close(FMTOUT);
-utime $time, $time, $outfile;
+rename("$outfile.$$", $outfile);
 
 # touch timestamp
 my $now = time;

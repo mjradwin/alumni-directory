@@ -2,9 +2,9 @@
 
 #
 # mails a welcome, update, confirm, or massmail message to members
-# $Id: aid_welcome,v 6.5 2003/10/30 17:56:04 mradwin Exp mradwin $
+# $Id: aid_welcome,v 1.6 2006/02/22 06:45:14 mradwin Exp $
 #
-# Copyright (c) 2003  Michael J. Radwin.
+# Copyright (c) 2006  Michael J. Radwin.
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or
@@ -43,23 +43,22 @@ BEGIN {
   if ($0 =~ m,(.*[/\\]),) {
     unshift @INC, $1;
   } else {
-    unshift @INC, '.';
+    unshift @INC, ".";
   }
 }
-use lib "/home/mradwin/local/share/perl";
 
-use aid_util;
-use Getopt::Std;
-
-use DB_File::Lock;
-use Net::SMTP; 
 use strict;
+use Getopt::Std ();
+use Net::SMTP; 
+use aid_util;
+use aid_newutil;
+use DBI ();
 
 my $default_sleep = 0;
 my $default_massmail_sleep = 5;
 
 $0 =~ s,.*/,,;  # basename
-my $usage = "usage: $0 [options] infile.db [target ids...]
+my $usage = "usage: $0 [options] [target ids...]
     -h            Display usage information.
     -a            Mail all users in <infile.db> matching -r <reqtype>.
     -y <year>     Mail all users in <infile.db> from year <year>.
@@ -77,51 +76,50 @@ Mutually exclusive optional message types (instead of 'welcome' e-mail):
 
 my @args = @ARGV;
 
-my(%opts);
-getopts('hd:r:ucm:l:as:y:', \%opts) || die "$usage\n";
-$opts{'h'} && die "$usage\n";
-$a = $b = 0;                    # avoid warning
-die "$0: Too many mutually-exclusive options\n$usage\n"
-    if (($opts{'c'} ? 1 : 0) + ($opts{'u'} ? 1 : 0) + ($opts{'m'} ? 1 : 0) +
-	($opts{'s'} ? 1 : 0)) > 1;
-die "$0: No database file specified\n$usage\n" unless $ARGV[0];
-die "$0: No target ids specified\n$usage\n" unless ($ARGV[1] || $opts{'a'} ||
-						    $opts{'y'});
-die "$0: Option -m requires -r\n$usage\n" 
-    if defined($opts{'m'}) && !defined($opts{'r'});
-die "$0: Option -a requires -r\n$usage\n" 
-    if defined($opts{'a'}) && !defined($opts{'r'});
+my %opts;
+Getopt::Std::getopts("hd:r:ucm:l:as:y:", \%opts) || die "$usage\n";
+$opts{"h"} && die "$usage\n";
 
-my $directory_name = aid_util::config('short_school') . ' Alumni Internet Directory';
+die "$0: Too many mutually-exclusive options\n$usage\n"
+    if (($opts{"c"} ? 1 : 0) + ($opts{"u"} ? 1 : 0) + ($opts{"m"} ? 1 : 0) +
+	($opts{"s"} ? 1 : 0)) > 1;
+die "$0: No target ids specified\n$usage\n" unless (@ARGV || $opts{"a"} ||
+						    $opts{"y"});
+die "$0: Option -m requires -r\n$usage\n" 
+    if defined($opts{"m"}) && !defined($opts{"r"});
+die "$0: Option -a requires -r\n$usage\n" 
+    if defined($opts{"a"}) && !defined($opts{"r"});
+
+my $directory_name = aid_util::config("short_school") . " Alumni Internet Directory";
 
 my %confirm_parameters = 
     (
-     'subject'	=>	$directory_name,
-     'log'	=>	'confirm',
-     'sleep'	=>	$default_sleep,
-     'listing'	=>	1,
-     'intro'	=>
+     "subject"	=>	$directory_name,
+     "log"	=>	"confirm",
+     "sleep"	=>	$default_sleep,
+     "listing"	=>	1,
+     "intro"	=>
      "You were sent this address verification message because
 it has been 6 months since we last confirmed your
 Directory listing.  Please make sure your infromation
 below is still current.  If everything you see below is
 correct, NO ACTION IS REQUIRED ON YOUR PART.\n\n",
 
-     'textfile'	=>	'',
-     'closing'	=>	'',
+     "textfile"	=>	"",
+     "closing"	=>	"",
      );
 
 my %welcome_parameters = 
     (
-     'subject'	=>	$directory_name,
-     'log'	=>	'welcome',
-     'sleep'	=>	$default_sleep,
-     'listing'	=>	1,
-     'intro'	=>
+     "subject"	=>	$directory_name,
+     "log"	=>	"welcome",
+     "sleep"	=>	$default_sleep,
+     "listing"	=>	1,
+     "intro"	=>
      "Welcome!  Your submission has been processed and you
 are now listed on-line in the Directory.\n\n",
-     'textfile'	=>	'',
-     'closing'	=>
+     "textfile"	=>	"",
+     "closing"	=>
 "
 Otherwise, if everything you see above is correct,
 you're all set.
@@ -132,16 +130,16 @@ Once again, welcome to the Alumni Internet Directory!
 
 my %update_parameters = 
     (
-     'subject'	=>	$directory_name,
-     'log'	=>	'update',
-     'sleep'	=>	$default_sleep,
-     'listing'	=>	1,
-     'intro'	=>
+     "subject"	=>	$directory_name,
+     "log"	=>	"update",
+     "sleep"	=>	$default_sleep,
+     "listing"	=>	1,
+     "intro"	=>
      "Your contact information has been updated and the
 changes are now visible on-line.\n\n",
 
-     'textfile'	=>	'',
-     'closing'	=>
+     "textfile"	=>	"",
+     "closing"	=>
 "
 Otherwise, if everything you see above is correct,
 you're all set.
@@ -150,15 +148,15 @@ you're all set.
 
 my %massmail_parameters = 
     (
-     'subject'	=>	$directory_name,
-     'log'	=>	'massmail',
-     'sleep'	=>	$default_massmail_sleep,
-     'listing'	=>	1,
-     'intro'	=>
+     "subject"	=>	$directory_name,
+     "log"	=>	"massmail",
+     "sleep"	=>	$default_massmail_sleep,
+     "listing"	=>	1,
+     "intro"	=>
      "Per your request, your quarterly digest of the
 Directory appears at the end of this message.\n\n",
-     'textfile'	=>	'',
-     'closing'	=>
+     "textfile"	=>	"",
+     "closing"	=>
 "
 You also may change your quarterly digest preference
 by visiting the above URL.
@@ -168,101 +166,85 @@ by visiting the above URL.
 
 my %special_parameters = 
     (
-     'subject'	=>	'Memorial Services for Benji Cantwell Thursday 8/26',
-     'from_addr' => 'joe@hulanetworks.com',
-     'from_name' => 'Joe Commendatore',
-     'log'	=>	'special',
-     'sleep'	=>	$default_massmail_sleep,
-     'listing'	=>	0,
-     'intro'	=>	'',
-     'textfile'	=>	'',
-     'closing'	=>	'',
+     "subject"	=>	"Memorial Services for Benji Cantwell Thursday 8/26",
+     "from_addr" => 'joe@hulanetworks.com',
+     "from_name" => "Joe Commendatore",
+     "log"	=>	"special",
+     "sleep"	=>	$default_massmail_sleep,
+     "listing"	=>	0,
+     "intro"	=>	"",
+     "textfile"	=>	"",
+     "closing"	=>	"",
      );
 
-my %params = $opts{'c'} ? %confirm_parameters : 
-    $opts{'u'} ? %update_parameters :
-    $opts{'s'} ? %special_parameters :
-    $opts{'m'} ? %massmail_parameters :
+my %params = $opts{"c"} ? %confirm_parameters : 
+    $opts{"u"} ? %update_parameters :
+    $opts{"s"} ? %special_parameters :
+    $opts{"m"} ? %massmail_parameters :
     %welcome_parameters;
 
-my $logfile = $opts{'l'} ? $opts{'l'} :
-    aid_util::config('aiddir') . "logs/" . $params{'log'} . '.log';
+my $logfile = $opts{"l"} ? $opts{"l"} :
+    aid_util::config("aiddir") . "logs/" . $params{"log"} . ".log";
 
-if ($opts{'s'} || $opts{'m'}) {
-    my $f = $opts{'s'} || $opts{'m'};
+if ($opts{"s"} || $opts{"m"}) {
+    my $f = $opts{"s"} || $opts{"m"};
     open(TEXTFILE,$f) || die "$0: Can't open $f: $!\n";
-    while(<TEXTFILE>) { $params{'textfile'} .= $_; }
+    while(<TEXTFILE>) { $params{"textfile"} .= $_; }
     close(TEXTFILE);
 }
 
-$params{'sleep'} = $opts{'d'} if defined $opts{'d'};
-
-my $dbmfile = shift;
-die "$0: $dbmfile: $!\n" unless -r $dbmfile;
+$params{"sleep"} = $opts{"d"} if defined $opts{"d"};
 
 open(LOG,">>$logfile") || die "$0: Can't open $logfile: $!\n";
 select(LOG); $| = 1; select(STDOUT);
 
 my $today = scalar(localtime(time));
 
-print LOG "# [$today] - $0 ", join(' ', @args), "\n";
+print LOG "# [$today] - $0 ", join(" ", @args), "\n";
 
-if ($opts{'a'})
+my $dbh = aid_newutil::db_connect();
+
+if ($opts{"a"})
 {
     @ARGV = ();
 
-    my(%DB);
-    tie(%DB, 'DB_File::Lock', $dbmfile, O_RDONLY, 0444, $DB_HASH, 'read')
-	or die "$dbmfile: $!\n";
-    while (my($key,$val) = each(%DB))
+    my $DB = aid_newutil::load_records($dbh, "");
+    foreach my $recp (values %{$DB})
     {
-	if ($key =~ /^\d+$/)
+	next unless $recp->{"v"};
+	next if $opts{"m"} && $recp->{"q"} != $opts{"r"};
+
+	if ($opts{"c"})
 	{
-	    my %rec = aid_util::db_unpack_rec($key,$val);
-
-	    next unless $rec{'v'};
-	    next if $opts{'m'} && $rec{'q'} != $opts{'r'};
-
-	    if ($opts{'c'})
-	    {
-		next unless $rec{'q'} == 0;
-		next unless aid_util::is_old($rec{'f'});
-	    }
-
-	    push(@ARGV, $rec{'id'});
+	    next unless $recp->{"q"} == 0;
+	    next unless aid_util::is_old($recp->{"f"});
 	}
+
+	push(@ARGV, $recp->{"id"});
     }
 
     @ARGV = sort { $a <=> $b } @ARGV;
 }
 
-if ($opts{'y'})
+if ($opts{"y"})
 {
     @ARGV = ();
 
-    my(%DB);
-    tie(%DB, 'DB_File::Lock', $dbmfile, O_RDONLY, 0444, $DB_HASH, 'read')
-	or die "$dbmfile: $!\n";
-    while (my($key,$val) = each(%DB))
+    my $DB = aid_newutil::load_records($dbh, "");
+    foreach my $recp (values %{$DB})
     {
-	if ($key =~ /^\d+$/)
-	{
-	    my %rec = aid_util::db_unpack_rec($key,$val);
+	next unless $recp->{"v"};
+	next unless $recp->{"r"};
+	next unless $recp->{"yr"} eq $opts{"y"};
 
-	    next unless $rec{'v'};
-	    next unless $rec{'r'};
-	    next unless $rec{'yr'} eq $opts{'y'};
-
-	    push(@ARGV, $rec{'id'});
-	}
+	push(@ARGV, $recp->{"id"});
     }
 
     @ARGV = sort { $a <=> $b } @ARGV;
 }
 
-my(%lm);
-my($id);
-foreach $id (@ARGV)
+my $DB = aid_newutil::load_records($dbh, "");
+foreach my $id (@ARGV)
 {
     unless ($id =~ /^\d+$/)
     {
@@ -270,48 +252,19 @@ foreach $id (@ARGV)
 	next;
     }
 
-    my(%DB);
-    tie(%DB, 'DB_File::Lock', $dbmfile, O_RDONLY, 0444, $DB_HASH, 'read')
-	or die "$dbmfile: $!\n";
-
-    unless (defined $DB{$id})
+    unless (defined $DB->{$id})
     {
-	warn "$0: skipping target `$id' (missing from $dbmfile)\n";
-	untie(%DB);
+	warn "$0: skipping target `$id' (missing from DB)\n";
 	next;
     }
 
-    my %rec = aid_util::db_unpack_rec($id,$DB{$id});
-
-    untie(%DB);
-
-    if (mail_user(\%rec))
+    if (mail_user($DB->{$id}))
     {
-	$lm{$id} = time;
-	sleep($params{'sleep'}) if $params{'sleep'} > 0;
+	sleep($params{"sleep"}) if $params{"sleep"} > 0;
     }
 }
 
 close(LOG);
-
-#if (-w $dbmfile)
-if (0)
-{
-    my(%DB);
-    tie(%DB, 'DB_File::Lock', $dbmfile, O_CREAT|O_RDWR, 0644, $DB_HASH, 'write')
-	or die "$dbmfile: $!\n";
-
-    # sucessful mailing; update timestamp
-    while (my($key,$val) = each(%lm))
-    {
-	my %rec = aid_util::db_unpack_rec($key,$DB{$key});
-	$rec{'lm'} = $val;
-	$DB{$rec{'id'}} = aid_util::db_pack_rec(\%rec);
-    }
-
-    untie(%DB);
-}
-
 exit(0);
 
 sub mail_user
@@ -319,42 +272,57 @@ sub mail_user
     my($recp) = @_;
     my($message,$name,@mailto);
 
-    if ($recp->{'v'} == 0)
+    if ($recp->{"v"} == 0)
     {
 	warn "$0: skipping target `$recp->{'id'}' (valid bit is off)\n";
 	return 0;
     }
 
-    unless (defined $recp->{'e'} && $recp->{'e'} ne '')
+    unless (defined $recp->{"e"} && $recp->{"e"} ne "")
     {
 	warn "$0: skipping target `$recp->{'id'}' (has no email address)\n";
 	return 0;
     }
 
-    if ($params{'listing'}) {
-	$message = &message_body($recp);
+    if ($params{"listing"}) {
+	$message = message_body($recp);
     } else {
-	$message = '';
+	$message = "";
     }
 
-    $message .= $params{'textfile'} .
-	"\n-- \n" . aid_util::config('short_school') . 
+    $message .= $params{"textfile"} .
+	"\n-- \n" . aid_util::config("short_school") . 
 	" Alumni Internet Directory\n" .
-	"http://" . aid_util::config('master_srv') . aid_util::config('master_path');
+	"http://" . aid_util::config("master_srv") . aid_util::config("master_path");
 
-    $name  = $recp->{'gn'};
+    $name  = $recp->{"gn"};
     $name .= " $recp->{'mi'}."
-	if defined $recp->{'mi'} && $recp->{'mi'} ne '';
+	if defined $recp->{"mi"} && $recp->{"mi"} ne "";
     $name .= " $recp->{'sn'}";
     $name .= " $recp->{'mn'}"
-	if defined $recp->{'mn'} && $recp->{'mn'} ne '';
+	if defined $recp->{"mn"} && $recp->{"mn"} ne "";
     $name =~ s/\"/\'/g;
 
-    @mailto = ($name,$recp->{'e'});
-    if ($opts{'u'} && defined $recp->{'eo'} &&
-	$recp->{'eo'} ne '' && lc($recp->{'eo'}) ne lc($recp->{'e'}))
-    {
-	push(@mailto,$name,$recp->{'eo'});
+    @mailto = ($name,$recp->{"e"});
+    if ($opts{"u"}) {
+	my $sql = "SELECT alumnus_old_id FROM aid_alumnus WHERE alumnus_id = ?";
+	my $sth = $dbh->prepare($sql);
+	$sth->execute($recp->{"id"}) or die $sth->errstr;
+	my($old_id) = $sth->fetchrow_array;
+
+	if (defined $old_id) {
+	    $sql = "SELECT entry_email FROM aid_entry WHERE entry_id = ?";
+	    $sth = $dbh->prepare($sql);
+	    $sth->execute($old_id) or die $sth->errstr;
+	    my($old_email) = $sth->fetchrow_array;
+	    if (defined $old_email) {
+		$recp->{"eo"} = $old_email;
+	    }
+	}
+
+	if (defined $recp->{"eo"} && lc($recp->{"eo"}) ne lc($recp->{"e"})) {
+	    push(@mailto,$name,$recp->{"eo"});
+	}
     }
 
     my($i);
@@ -362,17 +330,17 @@ sub mail_user
 
     for ($i = 0; $status == 0 && $i < 3; $i++)
     {
-	my $from_addr = $params{'from_addr'} ? $params{'from_addr'} :
-	    aid_util::config('admin_email');
-	my $from_name = $params{'from_name'} ? $params{'from_name'} :
-	    aid_util::config('short_school') . ' Alumni Robot';
+	my $from_addr = $params{"from_addr"} ? $params{"from_addr"} :
+	    aid_util::config("admin_email");
+	my $from_name = $params{"from_name"} ? $params{"from_name"} :
+	    aid_util::config("short_school") . " Alumni Robot";
 
 	my $time = time;
 	$status = aid_util::sendmail(
 	    $from_addr,
 	    $from_name,
-	    $params{'subject'} .
-		' [' . aid_util::config('short_school') . '-' . $recp->{'id'} . ']',
+	    $params{"subject"} .
+		" [" . aid_util::config("short_school") . "-" . $recp->{"id"} . "]",
 		$message,@mailto);
 
 	sleep(3) if $status == 0;
@@ -380,8 +348,8 @@ sub mail_user
 	print LOG $time, " - $recp->{'id'} - $recp->{'e'} - $status\n";
 
 	print LOG $time, " - $recp->{'id'} - $recp->{'eo'} - $status - OLD\n"
-	    if ($opts{'u'} && defined $recp->{'eo'} &&
-		$recp->{'eo'} ne '' && lc($recp->{'eo'}) ne lc($recp->{'e'}));
+	    if ($opts{"u"} && defined $recp->{"eo"} &&
+		$recp->{"eo"} ne "" && lc($recp->{"eo"}) ne lc($recp->{"e"}));
     }
 
     $status;
@@ -391,12 +359,12 @@ sub message_body
 {
     my($recp) = @_;
     my $about = aid_util::about_text($recp,1,0,0);
-    my $denied = $recp->{'q'} == 0 ?
+    my $denied = $recp->{"q"} == 0 ?
 	"
 Since you asked not to receive quarterly Directory
 digests via e-mail, you will only receive bi-yearly
 address verification messages.
-" : '';
+" : "";
 
     return aid_util::inorder_fullname($recp) . ",
 
@@ -407,7 +375,7 @@ $denied
 If any of the above information is incorrect or out
 of date, please update your listing online at:
 
-  http://" . aid_util::config('master_srv') . aid_util::config('go_cgi') . "/$recp->{'id'}
+  http://" . aid_util::config("master_srv") . aid_util::config("go_cgi") . "/$recp->{'id'}
 
 If you have received this e-mail in error, or you do
 not want to be listed in the Directory, please let

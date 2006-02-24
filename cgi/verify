@@ -4,9 +4,9 @@
 #     FILE: verify.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: CGI for verifcation of e-mail address
-#      $Id: verify,v 6.3 2003/10/30 07:28:07 mradwin Exp mradwin $
+#      $Id: verify,v 1.9 2006/02/23 22:33:33 mradwin Exp $
 #
-# Copyright (c) 2005  Michael J. Radwin.
+# Copyright (c) 2006  Michael J. Radwin.
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or
@@ -45,149 +45,263 @@ BEGIN {
     if ($0 =~ m,(.*[/\\]),) {
 	unshift @INC, $1;
     } else {
-	unshift @INC, '.';
+	unshift @INC, ".";
     }
 }
-use lib "/home/mradwin/local/share/perl";
 
-use DB_File::Lock;
+use strict;
 use CGI qw(-no_xhtml);
 use CGI::Carp qw(fatalsToBrowser);
 use aid_util;
-use strict;
+use aid_newutil;
+use DBI ();
 
 my %cgi;
-my($q) = new CGI;
-foreach my $key ($q->param())
-{
-    my($val) = $q->param($key);
-    $val = '' unless defined $val;
-    $cgi{$key} = $val;
+my $q = new CGI;
+my $key;
+if ($q->param("k")) {
+    $key = $q->param("k");
+} elsif ($q->keywords()) {
+    my @kw = $q->keywords();
+    $key = $kw[0];
+} else {
+    print "Status: 400 Bad Request\015\012";
+    aid_util::cgi_die("Bad Request",
+		      "Sorry, looks like the form submission was broken.\n");
+    close(STDOUT);
+    exit(0);
 }
 
-$cgi{'e'} = '' unless defined $cgi{'e'};
-$cgi{'id'} = '' unless defined $cgi{'id'};
+if ($key !~ /^[0-9a-f]+$/) {
+    invalid($key);
+}
 
-$ENV{'QUERY_STRING'} =~ s/%([A-Fa-f0-9]{2})/pack("c",hex($1))/ge;
-if ($ENV{'QUERY_STRING'} =~ /^(k=)?(\w+)$/)
-{
-    my($key8) = uc($2);
-    &check_key8($key8);
-}
-elsif (defined $cgi{'k'} && $cgi{'k'} =~ /^\w+$/)
-{
-    &check_key8(uc($cgi{'k'}));
-}
-else
-{
+my $dbh = aid_newutil::db_connect();
+my $sql = qq{
+SELECT
+verify_staging_id,verify_alumnus_id,
+UNIX_TIMESTAMP(verify_created),verify_confirmed
+FROM aid_verify
+WHERE verify_code = ?
+};
+my $sth = $dbh->prepare($sql);
+$sth->execute($key)
+    or aid_util::cgi_die("Database Error", $sth->errstr);
+my($sid,$id,$tscreated,$tsconfirmed) = $sth->fetchrow_array;
+
+if (defined $tsconfirmed) {
+    $dbh->disconnect;
+
     print "Content-Type: text/html\015\012\015\012";
-    print aid_util::common_html_hdr(20,'Enter verifcation code',1);
+    print aid_util::common_html_hdr(20,"Verifcation already confirmed",1);
+
+    print "<p>The verification code you entered\n",
+    "(<b>$key</b>) has already been processed.</p>\n";
+
+    print aid_util::common_html_ftr(20);
+    close(STDOUT);
+    exit(0);
 }
 
-print "<p>Please check your e-mail and find the 8-letter
-verification code that was sent to you by the ",
-aid_util::config('short_school'), "
-Alumni Robot and enter it below.</p>
+if (defined $sid) {
+    my $recp = get_staging_rec($dbh,$sid);
+    if (!$recp) {
+	$dbh->disconnect;
+	print "Status: 500 Server Error\015\012";
+	aid_util::cgi_die("Server Error",
+			  "Sorry, looks like the DB is broken.\n");
+	close(STDOUT);
+	exit(0);
+    }
 
-<form method=\"get\" action=\"" . aid_util::config('verify_cgi') . "\">
-<label for=\"k\">Enter 8-letter code:</label>
-&nbsp;
-<input id=\"k\" type=\"text\" size=\"8\" maxlength=\"8\" name=\"k\">
-&nbsp;
-<input id=\"e\" type=\"hidden\" name=\"e\" value=\"$cgi{'e'}\">
-<input id=\"id\" type=\"hidden\" name=\"id\" value=\"$cgi{'id'}\">
-<input type=\"submit\" value=\"Submit verification code\">
-</form>
-";
-
-print aid_util::common_html_ftr(20);
-
-close(STDOUT);
-exit(0);
-
-sub check_key8 {
-    my($key) = @_;
-
-    my $dbmfile = aid_util::config('staging');
-    die "$dbmfile: $!\n" unless -r $dbmfile;
-
-    my(%DB);
-    tie(%DB, 'DB_File::Lock', $dbmfile, O_CREAT|O_RDWR, 0644, $DB_HASH, 'write')
-	or die "$dbmfile: $!\n";
-
-    if (defined $DB{$key} && $DB{$key} =~ /^-?\d+\0/)
+    if ($q->param("commit"))
     {
-	my($val) = $DB{$key};
-
-	if (defined $DB{'_verified'})
+	if (defined $id)
 	{
-	    $DB{'_verified'} .= "\0" . $key
-		unless $DB{'_verified'} =~ /\b$key\b/;
+	    $sql = "UPDATE aid_alumnus SET alumnus_old_id = alumnus_entry_id"
+		. " WHERE alumnus_id = $id";
+	    $dbh->do($sql)
+		or aid_util::cgi_die("Database Error", $dbh->errstr);
+
+	    $sql = "UPDATE aid_alumnus SET alumnus_entry_id = $sid"
+		. " WHERE alumnus_id = $id";
+	    $dbh->do($sql)
+		or aid_util::cgi_die("Database Error", $dbh->errstr);
+
+	    $sql = "UPDATE aid_verify SET verify_confirmed = NOW()"
+		. " WHERE verify_code = ?";
+	    my $sth = $dbh->prepare($sql);
+	    $sth->execute($key)
+		or aid_util::cgi_die("Database Error", $sth->errstr);
 	}
 	else
 	{
-	    $DB{'_verified'} = $key;
+	    my $sql = "INSERT INTO aid_alumnus (alumnus_status,"
+		. "alumnus_entry_id,alumnus_create,alumnus_update)"
+		. " VALUES (1,$sid,FROM_UNIXTIME($tscreated),NOW())";
+	    $dbh->do($sql)
+		or aid_util::cgi_die("Database Error", $dbh->errstr);
+	    $id = $dbh->last_insert_id(undef, undef, undef, undef);
+
+	    $sql = "UPDATE aid_verify SET verify_confirmed = NOW(),"
+		. "verify_alumnus_id = ?"
+		. " WHERE verify_code = ?";
+	    my $sth = $dbh->prepare($sql);
+	    $sth->execute($id,$key)
+		or aid_util::cgi_die("Database Error", $sth->errstr);
 	}
 
-	untie(%DB);
+	$dbh->disconnect;
 
-	my($id,$packed) = split(/\0/, $val, 2);
-	my %rec = aid_util::db_unpack_rec($id,$packed);
-	my $fullname = aid_util::inorder_fullname(\%rec);
+	my $fullname = aid_util::html_entify_str(aid_util::inorder_fullname($recp));
 
 	print "Content-Type: text/html\015\012\015\012";
 	print aid_util::common_html_hdr(20,'E-mail address verified',1);
 
-	$fullname = aid_util::html_entify_str($fullname);
 	print "
-
 <p>The listing for <strong>$fullname</strong> has been
 accepted into the submission queue, and it will be processed
 within 5 minutes. E-mail will be sent to
-<b>$rec{'e'}</b>
+<b>$recp->{'e'}</b>
 confirming receipt of this submission when it it processed.</p>
-
-Here is what your listing will look like:
-<br><br>
-
-<table border=\"1\" cellpadding=\"6\"><tr><td>";
-
-	print aid_util::verbose_entry(\%rec,1,1,1);
-
-	print "</td></tr></table>\n";
+";
 	print aid_util::config('html_ad');
 	print aid_util::common_html_ftr(20);
 
 	close(STDOUT);
 	exit(0);
     }
-    elsif (defined $DB{$key} && $DB{$key} =~ /^[^\0]*\0$/)
-    {
-	untie(%DB);
 
-	print "Content-Type: text/html\015\012\015\012";
-        print aid_util::common_html_hdr(20,'Already verified',1);
-
-	print "<p>The verification code you entered\n",
-	    "(<b>$key</b>) has already been processed.</p>\n";
-
-	print aid_util::common_html_ftr(20);
-
-	close(STDOUT);
-	exit(0);
+    my $oldrecp;
+    if (defined $id) {
+	my $MDB = aid_newutil::load_records($dbh, "AND a.alumnus_id = $id");
+	my @oldrecs = values %{$MDB};
+	if (@oldrecs) {
+	    $oldrecp = $oldrecs[0];
+	}
     }
-    else
-    {
-	untie(%DB);
 
-	print "Content-Type: text/html\015\012\015\012";
-        print aid_util::common_html_hdr(20,'Invalid verifcation code',1);
+    my $title = $oldrecp
+	? "Confirm change to your listing"
+	: "Publish your listing";
 
-	$key =~ s/&/&amp;/g;
-	$key =~ s/</&lt;/g;
-	$key =~ s/>/&gt;/g;
+    print "Content-Type: text/html\015\012\015\012";
+    print aid_util::common_html_hdr(20,	$title, 1);
 
-	print "<p>Sorry, the verification code you entered\n",
-	    "(<b>$key</b>) is invalid.</p>\n";
+    my $action =  aid_util::config("verify_cgi");
+    print qq{
+<p>Here is what your listing will look like. If you approve,
+click the button below.</p>
+<form method="post" action="$action">
+<input type="hidden" name="k" value="$key">
+<input type="hidden" name="commit" value="1">
+<input type="submit" name="submit" value="$title"
+onclick="this.value='Please wait...';this.disabled=true;this.form.submit();">
+</form>
+<br>
+<table border="1" cellpadding="6">
+};
+
+    if ($oldrecp) {
+	print qq{<tr><th><big>Old Entry</big></th><th><big>New Entry</big></th></tr>},
+	qq{<tr valign="top"><td>},
+	aid_util::verbose_entry($oldrecp,1,1,1),
+	qq{</td><td>}, aid_util::verbose_entry($recp,1,1,1),
+	qq{</td></tr>\n};
+    } else {
+	print qq{<tr><td>}, aid_util::verbose_entry($recp,1,1,1),
+	qq{</td></tr>\n};
     }
+
+    print qq{</table><p>\n};
+
+    print aid_util::common_html_ftr(20);
+
+    close(STDOUT);
+    exit(0);
+
+} else {
+    $dbh->disconnect;
+
+    print "Content-Type: text/html\015\012\015\012";
+    print aid_util::common_html_hdr(20,"Verifcation code not found",1);
+
+    print "<p>Sorry, the verification code you entered\n",
+    "(<b>$key</b>) wasn't found in our database.</p>\n";
+
+    print aid_util::common_html_ftr(20);
+    close(STDOUT);
+    exit(0);
+}
+
+sub invalid {
+    my($key) = @_;
+
+    print "Content-Type: text/html\015\012\015\012";
+    print aid_util::common_html_hdr(20,"Invalid verifcation code",1);
+
+    $key =~ s/&/&amp;/g;
+    $key =~ s/</&lt;/g;
+    $key =~ s/>/&gt;/g;
+
+    print "<p>Sorry, the verification code you entered\n",
+    "(<b>$key</b>) is invalid.</p>\n";
+
+    print aid_util::common_html_ftr(20);
+    close(STDOUT);
+    exit(0);
+}
+
+sub get_staging_rec
+{
+    my($dbh,$sid) = @_;
+
+    my $sql = qq{
+SELECT
+entry_name_surname,entry_name_married,
+entry_name_given,entry_name_mi,
+entry_email,entry_gradclass,entry_affil_other,
+entry_web_page,entry_location,entry_note,entry_reunion
+FROM aid_entry
+WHERE entry_id = $sid
+};
+
+    my $sth = $dbh->prepare($sql);
+    $sth->execute
+	or aid_util::cgi_die("Database Error", $dbh->errstr);
+    my($name_surname,$name_married,
+       $name_given,$name_mi,
+       $email,$gradclass,$affil_other,
+       $web_page,$location,$note_text,$reunion) = $sth->fetchrow_array;
+
+    if (!defined $name_surname) {
+	return undef;
+    }
+
+    my $yr = $gradclass ? $gradclass : $affil_other;
+    my %rec = (
+	       "id" => -1,
+	       "v" => -1,
+	       "sn" => $name_surname,
+	       "mn" => $name_married,
+	       "gn" => $name_given,
+	       "mi" => $name_mi,
+	       "q" => 4,
+	       "r" => $reunion,
+	       "b" => 0,
+	       "c" => $tscreated,
+	       "u" => time(),
+	       "f" => 0,
+	       "yr" => $yr,
+	       "e" => $email,
+	       "w" => $web_page,
+	       "l" => $location,
+	       "n" => $note_text,
+	       );
+
+    foreach my $key (@aid_util::edit_field_names, "n") {
+	$rec{$key} = "" unless defined $rec{$key};
+    }
+
+    return \%rec;
 }

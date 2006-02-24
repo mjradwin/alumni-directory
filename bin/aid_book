@@ -2,9 +2,9 @@
 
 #
 # generates address books in several formats
-# $Id: aid_book,v 6.6 2004/03/22 00:43:26 mradwin Exp mradwin $
+# $Id: aid_book,v 1.3 2006/02/20 04:18:11 mradwin Exp $
 #
-# Copyright (c) 2003  Michael J. Radwin.
+# Copyright (c) 2006  Michael J. Radwin.
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or
@@ -46,15 +46,14 @@ BEGIN {
     unshift @INC, '.';
   }
 }
-use lib "/home/mradwin/local/share/perl";
 
-use DB_File::Lock;
+use strict;
 use Getopt::Std;
 use aid_util;
-use strict;
+use aid_newutil;
 
 $0 =~ s,.*/,,;  # basename
-my $usage = "usage: $0 [-h] [-y year] -{p,e,b,w,m,n,l,v,o} outfile infile.db
+my $usage = "usage: $0 [-h] [-y year] -{p,e,b,w,m,n,l,v,o} outfile
     -h        Display usage information.
 
     -p        Pine address book
@@ -76,20 +75,13 @@ my $usage = "usage: $0 [-h] [-y year] -{p,e,b,w,m,n,l,v,o} outfile infile.db
 my(%opts);
 getopts('hp:e:b:w:m:n:l:v:o:y:t:', \%opts) || die "$usage\n";
 $opts{'h'} && die "$usage\n";
-$ARGV[0] || die "$usage\n";
+@ARGV == 0 || die "$usage\n";
 
 # must have at least 1 option
 die "$usage\n" unless
     $opts{'t'} ||
     $opts{'p'} || $opts{'e'} || $opts{'b'} || $opts{'w'} || 
     $opts{'m'} || $opts{'n'} || $opts{'l'} || $opts{'v'} || $opts{'o'};
-
-my $dbmfile = shift;
-my %DB;
-tie(%DB, 'DB_File::Lock', $dbmfile, O_RDONLY, 0444, $DB_HASH, 'read')
-    or die "$dbmfile: $!\n";
-
-die "no _alpha key!" unless defined $DB{'_alpha'};
 
 my($BOOKp,$BOOKe,$BOOKb,$BOOKw,$BOOKm,$BOOKn,$BOOKl,$BOOKv,$BOOKo);
 my $BOOKt;
@@ -125,35 +117,39 @@ $opts{'l'} && aid_util::book_write_prefix($BOOKl,'l');
 $opts{'v'} && aid_util::book_write_prefix($BOOKv,'v');
 $opts{'o'} && aid_util::book_write_prefix($BOOKo,'o');
 
-my @alpha_ids;
-if ($opts{'y'}) {
-    my $key = '_' . $opts{'y'};
-    die "corrupt/missing $key key!"
-	unless defined $DB{$key} && $DB{$key} ne '';
-    @alpha_ids = unpack("n*",$DB{$key});
-} else {
-    @alpha_ids = unpack("n*",$DB{'_alpha'});
-}
+
+my $dbh = aid_newutil::db_connect();
+my $where = $opts{'y'} ? "WHERE e.entry_gradclass = $opts{'y'}" : "";
+my $DB = aid_newutil::load_records($dbh, $where);
+$dbh->disconnect;
+
+my @alpha_ids = sort { lc($DB->{$a}->{"sn"}) cmp lc($DB->{$b}->{"sn"})
+		       || lc($DB->{$a}->{"gn"}) cmp lc($DB->{$b}->{"gn"})
+		   } keys %{$DB};
 
 foreach my $id (@alpha_ids)
 {
-    my %rec = aid_util::db_unpack_rec($id,$DB{$id});
-    next unless $rec{'v'};
-    next unless $rec{'r'};
+    my $recp = $DB->{$id};
+    next unless $recp->{'v'};
+    next unless $recp->{'r'};
 
-    $opts{'p'} && aid_util::book_write_entry($BOOKp,'p',\%rec);
-    $opts{'e'} && aid_util::book_write_entry($BOOKe,'e',\%rec);
-    $opts{'b'} && aid_util::book_write_entry($BOOKb,'b',\%rec);
-    $opts{'w'} && aid_util::book_write_entry($BOOKw,'w',\%rec);
-    $opts{'m'} && aid_util::book_write_entry($BOOKm,'m',\%rec);
-    $opts{'n'} && aid_util::book_write_entry($BOOKn,'n',\%rec);
-    $opts{'l'} && aid_util::book_write_entry($BOOKl,'l',\%rec);
-    $opts{'v'} && aid_util::book_write_entry($BOOKv,'v',\%rec);
-    $opts{'o'} && aid_util::book_write_entry($BOOKo,'o',\%rec);
-    $opts{'t'} && print $BOOKt $rec{'e'}, "\n";
+    if (!$recp->{"a"}) {
+	$recp->{"a"} = aid_util::generate_alias($recp);
+    }
+
+    $opts{'p'} && aid_util::book_write_entry($BOOKp,'p',$recp);
+    $opts{'e'} && aid_util::book_write_entry($BOOKe,'e',$recp);
+    $opts{'b'} && aid_util::book_write_entry($BOOKb,'b',$recp);
+    $opts{'w'} && aid_util::book_write_entry($BOOKw,'w',$recp);
+    $opts{'m'} && aid_util::book_write_entry($BOOKm,'m',$recp);
+    $opts{'n'} && aid_util::book_write_entry($BOOKn,'n',$recp);
+    $opts{'l'} && aid_util::book_write_entry($BOOKl,'l',$recp);
+    $opts{'v'} && aid_util::book_write_entry($BOOKv,'v',$recp);
+    $opts{'o'} && aid_util::book_write_entry($BOOKo,'o',$recp);
+    $opts{'t'} && print $BOOKt $recp->{'e'}, "\n";
 }
 
-untie(%DB);
+undef $DB;
 
 $opts{'p'} && aid_util::book_write_suffix($BOOKp,'p');
 $opts{'e'} && aid_util::book_write_suffix($BOOKe,'e');

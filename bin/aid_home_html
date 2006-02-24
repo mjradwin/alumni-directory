@@ -2,9 +2,9 @@
 
 #
 # does the html version of just home pages
-# $Id: aid_home_html,v 6.3 2003/10/30 07:28:18 mradwin Exp mradwin $
+# $Id: aid_home_html,v 1.1 2006/02/09 02:45:18 mradwin Exp $
 #
-# Copyright (c) 2003  Michael J. Radwin.
+# Copyright (c) 2006  Michael J. Radwin.
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or
@@ -46,193 +46,99 @@ BEGIN {
     unshift @INC, '.';
   }
 }
-use lib "/home/mradwin/local/share/perl";
 
-use DB_File::Lock;
+use strict;
 use Getopt::Std;
 use aid_util;
+use aid_newutil;
 use aid_submit;
+use DBI ();
 
 $0 =~ s,.*/,,;  # basename
-my $usage = "usage: $0 [-hq] {-s,-d,-f <file>} [-i <keys>] -p <pg> -t <txt> out.html
+my $usage = "usage: $0 [-hq] {-s,-f <file>} -p <pg> -t <txt> out.html
     -h        Display usage information.
     -q        Quiet.
-    -i <keys> Incremental update only for list of keys.
     -p <pg>   Page number is <pg>.   REQUIRED.
     -t <txt>  Page title  is <txt>.  REQUIRED.
 
     -s        Create the submit page.
-    -d        Create the download page.
     -f <file> Create an 'other' page from HTML fragment in <file>.
 
-Either -s, -d or -f must be supplied.  They are mutuallly exclusive.
+Either -s or -f must be supplied.  They are mutuallly exclusive.
 ";
 
-getopts('hst:f:p:di:q') || die "$usage\n";
-$opt_h && die "$usage\n";
-$opt_h = $opt_h;		# avoid warning
-$opt_q = $opt_q;		# avoid warning
+my %opts;
+getopts('hst:f:p:q', \%opts) || die "$usage\n";
+$opts{"h"} && die "$usage\n";
 
 die "$usage\n" unless $ARGV[0];
 die "$usage\n"
-    unless ($opt_s ? 1 : 0) + ($opt_f ? 1 : 0) + ($opt_d ? 1 : 0) == 1;
-die "$usage\n" unless defined($opt_p);
-die "$usage\n" unless defined($opt_t);
+    unless ($opts{"s"} ? 1 : 0) + ($opts{"f"} ? 1 : 0) == 1;
+die "$usage\n" unless defined($opts{"p"});
+die "$usage\n" unless defined($opts{"t"});
 
-@incremental = ($opt_i ? split(/[,\s]+/, $opt_i) : ());
+my $connected = 0;
+my $dbname = aid_util::config("dbname");
+my $dbhost = aid_util::config("dbhost");
+my $dsn = "DBI:mysql:database=$dbname;host=$dbhost";
+my $dbh;
 
-if (@incremental && $opt_d && (! grep(/_years/, @incremental)))
-{
-    print STDOUT "incremental download page avoided; no _years key.\n"
-	unless $opt_q;
-    exit(0);
-}
+my $infile = $opts{"f"};
+my $outfile = shift;
 
-$infile = $opt_f;
-$outfile = shift;
+my @years;
+my $time;
+my @lines;
 
-$dbmfile = aid_util::config('dbmfile');
-
-if ($opt_f)
+if ($opts{"f"})
 {
     open(INFILE,$infile) || die "Can't open $infile: $!\n";
     $time = (stat(INFILE))[9];
     @lines = <INFILE>;
     close(INFILE);
 }
-elsif ($opt_s)
-{
-    $time = (stat(aid_util::config('aiddir') . 'bin/aid_submit.pm'))[9];
-}
 else
 {
-    tie(%DB, 'DB_File::Lock', $dbmfile, O_RDONLY, 0444, $DB_HASH, 'read')
-	or die "$dbmfile: $!\n";
-
-    die "corrupt/missing _t key!" unless defined $DB{'_t'} && $DB{'_t'} ne '';
-    $time = unpack("N",$DB{'_t'});
-    # don't untie(%DB);
+    # $opts{"s"}
+    $time = (stat(aid_util::config('aiddir') . 'bin/aid_submit.pm'))[9];
 }
 
-if ($opt_f && $opt_p == 0)
+if ($opts{"f"} && $opts{"p"} == 0)
 {
-    tie(%DB, 'DB_File::Lock', $dbmfile, O_RDONLY, 0444, $DB_HASH, 'read')
-	or die "$dbmfile: $!\n";
+#    $time = unpack("N",$DB{'_t'});
+    $time = time();		# TODO fix this
 
-    die "corrupt/missing _t key!" unless defined $DB{'_t'} && $DB{'_t'} ne '';
-    $time = unpack("N",$DB{'_t'});
-
-    die "corrupt/missing _years key!"
-	unless defined $DB{'_years'} && $DB{'_years'} ne '';
-
-    @years = unpack("n*",$DB{'_years'});
-    push(@years, 'other') if defined $DB{'_other'} && $DB{'_other'} ne '';
-
-    untie(%DB);
+    my $dbh = aid_newutil::db_connect();
+    @years = aid_newutil::load_years($dbh);
 }
 
 open(OUTFILE,">$outfile") || die "Can't open $outfile: $!\n";
-print OUTFILE aid_util::common_html_hdr($opt_p,$opt_t,0,$time);
+print OUTFILE aid_util::common_html_hdr($opts{"p"},$opts{"t"},0,$time);
 
-if ($opt_s) {
+if ($opts{"s"}) {
     print OUTFILE aid_submit::submit_body(\%aid_util::blank_entry,'');
 
-} elsif ($opt_d) {
-    die "corrupt/missing _years key!"
-	unless defined $DB{'_years'} && $DB{'_years'} ne '';
-    @years = unpack("n*",$DB{'_years'});
-    push(@years, 'other') if defined $DB{'_other'} && $DB{'_other'} ne '';
+} else { # $opts{"f"}
 
-    print OUTFILE "<p>Before downloading nickname and address book files
-for your e-mail program, please read the
-<a href=\"", aid_util::config('master_path'), "etc/copyright.html\">Acceptable
-Use Policy</a>.</p>
-
-<p>This feature is recommended for expert users only.
-You may need to use the \"import\" feature to merge the address book
-with your own.  Aliases (also called nicknames) are of the form
-<code><strong>flllllll</strong></code> where
-<code><strong>f</strong></code> is first initial and
-<code><strong>l</strong></code> is last name.  If there are duplicates
-such as John Smith and Jane Smith, then the first one will be
-<code><strong>jsmith</strong></code> and the second will be
-<code><strong>jsmith2</strong></code>.</p>
-
-<p>For help on importing into your e-mail application, please see <a
-href=\"", aid_util::config('master_path'), 
-"etc/faq.html#download\">instructions</a>.</p>\n\n";
-
-    print OUTFILE "<form method=\"get\" action=\"";
-    print OUTFILE aid_util::config('download_cgi') . "\">\n";
-    print OUTFILE "<input type=\"hidden\" name=\"download\" value=\"1\">\n\n";
-
-    print OUTFILE "<label for=\"year\">Year to download:&nbsp;</label>\n";
-    print OUTFILE "<select name=\"year\" id=\"year\">\n";
-    foreach (@years)
-    {
-	print OUTFILE "<option";
-	print OUTFILE " selected=\"selected\"" if $_ eq '1993';
-	print OUTFILE ">$_" unless $_ eq 'other';
-	print OUTFILE " value=\"other\">Faculty/Staff" if $_ eq 'other';
-#	print OUTFILE "</option>";
-	print OUTFILE "\n";
-    }
-    print OUTFILE "</select>\n";
-
-    print OUTFILE "
-<br>
-
-<input type=\"checkbox\" name=\"plusminus\" id=\"plusminus\"><label
-for=\"plusminus\">&nbsp;Also download graduating classes 3 years before and 3
-years after mine.</label>
-
-<br>
-
-<label for=\"format\">Format:&nbsp;</label>
-<select name=\"format\" id=\"format\">
-<option value=\"n\">Netscape 2.x .HTML</option>
-<option value=\"n\">Netscape 3.x .HTML</option>
-<option value=\"l\">Netscape 4.x .LDIF</option>
-<option value=\"w\">Eudora 2.x</option>
-<option value=\"m\">Eudora 3.x</option>
-<option value=\"m\">Eudora 4.x</option>
-<option value=\"o\" selected=\"selected\">Microsoft Outlook .CSV</option>
-<option value=\"p\">Pine (Unix)</option>
-<option value=\"e\">Elm (Unix)</option>
-<option value=\"b\">Berkeley Mail (Unix)</option>
-</select>
-
-<br>
-
-<label for=\"email\">Your e-mail address:&nbsp;</label>
-<input type=\"text\" name=\"email\" size=\"25\" value=\"\" id=\"email\">
-(for logging purposes only)
-
-<br>
-
-<input type=\"submit\" value=\"Download\">
-</form>\n\n";
-
-} else { # implicit opt_i
-
-    if ($opt_p == 0) {
+    if ($opts{"p"} == 0) {
 	print OUTFILE "<p>Classes:\n",
 	aid_util::class_jump_bar('class/', '.html', \@years, 0), "</p>\n";
     }
 
     print OUTFILE @lines;
 }
-print OUTFILE aid_util::common_html_ftr($opt_p,$time);
 
-untie(%DB) unless $opt_f || $opt_s;
+print OUTFILE aid_util::common_html_ftr($opts{"p"},$time);
+
 close(OUTFILE);
 utime $time, $time, $outfile;
 
 # touch timestamp
-$now = time;
-$ts = $outfile;
+my $now = time;
+my $ts = $outfile;
 $ts =~ s,([^/]+)$,\.$1,;
 open(TS,">$ts") && close(TS);
 utime $now, $now, $ts;
 
+$dbh->disconnect if $connected;
 exit(0);

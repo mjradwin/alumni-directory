@@ -2,9 +2,9 @@
 
 #
 # does the html verbose pages
-# $Id: aid_multi_alpha_html,v 6.3 2003/10/30 07:28:18 mradwin Exp mradwin $
+# $Id: aid_multi_alpha_html,v 1.4 2006/02/23 22:46:42 mradwin Exp $
 #
-# Copyright (c) 2003  Michael J. Radwin.
+# Copyright (c) 2006  Michael J. Radwin.
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or
@@ -43,44 +43,60 @@ BEGIN {
   if ($0 =~ m,(.*[/\\]),) {
     unshift @INC, $1;
   } else {
-    unshift @INC, '.';
+    unshift @INC, ".";
   }
 }
-use lib "/home/mradwin/local/share/perl";
 
-use DB_File::Lock;
+use strict;
 use Getopt::Std;
 use aid_util;
+use aid_newutil;
+use DBI ();
 
 $0 =~ s,.*/,,;  # basename
-my $usage = "usage: $0 [-hq] [-i <keys>] infile.db
+my $usage = "usage: $0 [-hq] [-i <keys>]
     -h        Display usage information.
     -q        Quiet.
     -i <keys> Incremental update only for list of keys.
 ";
 
-getopts('hi:q') || die "$usage\n";
-$opt_h && die "$usage\n";
-$ARGV[0] || die "$usage\n";
-$opt_h = $opt_h;		# avoid warning
+my %opts;
+getopts("hi:q", \%opts) || die "$usage\n";
+$opts{"h"} && die "$usage\n";
 
-@incremental = ($opt_i ? split(/[,\s]+/, $opt_i) : ());
+my @incremental = ($opts{"i"} ? split(/[,\s]+/, $opts{"i"}) : ());
 
-$dbmfile = shift;
-tie(%DB, 'DB_File::Lock', $dbmfile, O_RDONLY, 0444, $DB_HASH, 'read')
-    or die "$dbmfile: $!\n";
+my $dbh = aid_newutil::db_connect();
+my $DB = aid_newutil::load_records($dbh, "");
+$dbh->disconnect;
 
-@initials = ();
-%init_prev = ();
-%init_next = ();
-$prev = '';
-
-for ($initial = 'a'; $initial ne 'aa'; $initial++)
+my %alpha_id;
+my %alpha_ts;
+for (my $initial = "a"; $initial ne "aa"; $initial++)
 {
-    if (defined $DB{"_a_${initial}"})
+    $alpha_id{$initial} = [];
+    $alpha_ts{$initial} = 0;
+}
+
+foreach my $recp (values %{$DB})
+{
+#    next unless $recp->{"v"};
+    my $initial = lc(substr($recp->{"sn"}, 0, 1));
+    next if $initial !~ /^[a-z]$/;
+    push(@{$alpha_id{$initial}}, $recp->{"id"});
+    $alpha_ts{$initial} = $recp->{"u"} if $recp->{"u"} > $alpha_ts{$initial};
+}
+
+my @initials;
+my %init_prev;
+my %init_next;
+my $prev = "";
+for (my $initial = "a"; $initial ne "aa"; $initial++)
+{
+    if ($alpha_ts{$initial})
     {
 	push(@initials, $initial);
-	if ($prev ne '')
+	if ($prev ne "")
 	{
 	    $init_next{$prev}    = $initial;
 	    $init_prev{$initial} = $prev;
@@ -90,69 +106,56 @@ for ($initial = 'a'; $initial ne 'aa'; $initial++)
 }
 
 select(STDOUT); $| = 1;
-foreach $initial (@initials)
+foreach my $initial (@initials)
 {
-    $key = "_t_${initial}";
-    if (@incremental)
-    {
-	next unless grep(/$key/, @incremental);
-    }
-
-    die "corrupt/missing $key key!"
-	unless defined $DB{$key} && $DB{$key} ne '';
-    $time = unpack("N",$DB{$key});
+    my $time = $alpha_ts{$initial};
 
     print STDOUT "$initial "
-	unless $opt_q;
+	unless $opts{"q"};
 
-    $key = "_a_${initial}";
-    die "corrupt/missing $key key!"
-	unless defined $DB{$key} && $DB{$key} ne '';
-    @alpha_ids = unpack("n*",$DB{$key});
+    my $outFile = aid_util::config("wwwdir") . "alpha/${initial}.html";
+    open(FMTOUT,">$outFile.$$") || die "Can't open $outFile.$$: $!\n";
 
-    $outFile = aid_util::config('wwwdir') . "alpha/${initial}.html";
-    open(FMTOUT,">$outFile") || die "Can't open $outFile: $!\n";
-
-    $extra_meta  = "\n<link rel=\"contents\" href=\"./\" title=\"Alphabetically\">";
+    my $extra_meta = "\n<link rel=\"contents\" href=\"./\" title=\"Alphabetically\">";
     $extra_meta .= "\n<link rel=\"prev\" href=\"$init_prev{$initial}.html\" title=\"`\u$init_prev{$initial}' Alumni\">"
 	if defined $init_prev{$initial};
     $extra_meta .= "\n<link rel=\"next\" href=\"$init_next{$initial}.html\" title=\"`\u$init_next{$initial}' Alumni\">"
 	if defined $init_next{$initial};
 
     print FMTOUT aid_util::common_html_hdr(1,"`\u$initial' Alumni",1,$time,
-				      '',$extra_meta),
-      aid_util::common_intro_para(0),
-      "<p>\n", &alpha_jump_bar($initial), "</p>\n",
-      "<hr noshade=\"noshade\" size=\"1\">\n\n<ul>";
+					   "",$extra_meta),
+    aid_util::common_intro_para(0),
+    "<p>\n", alpha_jump_bar($initial), "</p>\n",
+    "<hr noshade=\"noshade\" size=\"1\">\n\n<ul>";
 
-    foreach $id (@alpha_ids)
+    my @alpha_ids = sort { lc($DB->{$a}->{"sn"}) cmp lc($DB->{$b}->{"sn"})
+			   || lc($DB->{$a}->{"gn"}) cmp lc($DB->{$b}->{"gn"})
+		       } @{$alpha_id{$initial}};
+
+    foreach my $id (@alpha_ids)
     {
-	my %rec = aid_util::db_unpack_rec($id,$DB{$id});
-	next unless $rec{'v'};
-
-	print FMTOUT &html_pre_entry(\%rec);
+	print FMTOUT html_pre_entry($DB->{$id});
     }
 
     print FMTOUT "</ul>\n";
     print FMTOUT aid_util::common_html_ftr(1,$time);
     close(FMTOUT);
-    utime $time, $time, $outFile;
+    utime $time, $time, "$outFile.$$";
+    rename("$outFile.$$", $outFile);
 }
 
-die "corrupt/missing _t key!" unless defined $DB{'_t'} && $DB{'_t'} ne '';
-$time = unpack("N",$DB{'_t'});
-untie(%DB);
 print STDOUT "\n"
-    unless $opt_q;
+    unless $opts{"q"};
 
 # index page
-$outFile = aid_util::config('wwwdir') . "alpha/index.html";
+my $outFile = aid_util::config("wwwdir") . "alpha/index.html";
 open(FMTOUT,">$outFile") || die "Can't open $outFile: $!\n";
 
-print FMTOUT aid_util::common_html_hdr(-1,'Alphabetically',0,$time);
+my $time = time();
+print FMTOUT aid_util::common_html_hdr(-1,"Alphabetically",0,$time);
 
 print FMTOUT "<p align=\"center\"><big>\n";
-print FMTOUT &alpha_jump_bar('');
+print FMTOUT alpha_jump_bar("");
 print FMTOUT "</big></p>\n\n";
 
 print FMTOUT aid_util::common_html_ftr(-1,$time);
@@ -160,8 +163,8 @@ close(FMTOUT);
 utime $time, $time, $outFile;
 
 # touch timestamp
-$now = time;
-$ts = $outFile;
+my $now = time;
+my $ts = $outFile;
 $ts =~ s,([^/]+)$,\.$1,;
 open(TS,">$ts") && close(TS);
 utime $now, $now, $ts;
@@ -185,7 +188,7 @@ sub alpha_jump_bar {
     my($regular) = @_;
     my($i,$retval);
 
-    $retval = '';
+    $retval = "";
     foreach $i (@initials)
     {
 	$retval .= (($regular eq $i) ?

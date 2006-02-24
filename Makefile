@@ -2,9 +2,9 @@
 #     FILE: Makefile
 #   AUTHOR: Michael J. Radwin
 #    DESCR: Makefile for building the Alumni Internet Directory
-#      $Id: Makefile,v 1.9 2004/02/17 03:44:37 mradwin Exp mradwin $
+#      $Id: Makefile,v 1.4 2006/02/24 00:00:25 mradwin Exp $
 #
-# Copyright (c) 2005  Michael J. Radwin.
+# Copyright (c) 2006  Michael J. Radwin.
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or
@@ -40,7 +40,7 @@
 # SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 SCHOOL=generic
-WWWROOT=$(HOME)/public_html
+WWWROOT=/home/mradwin/web/radwin.org
 WWWDIR=$(WWWROOT)/$(SCHOOL)
 CGIDIR=$(WWWROOT)/$(SCHOOL)/bin
 DATADIR=$(HOME)/alumni/$(SCHOOL)/data
@@ -69,15 +69,13 @@ TARFILES= \
 SNAPSHOTFILES= $(TAR_AIDDIR)
 
 all:	index submit \
-	addupdate reunions links faq copyright \
+	addupdate reunions links faq email copyright \
 	recent multi_class multi_alpha \
-	pages goners stats pine_book rss db_dump
+	stats pine_book rss
 
 install:
 	$(MKDIR) logs
 	($(MKDIR) $(WWWDIR) ; /bin/chmod 0755 $(WWWDIR))
-	echo 'AddType text/html;charset=ISO-8859-1 html' > $(WWWDIR)/.htaccess
-	echo 'AddType text/xml xml rdf' >> $(WWWDIR)/.htaccess
 	($(MKDIR) $(CGIDIR) ; /bin/chmod 0755 $(CGIDIR))
 	$(CP) $(AID_SUBMIT_PL) $(AID_UTIL_PL) $(BINDIR)/school_config.pl \
 	      $(CGISRC)/form $(CGISRC)/search $(CGISRC)/about \
@@ -87,55 +85,34 @@ install:
 	$(MKDIR) $(WWWDIR)/etc
 	$(CP) $(CGISRC)/xml.gif $(WWWDIR)/etc
 	$(CP) README $(WWWDIR)/etc/aid-README.txt
+	echo 'AddType text/html;charset=ISO-8859-1 html' > $(WWWDIR)/.htaccess
+	echo 'AddType text/xml xml rdf' >> $(WWWDIR)/.htaccess
 	echo 'SetHandler cgi-script' > $(CGIDIR)/.htaccess
 
-WORKING_DB=$(DATADIR)/working.db
-DBFILE=$(WWWDIR)/master.db
-dbfile:	$(DBFILE)
-$(DBFILE):	$(WORKING_DB)
-	$(CP) $(WORKING_DB) $(DBFILE)
-	chmod 0444 $(DBFILE)
-
-DB_DUMP=$(DATADIR)/master.ini
-db_dump:	$(DB_DUMP)
-$(DB_DUMP):	$(DBFILE)
-	$(BINDIR)/aid_dbm_read -I $(DB_DUMP) $(DBFILE)
+DBFILE=$(DATADIR)/db.timestamp
 
 MULTI_ALPHA_TS=$(WWWDIR)/alpha/.index.html
 multi_alpha:	$(MULTI_ALPHA_TS)
 $(MULTI_ALPHA_TS):	$(DBFILE) $(BINDIR)/aid_multi_alpha_html
 	$(MKDIR) $(WWWDIR)/alpha
-	$(BINDIR)/aid_multi_alpha_html $(QUIET) -i "$(MOD_KEYS)" $(DBFILE)
+	$(BINDIR)/aid_multi_alpha_html $(QUIET) -i "$(MOD_IDS)"
 
 RECENT=$(WWWDIR)/recent.html
 RECENT_TS=$(WWWDIR)/.recent.html
 recent:	$(RECENT_TS)
-$(RECENT_TS):	$(DBFILE) $(BINDIR)/aid_shortlist_html
-	$(BINDIR)/aid_shortlist_html -v -m 0.25 -M 'week' $(DBFILE) $(RECENT)
-
-GONERS=$(WWWDIR)/invalid.html
-GONERS_TS=$(WWWDIR)/.invalid.html
-goners:	$(GONERS_TS)
-$(GONERS_TS):	$(DBFILE) $(BINDIR)/aid_goners_html
-	$(BINDIR)/aid_goners_html $(QUIET) -i "$(MOD_KEYS)" $(DBFILE) $(GONERS)
-
-PAGES=$(WWWDIR)/pages.html
-PAGES_TS=$(WWWDIR)/.pages.html
-pages:	$(PAGES_TS)
-$(PAGES_TS):	$(DBFILE) $(BINDIR)/aid_class_html
-	$(BINDIR)/aid_class_html $(QUIET) -w -i "$(MOD_KEYS)" $(DBFILE) $(PAGES)
+$(RECENT_TS):	$(DBFILE) $(BINDIR)/aid_recent_html
+	$(BINDIR)/aid_recent_html -d 7 $(RECENT)
 
 MULTI_CLASS=$(WWWDIR)/class/.index.html
 multi_class:	$(MULTI_CLASS)
 $(MULTI_CLASS):	$(DBFILE) $(BINDIR)/aid_multi_class_html
-	$(MKDIR) $(WWWDIR)/class
-	$(BINDIR)/aid_multi_class_html -d $(QUIET) -i "$(MOD_KEYS)" \
-		$(DBFILE) $(WWWDIR)/reunions.db
+	$(MKDIR) $(WWWDIR)/class $(WWWDIR)/detail
+	$(BINDIR)/aid_multi_class_html -d $(QUIET) -i "$(MOD_IDS)"
 
 INDEX=$(WWWDIR)/index.html
 INDEX_TS=$(WWWDIR)/.index.html
 index:	$(INDEX_TS)
-$(INDEX_TS):	$(DATADIR)/index.include $(BINDIR)/aid_home_html $(DBFILE)
+$(INDEX_TS):	$(DBFILE) $(DATADIR)/index.include $(BINDIR)/aid_home_html
 	$(BINDIR)/aid_home_html -p0 -f $(DATADIR)/index.include \
 		$(QUIET) -t '' \
 		$(INDEX)
@@ -146,9 +123,9 @@ reunions:	$(REUNIONS_TS)
 $(REUNIONS_TS):	$(DATADIR)/reunions.dat $(BINDIR)/aid_reunion_html \
 $(BINDIR)/aid_reunion_create
 	$(BINDIR)/aid_reunion_create \
-		$(WWWDIR)/reunions.db $(DATADIR)/reunions.dat
+		$(DATADIR)/reunions.dat
 	$(MKDIR) $(WWWDIR)/etc
-	$(BINDIR)/aid_reunion_html $(WWWDIR)/reunions.db $(REUNIONS)
+	$(BINDIR)/aid_reunion_html $(REUNIONS)
 
 LINKS=$(WWWDIR)/etc/links.html
 LINKS_TS=$(WWWDIR)/etc/.links.html
@@ -168,6 +145,15 @@ $(FAQ_TS):	$(DATADIR)/faq.include $(BINDIR)/aid_home_html
 		$(QUIET) -t 'Frequently Asked Questions' \
 		$(FAQ)
 
+EMAIL=$(WWWDIR)/etc/email.html
+EMAIL_TS=$(WWWDIR)/etc/.email.html
+email:	$(EMAIL_TS)
+$(EMAIL_TS):	$(DATADIR)/email.include $(BINDIR)/aid_home_html
+	$(MKDIR) $(WWWDIR)/etc
+	$(BINDIR)/aid_home_html -p14 -f $(DATADIR)/email.include \
+		$(QUIET) -t 'Email Gateway' \
+		$(EMAIL)
+
 COPYRIGHT=$(WWWDIR)/etc/copyright.html
 COPYRIGHT_TS=$(WWWDIR)/etc/.copyright.html
 copyright:	$(COPYRIGHT_TS)
@@ -180,15 +166,15 @@ $(COPYRIGHT_TS):	$(DATADIR)/copyright.include $(BINDIR)/aid_home_html
 
 STATS=$(WWWDIR)/etc/stats.html
 stats:	$(STATS)
-$(STATS):	$(BINDIR)/aid_stats $(DBFILE)
+$(STATS):	$(DBFILE) $(BINDIR)/aid_stats
 	$(MKDIR) $(WWWDIR)/etc
-	$(BINDIR)/aid_stats $(DBFILE) $(STATS)
+	$(BINDIR)/aid_stats $(STATS)
 
 RSS=$(WWWDIR)/summary.rdf
 RSS_TS=$(WWWDIR)/.summary.rdf
 rss:	$(RSS_TS)
-$(RSS_TS):	$(BINDIR)/aid_rss_summary $(DBFILE)
-	$(BINDIR)/aid_rss_summary $(DBFILE) $(RSS) $(WWWDIR)/reunions.db
+$(RSS_TS):	$(DBFILE) $(BINDIR)/aid_rss_summary
+	$(BINDIR)/aid_rss_summary $(RSS)
 
 SUBMIT=$(WWWDIR)/add/new.html
 SUBMIT_TS=$(WWWDIR)/add/.new.html
@@ -211,11 +197,8 @@ $(ADDUPDATE_TS):	$(DATADIR)/add.include $(BINDIR)/aid_home_html
 PINE_BOOK=$(HOME)/.addressbook-$(SCHOOL)
 pine_book:	$(PINE_BOOK)
 $(PINE_BOOK):	$(DBFILE) $(BINDIR)/aid_book
-	$(BINDIR)/aid_book -p $(PINE_BOOK) $(DBFILE)
+	$(BINDIR)/aid_book -p $(PINE_BOOK)
 	$(RM) $(PINE_BOOK).lu
-
-recent.txt:	$(DBFILE) $(BINDIR)/aid_shortlist_html
-	$(BINDIR)/aid_shortlist_html -de -m3 -t $(DBFILE) recent.txt
 
 tar:
 	$(MKDIR) $(WWWDIR)/etc
@@ -234,12 +217,11 @@ clean:
 	$(MULTI_CLASS) \
 	$(MULTI_ALPHA_TS) \
 	$(RECENT_TS) \
-	$(GONERS_TS) \
-	$(PAGES_TS) \
 	$(INDEX_TS) \
 	$(REUNIONS_TS) \
 	$(LINKS_TS) \
 	$(FAQ_TS) \
+	$(EMAIL_TS) \
 	$(COPYRIGHT_TS) \
 	$(SUBMIT_TS) \
 	$(ADDUPDATE_TS) \

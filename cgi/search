@@ -4,9 +4,9 @@
 #     FILE: search.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: Alumni Internet Directory CGI search
-#      $Id: search,v 6.3 2003/10/30 07:28:07 mradwin Exp mradwin $
+#      $Id: search,v 1.2 2006/02/23 22:33:38 mradwin Exp $
 #
-# Copyright (c) 2005  Michael J. Radwin.
+# Copyright (c) 2006  Michael J. Radwin.
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or
@@ -42,196 +42,208 @@
 # SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 BEGIN {
-  if ($0 =~ m,(.*[/\\]),) {
-    unshift @INC, $1;
-  } else {
-    unshift @INC, '.';
-  }
+    if ($0 =~ m,(.*[/\\]),) {
+	unshift @INC, $1;
+    } else {
+	unshift @INC, ".";
+    }
 }
-use lib "/home/mradwin/local/share/perl";
 
-use DB_File::Lock;
+use strict;
 use CGI qw(-no_xhtml);
 use CGI::Carp qw(fatalsToBrowser);
 use aid_util;
-use strict;
-
-my $dbmfile = aid_util::config('dbmfile');
-die "$dbmfile: $!\n" unless -r $dbmfile;
-
-my(%DB);
-tie(%DB, 'DB_File::Lock', $dbmfile, O_RDONLY, 0444, $DB_HASH, 'read')
-    or die "$dbmfile: $!\n";
+use aid_newutil;
+use DBI ();
 
 my %in;
 my($q) = new CGI;
 foreach my $key ($q->param())
 {
     my($val) = $q->param($key);
-    $val = '' unless defined $val;
+    $val = "" unless defined $val;
     $in{$key} = $val;
 }
 
-if (!defined($in{'q'}) || $in{'q'} =~ /^[^\w]*$/)
+my $dbh = aid_newutil::db_connect();
+
+if (!defined($in{"q"}) || $in{"q"} =~ /^[^\w]*$/)
 {
     print "Content-Type: text/html\015\012\015\012";
 
-    print aid_util::common_html_hdr(6, 'Search', 1);
-    &print_search_form('', defined $in{'y'} ? $in{'y'} : '');
+    print aid_util::common_html_hdr(6, "Search", 1);
+    print_search_form($dbh, "", defined $in{"y"} ? $in{"y"} : "");
     print aid_util::common_html_ftr(6);
 
-    untie(%DB);
-
     close(STDOUT);
+    $dbh->disconnect;
     exit(0);
 }
 
-defined $DB{'_alpha'} || die "$dbmfile: missing _alpha\n";
-my @alpha_ids = unpack("n*",$DB{'_alpha'});
-
-my $query_save = $in{'q'};
+my $query_save = $in{"q"};
 $query_save =~ s/^\s*//;
 $query_save =~ s/\s*$//;
 my $query = $query_save;
-$query =~ s/[^\w]/ /g; #'#
+$query =~ s/[^\w]/ /g; # nuke everything but wordchars
 $query =~ s/\band\b//ig;
 $query =~ s/\bor\b//ig;
 my @search_terms = split(/\s+/, $query);
+my $qquery = "'+" . join(" +", @search_terms) . "'";
+#my $qquery = $dbh->quote($query);
 
-my %results;
-foreach (@alpha_ids)
-{
-    my %rec = aid_util::db_unpack_rec($_,$DB{$_});
-    my $fullname = aid_util::inorder_fullname(\%rec);
-    my $key = "\L$rec{'sn'}\0$rec{'gn'}\0$rec{'mi'}\0$rec{'mn'}\0$rec{'yr'}\E\0$rec{'id'}";
+my $sql = qq{
+SELECT a.alumnus_id,a.alumnus_status,
+e.entry_name_surname,e.entry_name_married,
+e.entry_name_given,e.entry_name_mi,
+e.entry_gradclass,e.entry_affil_other
+FROM aid_alumnus a, aid_entry e
+WHERE a.alumnus_entry_id=e.entry_id AND
+MATCH (e.entry_name_surname,e.entry_name_married,e.entry_name_given)
+AGAINST ($qquery IN BOOLEAN MODE)
+};
 
-    if (defined $in{'y'} && $in{'y'} ne '')
-    {
-	next if $in{'y'} eq 'other' && $rec{'yr'} =~ /^\d+$/;
-	next unless ($in{'y'} eq $rec{'yr'}) || $in{'y'} eq 'other';
-    }
-
-    $results{$key} = 1;
-    foreach my $term (@search_terms)
-    {
-	if ($fullname !~ /$term/i)
-	{
-	    delete $results{$key};
-	    last;
-	}
-    }
+if (defined $in{"y"} && $in{"y"} eq "other") {
+    $sql .= " AND e.entry_affil_other IS NOT NULL";
+} elsif (defined $in{"y"} && $in{"y"} =~ /^\d+$/) {
+    $sql .= " AND e.entry_gradclass = $in{'y'}";
 }
-undef @alpha_ids;
+
+$sql .= " ORDER BY e.entry_gradclass";
+
+my $sth = $dbh->prepare($sql);
+$sth->execute
+    or aid_util::cgi_die("Database Error", $dbh->errstr);
+
+my @results;
+while (my($id,$status,
+	  $name_surname,$name_married,$name_given,$name_mi,
+	  $gradclass,$affil_other) =  $sth->fetchrow_array)
+{
+	my $yr = $gradclass ? $gradclass : $affil_other;
+	my %rec = (
+		   "id" => $id,
+		   "v" => $status,
+		   "sn" => $name_surname,
+		   "mn" => $name_married,
+		   "gn" => $name_given,
+		   "mi" => $name_mi,
+		   "yr" => $yr,
+		   );
+
+	foreach my $key (@aid_util::edit_field_names, "n") {
+	    $rec{$key} = "" unless defined $rec{$key};
+	}
+
+	push(@results, \%rec);
+}
+
+my $nresults = scalar(@results);
 
 print "Content-Type: text/html\015\012\015\012";
 
-my @results = sort keys %results;
-undef %results;
-
 $query_save = aid_util::html_entify_str($query_save);
 
-if ($#results == -1)
+if ($nresults == 0)
 {
-    print aid_util::common_html_hdr(26, 'No matches', 1);
+    print aid_util::common_html_hdr(26, "No matches", 1);
+
+    print_search_form($dbh, $query_save, defined $in{"y"} ? $in{"y"} : "");
+
     print "<p>Sorry, no matches were found containing\n";
     print "<strong>$query_save</strong>";
     print "\nin <strong>Class of $in{'y'}</strong>"
-	if defined $in{'y'} && $in{'y'} =~ /^\d+$/;
+	if defined $in{"y"} && $in{"y"} =~ /^\d+$/;
     print "\nin <strong>Faculty/Staff</strong>"
-	if defined $in{'y'} && $in{'y'} eq 'other';
+	if defined $in{"y"} && $in{"y"} eq "other";
     print "\nin <strong>all graduating classes</strong>"
-	if ! defined $in{'y'} || $in{'y'} eq '';
+	if ! defined $in{"y"} || $in{"y"} eq "";
     print ".</p>\n\n";
 
     print "<p>You might try broadening your search.  Try just the first\n";
     print "or last name, or search \"all years\" instead of a particular\n";
     print "graduating class.  Or, just browse the\n";
-    print "<a href=\"", aid_util::config('master_path'), "alpha/\">";
+    print "<a href=\"", aid_util::config("master_path"), "alpha/\">";
     print "Alphabetical</a> or\n";
-    print "<a href=\"", aid_util::config('master_path'), "class/\">";
+    print "<a href=\"", aid_util::config("master_path"), "class/\">";
     print "Graduating Class</a>\nlistings.</p>\n\n";
 
     print "<p>For some other reasons why you might not find who you're\n";
     print "looking for, please see the\n";
-    print "<a href=\"", aid_util::config('master_path');
+    print "<a href=\"", aid_util::config("master_path");
     print "etc/faq.html#incomplete\">Frequently Asked Questions</a>.</p>\n\n";
 
-    &print_search_form($query_save, defined $in{'y'} ? $in{'y'} : '');
     print aid_util::common_html_ftr(26);
 
-    untie(%DB);
-
     close(STDOUT);
+    $dbh->disconnect;
     exit(0);
 }
 else
 {
-    if ($#results == 0)
+    if ($nresults == 1)
     {
-	print aid_util::common_html_hdr(26, 'Found 1 match', 1);
+	print aid_util::common_html_hdr(26, "Found 1 match", 1);
     }
     else
     {
-	print aid_util::common_html_hdr(26, 'Found ' . ($#results+1) . ' matches', 1);
+	print aid_util::common_html_hdr(26, "Found $nresults matches", 1);
     }
 
+    print_search_form($dbh, $query_save, defined $in{"y"} ? $in{"y"} : "");
+
     print "\n<ul>\n";
-    foreach (@results)
+    foreach my $recp (@results)
     {
-	my(undef,undef,undef,undef,undef,$id) = split(/\0/);
-	my %rec = aid_util::db_unpack_rec($id,$DB{$id});
-	my $fullname = aid_util::inorder_fullname(\%rec);
-	my($affil,undef) = aid_util::affiliate(\%rec,0);
+	my $fullname = aid_util::inorder_fullname($recp);
+	my($affil,undef) = aid_util::affiliate($recp,0);
 	
 	print "<li>";
-	if (!$rec{'v'} || $in{'upd'})
+	if (!$recp->{"v"} || $in{"upd"})
 	{
-	    print "<a href=\"", aid_util::config('about_cgi'), 
-	    "/", $rec{'id'}, "\">$fullname</a> $affil";
+	    print "<a href=\"", aid_util::config("about_cgi"), 
+	    "/", $recp->{"id"}, "\">$fullname</a> $affil";
 	}
 	else
 	{
-	    print "<a href=\"", aid_util::about_path(\%rec), 
+	    print "<a href=\"", aid_util::about_path($recp), 
 	    "\">$fullname</a> $affil";
 	}
 
-	if (! $rec{'v'})
+	if (! $recp->{"v"})
 	{
 	    print " <em>(invalid e-mail address)</em>";
 	}
 	print "\n";
     }
     print "</ul>\n";
-    &print_search_form($query_save, defined $in{'y'} ? $in{'y'} : '');
     print aid_util::common_html_ftr(26);
 }
 
-untie(%DB);
-
 close(STDOUT);
+$dbh->disconnect;
 exit(0);
 
 sub print_search_form
 {
-    my($q,$y) = @_;
+    my($dbh,$q,$y) = @_;
 
-    defined $DB{'_years'} || die "$dbmfile: missing _years\n";
-    my @years = unpack("n*",$DB{'_years'});
-    push(@years, 'other');
+    my @years = aid_newutil::load_years($dbh);
+    push(@years, "other");
 
+    print "\n<p>";
     print "<center>\n",
-      "<form method=\"get\" action=\"" . aid_util::config('search_cgi') . "\">\n",
+      "<form method=\"get\" action=\"" . aid_util::config("search_cgi") . "\">\n",
       "<input type=\"text\" name=\"q\" id=\"q\" size=\"25\" value=\"$q\">\n",
       "<select name=\"y\" id=\"y\">\n";
     print "<option";
-    print " selected=\"selected\"" if '' eq $y;
+    print " selected=\"selected\"" if "" eq $y;
     print " value=\"\">all years</option>\n";
     foreach (@years)
     {
 	print "<option";
 	print " selected=\"selected\"" if $_ eq $y;
-	print ">$_" unless $_ eq 'other';
-	print " value=\"other\">Faculty/Staff" if $_ eq 'other';
+	print ">$_" unless $_ eq "other";
+	print " value=\"other\">Faculty/Staff" if $_ eq "other";
 	print "</option>\n";
     }
     print "</select>\n";

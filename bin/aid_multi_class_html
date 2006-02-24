@@ -2,9 +2,9 @@
 
 #
 # does the html multi_class pages
-# $Id: aid_multi_class_html,v 6.11 2005/01/17 20:20:58 mradwin Exp mradwin $
+# $Id: aid_multi_class_html,v 1.9 2006/02/23 22:44:55 mradwin Exp $
 #
-# Copyright (c) 2003  Michael J. Radwin.
+# Copyright (c) 2006  Michael J. Radwin.
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or
@@ -43,58 +43,43 @@ BEGIN {
   if ($0 =~ m,(.*[/\\]),) {
     unshift @INC, $1;
   } else {
-    unshift @INC, '.';
+    unshift @INC, ".";
   }
 }
-use lib "/home/mradwin/local/share/perl";
 
-use DB_File::Lock;
+use strict;
 use Time::Local;
 use POSIX qw(strftime);
 use Getopt::Std;
 use Digest::MD5  qw(md5_hex);
 use aid_util;
+use aid_newutil;
+use DBI ();
 
 $0 =~ s,.*/,,;  # basename
-my $usage = "usage: $0 [-hq] [-i <keys>] infile.db [reunions.db]
+my $usage = "usage: $0 [-hq] [-i <keys>]
     -h        Display usage information.
     -q        Quiet.
     -d        Generate 'detail' pages for each individual.
     -i <keys> Incremental update only for list of keys.
 ";
 
-getopts('hi:qd') || die "$usage\n";
-$opt_h && die "$usage\n";
-$ARGV[0] || die "$usage\n";
-$opt_h = $opt_h;		# avoid warning
-$opt_d = $opt_d;		# avoid warning
+my %opts;
+getopts("hi:qd", \%opts) || die "$usage\n";
+$opts{"h"} && die "$usage\n";
+@ARGV == 0 || die "$usage\n";
 
-@incremental = ($opt_i ? split(/[,\s]+/, $opt_i) : ());
+my @incremental = ($opts{"i"} ? split(/[,\s]+/, $opts{"i"}) : ());
 
-$dbmfile = shift;
-tie(%DB, 'DB_File::Lock', $dbmfile, O_RDONLY, 0444, $DB_HASH, 'read')
-    or die "$dbmfile: $!\n";
+my $dbh = aid_newutil::db_connect();
+my @years = aid_newutil::load_years($dbh);
 
-my(%RDB);
-if ($ARGV[0])
+my %class_prev;
+my %class_next;
+my $prev = "";
+foreach my $year (@years)
 {
-    $r_dbmfile = shift;
-    tie(%RDB, 'DB_File::Lock', $r_dbmfile, O_RDONLY, 0444, $DB_HASH, 'read')
-	or die "$r_dbmfile: $!\n";
-}
-
-die "corrupt/missing _years key!"
-    unless defined $DB{'_years'} && $DB{'_years'} ne '';
-
-@years = unpack("n*",$DB{'_years'});
-push(@years, 'other') if defined $DB{'_other'} && $DB{'_other'} ne '';
-
-%class_prev = ();
-%class_next = ();
-$prev = '';
-foreach $year (@years)
-{
-    if ($prev ne '')
+    if ($prev ne "")
     {
 	$class_next{$prev} = $year;
 	$class_prev{$year} = $prev;
@@ -102,45 +87,72 @@ foreach $year (@years)
     $prev = $year;
 }
 
+
+# fake reunion DB
+my %RDB;
+my $sql = <<EOSQL
+SELECT reunion_gradclass,
+    reunion_date,
+    reunion_text
+FROM aid_reunion
+EOSQL
+;
+
+my $sth = $dbh->prepare($sql);
+$sth->execute or die $sth->errstr;
+while (my($class,$date,$html) = $sth->fetchrow_array) {
+    if (!$date) {
+	my $val = "TBA\0" . $html; 
+	$RDB{$class} = $val;
+    } else {
+	$date =~ s/-/\//g;
+	my $val = $date . "\0" . $html;
+	$RDB{$class} = $val;
+    }
+}
+
+
+### main loop
 select(STDOUT); $| = 1;
-foreach $year (@years)
+
+my $DB = aid_newutil::load_records($dbh, "");
+$dbh->disconnect;
+
+foreach my $year (@years)
 {
-    $key = "_t_${year}";
-    if (@incremental)
+    print STDOUT "$year " unless $opts{"q"};
+
+    my $time = 0;
+    my $count = 0;
+    my @class_ids;
+    foreach my $recp (values %{$DB})
     {
-	next unless grep(/$key/, @incremental);
-	print STDOUT "$year "
-	    unless $opt_q;
+#	next unless $recp->{"v"};
+	next unless $recp->{"yr"} eq $year;
+	$time = $recp->{"u"} if $recp->{"u"} > $time;
+	push(@class_ids, $recp->{"id"});
+	$count++;
+    }
+
+    my @ids = sort { lc($DB->{$a}->{"sn"}) cmp lc($DB->{$b}->{"sn"})
+		     || lc($DB->{$a}->{"gn"}) cmp lc($DB->{$b}->{"gn"})
+		 } @class_ids;
+
+    my $title = ($year =~ /^\d+$/) ? "Class of $year" : "Faculty and Staff";
+    my $outFile = aid_util::config("wwwdir") . "class/${year}.html";
+    open(FMTOUT,">$outFile.$$") || die "Can't open $outFile.$$: $!\n";
+
+    my $subtitle;
+    if ($count == 1)
+    {
+	$subtitle = "1 alumnus";
     }
     else
     {
-	print STDOUT "."
-	    unless $opt_q;
+	$subtitle = sprintf("%d alumni", $count);
     }
 
-    die "corrupt/missing $key key!"
-	unless defined $DB{$key} && $DB{$key} ne '';
-    $time = unpack("N",$DB{$key});
-
-    $key = "_${year}";
-    die "corrupt/missing $key key!"
-	unless defined $DB{$key} && $DB{$key} ne '';
-    @ids = unpack("n*",$DB{$key});
-
-    $title = ($year =~ /^\d+$/) ? "Class of $year" : "Faculty and Staff";
-    $outFile = aid_util::config('wwwdir') . "class/${year}.html";
-    open(FMTOUT,">$outFile") || die "Can't open $outFile: $!\n";
-
-    if ($#ids + 1 == 1)
-    {
-	$subtitle = '1 alumnus';
-    }
-    else
-    {
-	$subtitle = sprintf("%d alumni", $#ids + 1);
-    }
-
-    $extra_meta  = "\n<link rel=\"contents\" href=\"./\" title=\"Graduating Classes\">";
+    my $extra_meta = "\n<link rel=\"contents\" href=\"./\" title=\"Graduating Classes\">";
     $extra_meta .= "\n<link rel=\"prev\" href=\"$class_prev{$year}.html\" title=\"Class of $class_prev{$year}\">"
 	if defined $class_prev{$year};
 
@@ -155,34 +167,26 @@ foreach $year (@years)
 
     print FMTOUT aid_util::common_html_hdr(2,$title,1,$time,$subtitle,$extra_meta);
     print FMTOUT aid_util::common_intro_para(0);
-    print FMTOUT aid_util::class_jump_bar('', '.html', \@years, 1, $year);
+    print FMTOUT aid_util::class_jump_bar("", ".html", \@years, 1, $year);
     print FMTOUT "<hr noshade=\"noshade\" size=\"1\">\n\n";
 
-    my(%r);
-    my($key,$val);
+    my %r;
     while (my($key,$val) = each(%RDB))
     {
 	next if $key =~ /^_/;
 
-	if ($key =~ /^\d{4}$/ || $key eq 'other')
+	if ($key =~ /^\d{4}$/ || $key eq "other")
 	{
 	    next unless $key eq $year;
 	}
 
-#	my($date,$html) = split(/\0/, $val, 2);
-#	my($yr,$mon,$mday) = split(/\//, $date, 3);
-#	my($t) = &Time::Local::timelocal(59,59,23,$mday,$mon-1,$yr-1900,0,0,0);
-
-#	if ($t > time)
-#	{
-	    $r{$key} = $val;
-#	}
+	$r{$key} = $val;
     }
 
     if (keys %r)
     {
 	print FMTOUT "<h3>Reunion Info</h3>\n<ul>\n";
-	foreach $key (sort keys %r)
+	foreach my $key (sort keys %r)
 	{
 	    my($refname,$title);
 
@@ -205,7 +209,7 @@ foreach $year (@years)
 	    }
 
 	    my($long_date);
-	    my($prefix) = 'Past';
+	    my($prefix) = "Past";
 	    if ($date eq "TBA")
 	    {
 		$prefix = "Upcoming";
@@ -216,67 +220,77 @@ foreach $year (@years)
 		my($yr,$mon,$mday) = split(/\//, $date, 3);
 		my $t = Time::Local::timelocal(59,59,23,$mday,$mon-1,$yr-1900);
 		$long_date = POSIX::strftime("%A, %B %e, %Y", localtime($t));
-		$prefix = 'Upcoming' if ($t > time);
+		$prefix = "Upcoming" if ($t > time);
 	    }
 
 	    print FMTOUT "<li>$prefix:\n",
-	    "<a href=\"", aid_util::config('master_path'),
+	    "<a href=\"", aid_util::config("master_path"),
 	    "etc/reunions.html#$refname\">$title</a>\n($long_date)</li>\n";
 	}
 	print FMTOUT "</ul>\n<hr noshade=\"noshade\" size=\"1\">\n\n";
     }
 
     my @recent;
-    foreach $id (@ids)
+    foreach my $id (@ids)
     {
-	my %rec = aid_util::db_unpack_rec($id,$DB{$id});
-	next unless $rec{'v'};
+	my $recp = $DB->{$id};
+#	next unless $recp->{"v"};
 
-	if (aid_util::is_new($rec{'u'}))
+	if (aid_util::is_new($recp->{"u"}))
 	{
 	    push(@recent, $id);
 	}
     }
+
     if (@recent)
     {
 	print FMTOUT "<h3>New and Updated</h3>\n<ul>\n";
-	foreach $id (@recent)
+	foreach my $id (@recent)
 	{
-	    my %rec = aid_util::db_unpack_rec($id,$DB{$id});
+	    my $recp = $DB->{$id};
 	    print FMTOUT "<li><a href=\"#id-$id\">", 
-	    	aid_util::inorder_fullname(\%rec), "</a> ",
-	    	aid_util::is_new_html(\%rec), " ",
-	    	aid_util::caldate($rec{'u'}), "\n";
+	    	aid_util::inorder_fullname($recp), "</a> ",
+	    	aid_util::is_new_html($recp), " ",
+	    	aid_util::caldate($recp->{"u"}), "\n";
 	}
 	print FMTOUT "</ul>\n<hr noshade=\"noshade\" size=\"1\">\n\n";
     }
 
-    foreach $id (@ids)
+    foreach my $id (@ids)
     {
-	my %rec = aid_util::db_unpack_rec($id,$DB{$id});
-	next unless $rec{'v'};
+	my $recp = $DB->{$id};
+#	next unless $recp->{"v"};
 
-	print FMTOUT aid_util::verbose_entry(\%rec);
+	print FMTOUT aid_util::verbose_entry($recp);
 
-	if ($opt_d) {
-	my $out2 = sprintf("%s%s/%06d.html",
-			   aid_util::config('wwwdir'), "detail", $id);
-	open(FMTOUT2,">$out2") || die "Can't open $out2: $!\n";
+	if ($opts{"d"})
+	{
+	    my $out2 = sprintf("%s%s/%06d.html",
+			       aid_util::config("wwwdir"), "detail", $id);
+	    my @st = stat($out2);
+	    if (@st && $st[9] == $recp->{"u"}) {
+		next;
+	    }
 
-	my($affil,$len) = aid_util::affiliate(\%rec,0);
-	my $name = aid_util::inorder_fullname(\%rec);
+	    open(FMTOUT2,">$out2.$$") || die "Can't open $out2.$$: $!\n";
 
-	print FMTOUT2 aid_util::common_html_hdr(-2, $name . $affil, 1, $rec{'u'});
-	print FMTOUT2 aid_util::verbose_entry(\%rec,1,0,0,1);
+	    my($affil,$len) = aid_util::affiliate($recp,0);
+	    my $name = aid_util::inorder_fullname($recp);
 
-	my $action = aid_util::config('message_cgi');
-	my $hash = md5_hex($rec{'e'});
-	my $e = email_name(\%rec);
-	$e .= " &lt;" . aid_util::protect_email($rec{'e'}) . "&gt;";
-	my $subject = aid_util::config('short_school') . " Alumni";
-	my $name_affil = aid_util::html_entify_str($name . $affil);
+	    print FMTOUT2 aid_util::common_html_hdr(-2, $name . $affil,
+						    1, $recp->{"u"});
+	    print FMTOUT2 aid_util::verbose_entry($recp,1,0,0,1);
 
-	print FMTOUT2 <<_EOHTML_;
+	    if ($recp->{"v"})
+	    {
+		my $action = aid_util::config("message_cgi");
+		my $hash = md5_hex($recp->{"e"});
+		my $e = email_name($recp);
+		$e .= " &lt;" . aid_util::protect_email($recp->{"e"}) . "&gt;";
+		my $subject = aid_util::config("short_school") . " Alumni";
+		my $name_affil = aid_util::html_entify_str($name . $affil);
+
+		print FMTOUT2 <<_EOHTML_;
 <p>&nbsp;</p>
 <hr>
 <a name="msg"></a>
@@ -301,63 +315,33 @@ maxlength="80" value="$subject"></td></tr>
 </form>
 _EOHTML_
 ;
+	    }
 
-	print FMTOUT2 aid_util::common_html_ftr(-2,$rec{'u'});
-	close(FMTOUT2);
-	utime $rec{'u'}, $rec{'u'}, $out2;
+	    print FMTOUT2 aid_util::common_html_ftr(-2,$recp->{"u"});
+	    close(FMTOUT2);
+	    utime $recp->{"u"}, $recp->{"u"}, "$out2.$$";
+	    rename("$out2.$$", $out2);
     	}
     }
 
     print FMTOUT aid_util::common_html_ftr(2,$time);
     close(FMTOUT);
-#    utime $time, $time, $outFile;
+    utime $time, $time, "$outFile.$$";
+    rename("$outFile.$$", $outFile);
 }
 
-if ($opt_d && !$opt_i)
-{
-    print STDOUT "\nRemoving deleted entries..."
-	unless $opt_q;
-
-    my $max = $DB{'_nextid'};
-    foreach my $id (1 .. $max)
-    {
-	my $out2 = sprintf("%s%s/%06d.html",
-			   aid_util::config('wwwdir'), "detail", $id);
-	next unless -e $out2;
-	my $remove = 0;
-
-	if (defined $DB{$id})
-	{
-	    my %rec = aid_util::db_unpack_rec($id,$DB{$id});
-	    $remove = 1 unless $rec{'v'};
-	}
-	else
-	{
-	    $remove = 1;
-	}
-
-	if ($remove)
-	{
-	    print STDOUT " $id" unless $opt_q;
-	    unlink($out2);
-	}
-    }
-}
-
-die "corrupt/missing _t key!" unless defined $DB{'_t'} && $DB{'_t'} ne '';
-$time = unpack("N",$DB{'_t'});
-untie(%DB);
 print STDOUT "\n"
-    unless $opt_q;
+    unless $opts{"q"};
 
 # index page
-$outFile = aid_util::config('wwwdir') . "class/index.html";
+my $outFile = aid_util::config("wwwdir") . "class/index.html";
 open(FMTOUT,">$outFile") || die "Can't open $outFile: $!\n";
 
-print FMTOUT aid_util::common_html_hdr(-2,'Graduating Classes',0,$time);
+my $time = time(); # TODO fix this
+print FMTOUT aid_util::common_html_hdr(-2,"Graduating Classes",0,$time);
 
 print FMTOUT "<p align=\"center\"><big>\n";
-print FMTOUT aid_util::class_jump_bar('', '.html', \@years, 0);
+print FMTOUT aid_util::class_jump_bar("", ".html", \@years, 0);
 print FMTOUT "</big></p>\n\n";
 
 print FMTOUT aid_util::common_html_ftr(-2,$time);
@@ -365,24 +349,23 @@ close(FMTOUT);
 utime $time, $time, $outFile;
 
 # touch timestamp
-$now = time;
-$ts = $outFile;
+my $now = time;
+my $ts = $outFile;
 $ts =~ s,([^/]+)$,\.$1,;
 open(TS,">$ts") && close(TS);
 utime $now, $now, $ts;
 
-untie(%RDB) if defined $r_dbmfile;
 exit(0);
 
 sub email_name
 {
     my($recp) = @_;
-    my $name = $recp->{'gn'};
+    my $name = $recp->{"gn"};
     $name .= " $recp->{'mi'}."
-	if defined $recp->{'mi'} && $recp->{'mi'} ne '';
+	if defined $recp->{"mi"} && $recp->{"mi"} ne "";
     $name .= " $recp->{'sn'}";
     $name .= " $recp->{'mn'}"
-	if defined $recp->{'mn'} && $recp->{'mn'} ne '';
+	if defined $recp->{"mn"} && $recp->{"mn"} ne "";
     $name =~ s/\"/\'/g;
 
     aid_util::html_entify_str($name);
