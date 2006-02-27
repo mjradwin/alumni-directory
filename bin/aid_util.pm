@@ -2,7 +2,7 @@
 #     FILE: aid_util.pm
 #   AUTHOR: Michael J. Radwin
 #    DESCR: perl library routines for the Alumni Internet Directory
-#      $Id: aid_util.pm,v 7.1 2006/02/24 16:17:57 mradwin Exp mradwin $
+#      $Id: aid_util.pm,v 7.2 2006/02/27 16:58:37 mradwin Exp mradwin $
 #
 # Copyright (c) 2006  Michael J. Radwin.
 # All rights reserved.
@@ -61,7 +61,7 @@ require 'school_config.pl';
 
 package aid_util;
 
-my($VERSION) = '$Revision: 7.1 $$';
+my($VERSION) = '$Revision: 7.2 $$';
 if ($VERSION =~ /(\d+)\.(\d+)/) {
     $VERSION = "$1.$2";
 }
@@ -836,11 +836,6 @@ sub common_html_hdr
     $hdr .= "<link rel=\"stylesheet\" type=\"text/css\" href=\"http://";
     $hdr .= $aid_util::config{'master_srv'} . $aid_util::config{'master_path'};
     $hdr .= "default.css\">\n";
-
-    # Rich Site Summary
-    $hdr .= "<link rel=\"alternate\" type=\"application/rss+xml\" title=\"RSS\" href=\"http://";
-    $hdr .= $aid_util::config{'master_srv'} . $aid_util::config{'master_path'};
-    $hdr .= "summary.rdf\">\n";
 
     $hdr .= $aid_util::pics_label .
 	"\n" . $aid_util::author_meta . "\n" . $aid_util::navigation_meta .

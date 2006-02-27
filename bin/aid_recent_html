@@ -4,7 +4,7 @@
 # does a short list, either compact or verbose, sorted by graduating
 # class with a jump bar
 #
-# $Id: aid_recent_html,v 7.1 2006/02/24 00:27:39 mradwin Exp mradwin $
+# $Id: aid_recent_html,v 7.2 2006/02/27 16:58:37 mradwin Exp mradwin $
 #
 # Copyright (c) 2006  Michael J. Radwin.
 # All rights reserved.
@@ -98,8 +98,12 @@ else
 }
 
 
+my $rsslink = "<link rel=\"alternate\" type=\"application/rss+xml\" "
+    . "title=\"RSS\" href=\"http://" . aid_util::config('master_srv') 
+    . aid_util::config('master_path') . "summary.rdf\">\n";
+
 print FMTOUT aid_util::common_html_hdr(5,"Recent Additions and Updates",
-				       1,$time,$subtitle);
+				       1,$time,$subtitle,$rsslink);
 print FMTOUT
 "<p>All alumni on this page have been added to the Directory
 or updated their listings within the last $days days.</p>\n\n";
