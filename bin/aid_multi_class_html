@@ -2,7 +2,7 @@
 
 #
 # does the html multi_class pages
-# $Id: aid_multi_class_html,v 7.2 2006/02/27 16:58:37 mradwin Exp mradwin $
+# $Id: aid_multi_class_html,v 7.3 2006/02/27 17:34:16 mradwin Exp mradwin $
 #
 # Copyright (c) 2006  Michael J. Radwin.
 # All rights reserved.
@@ -164,13 +164,52 @@ foreach my $year (@years)
 	$extra_meta .= "\">";
     }
 
+    my $master_path = aid_util::config("master_path");
+    my $rsslink = "http://" . aid_util::config('master_srv') 
+	. "${master_path}class/${year}.xml";
+    my $rsslinku = aid_util::url_escape($rsslink);
+    my $rsstitle = aid_util::url_escape(aid_util::config("short_school") 
+					. " Alumni: Class of $year");
+
     $extra_meta .= "\n<link rel=\"alternate\" type=\"application/rss+xml\" "
-    . "title=\"RSS\" href=\"http://" . aid_util::config('master_srv') 
-    . aid_util::config('master_path') . "class/${year}.xml\">\n";
+    . "title=\"RSS\" href=\"$rsslink\">\n";
 
     print FMTOUT aid_util::common_html_hdr(2,$title,1,$time,$subtitle,$extra_meta);
+
     print FMTOUT aid_util::common_intro_para(0);
     print FMTOUT aid_util::class_jump_bar("", ".html", \@years, 1, $year);
+
+    print FMTOUT qq{<p>
+<a href="$rsslink"><img
+alt="View the raw XML source" src="${master_path}etc/xml.gif"
+width="36" height="14" border="0"></a>
+
+<a href="http://add.my.yahoo.com/rss?url=$rsslinku"><img
+alt="addtomyyahoo4" src="http://us.i1.yimg.com/us.yimg.com/i/us/my/addtomyyahoo4.gif"
+height="17" width="91" border="0"></a>
+
+<a href="http://www.newsgator.com/ngs/subscriber/subext.aspx?url=$rsslinku"><img
+alt="Subscribe in NewsGator Online" src="http://www.newsgator.com/images/ngsub1.gif"
+height="17" width="91" border="0"></a>
+
+<a href="http://client.pluck.com/pluckit/prompt.aspx?GCID=C12286x053&amp;a=$rsslinku&amp;t=$rsstitle"><img
+alt="Subscribe with Pluck RSS reader" src="http://www.pluck.com/images/rss-pluck.gif"
+height="17" width="91" border="0"></a>
+
+<a href="http://www.rojo.com/add-subscription?resource=$rsslinku"><img
+alt="Subscribe in Rojo" src="http://www.rojo.com/skins/static/images/add-to-rojo.gif"
+height="17" width="52" border="0"></a>
+
+<a href="http://www.bloglines.com/sub/$rsslink"><img
+alt="Subscribe with Bloglines" src="http://www.bloglines.com/images/sub_modern5.gif"
+height="15" width="80" border="0"></a>
+
+<a href="http://fusion.google.com/add?feedurl=$rsslinku"><img
+alt="Add to Google" src="http://buttons.googlesyndication.com/fusion/add.gif"
+height="17" width="104" border="0"></a>
+</p>
+};
+
     print FMTOUT "<hr noshade=\"noshade\" size=\"1\">\n\n";
 
     my %r;
