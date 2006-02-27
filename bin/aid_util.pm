@@ -2,7 +2,7 @@
 #     FILE: aid_util.pm
 #   AUTHOR: Michael J. Radwin
 #    DESCR: perl library routines for the Alumni Internet Directory
-#      $Id: aid_util.pm,v 7.4 2006/02/27 17:34:16 mradwin Exp mradwin $
+#      $Id: aid_util.pm,v 7.5 2006/02/27 21:14:41 mradwin Exp mradwin $
 #
 # Copyright (c) 2006  Michael J. Radwin.
 # All rights reserved.
@@ -61,30 +61,12 @@ require 'school_config.pl';
 
 package aid_util;
 
-my($VERSION) = '$Revision: 7.4 $$';
+my($VERSION) = '$Revision: 7.5 $$';
 if ($VERSION =~ /(\d+)\.(\d+)/) {
     $VERSION = "$1.$2";
 }
 
 my $HOSTNAME;
-
-@aid_util::req_descr_long =  
-    (
-     'No thanks, just send me bi-yearly address verification messages.',
-     'Yes, send me the entire Directory, sorted by name.',
-     'Yes, send me the entire Directory, sorted by graduating class.',
-     'Yes, send me a list of all new/updated alumni during the last quarter.',
-     'Yes, send me a list of alumni from my graduating class.',
-     );
-
-@aid_util::req_descr =  
-    (
-     'only address verification',
-     'yes (entire Directory, sorted by name)',
-     'yes (entire Directory, sorted by graduating class)',
-     'yes (all new and updated alumni)',
-     'yes (alumni from my graduating class)',
-     );
 
 die "NO CONFIG DEFINED!!" unless defined %aid_util::config;
 
@@ -121,7 +103,6 @@ $aid_util::pics_label =
     'sn' =>	'Last Name/Maiden Name',
     'mn' =>	'Married Last Name',
     'gn' =>	'First Name',
-    'q' =>	'[type of quarterly emailing]',
     'r' =>	'[bit for reunion email request]',
     'b' =>	'[unix time - first bounce (0 if none)]',
     'c' =>	'[unix time - record creation]',
@@ -148,7 +129,7 @@ $aid_util::pics_label =
      'e', 'a',
      'w', 'iu', 'l',
      'yr',
-     'v', 'q', 'r',
+     'v', 'r',
      'c', 'u', 'f', 'b', 'lm',
      'eu', 'eo',
      'h',
@@ -165,7 +146,6 @@ foreach my $key (@aid_util::edit_field_names)
 
 $aid_util::blank_entry{'id'} = -1;     
 $aid_util::blank_entry{'v'}  = 1;      
-$aid_util::blank_entry{'q'}  = 4;      
 $aid_util::blank_entry{'r'}  = 1;      
 $aid_util::blank_entry{'b'}  = 0;      
 $aid_util::blank_entry{'lm'} = 0;      
@@ -762,9 +742,6 @@ sub about_text
     $retval .= "\nPreferences\n-----------\n";
     $retval .= "My class officers may send me reunion info via e-mail:\n";
     $retval .= ($rec->{'r'} == 1) ? " --> yes\n" : " --> no\n";
-    $retval .= "Receive a digest of the Directory every quarter:\n";
-    $retval .= defined $aid_util::req_descr[$rec->{'q'}] ?
-	" --> $aid_util::req_descr[$rec->{'q'}]\n" : " --> no\n";
 
     $retval;
 }
@@ -1283,7 +1260,6 @@ EOSQL
 		   "mn" => $name_married,
 		   "gn" => $name_given,
 		   "mi" => $name_mi,
-		   "q" => 4,
 		   "r" => $reunion,
 		   "b" => 0,
 		   "c" => $ts_create,

@@ -2,7 +2,7 @@
 #     FILE: aid_submit.pm
 #   AUTHOR: Michael J. Radwin
 #    DESCR: submission form for Alumni Internet Directory
-#      $Id: aid_submit.pm,v 6.6 2004/05/12 22:36:43 mradwin Exp mradwin $
+#      $Id: aid_submit.pm,v 6.7 2005/02/21 20:10:44 mradwin Exp mradwin $
 #
 # Copyright (c) 2003  Michael J. Radwin.
 # All rights reserved.
@@ -48,27 +48,16 @@ sub submit_body
 {
     my($rec_arg,$empty_fields) = @_;
     my($body,$instr);
-    my(@reqradio,$i,$reunion_chk,@empty_fields,$prev_email);
+    my($i,$reunion_chk,@empty_fields);
 
     my %rec = aid_util::html_entify_rec($rec_arg);
 
-    $prev_email = defined $rec{'pe'} ? 
-	$rec{'pe'} : $rec{'e'};
     $rec{'w'} = 'http://' if $rec{'w'} eq '';
 
     # give defaults if they're being revalidated
     if ($rec{'v'} == 0)
     {
-	$rec{'q'} = $aid_util::blank_entry{'q'};
 	$rec{'r'} = $aid_util::blank_entry{'r'};
-    }
-
-    for ($i = 0; $i < @aid_util::req_descr_long; $i++) 
-    {
-	$reqradio[$i] = "
-  &nbsp;&nbsp;&nbsp;&nbsp;<input type=\"radio\" name=\"q\" id=\"q$i\"
-  value=\"$i\"" . (($rec{'q'} == $i) ? ' checked' : '') .
-  "><label for=\"q$i\">&nbsp;\n  $aid_util::req_descr_long[$i]\n  </label><br>\n";
     }
 
     $reunion_chk = ($rec{'r'} == 1) ? ' checked' : '';
@@ -232,6 +221,13 @@ Contact Info</strong></big></font>
   <td valign=\"top\"><input type=\"text\" name=\"l\" size=\"35\"
   value=\"$rec{'l'}\" id=\"l\"><br><br></td>
 </tr>
+<tr>
+  <td colspan=\"3\"><input type=\"checkbox\"
+  name=\"r\" id=\"r\" $reunion_chk><label
+  for=\"r\">&nbsp;My class officers may notify me of
+  reunion information via e-mail.</label>
+</td>
+</tr>
 
 <tr><td colspan=\"3\" bgcolor=\"#$aid_util::header_bg\">
 <font color=\"#$aid_util::header_fg\"><big><strong class=\"hl\">4.
@@ -250,39 +246,6 @@ What's New?</strong></big></font>
 
 <tr><td colspan=\"3\" bgcolor=\"#$aid_util::header_bg\">
 <font color=\"#$aid_util::header_fg\"><big><strong class=\"hl\">5.
-E-mail Preferences</strong></big></font>
-</td></tr>
-<tr>
-  <td colspan=\"3\"><input type=\"checkbox\"
-  name=\"r\" id=\"r\" $reunion_chk><label
-  for=\"r\">&nbsp;My class officers may notify me of
-  reunion information via e-mail.</label><br><br>
-  Would you like to <a target=\"c34286cd\"
-  href=\"${mp}etc/faq.html#mailings\">receive
-  a digest of the Directory every quarter</a><br>
-  (at the beginning of February, May, August and November) via e-mail?<br>
-";
-
-    $body .= $reqradio[4];
-    $body .= $reqradio[3];
-    $body .= $reqradio[2] if $rec{'q'} == 2;
-    $body .= $reqradio[1] if $rec{'q'} == 1;
-    $body .= $reqradio[0];
-
-    $body . "
-  <input type=\"hidden\" name=\"id\" value=\"$rec{'id'}\">
-  <input type=\"hidden\" name=\"c\" value=\"$rec{'c'}\">
-  <input type=\"hidden\" name=\"eu\" value=\"$rec{'eu'}\">
-  <input type=\"hidden\" name=\"lm\" value=\"$rec{'lm'}\">
-  <input type=\"hidden\" name=\"a\" value=\"$rec{'a'}\">
-  <input type=\"hidden\" name=\"iu\" value=\"$rec{'iu'}\">
-  <input type=\"hidden\" name=\"v\" value=\"1\">
-  <br><br>
-  </td>
-</tr>
-
-<tr><td colspan=\"3\" bgcolor=\"#$aid_util::header_bg\">
-<font color=\"#$aid_util::header_fg\"><big><strong class=\"hl\">6.
 Preview Listing</strong></big></font>
 </td></tr>
 
@@ -290,6 +253,9 @@ Preview Listing</strong></big></font>
 <td colspan=\"3\">
 Please review the above information and click the
 <strong>Preview&nbsp;Listing</strong> button to continue.
+<input type=\"hidden\" name=\"id\" value=\"$rec{'id'}\">
+<input type=\"hidden\" name=\"c\" value=\"$rec{'c'}\">
+<input type=\"hidden\" name=\"v\" value=\"1\">
 <br><input type=\"submit\"
 value=\"Preview Listing\">
 </td>
