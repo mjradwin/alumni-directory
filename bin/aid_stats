@@ -1,6 +1,6 @@
 #!/usr/local/bin/perl -w
 
-# $Id: aid_stats,v 7.1 2006/02/24 00:13:15 mradwin Exp mradwin $
+# $Id: aid_stats,v 7.2 2006/02/27 16:58:37 mradwin Exp mradwin $
 #
 # Copyright (c) 2006  Michael J. Radwin.
 # All rights reserved.
@@ -67,7 +67,6 @@ open(FMTOUT,">$outfile") || die "Can't open $outfile: $!\n";
 my $nvalid = 0;
 my $ndubious = 0;
 my $ntotal = 0;
-my @nreq = (0, 0, 0, 0, 0);
 my $nreunion = 0;
 my $nlocation = 0;
 my $nweb = 0;
@@ -100,8 +99,6 @@ foreach my $recp (values %{$DB})
     {
 	$nvalid++;
     }
-
-    $nreq[$recp->{"q"}]++;
 
     $nreunion++ if $recp->{"r"};
     $nlocation++ if $recp->{"l"} ne "";
@@ -159,21 +156,6 @@ printf FMTOUT "%3.0f%% (%4d) have possibly valid e-mail address (bounced recentl
 
 printf FMTOUT "%3.0f%% (%4d) have invalid e-mail address (too many bounces)\n",
     ((100 * ($ntotal - $nlegit)) / $ntotal), ($ntotal - $nlegit);
-
-print FMTOUT "\n";
-
-printf FMTOUT "%3.0f%% (%4d) requesting quarterly digests:\n",
-    ((100 * ($nreq[3] + $nreq[4])) / $nlegit),
-    ($nreq[3] + $nreq[4]);
-
-printf FMTOUT "%3.0f%% (%4d) - %s\n",
-    ((100 * $nreq[3]) / $nlegit),
-    $nreq[3],
-    $aid_util::req_descr_long[3];
-printf FMTOUT "%3.0f%% (%4d) - %s\n",
-    ((100 * $nreq[4]) / $nlegit),
-    $nreq[4],
-    $aid_util::req_descr_long[4];
 
 print FMTOUT "\n";
 
