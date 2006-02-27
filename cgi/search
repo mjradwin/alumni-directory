@@ -4,7 +4,7 @@
 #     FILE: search.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: Alumni Internet Directory CGI search
-#      $Id: search,v 6.5 2006/02/24 00:17:40 mradwin Exp mradwin $
+#      $Id: search,v 7.1 2006/02/24 16:23:29 mradwin Exp mradwin $
 #
 # Copyright (c) 2006  Michael J. Radwin.
 # All rights reserved.
@@ -53,7 +53,6 @@ use strict;
 use CGI qw(-no_xhtml);
 use CGI::Carp qw(fatalsToBrowser);
 use aid_util;
-use aid_newutil;
 use DBI ();
 
 my %in;
@@ -65,7 +64,7 @@ foreach my $key ($q->param())
     $in{$key} = $val;
 }
 
-my $dbh = aid_newutil::db_connect();
+my $dbh = aid_util::db_connect();
 
 if (!defined($in{"q"}) || $in{"q"} =~ /^[^\w]*$/)
 {
@@ -227,7 +226,7 @@ sub print_search_form
 {
     my($dbh,$q,$y) = @_;
 
-    my @years = aid_newutil::load_years($dbh);
+    my @years = aid_util::load_years($dbh);
     push(@years, "other");
 
     print "\n<p>";

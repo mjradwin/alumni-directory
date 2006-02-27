@@ -4,7 +4,7 @@
 #     FILE: verify.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: CGI for verifcation of e-mail address
-#      $Id: verify,v 1.9 2006/02/23 22:33:33 mradwin Exp $
+#      $Id: verify,v 6.5 2006/02/24 00:17:40 mradwin Exp mradwin $
 #
 # Copyright (c) 2006  Michael J. Radwin.
 # All rights reserved.
@@ -53,7 +53,6 @@ use strict;
 use CGI qw(-no_xhtml);
 use CGI::Carp qw(fatalsToBrowser);
 use aid_util;
-use aid_newutil;
 use DBI ();
 
 my %cgi;
@@ -76,7 +75,7 @@ if ($key !~ /^[0-9a-f]+$/) {
     invalid($key);
 }
 
-my $dbh = aid_newutil::db_connect();
+my $dbh = aid_util::db_connect();
 my $sql = qq{
 SELECT
 verify_staging_id,verify_alumnus_id,
@@ -174,7 +173,7 @@ confirming receipt of this submission when it it processed.</p>
 
     my $oldrecp;
     if (defined $id) {
-	my $MDB = aid_newutil::load_records($dbh, "AND a.alumnus_id = $id");
+	my $MDB = aid_util::load_records($dbh, "AND a.alumnus_id = $id");
 	my @oldrecs = values %{$MDB};
 	if (@oldrecs) {
 	    $oldrecp = $oldrecs[0];

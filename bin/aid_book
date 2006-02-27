@@ -2,7 +2,7 @@
 
 #
 # generates address books in several formats
-# $Id: aid_book,v 1.3 2006/02/20 04:18:11 mradwin Exp $
+# $Id: aid_book,v 7.1 2006/02/24 00:13:15 mradwin Exp mradwin $
 #
 # Copyright (c) 2006  Michael J. Radwin.
 # All rights reserved.
@@ -50,7 +50,6 @@ BEGIN {
 use strict;
 use Getopt::Std;
 use aid_util;
-use aid_newutil;
 
 $0 =~ s,.*/,,;  # basename
 my $usage = "usage: $0 [-h] [-y year] -{p,e,b,w,m,n,l,v,o} outfile
@@ -118,9 +117,9 @@ $opts{'v'} && aid_util::book_write_prefix($BOOKv,'v');
 $opts{'o'} && aid_util::book_write_prefix($BOOKo,'o');
 
 
-my $dbh = aid_newutil::db_connect();
+my $dbh = aid_util::db_connect();
 my $where = $opts{'y'} ? "WHERE e.entry_gradclass = $opts{'y'}" : "";
-my $DB = aid_newutil::load_records($dbh, $where);
+my $DB = aid_util::load_records($dbh, $where);
 $dbh->disconnect;
 
 my @alpha_ids = sort { lc($DB->{$a}->{"sn"}) cmp lc($DB->{$b}->{"sn"})

@@ -4,7 +4,7 @@
 #     FILE: form.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: Alumni Internet Directory CGI form-submission interface
-#      $Id: form,v 1.7 2006/02/22 06:20:05 mradwin Exp $
+#      $Id: form,v 6.6 2006/02/24 00:17:40 mradwin Exp mradwin $
 #
 # Copyright (c) 2006  Michael J. Radwin.
 # All rights reserved.
@@ -54,12 +54,11 @@ use CGI qw(-no_xhtml);
 use CGI::Carp qw(fatalsToBrowser);
 use Email::Valid;
 use aid_util;
-use aid_newutil;
 use aid_submit;
 use DBI ();
 
 # configuration
-my $rcsid = '$Id: form,v 1.7 2006/02/22 06:20:05 mradwin Exp $'; #'fnt
+my $rcsid = '$Id: form,v 6.6 2006/02/24 00:17:40 mradwin Exp mradwin $'; #'fnt
 
 my $listing_upd_title = "Modify Your Directory Listing";
 my $listing_add_title = "Join the Directory";
@@ -93,7 +92,7 @@ if (defined($cgi{"version"})) {
 
 }
 
-my $dbh = aid_newutil::db_connect();
+my $dbh = aid_util::db_connect();
 
 if (defined($cgi{"update"}) || defined($cgi{"upd"}))
 {
@@ -101,7 +100,7 @@ if (defined($cgi{"update"}) || defined($cgi{"upd"}))
 
     if ($key =~ /^\d+$/)
     {
-	my $DB = aid_newutil::load_records($dbh, "AND a.alumnus_id = $key");
+	my $DB = aid_util::load_records($dbh, "AND a.alumnus_id = $key");
 
 	my @recs = values %{$DB};
 	if (@recs)
@@ -120,7 +119,7 @@ if (defined($cgi{"update"}) || defined($cgi{"upd"}))
 	$key = lc($key);
 
 	my $qkey = $dbh->quote($key);
-	my $DB = aid_newutil::load_records($dbh, "AND e.entry_email = $qkey");
+	my $DB = aid_util::load_records($dbh, "AND e.entry_email = $qkey");
 
 	my @recs = values %{$DB};
 	if (@recs)

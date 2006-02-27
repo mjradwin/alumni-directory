@@ -4,7 +4,7 @@
 # does a short list, either compact or verbose, sorted by graduating
 # class with a jump bar
 #
-# $Id: aid_recent_html,v 1.2 2006/02/20 04:13:45 mradwin Exp $
+# $Id: aid_recent_html,v 7.1 2006/02/24 00:27:39 mradwin Exp mradwin $
 #
 # Copyright (c) 2006  Michael J. Radwin.
 # All rights reserved.
@@ -52,7 +52,6 @@ BEGIN {
 use strict;
 use Getopt::Std;
 use aid_util;
-use aid_newutil;
 use DBI ();
 
 $0 =~ s,.*/,,;  # basename
@@ -71,8 +70,8 @@ my $outfile = shift;
 open(FMTOUT,">$outfile") || die "Can't open $outfile: $!\n";
 
 my $days = $opts{"d"} && $opts{"d"} =~ /^\d+$/ ? $opts{"d"} : 14;
-my $dbh = aid_newutil::db_connect();
-my $DB = aid_newutil::load_records($dbh, 
+my $dbh = aid_util::db_connect();
+my $DB = aid_util::load_records($dbh, 
      "AND DATE_SUB(CURDATE(),INTERVAL $days DAY) <= a.alumnus_update");
 
 my %years;

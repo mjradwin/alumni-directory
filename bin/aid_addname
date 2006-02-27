@@ -1,6 +1,6 @@
 #!/usr/local/bin/perl -w
 
-# $Id: aid_addname,v 1.5 2006/02/22 06:45:14 mradwin Exp $
+# $Id: aid_addname,v 7.1 2006/02/24 00:13:15 mradwin Exp mradwin $
 #
 # Copyright (c) 2006  Michael J. Radwin.
 # All rights reserved.
@@ -48,7 +48,6 @@ BEGIN {
 use strict;
 use Getopt::Std ();
 use aid_util;
-use aid_newutil ();
 use DBI ();
 
 $0 =~ s,.*/,,;  # basename
@@ -74,7 +73,7 @@ my %upd_ids;
 
 my %verified;
 my $timestamp = 0;
-my $dbh = aid_newutil::db_connect();
+my $dbh = aid_util::db_connect();
 my $DB;
 
 my $status = readspool();
@@ -114,7 +113,7 @@ AND verify_published IS NULL
     return 0 if $count == 0;
 
     # set global var
-    $DB = aid_newutil::load_records($dbh, "");
+    $DB = aid_util::load_records($dbh, "");
 
     foreach my $id (keys %verified)
     {

@@ -4,7 +4,7 @@
 #     FILE: aid_rss_summary.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: creates an RDF Site Summary for the Directory
-#      $Id: aid_rss_summary,v 1.4 2006/02/23 22:52:05 mradwin Exp $
+#      $Id: aid_rss_summary,v 7.1 2006/02/24 00:13:15 mradwin Exp mradwin $
 #
 # Copyright (c) 2006  Michael J. Radwin.
 # All rights reserved.
@@ -53,7 +53,6 @@ use strict;
 use Getopt::Std;
 use POSIX qw(strftime);
 use aid_util;
-use aid_newutil;
 
 $0 =~ s,.*/,,;  # basename
 my $usage = "usage: $0 [-h] outfile.rdf
@@ -68,8 +67,8 @@ $opts{"h"} && die "$usage\n";
 my $outfile = shift;
 open(FMTOUT,">$outfile.$$") || die "Can't open $outfile.$$: $!\n";
 
-my $dbh = aid_newutil::db_connect();
-my $DB = aid_newutil::load_records($dbh,
+my $dbh = aid_util::db_connect();
+my $DB = aid_util::load_records($dbh,
 	 "ORDER BY a.alumnus_update DESC LIMIT 0, 20");
 $dbh->disconnect;
 

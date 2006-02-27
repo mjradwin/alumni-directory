@@ -2,7 +2,7 @@
 
 #
 # mails a welcome, update, confirm, or massmail message to members
-# $Id: aid_welcome,v 1.6 2006/02/22 06:45:14 mradwin Exp $
+# $Id: aid_welcome,v 7.1 2006/02/24 00:13:15 mradwin Exp mradwin $
 #
 # Copyright (c) 2006  Michael J. Radwin.
 # All rights reserved.
@@ -51,7 +51,6 @@ use strict;
 use Getopt::Std ();
 use Net::SMTP; 
 use aid_util;
-use aid_newutil;
 use DBI ();
 
 my $default_sleep = 0;
@@ -202,13 +201,13 @@ my $today = scalar(localtime(time));
 
 print LOG "# [$today] - $0 ", join(" ", @args), "\n";
 
-my $dbh = aid_newutil::db_connect();
+my $dbh = aid_util::db_connect();
 
 if ($opts{"a"})
 {
     @ARGV = ();
 
-    my $DB = aid_newutil::load_records($dbh, "");
+    my $DB = aid_util::load_records($dbh, "");
     foreach my $recp (values %{$DB})
     {
 	next unless $recp->{"v"};
@@ -230,7 +229,7 @@ if ($opts{"y"})
 {
     @ARGV = ();
 
-    my $DB = aid_newutil::load_records($dbh, "");
+    my $DB = aid_util::load_records($dbh, "");
     foreach my $recp (values %{$DB})
     {
 	next unless $recp->{"v"};
@@ -243,7 +242,7 @@ if ($opts{"y"})
     @ARGV = sort { $a <=> $b } @ARGV;
 }
 
-my $DB = aid_newutil::load_records($dbh, "");
+my $DB = aid_util::load_records($dbh, "");
 foreach my $id (@ARGV)
 {
     unless ($id =~ /^\d+$/)

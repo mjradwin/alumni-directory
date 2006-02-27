@@ -4,7 +4,7 @@
 #     FILE: about.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: Alumni Internet Directory CGI "About" page generation
-#      $Id: about,v 1.2 2006/02/20 04:28:22 mradwin Exp $
+#      $Id: about,v 6.5 2006/02/24 00:17:40 mradwin Exp mradwin $
 #
 # Copyright (c) 2006  Michael J. Radwin.
 # All rights reserved.
@@ -51,7 +51,6 @@ BEGIN {
 
 use strict;
 use aid_util;
-use aid_newutil;
 use DBI ();
 
 aid_util::cgi_die('$PATH_INFO Missing', "This URL is bogus.")
@@ -64,8 +63,8 @@ if ($ENV{'PATH_INFO'} =~ m,/(\d+)$,)
 {
     my $id = $1;
 
-    my $dbh = aid_newutil::db_connect();
-    my $DB = aid_newutil::load_records($dbh, "AND a.alumnus_id = $id");
+    my $dbh = aid_util::db_connect();
+    my $DB = aid_util::load_records($dbh, "AND a.alumnus_id = $id");
     $dbh->disconnect;
 
     my @recs = values %{$DB};

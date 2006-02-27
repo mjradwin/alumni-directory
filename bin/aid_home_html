@@ -2,7 +2,7 @@
 
 #
 # does the html version of just home pages
-# $Id: aid_home_html,v 1.1 2006/02/09 02:45:18 mradwin Exp $
+# $Id: aid_home_html,v 7.1 2006/02/24 00:13:15 mradwin Exp mradwin $
 #
 # Copyright (c) 2006  Michael J. Radwin.
 # All rights reserved.
@@ -50,7 +50,6 @@ BEGIN {
 use strict;
 use Getopt::Std;
 use aid_util;
-use aid_newutil;
 use aid_submit;
 use DBI ();
 
@@ -108,8 +107,8 @@ if ($opts{"f"} && $opts{"p"} == 0)
 #    $time = unpack("N",$DB{'_t'});
     $time = time();		# TODO fix this
 
-    my $dbh = aid_newutil::db_connect();
-    @years = aid_newutil::load_years($dbh);
+    my $dbh = aid_util::db_connect();
+    @years = aid_util::load_years($dbh);
 }
 
 open(OUTFILE,">$outfile") || die "Can't open $outfile: $!\n";

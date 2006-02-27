@@ -2,7 +2,7 @@
 #     FILE: aid_util.pm
 #   AUTHOR: Michael J. Radwin
 #    DESCR: perl library routines for the Alumni Internet Directory
-#      $Id: aid_util.pm,v 6.20 2006/02/24 00:54:55 mradwin Exp mradwin $
+#      $Id: aid_util.pm,v 7.1 2006/02/24 16:17:57 mradwin Exp mradwin $
 #
 # Copyright (c) 2006  Michael J. Radwin.
 # All rights reserved.
@@ -39,14 +39,6 @@
 # OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 # SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-use lib "/home/mradwin/local/share/perl";
-use lib "/home/mradwin/local/share/perl/site_perl";
-
-use MIME::QuotedPrint;
-use Net::SMTP; 
-use Time::Local;
-use POSIX qw(strftime);
-
 BEGIN {
   if ($0 =~ m,(.*[/\\]),) {
     unshift @INC, $1;
@@ -54,13 +46,22 @@ BEGIN {
     unshift @INC, '.';
   }
 }
-require 'school_config.pl';
+
+use lib "/home/mradwin/local/share/perl";
+use lib "/home/mradwin/local/share/perl/site_perl";
 
 use strict;
+use DBI ();
+use MIME::QuotedPrint;
+use Net::SMTP; 
+use Time::Local;
+use POSIX qw(strftime);
+
+require 'school_config.pl';
 
 package aid_util;
 
-my($VERSION) = '$Revision: 6.20 $$';
+my($VERSION) = '$Revision: 7.1 $$';
 if ($VERSION =~ /(\d+)\.(\d+)/) {
     $VERSION = "$1.$2";
 }
@@ -1201,6 +1202,113 @@ sub die_if_failure
     die "Exited with $exit_value\n" if $exit_value;
 
     1;
+}
+
+my $connected = 0;
+my $dbh;
+
+sub db_connect {
+    if (!$connected) {
+	my $dbname = config("dbname");
+	my $dbhost = config("dbhost");
+	my $dsn = "DBI:mysql:database=$dbname;host=$dbhost";
+	$dbh = DBI->connect($dsn, config("dbuser"), config("dbpass"))
+	    or die $DBI::errstr;
+	$connected = 1;
+    }
+
+    $dbh;
+}
+
+sub load_years {
+    my($dbh) = @_;
+
+    my $sql = qq{
+SELECT DISTINCT entry_gradclass FROM aid_entry
+WHERE entry_gradclass IS NOT NULL
+};
+    my $sth = $dbh->prepare($sql);
+    $sth->execute or die $sth->errstr;
+    my $yearsref = $sth->fetchall_arrayref([0]);
+    my @years = map { $_->[0] } @{$yearsref};
+
+    # are there any "other" alumni?
+    $sql = qq{
+SELECT COUNT(entry_affil_other) from aid_entry
+WHERE entry_affil_other IS NOT NULL
+};
+    $sth = $dbh->prepare($sql);
+    $sth->execute or die $sth->errstr;
+    my($count) = $sth->fetchrow_array;
+#    push(@years, "other") if $count;
+
+    @years;
+}
+
+sub load_records
+{
+    my($dbh,$extra_sql) = @_;
+
+    $extra_sql = "" unless defined $extra_sql;
+
+    my %result;
+    my $sql = <<EOSQL
+SELECT
+a.alumnus_id,a.alumnus_status,
+UNIX_TIMESTAMP(a.alumnus_create),
+UNIX_TIMESTAMP(a.alumnus_update),
+e.entry_name_surname,e.entry_name_married,
+e.entry_name_given,e.entry_name_mi,
+e.entry_email,e.entry_gradclass,e.entry_affil_other,
+e.entry_web_page,e.entry_location,e.entry_note,e.entry_reunion
+FROM aid_alumnus a, aid_entry e
+WHERE a.alumnus_entry_id = e.entry_id
+$extra_sql
+EOSQL
+;
+
+    if ($ENV{"AID_DEBUG"}) {
+	warn $sql;
+    }
+
+    my $sth = $dbh->prepare($sql);
+    $sth->execute or die $sth->errstr;
+    while (my($id,$status,$ts_create,$ts_update,
+	      $name_surname,$name_married,
+	      $name_given,$name_mi,
+	      $email,$gradclass,$affil_other,
+	      $web_page,$location,$note_text,$reunion) =
+	   $sth->fetchrow_array)
+    {
+	my $yr = $gradclass ? $gradclass : $affil_other;
+	my %rec = (
+		   "id" => $id,
+		   "v" => $status,
+		   "sn" => $name_surname,
+		   "mn" => $name_married,
+		   "gn" => $name_given,
+		   "mi" => $name_mi,
+		   "q" => 4,
+		   "r" => $reunion,
+		   "b" => 0,
+		   "c" => $ts_create,
+		   "u" => $ts_update,
+		   "f" => 0,
+		   "yr" => $yr,
+		   "e" => $email,
+		   "w" => $web_page,
+		   "l" => $location,
+		   "n" => $note_text,
+		   );
+
+	foreach my $key (@aid_util::edit_field_names, "n") {
+	    $rec{$key} = "" unless defined $rec{$key};
+	}
+
+	$result{$id} = \%rec;
+    }
+
+    \%result;
 }
 
 1;
