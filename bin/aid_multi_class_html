@@ -2,7 +2,7 @@
 
 #
 # does the html multi_class pages
-# $Id: aid_multi_class_html,v 7.3 2006/02/27 17:34:16 mradwin Exp mradwin $
+# $Id: aid_multi_class_html,v 7.4 2006/02/27 19:20:18 mradwin Exp mradwin $
 #
 # Copyright (c) 2006  Michael J. Radwin.
 # All rights reserved.
@@ -127,7 +127,11 @@ foreach my $year (@years)
     foreach my $recp (values %{$DB})
     {
 #	next unless $recp->{"v"};
-	next unless $recp->{"yr"} eq $year;
+	if ($year =~ /^\d+$/) {
+	    next unless $recp->{"yr"} eq $year;
+	} else {
+	    next if $recp->{"yr"} =~ /^\d+$/;
+	}
 	$time = $recp->{"u"} if $recp->{"u"} > $time;
 	push(@class_ids, $recp->{"id"});
 	$count++;
