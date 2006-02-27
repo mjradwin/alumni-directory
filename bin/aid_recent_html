@@ -4,7 +4,7 @@
 # does a short list, either compact or verbose, sorted by graduating
 # class with a jump bar
 #
-# $Id: aid_recent_html,v 7.2 2006/02/27 16:58:37 mradwin Exp mradwin $
+# $Id: aid_recent_html,v 7.3 2006/02/27 17:02:04 mradwin Exp mradwin $
 #
 # Copyright (c) 2006  Michael J. Radwin.
 # All rights reserved.
@@ -98,9 +98,9 @@ else
 }
 
 
-my $rsslink = "<link rel=\"alternate\" type=\"application/rss+xml\" "
+my $rsslink = "\n<link rel=\"alternate\" type=\"application/rss+xml\" "
     . "title=\"RSS\" href=\"http://" . aid_util::config('master_srv') 
-    . aid_util::config('master_path') . "summary.rdf\">\n";
+    . aid_util::config('master_path') . "summary.rdf\">";
 
 print FMTOUT aid_util::common_html_hdr(5,"Recent Additions and Updates",
 				       1,$time,$subtitle,$rsslink);
