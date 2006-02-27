@@ -4,7 +4,7 @@
 #     FILE: aid_rss_summary.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: creates an RDF Site Summary for the Directory
-#      $Id: aid_rss_summary,v 7.1 2006/02/24 00:13:15 mradwin Exp mradwin $
+#      $Id: aid_rss_summary,v 7.2 2006/02/27 16:58:37 mradwin Exp mradwin $
 #
 # Copyright (c) 2006  Michael J. Radwin.
 # All rights reserved.
@@ -53,6 +53,7 @@ use strict;
 use Getopt::Std;
 use POSIX qw(strftime);
 use aid_util;
+use Symbol ();
 
 $0 =~ s,.*/,,;  # basename
 my $usage = "usage: $0 [-h] outfile.rdf
@@ -65,56 +66,24 @@ $opts{"h"} && die "$usage\n";
 @ARGV == 1 || die "$usage\n";
 
 my $outfile = shift;
-open(FMTOUT,">$outfile.$$") || die "Can't open $outfile.$$: $!\n";
+my $fh = Symbol::gensym();
+open($fh,">$outfile.$$") || die "Can't open $outfile.$$: $!\n";
 
 my $dbh = aid_util::db_connect();
 my $DB = aid_util::load_records($dbh,
 	 "ORDER BY a.alumnus_update DESC LIMIT 0, 20");
 $dbh->disconnect;
 
-my $lastBuildDate = strftime("%a, %d %b %Y %H:%M:%S GMT", gmtime(time()));
-
-print FMTOUT
-"<?xml version=\"1.0\" encoding=\"iso-8859-1\"?>
-<rss version=\"2.0\">
-<channel>
-<title>" . aid_util::config("short_school") . " Alumni Internet Directory</title>
-<link>http://" . aid_util::config("master_srv") . aid_util::config("master_path") .
-    "recent.html</link>
-<description>" . aid_util::config("descr_long") . "</description>
-<language>en-us</language>
-<lastBuildDate>$lastBuildDate</lastBuildDate>
-";
+aid_util::print_rss_head($fh,time());
 
 foreach my $id (sort { $DB->{$b}->{"u"} <=> $DB->{$a}->{"u"} } keys %{$DB})
 {
     my $recp = $DB->{$id};
-    my($affil,$len) = aid_util::affiliate($recp, 0);
-    my $pubDate = strftime("%a, %d %b %Y %H:%M:%S GMT", gmtime($recp->{"u"}));
-
-    print FMTOUT
-"<item>
-<title>" . aid_util::html_entify_str(aid_util::inorder_fullname($recp)) . 
-aid_util::html_entify_str($affil) .
-"</title>
-<link>http://" . aid_util::config("master_srv") .
-    aid_util::about_path($recp,0) . "</link>
-<pubDate>$pubDate</pubDate>
-<description>Updated " . aid_util::caldate($recp->{"u"}), ".";
-
-    if ($recp->{"n"}) {
-	print FMTOUT " ", aid_util::html_entify_str($recp->{"n"});
-    }
-
-    print FMTOUT "</description>\n</item>\n";
+    aid_util::print_rss_item($fh,$recp);
 }
 
-print FMTOUT
-"</channel>
-</rss>
-";
-
-close(FMTOUT);
+print $fh "</channel>\n</rss>\n";
+close($fh);
 rename("$outfile.$$", $outfile);
 
 # touch timestamp

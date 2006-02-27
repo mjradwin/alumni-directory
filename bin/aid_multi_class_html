@@ -2,7 +2,7 @@
 
 #
 # does the html multi_class pages
-# $Id: aid_multi_class_html,v 7.1 2006/02/24 00:13:15 mradwin Exp mradwin $
+# $Id: aid_multi_class_html,v 7.2 2006/02/27 16:58:37 mradwin Exp mradwin $
 #
 # Copyright (c) 2006  Michael J. Radwin.
 # All rights reserved.
@@ -163,6 +163,10 @@ foreach my $year (@years)
 			"Class of $class_next{$year}" : "Faculty and Staff");
 	$extra_meta .= "\">";
     }
+
+    $extra_meta .= "\n<link rel=\"alternate\" type=\"application/rss+xml\" "
+    . "title=\"RSS\" href=\"http://" . aid_util::config('master_srv') 
+    . aid_util::config('master_path') . "class/${year}.xml\">\n";
 
     print FMTOUT aid_util::common_html_hdr(2,$title,1,$time,$subtitle,$extra_meta);
     print FMTOUT aid_util::common_intro_para(0);
@@ -325,6 +329,30 @@ _EOHTML_
 
     print FMTOUT aid_util::common_html_ftr(2,$time);
     close(FMTOUT);
+    utime $time, $time, "$outFile.$$";
+    rename("$outFile.$$", $outFile);
+
+    my $fh = Symbol::gensym();
+    $outFile = aid_util::config("wwwdir") . "class/${year}.xml";
+    open($fh,">$outFile.$$") || die "Can't open $outFile.$$: $!\n";
+    aid_util::print_rss_head($fh,$time,
+			     aid_util::config("short_school")
+			     . " Alumni: Class of $year",
+			     "http://"
+			     . aid_util::config("master_srv")
+			     . aid_util::config("master_path")
+			     . "class/${year}.html");
+
+    my $n = 0;
+    foreach my $id (sort { $DB->{$b}->{"u"} <=> $DB->{$a}->{"u"} } @ids)
+    {
+	last if ++$n > 10;
+	my $recp = $DB->{$id};
+	aid_util::print_rss_item($fh,$recp);
+    }
+
+    print $fh "</channel>\n</rss>\n";
+    close($fh);
     utime $time, $time, "$outFile.$$";
     rename("$outFile.$$", $outFile);
 }

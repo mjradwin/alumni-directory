@@ -2,7 +2,7 @@
 #     FILE: aid_util.pm
 #   AUTHOR: Michael J. Radwin
 #    DESCR: perl library routines for the Alumni Internet Directory
-#      $Id: aid_util.pm,v 7.2 2006/02/27 16:58:37 mradwin Exp mradwin $
+#      $Id: aid_util.pm,v 7.3 2006/02/27 17:02:04 mradwin Exp mradwin $
 #
 # Copyright (c) 2006  Michael J. Radwin.
 # All rights reserved.
@@ -61,7 +61,7 @@ require 'school_config.pl';
 
 package aid_util;
 
-my($VERSION) = '$Revision: 7.2 $$';
+my($VERSION) = '$Revision: 7.3 $$';
 if ($VERSION =~ /(\d+)\.(\d+)/) {
     $VERSION = "$1.$2";
 }
@@ -1304,6 +1304,55 @@ EOSQL
     }
 
     \%result;
+}
+
+sub print_rss_head 
+{
+    my($fh,$time,$title,$link,$desc) = @_;
+
+    my $lastBuildDate = POSIX::strftime("%a, %d %b %Y %H:%M:%S GMT",
+					gmtime($time));
+
+    $title = config("short_school") . " Alumni Internet Directory"
+	unless $title;
+    $link = "http://" . config("master_srv")
+	. config("master_path") . "recent.html"
+	unless $link;
+    $desc = config("descr_long")
+	unless $desc;
+
+    print $fh
+"<?xml version=\"1.0\" encoding=\"iso-8859-1\"?>
+<rss version=\"2.0\">
+<channel>
+<title>$title</title>
+<link>$link</link>
+<description>$desc</description>
+<language>en-us</language>
+<lastBuildDate>$lastBuildDate</lastBuildDate>
+";
+}
+
+sub print_rss_item
+{
+    my($fh,$rec) = @_;
+
+    my($affil,$len) = affiliate($rec, 0);
+    my $pubDate = POSIX::strftime("%a, %d %b %Y %H:%M:%S GMT",
+				  gmtime($rec->{"u"}));
+
+    print $fh "<item>\n<title>"
+    .  html_entify_str(inorder_fullname($rec)) . html_entify_str($affil)
+    . "</title>
+<link>http://" . config("master_srv") . about_path($rec,0) . "</link>
+<pubDate>$pubDate</pubDate>
+<description>Updated " . caldate($rec->{"u"}), ".";
+
+    if ($rec->{"n"}) {
+	print $fh " ", html_entify_str($rec->{"n"});
+    }
+
+    print $fh "</description>\n</item>\n";
 }
 
 1;
