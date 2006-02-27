@@ -2,7 +2,7 @@
 #     FILE: aid_util.pm
 #   AUTHOR: Michael J. Radwin
 #    DESCR: perl library routines for the Alumni Internet Directory
-#      $Id: aid_util.pm,v 7.3 2006/02/27 17:02:04 mradwin Exp mradwin $
+#      $Id: aid_util.pm,v 7.4 2006/02/27 17:34:16 mradwin Exp mradwin $
 #
 # Copyright (c) 2006  Michael J. Radwin.
 # All rights reserved.
@@ -61,7 +61,7 @@ require 'school_config.pl';
 
 package aid_util;
 
-my($VERSION) = '$Revision: 7.3 $$';
+my($VERSION) = '$Revision: 7.4 $$';
 if ($VERSION =~ /(\d+)\.(\d+)/) {
     $VERSION = "$1.$2";
 }
@@ -1235,7 +1235,7 @@ WHERE entry_affil_other IS NOT NULL
     $sth = $dbh->prepare($sql);
     $sth->execute or die $sth->errstr;
     my($count) = $sth->fetchrow_array;
-#    push(@years, "other") if $count;
+    push(@years, "other") if $count;
 
     @years;
 }
