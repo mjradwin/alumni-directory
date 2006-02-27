@@ -2,7 +2,7 @@
 
 #
 # does the html version of just home pages
-# $Id: aid_home_html,v 7.1 2006/02/24 00:13:15 mradwin Exp mradwin $
+# $Id: aid_home_html,v 7.2 2006/02/27 16:58:37 mradwin Exp mradwin $
 #
 # Copyright (c) 2006  Michael J. Radwin.
 # All rights reserved.
@@ -111,8 +111,17 @@ if ($opts{"f"} && $opts{"p"} == 0)
     @years = aid_util::load_years($dbh);
 }
 
+my $extra_meta;
+if ($opts{"p"} == 0)
+{
+    $extra_meta = "<link rel=\"alternate\" type=\"application/rss+xml\" "
+	. "title=\"RSS\" href=\"http://" . aid_util::config('master_srv') 
+	. aid_util::config('master_path') . "summary.rdf\">\n";
+}
+
 open(OUTFILE,">$outfile") || die "Can't open $outfile: $!\n";
-print OUTFILE aid_util::common_html_hdr($opts{"p"},$opts{"t"},0,$time);
+print OUTFILE aid_util::common_html_hdr($opts{"p"},$opts{"t"},0,$time,
+					undef,$extra_meta);
 
 if ($opts{"s"}) {
     print OUTFILE aid_submit::submit_body(\%aid_util::blank_entry,'');
