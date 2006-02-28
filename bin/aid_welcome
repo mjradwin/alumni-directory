@@ -2,7 +2,7 @@
 
 #
 # mails a welcome, update, confirm, or massmail message to members
-# $Id: aid_welcome,v 7.1 2006/02/24 00:13:15 mradwin Exp mradwin $
+# $Id: aid_welcome,v 7.2 2006/02/27 16:58:37 mradwin Exp mradwin $
 #
 # Copyright (c) 2006  Michael J. Radwin.
 # All rights reserved.
@@ -59,11 +59,10 @@ my $default_massmail_sleep = 5;
 $0 =~ s,.*/,,;  # basename
 my $usage = "usage: $0 [options] [target ids...]
     -h            Display usage information.
-    -a            Mail all users in <infile.db> matching -r <reqtype>.
+    -a            Mail all users in <infile.db>.
     -y <year>     Mail all users in <infile.db> from year <year>.
     -d <secs>     Sleep for <secs> seconds between sending e-mail
                   (default $default_massmail_sleep for -m, $default_sleep for all others).
-    -r <reqtype>  Request type [0-4] (only valid with -m and -a).
     -l <logfile>  Log to <logfile> instead of default.
 
 Mutually exclusive optional message types (instead of 'welcome' e-mail):
@@ -76,7 +75,7 @@ Mutually exclusive optional message types (instead of 'welcome' e-mail):
 my @args = @ARGV;
 
 my %opts;
-Getopt::Std::getopts("hd:r:ucm:l:as:y:", \%opts) || die "$usage\n";
+Getopt::Std::getopts("hd:ucm:l:as:y:", \%opts) || die "$usage\n";
 $opts{"h"} && die "$usage\n";
 
 die "$0: Too many mutually-exclusive options\n$usage\n"
@@ -84,10 +83,6 @@ die "$0: Too many mutually-exclusive options\n$usage\n"
 	($opts{"s"} ? 1 : 0)) > 1;
 die "$0: No target ids specified\n$usage\n" unless (@ARGV || $opts{"a"} ||
 						    $opts{"y"});
-die "$0: Option -m requires -r\n$usage\n" 
-    if defined($opts{"m"}) && !defined($opts{"r"});
-die "$0: Option -a requires -r\n$usage\n" 
-    if defined($opts{"a"}) && !defined($opts{"r"});
 
 my $directory_name = aid_util::config("short_school") . " Alumni Internet Directory";
 
@@ -211,11 +206,9 @@ if ($opts{"a"})
     foreach my $recp (values %{$DB})
     {
 	next unless $recp->{"v"};
-	next if $opts{"m"} && $recp->{"q"} != $opts{"r"};
 
 	if ($opts{"c"})
 	{
-	    next unless $recp->{"q"} == 0;
 	    next unless aid_util::is_old($recp->{"f"});
 	}
 
@@ -358,19 +351,13 @@ sub message_body
 {
     my($recp) = @_;
     my $about = aid_util::about_text($recp,1,0,0);
-    my $denied = $recp->{"q"} == 0 ?
-	"
-Since you asked not to receive quarterly Directory
-digests via e-mail, you will only receive bi-yearly
-address verification messages.
-" : "";
 
     return aid_util::inorder_fullname($recp) . ",
 
 $params{'intro'}You are listed in the Directory as follows:
 -------------------------------------------------------
 ${about}-------------------------------------------------------
-$denied
+
 If any of the above information is incorrect or out
 of date, please update your listing online at:
 
