@@ -2,7 +2,7 @@
 
 #
 # mails a welcome, update, confirm, or massmail message to members
-# $Id: aid_welcome,v 7.2 2006/02/27 16:58:37 mradwin Exp mradwin $
+# $Id: aid_welcome,v 7.3 2006/02/28 16:19:07 mradwin Exp mradwin $
 #
 # Copyright (c) 2006  Michael J. Radwin.
 # All rights reserved.
@@ -59,8 +59,8 @@ my $default_massmail_sleep = 5;
 $0 =~ s,.*/,,;  # basename
 my $usage = "usage: $0 [options] [target ids...]
     -h            Display usage information.
-    -a            Mail all users in <infile.db>.
-    -y <year>     Mail all users in <infile.db> from year <year>.
+    -a            Mail all users.
+    -y <year>     Mail all users from year <year>.
     -d <secs>     Sleep for <secs> seconds between sending e-mail
                   (default $default_massmail_sleep for -m, $default_sleep for all others).
     -l <logfile>  Log to <logfile> instead of default.
