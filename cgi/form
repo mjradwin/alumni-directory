@@ -4,7 +4,7 @@
 #     FILE: form.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: Alumni Internet Directory CGI form-submission interface
-#      $Id: form,v 6.6 2006/02/24 00:17:40 mradwin Exp mradwin $
+#      $Id: form,v 7.1 2006/02/27 16:56:03 mradwin Exp mradwin $
 #
 # Copyright (c) 2006  Michael J. Radwin.
 # All rights reserved.
@@ -58,7 +58,7 @@ use aid_submit;
 use DBI ();
 
 # configuration
-my $rcsid = '$Id: form,v 6.6 2006/02/24 00:17:40 mradwin Exp mradwin $'; #'fnt
+my $rcsid = '$Id: form,v 7.1 2006/02/27 16:56:03 mradwin Exp mradwin $'; #'fnt
 
 my $listing_upd_title = "Modify Your Directory Listing";
 my $listing_add_title = "Join the Directory";
@@ -289,10 +289,22 @@ exit(0);
 
 sub confirm_submission
 {
-    print "Content-Type: text/html\015\012\015\012";
-    print aid_util::common_html_hdr(20,$listing_sub_title,1);
+    my $js = qq{<script language="JavaScript" type="text/javascript"><!--
+var d=document;
+function s1(){
+d.f1.sub1.value='Please wait...';
+d.f1.sub1.disabled=true;
+d.f1.submit();
+return false;
+}
+// --></script>
+};
 
-    print "<form method=\"post\" action=\"", aid_util::config("confirm_cgi");
+    print "Content-Type: text/html\015\012\015\012";
+    print aid_util::common_html_hdr(20,$listing_sub_title,1,
+				    undef,undef,$js);
+
+    print "<form name=\"f1\" id=\"f1\" method=\"post\" action=\"", aid_util::config("confirm_cgi");
     print "/$cgi{'id'}" if $cgi{"id"} != -1;
     print "/new" if $cgi{"id"} == -1;
     print "\">\n";
@@ -314,12 +326,12 @@ Here is what your listing will look like:
 
     print "</td></tr></table>
 <p>Want to change something?
-<input type=button value=\"Edit Listing\" onClick=\"history.go(-1)\">
+<input type=button value=\"Edit Listing\" onclick=\"history.go(-1)\">
 <br><br>
 Everything above is correct?
 <input type=\"hidden\" name=\"confirmed\" value=\"1\">
-<input type=submit name=\"submit\" value=\"Submit Listing\"
-onclick=\"this.value='Please wait...';this.disabled=true;this.form.submit();\">
+<input type=\"submit\" name=\"sub1\" id=\"sub1\" value=\"Submit Listing\"
+onclick=\"return s1()\">
 </p>
 </form>
 ";
@@ -387,7 +399,7 @@ sub send_upd_real {
 			    "Modify listing for " .
 			    aid_util::inorder_fullname($recp)),
 			   1,
-			   defined $recp->{"u"} ? $recp->{"u"} : undef);
+			    defined $recp->{"u"} ? $recp->{"u"} : undef);
 
     print aid_submit::submit_body($recp,$empty_fields);
     print aid_util::common_html_ftr(20,
