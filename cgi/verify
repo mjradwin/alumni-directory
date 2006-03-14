@@ -4,7 +4,7 @@
 #     FILE: verify.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: CGI for verifcation of e-mail address
-#      $Id: verify,v 7.2 2006/02/27 21:32:25 mradwin Exp mradwin $
+#      $Id: verify,v 7.3 2006/03/13 20:53:10 mradwin Exp mradwin $
 #
 # Copyright (c) 2006  Michael J. Radwin.
 # All rights reserved.
@@ -185,19 +185,8 @@ confirming receipt of this submission when it it processed.</p>
 	? "Confirm change to your listing"
 	: "Publish your listing";
 
-    my $js = qq{<script language="JavaScript" type="text/javascript"><!--
-var d=document;
-function s1(){
-d.f1.sub1.value='Please wait...';
-d.f1.sub1.disabled=true;
-d.f1.submit();
-return false;
-}
-// --></script>
-};
-
     print "Content-Type: text/html\015\012\015\012";
-    print aid_util::common_html_hdr(20,	$title, 1, undef, undef, $js);
+    print aid_util::common_html_hdr(20,$title,1);
 
     my $action =  aid_util::config("verify_cgi");
     print qq{
@@ -206,8 +195,7 @@ click the button below.</p>
 <form method="post" name="f1" id="f1" action="$action">
 <input type="hidden" name="k" value="$key">
 <input type="hidden" name="commit" value="1">
-<input type="submit" name="sub1" id="sub1" value="$title"
-onclick="return s1()">
+<input type="submit" name="sub1" id="sub1" value="$title">
 </form>
 <br>
 <table border="1" cellpadding="6">
