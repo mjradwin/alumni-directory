@@ -2,7 +2,7 @@
 #     FILE: aid_submit.pm
 #   AUTHOR: Michael J. Radwin
 #    DESCR: submission form for Alumni Internet Directory
-#      $Id: aid_submit.pm,v 7.1 2006/02/27 21:28:23 mradwin Exp mradwin $
+#      $Id: aid_submit.pm,v 7.2 2006/03/13 20:34:35 mradwin Exp mradwin $
 #
 # Copyright (c) 2003  Michael J. Radwin.
 # All rights reserved.
@@ -136,7 +136,8 @@ Please add your listing  to the<br>
 instead.</p>
 " if $rec{'id'} == -1 && aid_util::config('school') eq 'Mountain View High School';
 
-    $body .= "\n<form id=\"f1\" method=\"post\" action=\"" . aid_util::config('submit_cgi');
+    $body .= "\n<form id=\"f1\" name=\"f1\" method=\"post\"\naction=\""
+	. aid_util::config('submit_cgi');
     $body .= "/$rec{'id'}" if $rec{'id'} != -1;
     $body .= "/new" if $rec{'id'} == -1;
     $body .= "\">\n\n" . $instr . "\n\n";
