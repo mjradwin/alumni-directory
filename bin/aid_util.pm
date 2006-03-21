@@ -1,8 +1,8 @@
 #
 #     FILE: aid_util.pm
 #   AUTHOR: Michael J. Radwin
-#    DESCR: perl library routines for the Alumni Internet Directory
-#      $Id: aid_util.pm,v 7.5 2006/02/27 21:14:41 mradwin Exp mradwin $
+#    DESCR: perl library routines for the Alumni Directory
+#      $Id: aid_util.pm,v 7.6 2006/02/27 21:28:30 mradwin Exp mradwin $
 #
 # Copyright (c) 2006  Michael J. Radwin.
 # All rights reserved.
@@ -20,7 +20,7 @@
 #    disclaimer in the documentation and/or other materials
 #    provided with the distribution.
 #
-#  * Neither the name of the High School Alumni Internet Directory
+#  * Neither the name of the High School Alumni Directory
 #    nor the names of its contributors may be used to endorse or
 #    promote products derived from this software without specific
 #    prior written permission.
@@ -61,7 +61,7 @@ require 'school_config.pl';
 
 package aid_util;
 
-my($VERSION) = '$Revision: 7.5 $$';
+my($VERSION) = '$Revision: 7.6 $$';
 if ($VERSION =~ /(\d+)\.(\d+)/) {
     $VERSION = "$1.$2";
 }
@@ -452,7 +452,7 @@ sub verification_message
 
 You recently submitted a profile on the " 
     . $aid_util::config{'short_school'} . " Alumni
-Internet Directory website. Please follow the instructions
+Directory website. Please follow the instructions
 below to publish your profile online.
 
 If your email reader will allow you to click on
@@ -467,18 +467,18 @@ WAS THIS EMAIL SENT TO THE WRONG ADDRESS?
 
 If you did not request a profile on the "
     . $aid_util::config{'short_school'} . " Alumni
-Internet Directory website, please ignore this message
+Directory website, please ignore this message
 with our apologies.
 
 Regards,
 
-" . $aid_util::config{'short_school'} . " Alumni Internet Directory
+" . $aid_util::config{'short_school'} . " Alumni Directory
 http://" . $aid_util::config{'master_srv'} . $aid_util::config{'master_path'} . "\n";
 
     $return_path = $aid_util::config{'devnull_email'};
     $from = $aid_util::config{'short_school'} . ' Alumni Robot';
     $subject = $aid_util::config{'short_school'} .
-	" Alumni Internet Directory";
+	" Alumni Directory";
     $xtrahead = "Reply-To: " . $aid_util::config{'admin_email'};
 
     ($return_path,$from,$subject,$xtrahead,$body,$name,$rec->{'e'});
@@ -529,7 +529,7 @@ sub sendmail_v2
     $message =
 "From: $from <$return_path>
 To: $to
-${cc}Organization: $aid_util::config{'school'} Alumni Internet Directory
+${cc}Organization: $aid_util::config{'school'} Alumni Directory
 ${xtrahead}MIME-Version: 1.0
 Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: QUOTED-PRINTABLE
@@ -798,7 +798,7 @@ sub common_html_hdr
 	if defined $subtitle && !$nohtmlize;
 
     $titletag = ($page == 0) ?
-	($aid_util::config{'school'} . " Alumni Internet Directory") :
+	($aid_util::config{'school'} . " Alumni Directory") :
 	($aid_util::config{'short_school'} . " Alumni: " . $title);
 
     $hdr  = 
@@ -867,12 +867,12 @@ type="text" name="q" size="20">
     if ($page == 0)
     {
 	$hdr .= "<h1>$aid_util::config{'school'}\n";
-	$hdr .= "Alumni Internet Directory</h1>";
+	$hdr .= "Alumni Directory</h1>";
     }
     else
     {
 	$hdr .= "<p class=\"overline\"><b>$aid_util::config{'short_school'}\n";
-	$hdr .= "Alumni Internet Directory:</b></p>\n";
+	$hdr .= "Alumni Directory:</b></p>\n";
 	$hdr .= "<h1>$title";
 	$hdr .= "\n- <small>$subtitle</small>"
 	    if defined $subtitle && $subtitle ne '';
@@ -1289,7 +1289,7 @@ sub print_rss_head
     my $lastBuildDate = POSIX::strftime("%a, %d %b %Y %H:%M:%S GMT",
 					gmtime($time));
 
-    $title = config("short_school") . " Alumni Internet Directory"
+    $title = config("short_school") . " Alumni Directory"
 	unless $title;
     $link = "http://" . config("master_srv")
 	. config("master_path") . "recent.html"

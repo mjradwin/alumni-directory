@@ -2,7 +2,7 @@
 
 #
 # generates address books in several formats
-# $Id: aid_book,v 7.2 2006/02/27 16:58:37 mradwin Exp mradwin $
+# $Id: aid_book,v 7.3 2006/03/13 20:07:04 mradwin Exp mradwin $
 #
 # Copyright (c) 2006  Michael J. Radwin.
 # All rights reserved.
@@ -20,7 +20,7 @@
 #    disclaimer in the documentation and/or other materials
 #    provided with the distribution.
 #
-#  * Neither the name of the High School Alumni Internet Directory
+#  * Neither the name of the High School Alumni Directory
 #    nor the names of its contributors may be used to endorse or
 #    promote products derived from this software without specific
 #    prior written permission.

@@ -1,8 +1,8 @@
 #
 #     FILE: generic_config.pl
 #   AUTHOR: Michael J. Radwin
-#    DESCR: configuration variables for Alumni Internet Directory
-#      $Id: generic_config.pl,v 5.19 2003/10/30 17:37:02 mradwin Exp mradwin $
+#    DESCR: configuration variables for Alumni Directory
+#      $Id: generic_config.pl,v 5.20 2003/11/06 19:37:51 mradwin Exp mradwin $
 #
 # Copyright (c) 2003  Michael J. Radwin.
 # All rights reserved.
@@ -20,7 +20,7 @@
 #    disclaimer in the documentation and/or other materials
 #    provided with the distribution. 
 #
-#  * Neither the name of the High School Alumni Internet Directory
+#  * Neither the name of the High School Alumni Directory
 #    nor the names of its contributors may be used to endorse or
 #    promote products derived from this software without specific
 #    prior written permission.
@@ -40,7 +40,7 @@
 # SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 $aid_util::rcsid =
- '$Id: generic_config.pl,v 5.19 2003/10/30 17:37:02 mradwin Exp mradwin $';
+ '$Id: generic_config.pl,v 5.20 2003/11/06 19:37:51 mradwin Exp mradwin $';
 
 # Generic HS on example.com (FreeBSD 2.2.2) configuration
 %aid_util::config =  
@@ -79,7 +79,7 @@ $aid_util::rcsid =
      'spoolfile',    '/var/mail/jsmith',
      'rcsid',        "$aid_util::rcsid",
      'html_ad', '',
-     'descr_long',  'The Generic School Alumni Internet Directory is an e-mail/web page listing of alumni, faculty and staff from Generic High School in Anytown, California.',
+     'descr_long',  'The Generic School Alumni Directory is an e-mail/web page listing of alumni, faculty and staff from Generic High School in Anytown, California.',
      'max_gradyear', ((localtime(time))[5] + 1904),
      );
 
@@ -91,14 +91,14 @@ $aid_util::navigation_meta =
     $aid_util::config{'master_srv'} .
     $aid_util::config{'master_path'} .
     "\" title=\"" . $aid_util::config{'short_school'} .
-    " Alumni Internet Directory\">";
+    " Alumni Directory\">";
 
 $aid_util::descr_meta =
 "<meta name=\"keywords\" content=\"" . $aid_util::config{'school'} . ", " .
 $aid_util::config{'short_school'} . ", Anytown, California, reunion, alumni, directory\">\n<meta name=\"description\" content=\"Alumni e-mail and web page directory for " . $aid_util::config{'school'} . " in Anytown, CA. Updated __DATE__.\">";
 
 $aid_util::disclaimer =
-"<a name=\"disclaimer\">Acceptable use:</a> the Alumni Internet
+"<a name=\"disclaimer\">Acceptable use:</a> the Alumni
 Directory is provided solely for the information of the
 " . $aid_util::config{'school'} . " community.
 Any redistribution outside of this community, or solicitation of

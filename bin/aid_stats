@@ -1,6 +1,6 @@
 #!/usr/local/bin/perl -w
 
-# $Id: aid_stats,v 7.2 2006/02/27 16:58:37 mradwin Exp mradwin $
+# $Id: aid_stats,v 7.3 2006/02/27 21:56:20 mradwin Exp mradwin $
 #
 # Copyright (c) 2006  Michael J. Radwin.
 # All rights reserved.
@@ -18,7 +18,7 @@
 #    disclaimer in the documentation and/or other materials
 #    provided with the distribution.
 #
-#  * Neither the name of the High School Alumni Internet Directory
+#  * Neither the name of the High School Alumni Directory
 #    nor the names of its contributors may be used to endorse or
 #    promote products derived from this software without specific
 #    prior written permission.
@@ -51,13 +51,12 @@ use aid_util;
 use DBI ();
 
 $0 =~ s,.*/,,;  # basename
-my $usage = "usage: $0 [-ht] outfile
+my $usage = "usage: $0 [-h] outfile
     -h        Display usage information.
-    -t        Text only.
 ";
 
 my %opts;
-getopts("ht", \%opts) || die "$usage\n";
+getopts("h", \%opts) || die "$usage\n";
 $opts{"h"} && die "$usage\n";
 @ARGV == 1 || die "$usage\n";
 
@@ -135,17 +134,8 @@ my $avg_tenure_weeks = ($now - $avg_join_time) / (60 * 60 * 24 * 7);
 my $median_tenure_weeks = ($now - $median_join_time) / (60 * 60 * 24 * 7);
 
 my $time = $now;
-if (!$opts{"t"})
-{
-    print FMTOUT aid_util::common_html_hdr(15,"Member Statistics",0,$time);
-    print FMTOUT "<pre>";
-}
-else
-{
-    print FMTOUT "Mountain View High School Alumni Internet Directory\n";
-    print FMTOUT "Member Statistics\n";
-    print FMTOUT "------------------------------------------------------------------------\n\n";
-}
+print FMTOUT aid_util::common_html_hdr(15,"Member Statistics",0,$time);
+print FMTOUT "<pre>";
 
 printf FMTOUT "      %4d  total entries in the Directory\n",
     $ntotal;
@@ -193,16 +183,8 @@ printf FMTOUT "average time since modify  : %3.0f weeks\n",
 printf FMTOUT "median  time since modify  : %3.0f weeks\n",
     $median_update_weeks;
 
-if (!$opts{"t"})
-{
-    print FMTOUT "</pre>\n";
-    print FMTOUT aid_util::common_html_ftr(15,$time);
-}
-else
-{
-    print FMTOUT "\n------------------------------------------------------------------------\n";
-    print FMTOUT scalar(localtime($time)), "\n";
-}
+print FMTOUT "</pre>\n";
+print FMTOUT aid_util::common_html_ftr(15,$time);
 
 close(FMTOUT);
 exit(0);

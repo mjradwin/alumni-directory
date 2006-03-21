@@ -3,8 +3,8 @@
 #
 #     FILE: form.pl
 #   AUTHOR: Michael J. Radwin
-#    DESCR: Alumni Internet Directory CGI form-submission interface
-#      $Id: form,v 7.1 2006/02/27 16:56:03 mradwin Exp mradwin $
+#    DESCR: Alumni Directory CGI form-submission interface
+#      $Id: form,v 7.2 2006/03/13 20:53:10 mradwin Exp mradwin $
 #
 # Copyright (c) 2006  Michael J. Radwin.
 # All rights reserved.
@@ -22,7 +22,7 @@
 #    disclaimer in the documentation and/or other materials
 #    provided with the distribution.
 #
-#  * Neither the name of the High School Alumni Internet Directory
+#  * Neither the name of the High School Alumni Directory
 #    nor the names of its contributors may be used to endorse or
 #    promote products derived from this software without specific
 #    prior written permission.
@@ -58,7 +58,7 @@ use aid_submit;
 use DBI ();
 
 # configuration
-my $rcsid = '$Id: form,v 7.1 2006/02/27 16:56:03 mradwin Exp mradwin $'; #'fnt
+my $rcsid = '$Id: form,v 7.2 2006/03/13 20:53:10 mradwin Exp mradwin $'; #'fnt
 
 my $listing_upd_title = "Modify Your Directory Listing";
 my $listing_add_title = "Join the Directory";

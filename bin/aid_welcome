@@ -2,7 +2,7 @@
 
 #
 # mails a welcome, update, confirm, or massmail message to members
-# $Id: aid_welcome,v 7.3 2006/02/28 16:19:07 mradwin Exp mradwin $
+# $Id: aid_welcome,v 7.4 2006/02/28 16:20:56 mradwin Exp mradwin $
 #
 # Copyright (c) 2006  Michael J. Radwin.
 # All rights reserved.
@@ -20,7 +20,7 @@
 #    disclaimer in the documentation and/or other materials
 #    provided with the distribution.
 #
-#  * Neither the name of the High School Alumni Internet Directory
+#  * Neither the name of the High School Alumni Directory
 #    nor the names of its contributors may be used to endorse or
 #    promote products derived from this software without specific
 #    prior written permission.
@@ -84,7 +84,7 @@ die "$0: Too many mutually-exclusive options\n$usage\n"
 die "$0: No target ids specified\n$usage\n" unless (@ARGV || $opts{"a"} ||
 						    $opts{"y"});
 
-my $directory_name = aid_util::config("short_school") . " Alumni Internet Directory";
+my $directory_name = aid_util::config("short_school") . " Alumni Directory";
 
 my %confirm_parameters = 
     (
@@ -118,7 +118,7 @@ are now listed on-line in the Directory.\n\n",
 Otherwise, if everything you see above is correct,
 you're all set.
 
-Once again, welcome to the Alumni Internet Directory!
+Once again, welcome to the Alumni Directory!
 ",
      );
 
@@ -284,7 +284,7 @@ sub mail_user
 
     $message .= $params{"textfile"} .
 	"\n-- \n" . aid_util::config("short_school") . 
-	" Alumni Internet Directory\n" .
+	" Alumni Directory\n" .
 	"http://" . aid_util::config("master_srv") . aid_util::config("master_path");
 
     $name  = $recp->{"gn"};

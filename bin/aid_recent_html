@@ -4,7 +4,7 @@
 # does a short list, either compact or verbose, sorted by graduating
 # class with a jump bar
 #
-# $Id: aid_recent_html,v 7.3 2006/02/27 17:02:04 mradwin Exp mradwin $
+# $Id: aid_recent_html,v 7.4 2006/02/27 19:24:22 mradwin Exp mradwin $
 #
 # Copyright (c) 2006  Michael J. Radwin.
 # All rights reserved.
@@ -22,7 +22,7 @@
 #    disclaimer in the documentation and/or other materials
 #    provided with the distribution.
 #
-#  * Neither the name of the High School Alumni Internet Directory
+#  * Neither the name of the High School Alumni Directory
 #    nor the names of its contributors may be used to endorse or
 #    promote products derived from this software without specific
 #    prior written permission.

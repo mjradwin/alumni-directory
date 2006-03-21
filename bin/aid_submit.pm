@@ -1,8 +1,8 @@
 #
 #     FILE: aid_submit.pm
 #   AUTHOR: Michael J. Radwin
-#    DESCR: submission form for Alumni Internet Directory
-#      $Id: aid_submit.pm,v 7.2 2006/03/13 20:34:35 mradwin Exp mradwin $
+#    DESCR: submission form for Alumni Directory
+#      $Id: aid_submit.pm,v 7.3 2006/03/14 20:36:09 mradwin Exp mradwin $
 #
 # Copyright (c) 2003  Michael J. Radwin.
 # All rights reserved.
@@ -20,7 +20,7 @@
 #    disclaimer in the documentation and/or other materials
 #    provided with the distribution.
 #
-#  * Neither the name of the High School Alumni Internet Directory
+#  * Neither the name of the High School Alumni Directory
 #    nor the names of its contributors may be used to endorse or
 #    promote products derived from this software without specific
 #    prior written permission.
@@ -132,7 +132,7 @@ are required.  All other fields are optional.</p>
     $instr .= "<p><font color=\"red\">Are you an alumnus of Awalt High
 School?</font>
 Please add your listing  to the<br>
-<a href=\"/awalt/\">Awalt High School Alumni Internet Directory</a>
+<a href=\"/awalt/\">Awalt High School Alumni Directory</a>
 instead.</p>
 " if $rec{'id'} == -1 && aid_util::config('school') eq 'Mountain View High School';
 
