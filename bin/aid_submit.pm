@@ -2,7 +2,7 @@
 #     FILE: aid_submit.pm
 #   AUTHOR: Michael J. Radwin
 #    DESCR: submission form for Alumni Directory
-#      $Id: aid_submit.pm,v 7.3 2006/03/14 20:36:09 mradwin Exp mradwin $
+#      $Id: aid_submit.pm,v 7.4 2006/03/21 16:57:21 mradwin Exp mradwin $
 #
 # Copyright (c) 2003  Michael J. Radwin.
 # All rights reserved.
@@ -51,6 +51,8 @@ sub submit_body
     my($i,$reunion_chk,@empty_fields);
 
     my %rec = aid_util::html_entify_rec($rec_arg);
+    my $email_addr = defined $rec{"email_override"} ?
+	$rec{"email_override"} : "";
 
     $rec{'w'} = 'http://' if $rec{'w'} eq '';
 
@@ -205,7 +207,7 @@ Contact Info</strong></big></font>
   <small>(such as chester\@aol.com)</small></td>
   <td valign=\"top\">$star</td>
   <td valign=\"top\"><input type=\"text\" name=\"e\" size=\"35\"
-  value=\"\" id=\"e\"></td>
+  value=\"$email_addr\" id=\"e\"></td>
 </tr>
 <tr>
   <td valign=\"top\" align=\"right\"><label

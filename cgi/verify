@@ -4,7 +4,7 @@
 #     FILE: verify.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: CGI for verifcation of e-mail address
-#      $Id: verify,v 7.4 2006/03/14 20:50:08 mradwin Exp mradwin $
+#      $Id: verify,v 7.5 2006/03/21 16:58:48 mradwin Exp mradwin $
 #
 # Copyright (c) 2006  Michael J. Radwin.
 # All rights reserved.
@@ -204,11 +204,11 @@ click the button below.</p>
     if ($oldrecp) {
 	print qq{<tr><th><big>Old Entry</big></th><th><big>New Entry</big></th></tr>},
 	qq{<tr valign="top"><td>},
-	aid_util::verbose_entry($oldrecp,1,1,1),
-	qq{</td><td>}, aid_util::verbose_entry($recp,1,1,1),
+	aid_util::verbose_entry($oldrecp,1,1,1,0,1),
+	qq{</td><td>}, aid_util::verbose_entry($recp,1,1,1,0,1),
 	qq{</td></tr>\n};
     } else {
-	print qq{<tr><td>}, aid_util::verbose_entry($recp,1,1,1),
+	print qq{<tr><td>}, aid_util::verbose_entry($recp,1,1,1,0,1),
 	qq{</td></tr>\n};
     }
 

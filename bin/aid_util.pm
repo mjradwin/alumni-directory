@@ -2,7 +2,7 @@
 #     FILE: aid_util.pm
 #   AUTHOR: Michael J. Radwin
 #    DESCR: perl library routines for the Alumni Directory
-#      $Id: aid_util.pm,v 7.6 2006/02/27 21:28:30 mradwin Exp mradwin $
+#      $Id: aid_util.pm,v 7.7 2006/03/21 16:57:21 mradwin Exp mradwin $
 #
 # Copyright (c) 2006  Michael J. Radwin.
 # All rights reserved.
@@ -61,7 +61,7 @@ require 'school_config.pl';
 
 package aid_util;
 
-my($VERSION) = '$Revision: 7.6 $$';
+my($VERSION) = '$Revision: 7.7 $$';
 if ($VERSION =~ /(\d+)\.(\d+)/) {
     $VERSION = "$1.$2";
 }
@@ -452,16 +452,10 @@ sub verification_message
 
 You recently submitted a profile on the " 
     . $aid_util::config{'short_school'} . " Alumni
-Directory website. Please follow the instructions
-below to publish your profile online.
-
-If your email reader will allow you to click on
-links, click the following link.  If not, enter the URL
-into your browser:
+Directory website. Please click the following link to
+publish your profile online:
 
 http://" . $aid_util::config{'master_srv'} . $aid_util::config{'verify_cgi'} . "?$randkey
-
-Then click on the \"Submit verification code\" button.
 
 WAS THIS EMAIL SENT TO THE WRONG ADDRESS?
 
@@ -577,7 +571,8 @@ Subject: $subject
 
 sub verbose_entry
 {
-    my($rec_arg,$display_year,$suppress_new,$suppress_links,$suppress_name) = @_;
+    my($rec_arg,$display_year,$suppress_new,$suppress_links,$suppress_name,
+       $show_email) = @_;
     my($fullname);
     my($retval) = '';
 
@@ -623,7 +618,11 @@ sub verbose_entry
 		about_path(\%rec, 0) . "#msg" .
 		"\">")
 	if $rec{'v'} && $rec{'id'} > 0;
-    $retval .= protect_email($rec{'e'});
+    if ($show_email) {
+	$retval .= $rec{'e'};
+    } else {
+	$retval .= protect_email($rec{'e'});
+    }
     $retval .= "</a>" if $rec{'v'};
     $retval .= "\n<em>(e-mail bouncing)</em>" unless $rec{'v'};
     $retval .= "</b></tt>";

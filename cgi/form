@@ -4,7 +4,7 @@
 #     FILE: form.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: Alumni Directory CGI form-submission interface
-#      $Id: form,v 7.2 2006/03/13 20:53:10 mradwin Exp mradwin $
+#      $Id: form,v 7.3 2006/03/21 16:58:48 mradwin Exp mradwin $
 #
 # Copyright (c) 2006  Michael J. Radwin.
 # All rights reserved.
@@ -58,7 +58,7 @@ use aid_submit;
 use DBI ();
 
 # configuration
-my $rcsid = '$Id: form,v 7.2 2006/03/13 20:53:10 mradwin Exp mradwin $'; #'fnt
+my $rcsid = '$Id: form,v 7.3 2006/03/21 16:58:48 mradwin Exp mradwin $'; #'fnt
 
 my $listing_upd_title = "Modify Your Directory Listing";
 my $listing_add_title = "Join the Directory";
@@ -127,6 +127,7 @@ if (defined($cgi{"update"}) || defined($cgi{"upd"}))
 	    my $id = $recs[0]->{"id"};
 	    if ($id > 0)
 	    {
+		$recs[0]->{"email_override"} = $recs[0]->{"e"};
 		send_upd_real($recs[0],"");
 		close(STDOUT);
 		$dbh->disconnect;
@@ -322,7 +323,7 @@ Here is what your listing will look like:
 <table border=\"1\" cellpadding=\"6\"><tr><td>";
 
     $cgi{"u"} = time unless defined $cgi{"u"};
-    print aid_util::verbose_entry(\%cgi,1,1,1);
+    print aid_util::verbose_entry(\%cgi,1,1,1,0,1);
 
     print "</td></tr></table>
 <p>Want to change something?
