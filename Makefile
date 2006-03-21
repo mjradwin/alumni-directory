@@ -1,8 +1,8 @@
 #
 #     FILE: Makefile
 #   AUTHOR: Michael J. Radwin
-#    DESCR: Makefile for building the Alumni Internet Directory
-#      $Id: Makefile,v 1.4 2006/02/24 00:00:25 mradwin Exp $
+#    DESCR: Makefile for building the Alumni Directory
+#      $Id: Makefile,v 7.1 2006/02/24 00:20:25 mradwin Exp mradwin $
 #
 # Copyright (c) 2006  Michael J. Radwin.
 # All rights reserved.
@@ -20,7 +20,7 @@
 #    disclaimer in the documentation and/or other materials
 #    provided with the distribution. 
 #
-#  * Neither the name of the High School Alumni Internet Directory
+#  * Neither the name of the High School Alumni Directory
 #    nor the names of its contributors may be used to endorse or
 #    promote products derived from this software without specific
 #    prior written permission.

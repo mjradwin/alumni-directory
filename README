@@ -1,5 +1,5 @@
-Alumni Internet Directory README file
-$Id: README,v 5.11 2003/11/06 01:39:29 mradwin Exp mradwin $
+Alumni Directory README file
+$Id: README,v 5.12 2003/11/06 01:41:33 mradwin Exp mradwin $
 
 ========================================================================
 
@@ -12,7 +12,7 @@ DISCLAIMER: This is not very well packaged code.  It's not packaged at
 all.  Don't come here expecting something you plop in a directory,
 twiddle a few things, and you're off and using it.
 
-To set up the Alumni Internet Directory, do the following:
+To set up the Alumni Directory, do the following:
 
 1. Customize these files for your School/Unix/Apache setup
 ------------------------------------------------------------------------
