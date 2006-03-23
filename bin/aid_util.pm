@@ -2,7 +2,7 @@
 #     FILE: aid_util.pm
 #   AUTHOR: Michael J. Radwin
 #    DESCR: perl library routines for the Alumni Directory
-#      $Id: aid_util.pm,v 7.7 2006/03/21 16:57:21 mradwin Exp mradwin $
+#      $Id: aid_util.pm,v 7.8 2006/03/21 19:18:15 mradwin Exp mradwin $
 #
 # Copyright (c) 2006  Michael J. Radwin.
 # All rights reserved.
@@ -61,7 +61,7 @@ require 'school_config.pl';
 
 package aid_util;
 
-my($VERSION) = '$Revision: 7.7 $$';
+my($VERSION) = '$Revision: 7.8 $$';
 if ($VERSION =~ /(\d+)\.(\d+)/) {
     $VERSION = "$1.$2";
 }
@@ -1321,6 +1321,8 @@ sub print_rss_item
     . "</title>
 <link>http://" . config("master_srv") . about_path($rec,0) . "</link>
 <pubDate>$pubDate</pubDate>
+<guid isPermaLink=\"false\">" . $rec->{"id"} . "," . $rec->{"u"} .
+"\@" . config("master_srv") . config("master_path") . "</guid>
 <description>Updated " . caldate($rec->{"u"}), ".";
 
     if ($rec->{"n"}) {
