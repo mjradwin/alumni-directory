@@ -2,7 +2,7 @@
 
 #
 # generates address books in several formats
-# $Id: aid_book,v 7.4 2006/03/21 16:57:21 mradwin Exp mradwin $
+# $Id: aid_book,v 7.5 2006/03/30 23:19:10 mradwin Exp mradwin $
 #
 # Copyright (c) 2006  Michael J. Radwin.
 # All rights reserved.
@@ -50,9 +50,10 @@ BEGIN {
 use strict;
 use Getopt::Std;
 use aid_util;
+use Symbol qw(gensym);
 
 $0 =~ s,.*/,,;  # basename
-my $usage = "usage: $0 [-h] [-y year] -{p,e,b,w,m,n,l,v,o} outfile
+my $usage = "usage: $0 [-h] [-y year] -{p,e,b,w,m,n,l,v,o,t,T} outfile
     -h        Display usage information.
 
     -p        Pine address book
@@ -65,56 +66,42 @@ my $usage = "usage: $0 [-h] [-y year] -{p,e,b,w,m,n,l,v,o} outfile
     -v        vCard book
     -o        Outlook Express .csv
     -t        Plain text
+    -T        Simple .TSV
 
     -y year   Only output for a given graduating class.
 ";
 
+my @output_types = qw(p e b w m n l v o t T);
+
 # get the command-line options and die if there is a bad option or
 # there are no filenames
-my(%opts);
-getopts('hp:e:b:w:m:n:l:v:o:y:t:', \%opts) || die "$usage\n";
+my %opts;
+my $optstr = "hy:" . join(":", @output_types) . ":";
+getopts($optstr, \%opts) || die "$usage\n";
 $opts{'h'} && die "$usage\n";
 @ARGV == 0 || die "$usage\n";
 
 # must have at least 1 option
-die "$usage\n" unless
-    $opts{'t'} ||
-    $opts{'p'} || $opts{'e'} || $opts{'b'} || $opts{'w'} || 
-    $opts{'m'} || $opts{'n'} || $opts{'l'} || $opts{'v'} || $opts{'o'};
+my $sum = 0;
+foreach my $t (@output_types) {
+    $sum++ if $opts{$t};
+}
+die "$usage\n" unless $sum;
 
-my($BOOKp,$BOOKe,$BOOKb,$BOOKw,$BOOKm,$BOOKn,$BOOKl,$BOOKv,$BOOKo);
-my $BOOKt;
+my %fh;
+foreach my $t (@output_types) {
+    if ($opts{$t}) {
+	my $fn = $opts{$t};
+	$fh{$t} = Symbol::gensym();
+	open($fh{$t}, ">$fn") || die "Can't open $fn: $!\n";
+    }
+}
 
-if ($opts{'p'}) {
-    open($BOOKp,">$opts{'p'}") || die "Can't open $opts{'p'}: $!\n"; }
-if ($opts{'e'}) {
-    open($BOOKe,">$opts{'e'}") || die "Can't open $opts{'e'}: $!\n"; }
-if ($opts{'b'}) { 
-    open($BOOKb,">$opts{'b'}") || die "Can't open $opts{'b'}: $!\n"; }
-if ($opts{'w'}) {
-    open($BOOKw,">$opts{'w'}") || die "Can't open $opts{'w'}: $!\n"; }
-if ($opts{'m'}) {
-    open($BOOKm,">$opts{'m'}") || die "Can't open $opts{'m'}: $!\n"; }
-if ($opts{'n'}) {
-    open($BOOKn,">$opts{'n'}") || die "Can't open $opts{'n'}: $!\n"; }
-if ($opts{'l'}) {
-    open($BOOKl,">$opts{'l'}") || die "Can't open $opts{'l'}: $!\n"; }
-if ($opts{'v'}) {
-    open($BOOKv,">$opts{'v'}") || die "Can't open $opts{'v'}: $!\n"; }
-if ($opts{'o'}) {
-    open($BOOKo,">$opts{'o'}") || die "Can't open $opts{'o'}: $!\n"; }
-if ($opts{'t'}) {
-    open($BOOKt,">$opts{'t'}") || die "Can't open $opts{'t'}: $!\n"; }
-
-$opts{'p'} && aid_util::book_write_prefix($BOOKp,'p');
-$opts{'e'} && aid_util::book_write_prefix($BOOKe,'e');
-$opts{'b'} && aid_util::book_write_prefix($BOOKb,'b');
-$opts{'w'} && aid_util::book_write_prefix($BOOKw,'w');
-$opts{'m'} && aid_util::book_write_prefix($BOOKm,'m');
-$opts{'n'} && aid_util::book_write_prefix($BOOKn,'n');
-$opts{'l'} && aid_util::book_write_prefix($BOOKl,'l');
-$opts{'v'} && aid_util::book_write_prefix($BOOKv,'v');
-$opts{'o'} && aid_util::book_write_prefix($BOOKo,'o');
+foreach my $t (@output_types) {
+    if ($opts{$t}) {
+	aid_util::book_write_prefix($fh{$t}, $t);
+    }
+}
 
 
 my $dbh = aid_util::db_connect();
@@ -136,39 +123,20 @@ foreach my $id (@alpha_ids)
 	$recp->{"a"} = aid_util::generate_alias($recp);
     }
 
-    $opts{'p'} && aid_util::book_write_entry($BOOKp,'p',$recp);
-    $opts{'e'} && aid_util::book_write_entry($BOOKe,'e',$recp);
-    $opts{'b'} && aid_util::book_write_entry($BOOKb,'b',$recp);
-    $opts{'w'} && aid_util::book_write_entry($BOOKw,'w',$recp);
-    $opts{'m'} && aid_util::book_write_entry($BOOKm,'m',$recp);
-    $opts{'n'} && aid_util::book_write_entry($BOOKn,'n',$recp);
-    $opts{'l'} && aid_util::book_write_entry($BOOKl,'l',$recp);
-    $opts{'v'} && aid_util::book_write_entry($BOOKv,'v',$recp);
-    $opts{'o'} && aid_util::book_write_entry($BOOKo,'o',$recp);
-    $opts{'t'} && print $BOOKt $recp->{'e'}, "\r\n";
+    foreach my $t (@output_types) {
+	if ($opts{$t}) {
+	    aid_util::book_write_entry($fh{$t}, $t, $recp);
+	  }
+    }
 }
 
 undef $DB;
 
-$opts{'p'} && aid_util::book_write_suffix($BOOKp,'p');
-$opts{'e'} && aid_util::book_write_suffix($BOOKe,'e');
-$opts{'b'} && aid_util::book_write_suffix($BOOKb,'b');
-$opts{'w'} && aid_util::book_write_suffix($BOOKw,'w');
-$opts{'m'} && aid_util::book_write_suffix($BOOKm,'m');
-$opts{'n'} && aid_util::book_write_suffix($BOOKn,'n');
-$opts{'l'} && aid_util::book_write_suffix($BOOKl,'l');
-$opts{'v'} && aid_util::book_write_suffix($BOOKv,'v');
-$opts{'o'} && aid_util::book_write_suffix($BOOKo,'o');
-
-$opts{'p'} && close($BOOKp);
-$opts{'e'} && close($BOOKe);
-$opts{'b'} && close($BOOKb);
-$opts{'w'} && close($BOOKw);
-$opts{'m'} && close($BOOKm);
-$opts{'n'} && close($BOOKn);
-$opts{'l'} && close($BOOKl);
-$opts{'v'} && close($BOOKv);
-$opts{'o'} && close($BOOKo);
-$opts{'t'} && close($BOOKt);
+foreach my $t (@output_types) {
+    if ($opts{$t}) {
+	aid_util::book_write_suffix($fh{$t}, $t);
+	close($fh{$t});
+    }
+}
 
 exit(0);

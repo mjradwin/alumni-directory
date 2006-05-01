@@ -2,7 +2,7 @@
 #     FILE: aid_util.pm
 #   AUTHOR: Michael J. Radwin
 #    DESCR: perl library routines for the Alumni Directory
-#      $Id: aid_util.pm,v 7.8 2006/03/21 19:18:15 mradwin Exp mradwin $
+#      $Id: aid_util.pm,v 7.9 2006/03/23 20:14:25 mradwin Exp mradwin $
 #
 # Copyright (c) 2006  Michael J. Radwin.
 # All rights reserved.
@@ -61,7 +61,7 @@ require 'school_config.pl';
 
 package aid_util;
 
-my($VERSION) = '$Revision: 7.8 $$';
+my($VERSION) = '$Revision: 7.9 $$';
 if ($VERSION =~ /(\d+)\.(\d+)/) {
     $VERSION = "$1.$2";
 }
@@ -963,6 +963,8 @@ sub book_write_entry
     $gn =~ s/\"/\'/g;
     $gn =~ s/[,;\t]/ /g;
 
+    $option eq 'T' && print $BOOKfh "$long_last, $gn$mi_spc\t$rec->{'e'}\r\n";
+    $option eq 't' && print $BOOKfh "$rec->{'e'}\r\n";
     $option eq 'p' && print $BOOKfh "$rec->{'a'}\t$long_last, $gn$mi_spc\t$rec->{'e'}\t\t$aid_util::config{'short_school'} $rec->{'yr'}\n";
     $option eq 'e' && print $BOOKfh "$rec->{'a'} = $long_last; $gn, $aid_util::config{'short_school'} $rec->{'yr'} = $rec->{'e'}\n";
     $option eq 'b' && print $BOOKfh "alias $rec->{'a'}\t$rec->{'e'}\n";
