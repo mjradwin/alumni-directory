@@ -2,7 +2,7 @@
 #     FILE: aid_util.pm
 #   AUTHOR: Michael J. Radwin
 #    DESCR: perl library routines for the Alumni Directory
-#      $Id: aid_util.pm,v 7.9 2006/03/23 20:14:25 mradwin Exp mradwin $
+#      $Id: aid_util.pm,v 7.10 2006/05/01 16:39:20 mradwin Exp mradwin $
 #
 # Copyright (c) 2006  Michael J. Radwin.
 # All rights reserved.
@@ -61,7 +61,7 @@ require 'school_config.pl';
 
 package aid_util;
 
-my($VERSION) = '$Revision: 7.9 $$';
+my($VERSION) = '$Revision: 7.10 $$';
 if ($VERSION =~ /(\d+)\.(\d+)/) {
     $VERSION = "$1.$2";
 }
@@ -1197,9 +1197,13 @@ sub load_years {
     my($dbh) = @_;
 
     my $sql = qq{
-SELECT DISTINCT entry_gradclass FROM aid_entry
-WHERE entry_gradclass IS NOT NULL
+SELECT DISTINCT e.entry_gradclass
+FROM aid_alumnus a, aid_entry e
+WHERE a.alumnus_entry_id = e.entry_id
+AND e.entry_gradclass IS NOT NULL
+ORDER BY e.entry_gradclass ASC 
 };
+
     my $sth = $dbh->prepare($sql);
     $sth->execute or die $sth->errstr;
     my $yearsref = $sth->fetchall_arrayref([0]);
@@ -1207,8 +1211,10 @@ WHERE entry_gradclass IS NOT NULL
 
     # are there any "other" alumni?
     $sql = qq{
-SELECT COUNT(entry_affil_other) from aid_entry
-WHERE entry_affil_other IS NOT NULL
+SELECT COUNT(e.entry_affil_other)
+FROM aid_alumnus a, aid_entry e
+WHERE a.alumnus_entry_id = e.entry_id
+AND e.entry_affil_other IS NOT NULL
 };
     $sth = $dbh->prepare($sql);
     $sth->execute or die $sth->errstr;
