@@ -2,7 +2,7 @@
 #     FILE: aid_util.pm
 #   AUTHOR: Michael J. Radwin
 #    DESCR: perl library routines for the Alumni Directory
-#      $Id: aid_util.pm,v 7.10 2006/05/01 16:39:20 mradwin Exp mradwin $
+#      $Id: aid_util.pm,v 7.11 2006/06/15 22:46:21 mradwin Exp mradwin $
 #
 # Copyright (c) 2006  Michael J. Radwin.
 # All rights reserved.
@@ -61,7 +61,7 @@ require 'school_config.pl';
 
 package aid_util;
 
-my($VERSION) = '$Revision: 7.10 $$';
+my($VERSION) = '$Revision: 7.11 $$';
 if ($VERSION =~ /(\d+)\.(\d+)/) {
     $VERSION = "$1.$2";
 }
@@ -496,6 +496,10 @@ sub sendmail_v2
 	warn "smtp new() failure for $aid_util::config{'smtp_svr'}\n";
 	return 0;
     }
+
+    # try smtp auth and see if this fixes things
+    $smtp->auth($aid_util::config{'smtp_user'},
+		$aid_util::config{'smtp_pass'});
 
     chomp($xtrahead);
     $xtrahead .= "\n" if $xtrahead ne '';
