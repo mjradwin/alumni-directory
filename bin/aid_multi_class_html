@@ -2,7 +2,7 @@
 
 #
 # does the html multi_class pages
-# $Id: aid_multi_class_html,v 7.6 2006/02/28 17:18:45 mradwin Exp mradwin $
+# $Id: aid_multi_class_html,v 7.7 2006/03/21 16:57:21 mradwin Exp mradwin $
 #
 # Copyright (c) 2006  Michael J. Radwin.
 # All rights reserved.
@@ -115,6 +115,7 @@ while (my($class,$date,$html) = $sth->fetchrow_array) {
 select(STDOUT); $| = 1;
 
 my $DB = aid_util::load_records($dbh, "");
+$dbh->disconnect;
 
 foreach my $year (@years)
 {
@@ -398,31 +399,6 @@ _EOHTML_
     utime $time, $time, "$outFile.$$";
     rename("$outFile.$$", $outFile);
 }
-
-if ($opts{"d"} && !@incremental)
-{
-    print STDOUT "\nRemoving deleted entries..."
-	unless $opts{"q"};
-
-    my $sql = "SELECT alumnus_id FROM aid_alumnus ORDER BY alumnus_id DESC"
-	. " LIMIT 1";
-    my $sth = $dbh->prepare($sql);
-    $sth->execute or die $sth->errstr;
-    my($max) = $sth->fetchrow_array;
-
-    foreach my $id (1 .. $max)
-    {
-	my $out2 = sprintf("%s%s/%06d.html",
-			   aid_util::config("wwwdir"), "detail", $id);
-	if (-e $out2 && !defined $DB->{$id})
-	{
-	    print STDOUT " $id" unless $opts{"q"};
-	    unlink($out2);
-	}
-    }
-}
-
-$dbh->disconnect;
 
 print STDOUT "\n"
     unless $opts{"q"};
