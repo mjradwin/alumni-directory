@@ -4,7 +4,7 @@
 #     FILE: msg.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: Alumni Directory update redirector
-#      $Id: msg,v 7.2 2006/03/21 16:58:48 mradwin Exp mradwin $
+#      $Id: msg,v 7.3 2006/11/07 04:27:23 mradwin Exp mradwin $
 #
 # Copyright (c) 2006  Michael J. Radwin.
 # All rights reserved.
@@ -217,7 +217,7 @@ _EOHTML_
     $dbh->do($sql)
 	or aid_util::cgi_die("Database Error", $dbh->errstr);
 
-    warn "aid_msg: $qkey, $count, from=$from, to=$recp->{'e'}\n";
+    warn "aid_msg: $qkey, $count, from=$from, to=$recp->{'e'}, to_id=$recp->{'id'}\n";
 
     my $name = email_name($recp);
     my $school = aid_util::config('short_school');
