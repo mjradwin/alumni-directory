@@ -4,7 +4,7 @@
 #     FILE: verify.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: CGI for verifcation of e-mail address
-#      $Id: verify,v 7.5 2006/03/21 16:58:48 mradwin Exp mradwin $
+#      $Id: verify,v 7.6 2006/03/21 19:18:15 mradwin Exp mradwin $
 #
 # Copyright (c) 2006  Michael J. Radwin.
 # All rights reserved.
@@ -87,6 +87,7 @@ my $sth = $dbh->prepare($sql);
 $sth->execute($key)
     or aid_util::cgi_die("Database Error", $sth->errstr);
 my($sid,$id,$tscreated,$tsconfirmed) = $sth->fetchrow_array;
+$sth->finish;
 
 if (defined $tsconfirmed) {
     $dbh->disconnect;
@@ -272,6 +273,7 @@ WHERE entry_id = $sid
        $name_given,$name_mi,
        $email,$gradclass,$affil_other,
        $web_page,$location,$note_text,$reunion) = $sth->fetchrow_array;
+    $sth->finish;
 
     if (!defined $name_surname) {
 	return undef;
