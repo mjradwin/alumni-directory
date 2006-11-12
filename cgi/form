@@ -4,7 +4,7 @@
 #     FILE: form.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: Alumni Directory CGI form-submission interface
-#      $Id: form,v 7.3 2006/03/21 16:58:48 mradwin Exp mradwin $
+#      $Id: form,v 7.4 2006/03/21 19:18:15 mradwin Exp mradwin $
 #
 # Copyright (c) 2006  Michael J. Radwin.
 # All rights reserved.
@@ -58,7 +58,7 @@ use aid_submit;
 use DBI ();
 
 # configuration
-my $rcsid = '$Id: form,v 7.3 2006/03/21 16:58:48 mradwin Exp mradwin $'; #'fnt
+my $rcsid = '$Id: form,v 7.4 2006/03/21 19:18:15 mradwin Exp mradwin $'; #'fnt
 
 my $listing_upd_title = "Modify Your Directory Listing";
 my $listing_add_title = "Join the Directory";
@@ -270,8 +270,10 @@ if ($empty_fields ne "")
 }
 
 # hack! lock this entry to prevent abuse
-if ($cgi{"id"} && $cgi{"id"} eq "3066") {
-    aid_util::cgi_die("Entry locked", "This entry can not be edited.");
+if ($cgi{"id"} && $cgi{"id"} eq "3066"
+    && $cgi{"e"} ne 'torpgirl@yahoo.com') {
+  aid_util::cgi_die("Bad email address",
+		    "This entry's email address can not be changed.");
 }
 
 # now that the input is cleaned up, decide whether we're going to enter
