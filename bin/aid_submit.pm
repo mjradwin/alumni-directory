@@ -2,7 +2,7 @@
 #     FILE: aid_submit.pm
 #   AUTHOR: Michael J. Radwin
 #    DESCR: submission form for Alumni Directory
-#      $Id: aid_submit.pm,v 7.4 2006/03/21 16:57:21 mradwin Exp mradwin $
+#      $Id: aid_submit.pm,v 7.5 2006/03/21 19:18:15 mradwin Exp mradwin $
 #
 # Copyright (c) 2003  Michael J. Radwin.
 # All rights reserved.
@@ -86,6 +86,13 @@ sub submit_body
 		 ".</strong></p>\n\n";
 
 	$empty_fields =~ s/\byr\b//g;
+    }
+    elsif (defined $rec{"n"} && length($rec{"n"}) > 3600)
+    {
+	$body .= "<p><strong><font color=\"red\">Your \"What's New?\" note\n" .
+		 "is too long.</font>\n" .
+		 "<br>It must be fewer than 3600 bytes"
+		 ".</strong></p>\n\n";
     }
 
     if ($empty_fields ne '')
@@ -242,6 +249,7 @@ What's New?</strong></big></font>
   Let your classmates know what you've been doing since<br>
   graduation, or any important bits of news you'd like to share.
   </label><br>
+  <small>(limit 3600 bytes)</small>
   <textarea name=\"n\" rows=\"10\" cols=\"55\" wrap=\"hard\"
   id=\"n\">$rec{'n'}</textarea><br><br>
   </td>
