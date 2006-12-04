@@ -2,7 +2,7 @@
 #     FILE: aid_submit.pm
 #   AUTHOR: Michael J. Radwin
 #    DESCR: submission form for Alumni Directory
-#      $Id: aid_submit.pm,v 7.5 2006/03/21 19:18:15 mradwin Exp mradwin $
+#      $Id: aid_submit.pm,v 7.6 2006/12/04 00:52:35 mradwin Exp mradwin $
 #
 # Copyright (c) 2003  Michael J. Radwin.
 # All rights reserved.
@@ -90,8 +90,8 @@ sub submit_body
     elsif (defined $rec{"n"} && length($rec{"n"}) > 3600)
     {
 	$body .= "<p><strong><font color=\"red\">Your \"What's New?\" note\n" .
-		 "is too long.</font>\n" .
-		 "<br>It must be fewer than 3600 bytes"
+		 "is too long (" . length($rec{"n"}) . " bytes).</font>\n" .
+		 "<br>It must be fewer than 3600 bytes" .
 		 ".</strong></p>\n\n";
     }
 
