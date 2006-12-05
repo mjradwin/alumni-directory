@@ -2,7 +2,7 @@
 #     FILE: aid_util.pm
 #   AUTHOR: Michael J. Radwin
 #    DESCR: perl library routines for the Alumni Directory
-#      $Id: aid_util.pm,v 7.11 2006/06/15 22:46:21 mradwin Exp mradwin $
+#      $Id: aid_util.pm,v 7.12 2006/08/08 03:24:03 mradwin Exp mradwin $
 #
 # Copyright (c) 2006  Michael J. Radwin.
 # All rights reserved.
@@ -61,7 +61,7 @@ require 'school_config.pl';
 
 package aid_util;
 
-my($VERSION) = '$Revision: 7.11 $$';
+my($VERSION) = '$Revision: 7.12 $$';
 if ($VERSION =~ /(\d+)\.(\d+)/) {
     $VERSION = "$1.$2";
 }
@@ -1263,6 +1263,9 @@ EOSQL
 	      $web_page,$location,$note_text,$reunion) =
 	   $sth->fetchrow_array)
     {
+	if ($note_text) {
+	    $note_text =~ s/\r\n/\n/g;
+	}
 	my $yr = $gradclass ? $gradclass : $affil_other;
 	my %rec = (
 		   "id" => $id,
