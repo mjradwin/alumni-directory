@@ -2,9 +2,9 @@
 #     FILE: aid_util.pm
 #   AUTHOR: Michael J. Radwin
 #    DESCR: perl library routines for the Alumni Directory
-#      $Id: aid_util.pm,v 7.12 2006/08/08 03:24:03 mradwin Exp mradwin $
+#      $Id: aid_util.pm,v 7.13 2006/12/05 21:54:42 mradwin Exp mradwin $
 #
-# Copyright (c) 2006  Michael J. Radwin.
+# Copyright (c) 2007  Michael J. Radwin.
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or
@@ -61,7 +61,7 @@ require 'school_config.pl';
 
 package aid_util;
 
-my($VERSION) = '$Revision: 7.12 $$';
+my($VERSION) = '$Revision: 7.13 $$';
 if ($VERSION =~ /(\d+)\.(\d+)/) {
     $VERSION = "$1.$2";
 }
@@ -85,9 +85,6 @@ die "NO CONFIG DEFINED!!" unless defined %aid_util::config;
  '20' => $aid_util::config{'master_path'} . 'add/'  ,
  '26' => $aid_util::config{'search_cgi'}            ,
 );
-
-$aid_util::copyright_path = $aid_util::config{'master_path'} .
-    "etc/copyright.html";
 
 $aid_util::pics_label =
 "<meta http-equiv=\"PICS-Label\" content='(PICS-1.1 " . 
@@ -776,13 +773,13 @@ sub common_html_ftr
     $ftr .= "<small>\n<!-- hhmts start -->\nLast modified: ";
     $ftr .= scalar(localtime($time)) . "\n";
     $ftr .= "<!-- hhmts end -->\n<br>\n";
-    $ftr .= "<a href=\"" . $aid_util::copyright_path . "\">" .
-	"Copyright</a>\n&copy; $year " . $aid_util::config{'admin_name'} . 
+    $ftr .=
+	"Copyright &copy; $year " . $aid_util::config{'admin_name'} . 
 	".  All rights reserved.\n" .
-	"<br><br>\n";
-    $ftr .= $aid_util::disclaimer . "\n" .
 	"<a\nhref=\"" . $aid_util::config{'master_path'} .
-	"etc/privacy.html\">More info on privacy</a>." .
+	"etc/privacy.html\">Privacy Policy</a> - " .
+	"<a\nhref=\"" . $aid_util::config{'master_path'} .
+	"etc/tos.html\">Terms of Service</a>" .
 	"</small>\n</body>\n</html>\n";
 
     $ftr;

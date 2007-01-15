@@ -2,9 +2,9 @@
 #     FILE: Makefile
 #   AUTHOR: Michael J. Radwin
 #    DESCR: Makefile for building the Alumni Directory
-#      $Id: Makefile,v 7.1 2006/02/24 00:20:25 mradwin Exp mradwin $
+#      $Id: Makefile,v 7.2 2006/03/21 17:15:59 mradwin Exp mradwin $
 #
-# Copyright (c) 2006  Michael J. Radwin.
+# Copyright (c) 2007  Michael J. Radwin.
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or
@@ -69,7 +69,7 @@ TARFILES= \
 SNAPSHOTFILES= $(TAR_AIDDIR)
 
 all:	index submit \
-	addupdate reunions links faq email copyright \
+	addupdate reunions links faq email privacy tos \
 	recent multi_class multi_alpha \
 	stats pine_book rss
 
@@ -154,15 +154,23 @@ $(EMAIL_TS):	$(DATADIR)/email.include $(BINDIR)/aid_home_html
 		$(QUIET) -t 'Email Gateway' \
 		$(EMAIL)
 
-COPYRIGHT=$(WWWDIR)/etc/copyright.html
-COPYRIGHT_TS=$(WWWDIR)/etc/.copyright.html
-copyright:	$(COPYRIGHT_TS)
-$(COPYRIGHT_TS):	$(DATADIR)/copyright.include $(BINDIR)/aid_home_html
+PRIVACY=$(WWWDIR)/etc/privacy.html
+PRIVACY_TS=$(WWWDIR)/etc/.privacy.html
+privacy:	$(PRIVACY_TS)
+$(PRIVACY_TS):	$(DATADIR)/privacy.include $(BINDIR)/aid_home_html
 	$(MKDIR) $(WWWDIR)/etc
-	$(BINDIR)/aid_home_html -p16 -f $(DATADIR)/copyright.include \
-		$(QUIET) -t 'Acceptable Use, Privacy Statement, Copyright' \
-		$(COPYRIGHT)
-	/bin/ln -sf $(COPYRIGHT) $(WWWDIR)/etc/privacy.html
+	$(BINDIR)/aid_home_html -p16 -f $(DATADIR)/privacy.include \
+		$(QUIET) -t 'Privacy Policy' \
+		$(PRIVACY)
+
+TOS=$(WWWDIR)/etc/tos.html
+TOS_TS=$(WWWDIR)/etc/.tos.html
+tos:	$(TOS_TS)
+$(TOS_TS):	$(DATADIR)/tos.include $(BINDIR)/aid_home_html
+	$(MKDIR) $(WWWDIR)/etc
+	$(BINDIR)/aid_home_html -p16 -f $(DATADIR)/tos.include \
+		$(QUIET) -t 'Terms of Service' \
+		$(TOS)
 
 STATS=$(WWWDIR)/etc/stats.html
 stats:	$(STATS)
@@ -222,7 +230,8 @@ clean:
 	$(LINKS_TS) \
 	$(FAQ_TS) \
 	$(EMAIL_TS) \
-	$(COPYRIGHT_TS) \
+	$(PRIVACY_TS) \
+	$(TOS_TS) \
 	$(SUBMIT_TS) \
 	$(ADDUPDATE_TS) \
 	$(RSS_TS)
