@@ -2,7 +2,7 @@
 #     FILE: aid_submit.pm
 #   AUTHOR: Michael J. Radwin
 #    DESCR: submission form for Alumni Directory
-#      $Id: aid_submit.pm,v 7.6 2006/12/04 00:52:35 mradwin Exp mradwin $
+#      $Id: aid_submit.pm,v 7.7 2006/12/04 00:58:31 mradwin Exp mradwin $
 #
 # Copyright (c) 2003  Michael J. Radwin.
 # All rights reserved.
@@ -249,7 +249,7 @@ What's New?</strong></big></font>
   Let your classmates know what you've been doing since<br>
   graduation, or any important bits of news you'd like to share.
   </label><br>
-  <small>(limit 3600 bytes)</small>
+  <small>(limit 3600 bytes)</small><br>
   <textarea name=\"n\" rows=\"10\" cols=\"55\" wrap=\"hard\"
   id=\"n\">$rec{'n'}</textarea><br><br>
   </td>
