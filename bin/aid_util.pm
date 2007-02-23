@@ -2,7 +2,7 @@
 #     FILE: aid_util.pm
 #   AUTHOR: Michael J. Radwin
 #    DESCR: perl library routines for the Alumni Directory
-#      $Id: aid_util.pm,v 7.13 2006/12/05 21:54:42 mradwin Exp mradwin $
+#      $Id: aid_util.pm,v 7.14 2007/01/15 18:36:50 mradwin Exp mradwin $
 #
 # Copyright (c) 2007  Michael J. Radwin.
 # All rights reserved.
@@ -56,12 +56,13 @@ use MIME::QuotedPrint;
 use Net::SMTP; 
 use Time::Local;
 use POSIX qw(strftime);
+use Date::Calc ();
 
 require 'school_config.pl';
 
 package aid_util;
 
-my($VERSION) = '$Revision: 7.13 $$';
+my($VERSION) = '$Revision: 7.14 $$';
 if ($VERSION =~ /(\d+)\.(\d+)/) {
     $VERSION = "$1.$2";
 }
@@ -1088,6 +1089,23 @@ sub cgi_die
     exit(0);
 }
 
+sub Normalize_Delta_YMD
+{
+    my($date1,$date2) = @_;
+    my(@delta);
+
+    @delta = Date::Calc::Delta_YMD(@$date1,@$date2);
+    while ($delta[1] < 0 or $delta[2] < 0)
+    {
+	if ($delta[1] < 0) { $delta[0]--; $delta[1] += 12; }
+	if ($delta[2] < 0)
+	{
+	    $delta[1]--;
+	    $delta[2] = Date::Calc::Delta_Days(Date::Calc::Add_Delta_YM(@$date1,@delta[0,1]),@$date2);
+	}
+    }
+    return \@delta;
+}
 
 sub write_reunion_hash
 {
@@ -1141,6 +1159,27 @@ sub write_reunion_hash
 	    $t = Time::Local::timelocal(59,59,23,$mday,$mon-1,$year-1900);
 
 	    print $FH POSIX::strftime("%A, %B %e, %Y", localtime($t));
+
+	    if ($t < time())
+	    {
+		my $today = [Date::Calc::Today()];
+		my $target = [$year,$mon,$mday];
+		my $delta = Normalize_Delta_YMD($target,$today);
+		print $FH " <em>(";
+		if ($delta->[0] == 1) {
+		    print $FH "1 year";
+		} elsif ($delta->[0] > 0) {
+		    print $FH "$delta->[0] years";
+		}
+		if ($delta->[1] == 1) {
+		    print $FH ", " if $delta->[0] > 0;
+		    print $FH "1 month";
+		} elsif ($delta->[1] > 0) {
+		    print $FH ", " if $delta->[0] > 0;
+		    print $FH "$delta->[1] months";
+		}
+		print $FH " ago)</em>";
+	    }
 	}
 
 	$html =~ s/\@/&#64;/g;	# protect email addresses
