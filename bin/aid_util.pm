@@ -2,7 +2,7 @@
 #     FILE: aid_util.pm
 #   AUTHOR: Michael J. Radwin
 #    DESCR: perl library routines for the Alumni Directory
-#      $Id: aid_util.pm,v 7.14 2007/01/15 18:36:50 mradwin Exp mradwin $
+#      $Id: aid_util.pm,v 7.15 2007/02/23 22:35:17 mradwin Exp mradwin $
 #
 # Copyright (c) 2007  Michael J. Radwin.
 # All rights reserved.
@@ -62,7 +62,7 @@ require 'school_config.pl';
 
 package aid_util;
 
-my($VERSION) = '$Revision: 7.14 $$';
+my($VERSION) = '$Revision: 7.15 $$';
 if ($VERSION =~ /(\d+)\.(\d+)/) {
     $VERSION = "$1.$2";
 }
@@ -1185,22 +1185,7 @@ sub write_reunion_hash
 	$html =~ s/\@/&#64;/g;	# protect email addresses
 
 	print $FH "</dd>\n",
-	$html, "\n";
-
-	# y! calendar
-	if ($t > time)
-	{
-	    print $FH "<dd><a\n",
-	    "href=\"http://calendar.yahoo.com/?v=60&amp;TITLE=",
-	    url_escape(aid_util::config('school'));
-
-	    print $FH url_escape(" Class of")
-		if ($key =~ /^\d+$/);
-	    print $FH url_escape(" $key Reunion");
-	    printf $FH "&amp;ST=%4d%02d%02d", $year, $mon, $mday;
-	    print $FH "&amp;VIEW=d\" target=\"_calendar\">Add\n",
-	    "This Event To My Personal Yahoo! Calendar</a></dd>\n";
-	}
+	$html, "\n<br><br>\n\n";
     }
 
     print $FH "</dl>\n\n" unless $first;
