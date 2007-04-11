@@ -1,6 +1,6 @@
 #!/usr/local/bin/perl -w
 
-# $Id: aid_stats,v 7.3 2006/02/27 21:56:20 mradwin Exp mradwin $
+# $Id: aid_stats,v 7.4 2006/03/21 16:57:21 mradwin Exp mradwin $
 #
 # Copyright (c) 2006  Michael J. Radwin.
 # All rights reserved.
@@ -81,6 +81,7 @@ my($nnever_updated,$nweek,$nmonth,$n3month,$n13month);
 $nnever_updated = $nweek = $nmonth = $n3month = $n13month = 0;
 
 my $dbh = aid_util::db_connect();
+$dbh || die $DBI::errstr;
 my $DB = aid_util::load_records($dbh, "");
 $dbh->disconnect;
 

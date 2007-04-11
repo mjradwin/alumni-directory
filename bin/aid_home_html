@@ -2,7 +2,7 @@
 
 #
 # does the html version of just home pages
-# $Id: aid_home_html,v 7.4 2006/02/27 19:24:07 mradwin Exp mradwin $
+# $Id: aid_home_html,v 7.5 2006/03/21 16:57:21 mradwin Exp mradwin $
 #
 # Copyright (c) 2006  Michael J. Radwin.
 # All rights reserved.
@@ -108,6 +108,7 @@ if ($opts{"f"} && $opts{"p"} == 0)
     $time = time();		# TODO fix this
 
     my $dbh = aid_util::db_connect();
+    $dbh || die $DBI::errstr;
     @years = aid_util::load_years($dbh);
 }
 

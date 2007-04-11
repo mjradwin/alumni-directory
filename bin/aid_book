@@ -2,7 +2,7 @@
 
 #
 # generates address books in several formats
-# $Id: aid_book,v 7.5 2006/03/30 23:19:10 mradwin Exp mradwin $
+# $Id: aid_book,v 7.6 2006/05/01 16:39:20 mradwin Exp mradwin $
 #
 # Copyright (c) 2006  Michael J. Radwin.
 # All rights reserved.
@@ -105,6 +105,7 @@ foreach my $t (@output_types) {
 
 
 my $dbh = aid_util::db_connect();
+$dbh || die $DBI::errstr;
 my $where = $opts{'y'} ? "AND e.entry_gradclass = $opts{'y'}" : "";
 my $DB = aid_util::load_records($dbh, $where);
 $dbh->disconnect;

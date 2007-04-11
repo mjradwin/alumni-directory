@@ -1,6 +1,6 @@
 #!/usr/local/bin/perl -w
 
-# $Id: aid_delete_entry,v 7.2 2006/03/13 18:47:25 mradwin Exp mradwin $
+# $Id: aid_delete_entry,v 7.3 2006/03/21 16:57:21 mradwin Exp mradwin $
 #
 # Copyright (c) 2006  Michael J. Radwin.
 # All rights reserved.
@@ -65,6 +65,7 @@ open(LOG, ">>$logFile") || die "$0: can't open $logFile: $!\n";
 select(LOG); $| = 1; select(STDOUT);
 
 my $dbh = aid_util::db_connect();
+$dbh || die $DBI::errstr;
 my $id = shift;
 my $recp;
 if ($id =~ /^\d+$/)

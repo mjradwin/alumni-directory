@@ -2,7 +2,7 @@
 
 #
 # mails a welcome, update, confirm, or massmail message to members
-# $Id: aid_welcome,v 7.4 2006/02/28 16:20:56 mradwin Exp mradwin $
+# $Id: aid_welcome,v 7.5 2006/03/21 16:57:21 mradwin Exp mradwin $
 #
 # Copyright (c) 2006  Michael J. Radwin.
 # All rights reserved.
@@ -197,6 +197,7 @@ my $today = scalar(localtime(time));
 print LOG "# [$today] - $0 ", join(" ", @args), "\n";
 
 my $dbh = aid_util::db_connect();
+$dbh || die $DBI::errstr;
 
 if ($opts{"a"})
 {

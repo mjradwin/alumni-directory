@@ -1,6 +1,6 @@
 #!/usr/local/bin/perl -w
 
-# $Id: aid_addname,v 7.2 2006/02/27 16:58:37 mradwin Exp mradwin $
+# $Id: aid_addname,v 7.3 2006/03/21 16:57:21 mradwin Exp mradwin $
 #
 # Copyright (c) 2006  Michael J. Radwin.
 # All rights reserved.
@@ -74,6 +74,13 @@ my %upd_ids;
 my %verified;
 my $timestamp = 0;
 my $dbh = aid_util::db_connect();
+if (!$dbh) {
+    if ($opts{"q"}) {
+	exit(1);
+    } else {
+	die $DBI::errstr;
+    }
+}
 my $DB;
 
 my $status = readspool();

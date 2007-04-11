@@ -2,7 +2,7 @@
 #     FILE: aid_util.pm
 #   AUTHOR: Michael J. Radwin
 #    DESCR: perl library routines for the Alumni Directory
-#      $Id: aid_util.pm,v 7.15 2007/02/23 22:35:17 mradwin Exp mradwin $
+#      $Id: aid_util.pm,v 7.16 2007/02/27 22:50:32 mradwin Exp mradwin $
 #
 # Copyright (c) 2007  Michael J. Radwin.
 # All rights reserved.
@@ -62,7 +62,7 @@ require 'school_config.pl';
 
 package aid_util;
 
-my($VERSION) = '$Revision: 7.15 $$';
+my($VERSION) = '$Revision: 7.16 $$';
 if ($VERSION =~ /(\d+)\.(\d+)/) {
     $VERSION = "$1.$2";
 }
@@ -1210,9 +1210,10 @@ sub db_connect {
 	my $dbname = config("dbname");
 	my $dbhost = config("dbhost");
 	my $dsn = "DBI:mysql:database=$dbname;host=$dbhost";
-	$dbh = DBI->connect($dsn, config("dbuser"), config("dbpass"))
-	    or die $DBI::errstr;
-	$connected = 1;
+	$dbh = DBI->connect($dsn, config("dbuser"), config("dbpass"));
+	if (defined $dbh) {
+	    $connected = 1;
+	}
     }
 
     $dbh;
