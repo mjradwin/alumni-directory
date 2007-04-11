@@ -4,7 +4,7 @@
 #     FILE: about.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: Alumni Directory CGI "About" page generation
-#      $Id: about,v 7.1 2006/02/27 16:56:03 mradwin Exp mradwin $
+#      $Id: about,v 7.2 2006/03/21 16:58:48 mradwin Exp mradwin $
 #
 # Copyright (c) 2006  Michael J. Radwin.
 # All rights reserved.
@@ -64,6 +64,7 @@ if ($ENV{'PATH_INFO'} =~ m,/(\d+)$,)
     my $id = $1;
 
     my $dbh = aid_util::db_connect();
+    $dbh || aid_util::cgi_die("Database Failure", $DBI::errstr);
     my $DB = aid_util::load_records($dbh, "AND a.alumnus_id = $id");
     $dbh->disconnect;
 

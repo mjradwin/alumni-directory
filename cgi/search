@@ -4,7 +4,7 @@
 #     FILE: search.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: Alumni Directory CGI search
-#      $Id: search,v 7.2 2006/02/27 16:56:22 mradwin Exp mradwin $
+#      $Id: search,v 7.3 2006/03/21 16:58:48 mradwin Exp mradwin $
 #
 # Copyright (c) 2006  Michael J. Radwin.
 # All rights reserved.
@@ -65,6 +65,7 @@ foreach my $key ($q->param())
 }
 
 my $dbh = aid_util::db_connect();
+$dbh || aid_util::cgi_die("Database Failure", $DBI::errstr);
 
 if (!defined($in{"q"}) || $in{"q"} =~ /^[^\w]*$/)
 {

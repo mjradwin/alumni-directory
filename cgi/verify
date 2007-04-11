@@ -4,7 +4,7 @@
 #     FILE: verify.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: CGI for verifcation of e-mail address
-#      $Id: verify,v 7.6 2006/03/21 19:18:15 mradwin Exp mradwin $
+#      $Id: verify,v 7.7 2006/11/07 17:15:38 mradwin Exp mradwin $
 #
 # Copyright (c) 2006  Michael J. Radwin.
 # All rights reserved.
@@ -76,6 +76,7 @@ if ($key !~ /^[0-9a-f]+$/) {
 }
 
 my $dbh = aid_util::db_connect();
+$dbh || aid_util::cgi_die("Database Failure", $DBI::errstr);
 my $sql = qq{
 SELECT
 verify_staging_id,verify_alumnus_id,
