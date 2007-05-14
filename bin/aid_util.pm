@@ -2,7 +2,7 @@
 #     FILE: aid_util.pm
 #   AUTHOR: Michael J. Radwin
 #    DESCR: perl library routines for the Alumni Directory
-#      $Id: aid_util.pm,v 7.17 2007/04/11 16:46:44 mradwin Exp mradwin $
+#      $Id: aid_util.pm,v 7.18 2007/04/16 16:36:03 mradwin Exp mradwin $
 #
 # Copyright (c) 2007  Michael J. Radwin.
 # All rights reserved.
@@ -62,7 +62,7 @@ require 'school_config.pl';
 
 package aid_util;
 
-my($VERSION) = '$Revision: 7.17 $$';
+my($VERSION) = '$Revision: 7.18 $$';
 if ($VERSION =~ /(\d+)\.(\d+)/) {
     $VERSION = "$1.$2";
 }
@@ -800,7 +800,7 @@ sub common_html_hdr
 
     $titletag = ($page == 0) ?
 	($aid_util::config{'school'} . " Alumni Directory") :
-	($aid_util::config{'short_school'} . " Alumni: " . $title);
+	($title . " - " $aid_util::config{'short_school'} . " Alumni");
 
     $hdr  = 
 	"<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\"\n" .
