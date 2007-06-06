@@ -2,7 +2,7 @@
 
 #
 # does the html multi_class pages
-# $Id: aid_multi_class_html,v 7.8 2006/09/01 16:49:59 mradwin Exp mradwin $
+# $Id: aid_multi_class_html,v 7.9 2007/04/11 16:46:44 mradwin Exp mradwin $
 #
 # Copyright (c) 2006  Michael J. Radwin.
 # All rights reserved.
@@ -60,11 +60,12 @@ my $usage = "usage: $0 [-hq] [-i <keys>]
     -h        Display usage information.
     -q        Quiet.
     -d        Generate 'detail' pages for each individual.
+    -f        Force 'detail' pages.
     -i <keys> Incremental update only for list of keys.
 ";
 
 my %opts;
-getopts("hi:qd", \%opts) || die "$usage\n";
+getopts("hi:qdf", \%opts) || die "$usage\n";
 $opts{"h"} && die "$usage\n";
 @ARGV == 0 || die "$usage\n";
 
@@ -314,9 +315,12 @@ height="17" width="104" border="0"></a>
 	{
 	    my $out2 = sprintf("%s%s/%06d.html",
 			       aid_util::config("wwwdir"), "detail", $id);
-	    my @st = stat($out2);
-	    if (@st && $st[9] == $recp->{"u"}) {
-		next;
+
+	    unless ($opts{"f"}) {
+		my @st = stat($out2);
+		if (@st && $st[9] == $recp->{"u"}) {
+		    next;
+		}
 	    }
 
 	    open(FMTOUT2,">$out2.$$") || die "Can't open $out2.$$: $!\n";
