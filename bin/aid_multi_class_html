@@ -2,7 +2,7 @@
 
 #
 # does the html multi_class pages
-# $Id: aid_multi_class_html,v 7.9 2007/04/11 16:46:44 mradwin Exp mradwin $
+# $Id: aid_multi_class_html,v 7.10 2007/06/06 00:05:05 mradwin Exp mradwin $
 #
 # Copyright (c) 2006  Michael J. Radwin.
 # All rights reserved.
@@ -326,7 +326,10 @@ height="17" width="104" border="0"></a>
 	    open(FMTOUT2,">$out2.$$") || die "Can't open $out2.$$: $!\n";
 
 	    my($affil,$len) = aid_util::affiliate($recp,0);
-	    my $name = aid_util::inorder_fullname($recp);
+
+	    my %rec_copy = %{$recp};
+	    $rec_copy{"mi"} = "";
+	    my $name = aid_util::inorder_fullname(\%rec_copy);
 
 	    print FMTOUT2 aid_util::common_html_hdr(-2, $name . $affil,
 						    1, $recp->{"u"});
