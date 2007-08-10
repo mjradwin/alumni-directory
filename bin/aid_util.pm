@@ -2,7 +2,7 @@
 #     FILE: aid_util.pm
 #   AUTHOR: Michael J. Radwin
 #    DESCR: perl library routines for the Alumni Directory
-#      $Id: aid_util.pm,v 7.20 2007/05/14 03:14:13 mradwin Exp mradwin $
+#      $Id: aid_util.pm,v 7.21 2007/06/12 23:57:05 mradwin Exp mradwin $
 #
 # Copyright (c) 2007  Michael J. Radwin.
 # All rights reserved.
@@ -62,7 +62,7 @@ require 'school_config.pl';
 
 package aid_util;
 
-my($VERSION) = '$Revision: 7.20 $$';
+my($VERSION) = '$Revision: 7.21 $$';
 if ($VERSION =~ /(\d+)\.(\d+)/) {
     $VERSION = "$1.$2";
 }
@@ -783,19 +783,6 @@ sub common_html_ftr
 	"etc/tos.html\">Terms of Service</a>" .
 	"</small>\n";
     
-    $ftr .= qq{
-<script type="text/javascript">
-_fwid="radwin-alumni";
-</script>
-<script src="http://track.fraudwall.net/track.js"
-type="text/javascript">
-</script>
-<noscript>
-<img alt="" width="1" height="1"
-src="http://track.fraudwall.net/servlet/pix/nojs.gif?id=radwin-alumni">
-</noscript>
-};
-
     $ftr .= "</body>\n</html>\n";
 
     $ftr;
