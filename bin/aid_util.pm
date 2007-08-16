@@ -2,7 +2,7 @@
 #     FILE: aid_util.pm
 #   AUTHOR: Michael J. Radwin
 #    DESCR: perl library routines for the Alumni Directory
-#      $Id: aid_util.pm,v 7.21 2007/06/12 23:57:05 mradwin Exp mradwin $
+#      $Id: aid_util.pm,v 7.22 2007/08/10 04:16:49 mradwin Exp mradwin $
 #
 # Copyright (c) 2007  Michael J. Radwin.
 # All rights reserved.
@@ -62,7 +62,7 @@ require 'school_config.pl';
 
 package aid_util;
 
-my($VERSION) = '$Revision: 7.21 $$';
+my($VERSION) = '$Revision: 7.22 $$';
 if ($VERSION =~ /(\d+)\.(\d+)/) {
     $VERSION = "$1.$2";
 }
@@ -949,6 +949,8 @@ Do Not Edit! -->
     elsif ($option eq 'o') {
 	print $BOOKfh
 	    "\"Title\",\"First Name\",\"Middle Name\",\"Last Name\",\"Suffix\",\"Company\",\"Department\",\"Job Title\",\"Business Street\",\"Business Street 2\",\"Business Street 3\",\"Business City\",\"Business State\",\"Business Postal Code\",\"Business Country\",\"Home Street\",\"Home Street 2\",\"Home Street 3\",\"Home City\",\"Home State\",\"Home Postal Code\",\"Home Country\",\"Other Street\",\"Other Street 2\",\"Other Street 3\",\"Other City\",\"Other State\",\"Other Postal Code\",\"Other Country\",\"Assistant's Phone\",\"Business Fax\",\"Business Phone\",\"Business Phone 2\",\"Callback\",\"Car Phone\",\"Company Main Phone\",\"Home Fax\",\"Home Phone\",\"Home Phone 2\",\"ISDN\",\"Mobile Phone\",\"Other Fax\",\"Other Phone\",\"Pager\",\"Primary Phone\",\"Radio Phone\",\"TTY/TDD Phone\",\"Telex\",\"Account\",\"Anniversary\",\"Assistant's Name\",\"Billing Information\",\"Birthday\",\"Categories\",\"Children\",\"E-mail Address\",\"E-mail Display Name\",\"E-mail 2 Address\",\"E-mail 2 Display Name\",\"E-mail 3 Address\",\"E-mail 3 Display Name\",\"Gender\",\"Government ID Number\",\"Hobby\",\"Initials\",\"Keywords\",\"Language\",\"Location\",\"Mileage\",\"Notes\",\"Office Location\",\"Organizational ID Number\",\"PO Box\",\"Private\",\"Profession\",\"Referred By\",\"Spouse\",\"User 1\",\"User 2\",\"User 3\",\"User 4\",\"Web Page\"\015\012";
+    } elsif ($option eq 'T') {
+	print $BOOKfh "Last Name\tFirst Name\tE-mail Address\015\012";
     }
 }
 
@@ -957,7 +959,6 @@ sub book_write_entry
     my($BOOKfh,$option,$rec) = @_;
     my($long_last) = $rec->{'sn'};
     my($mi) = $rec->{'mi'} ne '' ? "$rec->{'mi'}." : '';
-    my($mi_spc) = $rec->{'mi'} ne '' ? " $rec->{'mi'}." : '';
 
     $long_last .= " $rec->{'mn'}" if $rec->{'mn'} ne '';
     $long_last =~ s/\"/\'/g;
@@ -967,28 +968,28 @@ sub book_write_entry
     $gn =~ s/\"/\'/g;
     $gn =~ s/[,;\t]/ /g;
 
-    $option eq 'T' && print $BOOKfh "$long_last, $gn$mi_spc\t$rec->{'e'}\r\n";
+    $option eq 'T' && print $BOOKfh "$long_last\t$gn\t$rec->{'e'}\r\n";
     $option eq 't' && print $BOOKfh "$rec->{'e'}\r\n";
-    $option eq 'p' && print $BOOKfh "$rec->{'a'}\t$long_last, $gn$mi_spc\t$rec->{'e'}\t\t$aid_util::config{'short_school'} $rec->{'yr'}\n";
+    $option eq 'p' && print $BOOKfh "$rec->{'a'}\t$long_last, $gn\t$rec->{'e'}\t\t$aid_util::config{'short_school'} $rec->{'yr'}\n";
     $option eq 'e' && print $BOOKfh "$rec->{'a'} = $long_last; $gn, $aid_util::config{'short_school'} $rec->{'yr'} = $rec->{'e'}\n";
     $option eq 'b' && print $BOOKfh "alias $rec->{'a'}\t$rec->{'e'}\n";
-    $option eq 'w' && print $BOOKfh "<$rec->{'a'}>\015\012>$gn$mi_spc $long_last <$rec->{'e'}>\015\012<$rec->{'a'}>\015\012>$aid_util::config{'short_school'} $rec->{'yr'}\015\012";
-    $option eq 'm' && print $BOOKfh "alias $rec->{'a'} $rec->{'e'}\015\012note $rec->{'a'} <name:$gn$mi_spc $long_last>$aid_util::config{'short_school'} $rec->{'yr'}\015\012";
+    $option eq 'w' && print $BOOKfh "<$rec->{'a'}>\015\012>$gn $long_last <$rec->{'e'}>\015\012<$rec->{'a'}>\015\012>$aid_util::config{'short_school'} $rec->{'yr'}\015\012";
+    $option eq 'm' && print $BOOKfh "alias $rec->{'a'} $rec->{'e'}\015\012note $rec->{'a'} <name:$gn $long_last>$aid_util::config{'short_school'} $rec->{'yr'}\015\012";
 
     # netscape is a bigger sucker
     if ($option eq 'n') {
 	print $BOOKfh "    <DT><A HREF=\"mailto:$rec->{'e'}\" ";
-	print $BOOKfh "NICKNAME=\"$rec->{'a'}\">$gn$mi_spc $long_last</A>\n";
+	print $BOOKfh "NICKNAME=\"$rec->{'a'}\">$gn $long_last</A>\n";
 	print $BOOKfh "<DD>$aid_util::config{'short_school'} $rec->{'yr'}\n";
     }
 
     elsif ($option eq 'l') {
-        print $BOOKfh "dn: cn=$gn$mi_spc $long_last,mail=$rec->{'e'}\015\012";
+        print $BOOKfh "dn: cn=$gn $long_last,mail=$rec->{'e'}\015\012";
 	print $BOOKfh "modifytimestamp: ";
 	my $vdate = vdate($rec->{'u'}); 
 	$vdate =~ s/T//;
 	print $BOOKfh "$vdate\015\012";
-        print $BOOKfh "cn: $gn$mi_spc $long_last\015\012";
+        print $BOOKfh "cn: $gn $long_last\015\012";
 	if ($rec->{'mn'} ne '') {
 	    print $BOOKfh "sn: $rec->{'mn'}\015\012";
 	} else {
