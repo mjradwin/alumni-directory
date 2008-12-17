@@ -2,9 +2,9 @@
 
 #
 # does the html multi_class pages
-# $Id: aid_multi_class_html,v 7.10 2007/06/06 00:05:05 mradwin Exp mradwin $
+# $Id: aid_multi_class_html,v 7.11 2007/06/12 23:37:53 mradwin Exp mradwin $
 #
-# Copyright (c) 2006  Michael J. Radwin.
+# Copyright (c) 2008  Michael J. Radwin.
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or
@@ -174,8 +174,9 @@ foreach my $year (@years)
     my $rsslink = "http://" . aid_util::config('master_srv') 
 	. "${master_path}class/${year}.xml";
     my $rsslinku = aid_util::url_escape($rsslink);
-    my $rsstitle = aid_util::url_escape(aid_util::config("short_school") 
-					. " Alumni: Class of $year");
+    my $rsstitle = aid_util::config("short_school")
+	. " Alumni: Class of $year";
+    my $rsstitleu = aid_util::url_escape($rsstitle);
 
     $extra_meta .= "\n<link rel=\"alternate\" type=\"application/rss+xml\" "
     . "title=\"RSS\" href=\"$rsslink\">\n";
@@ -190,30 +191,16 @@ foreach my $year (@years)
 alt="View the raw XML source" src="${master_path}etc/xml.gif"
 width="36" height="14" border="0"></a>
 
-<a href="http://add.my.yahoo.com/rss?url=$rsslinku"><img
-alt="addtomyyahoo4" src="http://us.i1.yimg.com/us.yimg.com/i/us/my/addtomyyahoo4.gif"
-height="17" width="91" border="0"></a>
-
-<a href="http://www.newsgator.com/ngs/subscriber/subext.aspx?url=$rsslinku"><img
-alt="Subscribe in NewsGator Online" src="http://www.newsgator.com/images/ngsub1.gif"
-height="17" width="91" border="0"></a>
-
-<a href="http://client.pluck.com/pluckit/prompt.aspx?GCID=C12286x053&amp;a=$rsslinku&amp;t=$rsstitle"><img
-alt="Subscribe with Pluck RSS reader" src="http://www.pluck.com/images/rss-pluck.gif"
-height="17" width="91" border="0"></a>
-
-<a href="http://www.rojo.com/add-subscription?resource=$rsslinku"><img
-alt="Subscribe in Rojo" src="http://www.rojo.com/skins/static/images/add-to-rojo.gif"
-height="17" width="52" border="0"></a>
-
-<a href="http://www.bloglines.com/sub/$rsslink"><img
-alt="Subscribe with Bloglines" src="http://www.bloglines.com/images/sub_modern5.gif"
-height="15" width="80" border="0"></a>
-
-<a href="http://fusion.google.com/add?feedurl=$rsslinku"><img
-alt="Add to Google" src="http://buttons.googlesyndication.com/fusion/add.gif"
-height="17" width="104" border="0"></a>
-</p>
+<a class="a2a_dd"
+href="http://www.addtoany.com/subscribe?linkname=${rsstitleu}&amp;linkurl=${rsslinku}"><img
+src="http://static.addtoany.com/buttons/subscribe_120_16.gif"
+width="120" height="16" border="0" alt="Subscribe"/></a>
+<script type="text/javascript">
+a2a_linkname="${rsstitle}";
+a2a_linkurl="${rsslink}";
+</script>
+<script type="text/javascript"
+src="http://static.addtoany.com/menu/feed.js"></script>
 };
 
     print FMTOUT "<hr noshade=\"noshade\" size=\"1\">\n\n";
