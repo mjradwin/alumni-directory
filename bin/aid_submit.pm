@@ -2,7 +2,7 @@
 #     FILE: aid_submit.pm
 #   AUTHOR: Michael J. Radwin
 #    DESCR: submission form for Alumni Directory
-#      $Id: aid_submit.pm,v 7.7 2006/12/04 00:58:31 mradwin Exp mradwin $
+#      $Id: aid_submit.pm,v 7.8 2007/02/20 17:24:36 mradwin Exp mradwin $
 #
 # Copyright (c) 2003  Michael J. Radwin.
 # All rights reserved.
@@ -131,7 +131,14 @@ sub submit_body
 
     my $star = "<font color=\"#$aid_util::star_fg\">*</font>";
 
-    $instr = "<p>Please " . (($rec{'id'} != -1) ? "update" : "enter") .
+    $instr = "";
+    if ($rec{'id'} != -1) {
+	$instr .= "<p>Looking to <a href=\"" .
+	    $aid_util::config{'delete_cgi'} . "?id=" . $rec{'id'} .
+	    "\">delete your profile</a>?</p>\n";
+    }
+
+    $instr .= "<p>Please " . (($rec{'id'} != -1) ? "update" : "enter") .
     " the following information about yourself.<br>
 Fields marked with a $star
 are required.  All other fields are optional.</p>
@@ -140,7 +147,7 @@ are required.  All other fields are optional.</p>
     # special hack for MVHS
     $instr .= "<p><font color=\"red\">Are you an alumnus of Awalt High
 School?</font>
-Please add your listing  to the<br>
+Please add your profile  to the<br>
 <a href=\"/awalt/\">Awalt High School Alumni Directory</a>
 instead.</p>
 " if $rec{'id'} == -1 && aid_util::config('school') eq 'Mountain View High School';
@@ -257,18 +264,18 @@ What's New?</strong></big></font>
 
 <tr><td colspan=\"3\" bgcolor=\"#$aid_util::header_bg\">
 <font color=\"#$aid_util::header_fg\"><big><strong class=\"hl\">5.
-Preview Listing</strong></big></font>
+Preview Profile</strong></big></font>
 </td></tr>
 
 <tr>
 <td colspan=\"3\">
 Please review the above information and click the
-<strong>Preview&nbsp;Listing</strong> button to continue.
+<strong>Preview&nbsp;Profile</strong> button to continue.
 <input type=\"hidden\" name=\"id\" value=\"$rec{'id'}\">
 <input type=\"hidden\" name=\"c\" value=\"$rec{'c'}\">
 <input type=\"hidden\" name=\"v\" value=\"1\">
 <br><input type=\"submit\"
-value=\"Preview Listing\">
+value=\"Preview Profile\">
 </td>
 </tr>
 

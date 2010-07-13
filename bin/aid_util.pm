@@ -2,7 +2,7 @@
 #     FILE: aid_util.pm
 #   AUTHOR: Michael J. Radwin
 #    DESCR: perl library routines for the Alumni Directory
-#      $Id: aid_util.pm,v 7.26 2010/07/13 22:47:30 mradwin Exp mradwin $
+#      $Id: aid_util.pm,v 7.27 2010/07/13 22:56:45 mradwin Exp mradwin $
 #
 # Copyright (c) 2007  Michael J. Radwin.
 # All rights reserved.
@@ -62,7 +62,7 @@ require 'school_config.pl';
 
 package aid_util;
 
-my($VERSION) = '$Revision: 7.26 $$';
+my($VERSION) = '$Revision: 7.27 $$';
 if ($VERSION =~ /(\d+)\.(\d+)/) {
     $VERSION = "$1.$2";
 }
@@ -75,7 +75,7 @@ die "NO CONFIG DEFINED!!" unless defined %aid_util::config;
 (
   '1' => 'Alphabetically',
   '2' => 'Graduating Classes',
- '20' => 'Join or Modify Your Listing',
+ '20' => 'Join or Modify Your Profile',
  '26' => 'Search',
 );
 
@@ -488,7 +488,7 @@ http://" . $aid_util::config{'master_srv'} . $aid_util::config{'master_path'} . 
     $return_path = $aid_util::config{'devnull_email'};
     $from = $aid_util::config{'short_school'} . ' Alumni Robot';
     $subject = $aid_util::config{'short_school'} .
-	" Alumni Directory - action required to $action2 your entry";
+	" Alumni Directory - action required to $action2 your profile";
     $xtrahead = "Reply-To: " . $aid_util::config{'devnull_email'};
 
     ($return_path,$from,$subject,$xtrahead,$body,$name,$rec->{'e'});
@@ -666,9 +666,9 @@ sub verbose_entry
     {
 	$retval .= "<dt>Tools: <small>" .
 	    "<a\nhref=\"" . $aid_util::config{'about_cgi'} .
-	    "/$rec{'id'}\">modify your entry</a>" . 
+	    "/$rec{'id'}\">modify your profile</a>" . 
 	    " | <a\nhref=\"" . $aid_util::config{'delete_cgi'} .
-	    "?id=$rec{'id'}\">delete your entry</a>" . 
+	    "?id=$rec{'id'}\">delete your profile</a>" . 
 	    "</small>";
 	$retval .= "\n";
     }
