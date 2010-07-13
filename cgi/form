@@ -4,7 +4,7 @@
 #     FILE: form.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: Alumni Directory CGI form-submission interface
-#      $Id: form,v 7.8 2007/04/11 18:08:25 mradwin Exp mradwin $
+#      $Id: form,v 7.9 2010/07/13 20:29:32 mradwin Exp mradwin $
 #
 # Copyright (c) 2006  Michael J. Radwin.
 # All rights reserved.
@@ -58,11 +58,11 @@ use aid_submit;
 use DBI ();
 
 # configuration
-my $rcsid = '$Id: form,v 7.8 2007/04/11 18:08:25 mradwin Exp mradwin $'; #'fnt
+my $rcsid = '$Id: form,v 7.9 2010/07/13 20:29:32 mradwin Exp mradwin $'; #'fnt
 
-my $listing_upd_title = "Modify Your Directory Listing";
+my $listing_upd_title = "Modify Your Directory Profile";
 my $listing_add_title = "Join the Directory";
-my $listing_sub_title = "Review and Confirm Your Listing";
+my $listing_sub_title = "Review and Confirm Your Profile";
 
 my %cgi;
 my($q) = new CGI;
@@ -333,7 +333,7 @@ return false;
     }
 
     print "
-Here is what your listing will look like:
+Here is what your profile will look like:
 <br><br>
 
 <table border=\"1\" cellpadding=\"6\"><tr><td>";
@@ -343,11 +343,11 @@ Here is what your listing will look like:
 
     print "</td></tr></table>
 <p>Want to change something?
-<input type=button value=\"Edit Listing\" onclick=\"history.go(-1)\">
+<input type=button value=\"Edit Profile\" onclick=\"history.go(-1)\">
 <br><br>
 Everything above is correct?
 <input type=\"hidden\" name=\"confirmed\" value=\"1\">
-<input type=\"submit\" name=\"sub1\" id=\"sub1\" value=\"Submit Listing\"
+<input type=\"submit\" name=\"sub1\" id=\"sub1\" value=\"Submit Profile\"
 onclick=\"return s1()\">
 </p>
 </form>
@@ -413,7 +413,7 @@ sub send_upd_real {
     print aid_util::common_html_hdr(20,
 			   (($recp->{"id"} == -1) ? 
 			    $listing_add_title :
-			    "Modify listing for " .
+			    "Modify profile for " .
 			    aid_util::inorder_fullname($recp)),
 			   1,
 			    defined $recp->{"u"} ? $recp->{"u"} : undef);
@@ -431,13 +431,13 @@ sub send_upd_notfound {
     print "Content-Type: text/html\015\012\015\012";
     print aid_util::common_html_hdr(20,$listing_upd_title,1);
     print "
-<p><big><font color=\"red\">Sorry, a listing with the address</font>
+<p><big><font color=\"red\">Sorry, a profile with the address</font>
 <code><strong>$notfound</strong></code>
 <font color=\"red\">could not be found in the Directory.</font></big></p>
 <blockquote>
 <dl>
   <dt><h3>I am currently listed in the Directory and want to
-      modify my listing.</h3>
+      modify my profile.</h3>
   <dd><br>
       <form method=\"get\" action=\"" . aid_util::config("update_cgi") . "\">
       <label for=\"upd\">My e-mail address is </label>
@@ -445,7 +445,7 @@ sub send_upd_notfound {
       <input type=\"submit\" value=\"Sign In\">
       </form>
   <dt><dd><strong>If you don't remember the e-mail address you used
-  before, search for your listing:</strong>
+  before, search for your profile:</strong>
   <dd><br>
       <form method=\"get\" action=\"" . aid_util::config("search_cgi") . "/upd\">
       <label for=\"q\">My last name is </label>

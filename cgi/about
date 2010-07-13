@@ -4,7 +4,7 @@
 #     FILE: about.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: Alumni Directory CGI "About" page generation
-#      $Id: about,v 7.2 2006/03/21 16:58:48 mradwin Exp mradwin $
+#      $Id: about,v 7.3 2007/04/11 18:08:25 mradwin Exp mradwin $
 #
 # Copyright (c) 2006  Michael J. Radwin.
 # All rights reserved.
@@ -99,8 +99,8 @@ sub send_about
     print "Content-Type: text/html\015\012\015\012";
 
     print aid_util::common_html_hdr(20,$fullname,1,$recp->{'u'});
-    print "<p>Below is the current listing for ${html_name}.\n";
-    print "Click the modify button below to edit this listing.</p>\n";
+    print "<p>Below is the current profile for ${html_name}.\n";
+    print "Click the modify button below to edit this profile.</p>\n";
     print "
 <!-- borrowed from gamelan -->
 

@@ -4,7 +4,7 @@
 #     FILE: verify.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: CGI for verifcation of e-mail address
-#      $Id: verify,v 7.7 2006/11/07 17:15:38 mradwin Exp mradwin $
+#      $Id: verify,v 7.8 2007/04/11 18:08:25 mradwin Exp mradwin $
 #
 # Copyright (c) 2006  Michael J. Radwin.
 # All rights reserved.
@@ -161,7 +161,7 @@ if (defined $sid) {
 	print aid_util::common_html_hdr(20,'E-mail address verified',1);
 
 	print "
-<p>The listing for <strong>$fullname</strong> has been
+<p>The profile for <strong>$fullname</strong> has been
 accepted into the submission queue, and it will be processed
 within 5 minutes. E-mail will be sent to
 <b>$recp->{'e'}</b>
@@ -184,15 +184,15 @@ confirming receipt of this submission when it it processed.</p>
     }
 
     my $title = $oldrecp
-	? "Confirm change to your listing"
-	: "Publish your listing";
+	? "Confirm change to your profile"
+	: "Publish your profile";
 
     print "Content-Type: text/html\015\012\015\012";
     print aid_util::common_html_hdr(20,$title,1);
 
     my $action =  aid_util::config("verify_cgi");
     print qq{
-<p>Here is what your listing will look like. If you approve,
+<p>Here is what your profile will look like. If you approve,
 click the button below.</p>
 <form method="post" name="f1" id="f1" action="$action">
 <input type="hidden" name="k" value="$key">

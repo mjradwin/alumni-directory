@@ -4,7 +4,7 @@
 #     FILE: go.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: Alumni Directory update redirector
-#      $Id: go,v 7.2 2006/03/21 16:58:48 mradwin Exp mradwin $
+#      $Id: go,v 7.3 2007/04/11 18:08:25 mradwin Exp mradwin $
 #
 # Copyright (c) 2006  Michael J. Radwin.
 # All rights reserved.
@@ -79,7 +79,7 @@ if ($ENV{'PATH_INFO'} =~ m,/(\d+)$,)
 	print "Content-Type: text/html\015\012\015\012";
 
 	print aid_util::common_html_hdr(20,
-				   'Modify listing for ' .
+				   'Modify profile for ' .
 				   aid_util::inorder_fullname($recp),
 				   1,$recp->{'u'});
 	print aid_submit::submit_body($recp,'');
