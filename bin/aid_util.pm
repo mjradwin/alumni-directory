@@ -2,7 +2,7 @@
 #     FILE: aid_util.pm
 #   AUTHOR: Michael J. Radwin
 #    DESCR: perl library routines for the Alumni Directory
-#      $Id: aid_util.pm,v 7.22 2007/08/10 04:16:49 mradwin Exp mradwin $
+#      $Id: aid_util.pm,v 7.23 2007/08/16 16:14:13 mradwin Exp mradwin $
 #
 # Copyright (c) 2007  Michael J. Radwin.
 # All rights reserved.
@@ -53,7 +53,7 @@ use lib "/home/mradwin/local/share/perl/site_perl";
 use strict;
 use DBI ();
 use MIME::QuotedPrint;
-use Net::SMTP; 
+use Net::SMTP::SSL ();
 use Time::Local;
 use POSIX qw(strftime);
 use Date::Calc ();
@@ -62,7 +62,7 @@ require 'school_config.pl';
 
 package aid_util;
 
-my($VERSION) = '$Revision: 7.22 $$';
+my($VERSION) = '$Revision: 7.23 $$';
 if ($VERSION =~ /(\d+)\.(\d+)/) {
     $VERSION = "$1.$2";
 }
@@ -471,7 +471,7 @@ http://" . $aid_util::config{'master_srv'} . $aid_util::config{'master_path'} . 
     $from = $aid_util::config{'short_school'} . ' Alumni Robot';
     $subject = $aid_util::config{'short_school'} .
 	" Alumni Directory";
-    $xtrahead = "Reply-To: " . $aid_util::config{'admin_email'};
+    $xtrahead = "Reply-To: " . $aid_util::config{'devnull_email'};
 
     ($return_path,$from,$subject,$xtrahead,$body,$name,$rec->{'e'});
 }
@@ -489,7 +489,9 @@ sub sendmail_v2
     my($return_path,$from,$subject,$xtrahead,$body,@recip) = @_;
     my($message,$i,$to,$cc,@targets);
 
-    my($smtp) = Net::SMTP->new($aid_util::config{'smtp_svr'}, Timeout => 30);
+    my $smtp = Net::SMTP::SSL->new($aid_util::config{"smtp_svr"},
+				   Port => 465,
+				   Timeout => 15);
     unless ($smtp) {
 	warn "smtp new() failure for $aid_util::config{'smtp_svr'}\n";
 	return 0;
