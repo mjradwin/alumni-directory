@@ -2,7 +2,7 @@
 #     FILE: aid_util.pm
 #   AUTHOR: Michael J. Radwin
 #    DESCR: perl library routines for the Alumni Directory
-#      $Id: aid_util.pm,v 7.24 2010/07/13 20:29:03 mradwin Exp mradwin $
+#      $Id: aid_util.pm,v 7.25 2010/07/13 22:30:14 mradwin Exp mradwin $
 #
 # Copyright (c) 2007  Michael J. Radwin.
 # All rights reserved.
@@ -62,7 +62,7 @@ require 'school_config.pl';
 
 package aid_util;
 
-my($VERSION) = '$Revision: 7.24 $$';
+my($VERSION) = '$Revision: 7.25 $$';
 if ($VERSION =~ /(\d+)\.(\d+)/) {
     $VERSION = "$1.$2";
 }
@@ -432,18 +432,25 @@ sub html_entify_rec
     %rec;
 }
 
-sub verification_message
+sub email_name
 {
-    my($randkey,$rec,$is_delete) = @_;
+    my($rec) = @_;
 
-    my($name) = $rec->{'gn'};
+    my $name = $rec->{'gn'};
     $name .= " $rec->{'mi'}."
 	if defined $rec->{'mi'} && $rec->{'mi'} ne '';
     $name .= " $rec->{'sn'}";
     $name .= " $rec->{'mn'}"
 	if defined $rec->{'mn'} && $rec->{'mn'} ne '';
     $name =~ s/\"/\'/g;
+    return $name;
+}
 
+sub verification_message
+{
+    my($randkey,$rec,$is_delete) = @_;
+
+    my $name = email_name($rec);
     my($return_path,$from,$subject,$xtrahead,$body,$recip);
 
     my($action1,$action2,$url);
@@ -459,7 +466,7 @@ sub verification_message
 
     $body = inorder_fullname($rec) . ",
 
-You recently $action1 " 
+You recently $action1 the "
     . $aid_util::config{'short_school'} . " Alumni
 Directory website. Please click the following link to
 $action2 your profile:
@@ -481,7 +488,7 @@ http://" . $aid_util::config{'master_srv'} . $aid_util::config{'master_path'} . 
     $return_path = $aid_util::config{'devnull_email'};
     $from = $aid_util::config{'short_school'} . ' Alumni Robot';
     $subject = $aid_util::config{'short_school'} .
-	" Alumni Directory";
+	" Alumni Directory - action required to $action2 your entry";
     $xtrahead = "Reply-To: " . $aid_util::config{'devnull_email'};
 
     ($return_path,$from,$subject,$xtrahead,$body,$name,$rec->{'e'});
