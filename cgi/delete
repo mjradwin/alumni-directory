@@ -16,7 +16,7 @@ use aid_submit;
 use DBI ();
 
 # configuration
-my $rcsid = '$Id: delete,v 1.2 2010/07/13 22:30:01 mradwin Exp mradwin $'; #'fnt
+my $rcsid = '$Id: delete,v 1.3 2010/07/13 22:47:03 mradwin Exp mradwin $'; #'fnt
 
 my $q = new CGI;
 my $id = $q->param("id");
@@ -100,7 +100,7 @@ Alumni Robot and click on it to delete your profile.</p>
     my $xtrahead = "Reply-To: " . $aid_util::config{'devnull_email'};
     my $name = aid_util::email_name($rec);
 
-    my $body = inorder_fullname($rec) . ",
+    my $body = aid_util::inorder_fullname($rec) . ",
 
 Your Alumni Directory profile has been deleted.
 
