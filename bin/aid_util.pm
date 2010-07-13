@@ -2,7 +2,7 @@
 #     FILE: aid_util.pm
 #   AUTHOR: Michael J. Radwin
 #    DESCR: perl library routines for the Alumni Directory
-#      $Id: aid_util.pm,v 7.25 2010/07/13 22:30:14 mradwin Exp mradwin $
+#      $Id: aid_util.pm,v 7.26 2010/07/13 22:47:30 mradwin Exp mradwin $
 #
 # Copyright (c) 2007  Michael J. Radwin.
 # All rights reserved.
@@ -62,7 +62,7 @@ require 'school_config.pl';
 
 package aid_util;
 
-my($VERSION) = '$Revision: 7.25 $$';
+my($VERSION) = '$Revision: 7.26 $$';
 if ($VERSION =~ /(\d+)\.(\d+)/) {
     $VERSION = "$1.$2";
 }
@@ -666,7 +666,10 @@ sub verbose_entry
     {
 	$retval .= "<dt>Tools: <small>" .
 	    "<a\nhref=\"" . $aid_util::config{'about_cgi'} .
-	    "/$rec{'id'}\">modify your entry</a></small>";
+	    "/$rec{'id'}\">modify your entry</a>" . 
+	    " | <a\nhref=\"" . $aid_util::config{'delete_cgi'} .
+	    "?id=$rec{'id'}\">delete your entry</a>" . 
+	    "</small>";
 	$retval .= "\n";
     }
 
