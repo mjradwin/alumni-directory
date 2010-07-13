@@ -16,13 +16,14 @@ use aid_submit;
 use DBI ();
 
 # configuration
-my $rcsid = '$Id$'; #'fnt
+my $rcsid = '$Id: delete,v 1.1 2010/07/13 21:11:30 mradwin Exp mradwin $'; #'fnt
 
 my $q = new CGI;
 my $id = $q->param("id");
 
 if (!defined $id || $id !~ /^\d+$/) {
-    aid_util::cgi_die("Form Data Missing",
+    print "Status: 400 Bad Request\015\012";
+    aid_util::cgi_die("Error: Form Data Missing",
 		      "The required form data was not present or something\n" .
 		      "is awry.");
 }
@@ -32,38 +33,46 @@ $dbh || aid_util::cgi_die("Database Failure", $DBI::errstr);
 
 my $MDB = aid_util::load_records($dbh, "AND a.alumnus_id = $id");
 if (!defined $MDB->{$id}) {
-    $dbh->disconnect;
-    aid_util::cgi_die("Alumnus id $id Not Found",
-		      "Alumnus id $id Not Found");
+    print "Status: 404 Not Found\015\012";
+    aid_util::cgi_die("Error: id $id Not Found",
+		      "Alumnus id $id not present in DB");
 }
 
-my $randkey = create_key();
 my $rec = $MDB->{$id};
-staging_store_rec($dbh, $rec, $randkey);
+my $commit = $q->param("commit");
+if (!$commit) {
+    form(1,$rec,"",
+	 "Delete my profile",
+	 "If you wish to delete your entry, click the button below\n"
+	 . "to begin the verification process.",
+	 "Send verification email");
+} elsif ($commit eq "1") {
+    my $randkey = create_key();
+    staging_store_rec($dbh, $rec, $randkey);
 
-my($return_path,$from,$subject,$body,@recip) =
-    aid_util::verification_message($randkey, $rec);
+    my($return_path,$from,$subject,$body,@recip) =
+	aid_util::verification_message($randkey, $rec, 1);
 
-my $status = 0;
-for (my $i = 0; $status == 0 && $i < 3; $i++) {
-    $status = aid_util::sendmail_v2($return_path,$from,$subject,$body,@recip);
-}
+    my $status = 0;
+    for (my $i = 0; $status == 0 && $i < 3; $i++) {
+	$status = aid_util::sendmail_v2($return_path,$from,$subject,$body,@recip);
+    }
 
-aid_util::cgi_die("ERROR: Unable to send confirmation e-mail",
-		  "We're sorry, we were unable to send e-mail to\n" .
-		  "<b>$rec->{'e'}</b>.<p>This may be a problem with our\n" .
-		  "server or perhaps with your e-mail address.\n" .
-		  "Please try again in a few minutes.<p>If you continue\n" .
-		  "to get this error, please send e-mail to <a\n" .
-		  "href=\"mailto:" . aid_util::config("admin_email") .
-		  "\">" . aid_util::config("admin_email") . "</a>\n" .
-		  "with error code <b>$randkey</b>.")
-    if $status == 0;
+    aid_util::cgi_die("ERROR: Unable to send confirmation e-mail",
+		      "We're sorry, we were unable to send e-mail to\n" .
+		      "<b>$rec->{'e'}</b>.<p>This may be a problem with our\n" .
+		      "server or perhaps with your e-mail address.\n" .
+		      "Please try again in a few minutes.<p>If you continue\n" .
+		      "to get this error, please send e-mail to <a\n" .
+		      "href=\"mailto:" . aid_util::config("admin_email") .
+		      "\">" . aid_util::config("admin_email") . "</a>\n" .
+		      "with error code <b>$randkey</b>.")
+	if $status == 0;
 
-print "Content-Type: text/html\015\012\015\012";
-print aid_util::common_html_hdr(20,"Verify e-mail address to delete account",1);
+    print "Content-Type: text/html\015\012\015\012";
+    print aid_util::common_html_hdr(20,"Verify e-mail address to delete profile",1);
 
-print "
+    print "
 <p>Our e-mail robot (<tt>", aid_util::config("smtp_user"), "</tt>)
 just sent a verification message to
 <b>$rec->{'e'}</b>.
@@ -72,17 +81,56 @@ It may take 2 or 3 minutes for it to arrive.</p>
 <p>Please check your e-mail and find the
 verification URL that was sent to you by the ",
 aid_util::config("short_school"), "
-Alumni Robot and click on it to delete your account.</p>
+Alumni Robot and click on it to delete your profile.</p>
 ";
 
-print aid_util::common_html_ftr(20);
+    print aid_util::common_html_ftr(20);
+} elsif ($commit eq "2") {
+    form(3,$rec,$q->param("k"),
+	 "Confirm profile deletion",
+	 "To finish deleting your entry, click the button below.\n",
+	 "Confirm profile deletion");
+} elsif ($commit eq "3") {
+    aid_util::delete_entry($dbh,$rec,0);
+
+    print "Content-Type: text/html\015\012\015\012";
+    print aid_util::common_html_hdr(20,"Profile deleted",1);
+    print "
+<p>Your Alumni Directory profile has been deleted.</p>
+<p>Thanks for being an Alumni Directory member.</p>
+";
+    print aid_util::common_html_ftr(20);
+}
 
 close(STDOUT);
 $dbh->disconnect;
 exit(0);
 
-sub create_key
-{
+sub form {
+    my($phase,$rec,$key,$title,$message,$submit_text) = @_;
+    my $action =  aid_util::config("delete_cgi");
+    my $id = $rec->{"id"};
+
+    print "Content-Type: text/html\015\012\015\012";
+    print aid_util::common_html_hdr(20,$title,1);
+    print qq{
+<p>$message</p>
+<form method="post" name="f1" id="f1" action="$action">
+<input type="hidden" name="k" value="$key">
+<input type="hidden" name="id" value="$id">
+<input type="hidden" name="commit" value="$phase">
+<input type="submit" name="sub1" id="sub1" value="$submit_text">
+</form>
+<br>
+<table border="1" cellpadding="6">
+<tr><td>
+};
+    print aid_util::verbose_entry($rec,1,1,1,0,1);
+    print qq{</td></tr>\n</table><p>\n};
+    print aid_util::common_html_ftr(20);
+}
+
+sub create_key {
     my $now = time();
 
     my $rand = pack("N", $now);
@@ -96,8 +144,7 @@ sub create_key
     unpack("H*", $rand);
 }
 
-sub staging_store_rec
-{
+sub staging_store_rec {
     my($dbh,$rec,$randkey) = @_;
 
     my $sql = "INSERT INTO aid_verify"
