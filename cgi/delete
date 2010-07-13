@@ -16,7 +16,7 @@ use aid_submit;
 use DBI ();
 
 # configuration
-my $rcsid = '$Id: delete,v 1.1 2010/07/13 21:11:30 mradwin Exp mradwin $'; #'fnt
+my $rcsid = '$Id: delete,v 1.2 2010/07/13 22:30:01 mradwin Exp mradwin $'; #'fnt
 
 my $q = new CGI;
 my $id = $q->param("id");
@@ -50,12 +50,12 @@ if (!$commit) {
     my $randkey = create_key();
     staging_store_rec($dbh, $rec, $randkey);
 
-    my($return_path,$from,$subject,$body,@recip) =
+    my($return_path,$from,$subject,$xtrahead,$body,@recip) =
 	aid_util::verification_message($randkey, $rec, 1);
 
     my $status = 0;
     for (my $i = 0; $status == 0 && $i < 3; $i++) {
-	$status = aid_util::sendmail_v2($return_path,$from,$subject,$body,@recip);
+	$status = aid_util::sendmail_v2($return_path,$from,$subject,$xtrahead,$body,@recip);
     }
 
     aid_util::cgi_die("ERROR: Unable to send confirmation e-mail",
@@ -92,6 +92,26 @@ Alumni Robot and click on it to delete your profile.</p>
 	 "Confirm profile deletion");
 } elsif ($commit eq "3") {
     aid_util::delete_entry($dbh,$rec,0);
+      
+    my $return_path = $aid_util::config{'devnull_email'};
+    my $from = $aid_util::config{'short_school'} . ' Alumni Robot';
+    my $subject = $aid_util::config{'short_school'} .
+	" Alumni Directory - thanks and goodbye";
+    my $xtrahead = "Reply-To: " . $aid_util::config{'devnull_email'};
+    my $name = aid_util::email_name($rec);
+
+    my $body = inorder_fullname($rec) . ",
+
+Your Alumni Directory profile has been deleted.
+
+Thanks for being an Alumni Directory member.
+
+Regards,
+
+" . aid_util::config('short_school') . " Alumni Directory
+http://" . aid_util::config('master_srv') . aid_util::config('master_path') . "\n";
+
+    aid_util::sendmail_v2($return_path,$from,$subject,$xtrahead,$body,$name,$rec->{"e"});
 
     print "Content-Type: text/html\015\012\015\012";
     print aid_util::common_html_hdr(20,"Profile deleted",1);
