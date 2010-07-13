@@ -4,7 +4,7 @@
 #     FILE: form.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: Alumni Directory CGI form-submission interface
-#      $Id: form,v 7.7 2006/12/05 21:54:17 mradwin Exp mradwin $
+#      $Id: form,v 7.8 2007/04/11 18:08:25 mradwin Exp mradwin $
 #
 # Copyright (c) 2006  Michael J. Radwin.
 # All rights reserved.
@@ -58,7 +58,7 @@ use aid_submit;
 use DBI ();
 
 # configuration
-my $rcsid = '$Id: form,v 7.7 2006/12/05 21:54:17 mradwin Exp mradwin $'; #'fnt
+my $rcsid = '$Id: form,v 7.8 2007/04/11 18:08:25 mradwin Exp mradwin $'; #'fnt
 
 my $listing_upd_title = "Modify Your Directory Listing";
 my $listing_add_title = "Join the Directory";
@@ -391,7 +391,7 @@ sub queue_submission {
     print aid_util::common_html_hdr(20,"Final Step: verify e-mail address",1);
 
     print "
-<p>Our e-mail robot (<tt>", aid_util::config("admin_email"), "</tt>)
+<p>Our e-mail robot (<tt>", aid_util::config("smtp_user"), "</tt>)
 just sent a verification message to
 <b>$cgi{'e'}</b>.
 It may take 2 or 3 minutes for it to arrive.</p>
