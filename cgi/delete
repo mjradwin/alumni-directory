@@ -16,7 +16,7 @@ use aid_submit;
 use DBI ();
 
 # configuration
-my $rcsid = '$Id: delete,v 1.4 2010/07/13 22:56:57 mradwin Exp mradwin $'; #'fnt
+my $rcsid = '$Id: delete,v 1.5 2010/07/13 23:05:03 mradwin Exp mradwin $'; #'fnt
 
 my $q = new CGI;
 my $id = $q->param("id");
@@ -60,7 +60,8 @@ if (!$commit) {
 
     aid_util::cgi_die("ERROR: Unable to send confirmation e-mail",
 		      "We're sorry, we were unable to send e-mail to\n" .
-		      "<b>$rec->{'e'}</b>.<p>This may be a problem with our\n" .
+		      "<b>" . aid_util::protect_email($rec->{'e'}) . "</b>. " .
+		      "<p>This may be a problem with our\n" .
 		      "server or perhaps with your e-mail address.\n" .
 		      "Please try again in a few minutes.<p>If you continue\n" .
 		      "to get this error, please send e-mail to <a\n" .
@@ -75,7 +76,7 @@ if (!$commit) {
     print "
 <p>Our e-mail robot (<tt>", aid_util::config("smtp_user"), "</tt>)
 just sent a verification message to
-<b>$rec->{'e'}</b>.
+<b>", aid_util::protect_email($rec->{'e'}), "</b>.
 It may take 2 or 3 minutes for it to arrive.</p>
 
 <p>Please check your e-mail and find the
@@ -145,7 +146,7 @@ sub form {
 <table border="1" cellpadding="6">
 <tr><td>
 };
-    print aid_util::verbose_entry($rec,1,1,1,0,1);
+    print aid_util::verbose_entry($rec,1,1,1,0,0);
     print qq{</td></tr>\n</table><p>\n};
     print aid_util::common_html_ftr(20);
 }
