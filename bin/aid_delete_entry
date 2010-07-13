@@ -1,6 +1,6 @@
 #!/usr/local/bin/perl -w
 
-# $Id: aid_delete_entry,v 7.3 2006/03/21 16:57:21 mradwin Exp mradwin $
+# $Id: aid_delete_entry,v 7.4 2007/04/11 16:46:44 mradwin Exp mradwin $
 #
 # Copyright (c) 2006  Michael J. Radwin.
 # All rights reserved.
@@ -104,48 +104,7 @@ my $joined = aid_util::ampersand_join($recp);
 warn "$0: deleting $joined\n";
 print LOG "del - $joined\n";
 
-my $sql = "SELECT alumnus_entry_id,alumnus_old_id"
-    . " FROM aid_alumnus WHERE alumnus_id = ?";
-if ($opts{"n"}) {
-    print $sql, " -- $recp->{id}\n";
-}
-my $sth = $dbh->prepare($sql);
-$sth->execute($recp->{"id"}) or die $sth->errstr;
-my($entry_id,$old_entry_id) = $sth->fetchrow_array;
-if (defined $entry_id) {
-    $sql = "DELETE FROM aid_entry WHERE entry_id = ?";
-    $sth = $dbh->prepare($sql);
-    if ($opts{"n"}) {
-	print $sql, " -- $entry_id\n";
-    } else {
-	$sth->execute($entry_id) or die $sth->errstr;
-    }
-    if (defined $old_entry_id) {
-	if ($opts{"n"}) {
-	    print $sql, " -- $old_entry_id\n";
-	} else {
-	    $sth->execute($old_entry_id) or die $sth->errstr;
-	}
-    }
-}
-
-$sql = "DELETE FROM aid_alumnus WHERE alumnus_id = ?";
-if ($opts{"n"}) {
-    print $sql, " -- $recp->{id}\n";
-} else {
-    $sth = $dbh->prepare($sql);
-    $sth->execute($recp->{"id"}) or die $sth->errstr;
-}
-
-my $out2 = sprintf("%s%s/%06d.html",
-		   aid_util::config("wwwdir"), "detail", $recp->{"id"});
-if (-e $out2) {
-    if ($opts{"n"}) {
-	print "/bin/rm -f $out2\n";
-    } else {
-	unlink($out2);
-    }
-}
+aid_util::delete_entry($dbh,$recp,$opts{"n"});
 
 warn "$0: delete successful\n";
 

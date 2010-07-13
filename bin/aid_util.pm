@@ -2,7 +2,7 @@
 #     FILE: aid_util.pm
 #   AUTHOR: Michael J. Radwin
 #    DESCR: perl library routines for the Alumni Directory
-#      $Id: aid_util.pm,v 7.23 2007/08/16 16:14:13 mradwin Exp mradwin $
+#      $Id: aid_util.pm,v 7.24 2010/07/13 20:29:03 mradwin Exp mradwin $
 #
 # Copyright (c) 2007  Michael J. Radwin.
 # All rights reserved.
@@ -62,7 +62,7 @@ require 'school_config.pl';
 
 package aid_util;
 
-my($VERSION) = '$Revision: 7.23 $$';
+my($VERSION) = '$Revision: 7.24 $$';
 if ($VERSION =~ /(\d+)\.(\d+)/) {
     $VERSION = "$1.$2";
 }
@@ -434,7 +434,7 @@ sub html_entify_rec
 
 sub verification_message
 {
-    my($randkey,$rec) = @_;
+    my($randkey,$rec,$is_delete) = @_;
 
     my($name) = $rec->{'gn'};
     $name .= " $rec->{'mi'}."
@@ -446,14 +446,25 @@ sub verification_message
 
     my($return_path,$from,$subject,$xtrahead,$body,$recip);
 
+    my($action1,$action2,$url);
+    if ($is_delete) {
+	$action1 = "requested deletion of your profile from";
+	$action2 = "delete";
+	$url = sprintf('%s?id=%d&k=%s&commit=2', $aid_util::config{"delete_cgi"}, $rec->{"id"}, $randkey);
+    } else {
+	$action1 = "submitted a profile on";
+	$action2 = "publish";
+	$url = sprintf('%s?%s', $aid_util::config{"verify_cgi"}, $randkey);
+    }
+
     $body = inorder_fullname($rec) . ",
 
-You recently submitted a profile on the " 
+You recently $action1 " 
     . $aid_util::config{'short_school'} . " Alumni
 Directory website. Please click the following link to
-publish your profile online:
+$action2 your profile:
 
-http://" . $aid_util::config{'master_srv'} . $aid_util::config{'verify_cgi'} . "?$randkey
+http://" . $aid_util::config{'master_srv'} . $url ."
 
 WAS THIS EMAIL SENT TO THE WRONG ADDRESS?
 
@@ -1374,6 +1385,54 @@ sub print_rss_item
     }
 
     print $fh "</description>\n</item>\n";
+}
+
+sub delete_entry
+{
+    my($dbh,$recp,$dryrun) = @_;
+
+    my $sql = "SELECT alumnus_entry_id,alumnus_old_id"
+	. " FROM aid_alumnus WHERE alumnus_id = ?";
+    if ($dryrun) {
+	print $sql, " -- $recp->{id}\n";
+    }
+    my $sth = $dbh->prepare($sql);
+    $sth->execute($recp->{"id"}) or die $sth->errstr;
+    my($entry_id,$old_entry_id) = $sth->fetchrow_array;
+    if (defined $entry_id) {
+	$sql = "DELETE FROM aid_entry WHERE entry_id = ?";
+	$sth = $dbh->prepare($sql);
+	if ($dryrun) {
+	    print $sql, " -- $entry_id\n";
+	} else {
+	    $sth->execute($entry_id) or die $sth->errstr;
+	}
+	if (defined $old_entry_id) {
+	    if ($dryrun) {
+		print $sql, " -- $old_entry_id\n";
+	    } else {
+		$sth->execute($old_entry_id) or die $sth->errstr;
+	    }
+	}
+    }
+
+    $sql = "DELETE FROM aid_alumnus WHERE alumnus_id = ?";
+    if ($dryrun) {
+	print $sql, " -- $recp->{id}\n";
+    } else {
+	$sth = $dbh->prepare($sql);
+	$sth->execute($recp->{"id"}) or die $sth->errstr;
+    }
+
+    my $out2 = sprintf("%s%s/%06d.html",
+		       aid_util::config("wwwdir"), "detail", $recp->{"id"});
+    if (-e $out2) {
+	if ($dryrun) {
+	    print "/bin/rm -f $out2\n";
+	} else {
+	    unlink($out2);
+	}
+    }
 }
 
 1;
