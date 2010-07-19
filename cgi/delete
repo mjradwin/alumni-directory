@@ -16,7 +16,7 @@ use aid_submit;
 use DBI ();
 
 # configuration
-my $rcsid = '$Id: delete,v 1.5 2010/07/13 23:05:03 mradwin Exp mradwin $'; #'fnt
+my $rcsid = '$Id: delete,v 1.6 2010/07/13 23:23:41 mradwin Exp mradwin $'; #'fnt
 
 my $q = new CGI;
 my $id = $q->param("id");
@@ -45,7 +45,7 @@ if (!$commit) {
 	 "Delete my profile",
 	 "If you wish to delete your profile, click the button below\n"
 	 . "to begin the verification process.",
-	 "Send verification email");
+	 "Send delete verification email");
 } elsif ($commit eq "1") {
     my $randkey = create_key();
     staging_store_rec($dbh, $rec, $randkey);
