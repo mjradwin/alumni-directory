@@ -2,7 +2,7 @@
 
 #
 # does the html verbose pages
-# $Id: aid_multi_alpha_html,v 7.3 2006/03/21 16:57:21 mradwin Exp mradwin $
+# $Id: aid_multi_alpha_html,v 7.4 2007/04/11 16:46:44 mradwin Exp mradwin $
 #
 # Copyright (c) 2006  Michael J. Radwin.
 # All rights reserved.
@@ -140,7 +140,7 @@ foreach my $initial (@initials)
     print FMTOUT "</ul>\n";
     print FMTOUT aid_util::common_html_ftr(1,$time);
     close(FMTOUT);
-    utime $time, $time, "$outFile.$$";
+    #utime $time, $time, "$outFile.$$";
     rename("$outFile.$$", $outFile);
 }
 
@@ -160,14 +160,14 @@ print FMTOUT "</big></p>\n\n";
 
 print FMTOUT aid_util::common_html_ftr(-1,$time);
 close(FMTOUT);
-utime $time, $time, $outFile;
+#utime $time, $time, $outFile;
 
 # touch timestamp
 my $now = time;
 my $ts = $outFile;
 $ts =~ s,([^/]+)$,\.$1,;
 open(TS,">$ts") && close(TS);
-utime $now, $now, $ts;
+#utime $now, $now, $ts;
 
 exit(0);
 

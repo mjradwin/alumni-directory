@@ -2,7 +2,7 @@
 
 #
 # does the html multi_class pages
-# $Id: aid_multi_class_html,v 7.11 2007/06/12 23:37:53 mradwin Exp mradwin $
+# $Id: aid_multi_class_html,v 7.12 2008/12/17 06:02:22 mradwin Exp mradwin $
 #
 # Copyright (c) 2008  Michael J. Radwin.
 # All rights reserved.
@@ -360,14 +360,14 @@ _EOHTML_
 
 	    print FMTOUT2 aid_util::common_html_ftr(-2,$recp->{"u"});
 	    close(FMTOUT2);
-	    utime $recp->{"u"}, $recp->{"u"}, "$out2.$$";
+	    #utime $recp->{"u"}, $recp->{"u"}, "$out2.$$";
 	    rename("$out2.$$", $out2);
     	}
     }
 
     print FMTOUT aid_util::common_html_ftr(2,$time);
     close(FMTOUT);
-    utime $time, $time, "$outFile.$$";
+    #utime $time, $time, "$outFile.$$";
     rename("$outFile.$$", $outFile);
 
     my $fh = Symbol::gensym();
@@ -391,7 +391,7 @@ _EOHTML_
 
     print $fh "</channel>\n</rss>\n";
     close($fh);
-    utime $time, $time, "$outFile.$$";
+    #utime $time, $time, "$outFile.$$";
     rename("$outFile.$$", $outFile);
 }
 
@@ -411,14 +411,14 @@ print FMTOUT "</big></p>\n\n";
 
 print FMTOUT aid_util::common_html_ftr(-2,$time);
 close(FMTOUT);
-utime $time, $time, $outFile;
+#utime $time, $time, $outFile;
 
 # touch timestamp
 my $now = time;
 my $ts = $outFile;
 $ts =~ s,([^/]+)$,\.$1,;
 open(TS,">$ts") && close(TS);
-utime $now, $now, $ts;
+#utime $now, $now, $ts;
 
 exit(0);
 

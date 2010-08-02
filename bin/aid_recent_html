@@ -4,7 +4,7 @@
 # does a short list, either compact or verbose, sorted by graduating
 # class with a jump bar
 #
-# $Id: aid_recent_html,v 7.5 2006/03/21 16:57:21 mradwin Exp mradwin $
+# $Id: aid_recent_html,v 7.6 2007/04/11 16:46:44 mradwin Exp mradwin $
 #
 # Copyright (c) 2006  Michael J. Radwin.
 # All rights reserved.
@@ -127,13 +127,13 @@ foreach my $recp (sort { $a->{"yr"} cmp $b->{"yr"}
 
 print FMTOUT aid_util::common_html_ftr(5,$time);
 close(FMTOUT);
-utime $time, $time, $outfile unless $opts{"t"};
+#utime $time, $time, $outfile unless $opts{"t"};
 
 # touch timestamp
 my $now = time;
 my $ts = $outfile;
 $ts =~ s,([^/]+)$,\.$1,;
 open(TS,">$ts") && close(TS);
-utime $now, $now, $ts;
+#utime $now, $now, $ts;
 
 exit(0);

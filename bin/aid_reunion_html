@@ -3,7 +3,7 @@
 #
 # generates reunion info page
 #
-# $Id: aid_reunion_html,v 7.1 2006/02/24 00:13:15 mradwin Exp mradwin $
+# $Id: aid_reunion_html,v 7.2 2006/03/21 16:57:21 mradwin Exp mradwin $
 #
 # Copyright (c) 2006  Michael J. Radwin.
 # All rights reserved.
@@ -151,13 +151,13 @@ aid_util::write_reunion_hash($FH, \%past);
 print $FH aid_util::common_html_ftr(11,$time);
 
 close($FH);
-utime $time, $time, $outfile;
+#utime $time, $time, $outfile;
 
 # touch timestamp
 my $now = time;
 my $ts = $outfile;
 $ts =~ s,([^/]+)$,\.$1,;
 open(TS,">$ts") && close(TS);
-utime $now, $now, $ts;
+#utime $now, $now, $ts;
 
 exit(0);
