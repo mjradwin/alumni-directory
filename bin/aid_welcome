@@ -2,7 +2,7 @@
 
 #
 # mails a welcome, update, confirm, or massmail message to members
-# $Id: aid_welcome,v 7.5 2006/03/21 16:57:21 mradwin Exp mradwin $
+# $Id: aid_welcome,v 7.6 2007/04/11 16:46:44 mradwin Exp mradwin $
 #
 # Copyright (c) 2006  Michael J. Radwin.
 # All rights reserved.
@@ -75,7 +75,7 @@ Mutually exclusive optional message types (instead of 'welcome' e-mail):
 my @args = @ARGV;
 
 my %opts;
-Getopt::Std::getopts("hd:ucm:l:as:y:", \%opts) || die "$usage\n";
+Getopt::Std::getopts("hd:ucm:l:as:y:Z", \%opts) || die "$usage\n";
 $opts{"h"} && die "$usage\n";
 
 die "$0: Too many mutually-exclusive options\n$usage\n"
@@ -160,9 +160,9 @@ by visiting the above URL.
 
 my %special_parameters = 
     (
-     "subject"	=>	"Memorial Services for Benji Cantwell Thursday 8/26",
-     "from_addr" => 'joe@hulanetworks.com',
-     "from_name" => "Joe Commendatore",
+     "subject"	=>	"Robin Kramer retirement festivities",
+     "from_addr" => 'no-reply@radwin.org',
+     "from_name" => "MVHS Alumni",
      "log"	=>	"special",
      "sleep"	=>	$default_massmail_sleep,
      "listing"	=>	0,
@@ -283,10 +283,26 @@ sub mail_user
 	$message = "";
     }
 
-    $message .= $params{"textfile"} .
-	"\n-- \n" . aid_util::config("short_school") . 
+    $message .= $params{"textfile"} . "\n";
+    if ($opts{"Z"}) {
+	my $inorder = aid_util::inorder_fullname($recp);
+	my $url_update = "http://" . aid_util::config("master_srv") . aid_util::config("update_cgi") . "?upd=" . $recp->{'id'};
+	my $url_delete = "http://" . aid_util::config("master_srv") . aid_util::config("delete_cgi") . "?id=" . $recp->{'id'};
+	$message .= "This message was sent by the MVHS Alumni Directory
+to $inorder (" . $recp->{"e"} . ").
+
+To unsubscribe from announcements like this, you may delete your profile:
+    $url_delete
+
+To update your profile:
+    $url_update
+
+";
+    }
+    $message .= "-- \n" . aid_util::config("short_school") .
 	" Alumni Directory\n" .
-	"http://" . aid_util::config("master_srv") . aid_util::config("master_path");
+	"http://" . aid_util::config("master_srv") . aid_util::config("master_path") .
+	"\n";
 
     $name  = $recp->{"gn"};
     $name .= " $recp->{'mi'}."
