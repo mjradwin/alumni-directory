@@ -2,7 +2,7 @@
 
 #
 # mails a welcome, update, confirm, or massmail message to members
-# $Id: aid_welcome,v 7.6 2007/04/11 16:46:44 mradwin Exp mradwin $
+# $Id: aid_welcome,v 7.7 2013/04/04 22:25:17 mradwin Exp mradwin $
 #
 # Copyright (c) 2006  Michael J. Radwin.
 # All rights reserved.
@@ -288,7 +288,7 @@ sub mail_user
 	my $inorder = aid_util::inorder_fullname($recp);
 	my $url_update = "http://" . aid_util::config("master_srv") . aid_util::config("update_cgi") . "?upd=" . $recp->{'id'};
 	my $url_delete = "http://" . aid_util::config("master_srv") . aid_util::config("delete_cgi") . "?id=" . $recp->{'id'};
-	$message .= "This message was sent by the MVHS Alumni Directory
+	$message .= "This message was sent by the " . aid_util::config("short_school") . " Alumni Directory
 to $inorder (" . $recp->{"e"} . ").
 
 To unsubscribe from announcements like this, you may delete your profile:
