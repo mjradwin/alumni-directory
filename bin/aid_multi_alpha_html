@@ -1,8 +1,8 @@
-#!/usr/local/bin/perl -w
+#!/usr/bin/perl -w
 
 #
 # does the html verbose pages
-# $Id: aid_multi_alpha_html,v 7.4 2007/04/11 16:46:44 mradwin Exp mradwin $
+# $Id: aid_multi_alpha_html,v 7.5 2010/08/02 16:36:00 mradwin Exp mradwin $
 #
 # Copyright (c) 2006  Michael J. Radwin.
 # All rights reserved.

@@ -1,8 +1,8 @@
-#!/usr/local/bin/perl -w
+#!/usr/bin/perl -w
 
 #
 # does the html version of just home pages
-# $Id: aid_home_html,v 7.6 2007/04/11 16:46:44 mradwin Exp mradwin $
+# $Id: aid_home_html,v 7.7 2010/08/02 16:36:00 mradwin Exp mradwin $
 #
 # Copyright (c) 2006  Michael J. Radwin.
 # All rights reserved.

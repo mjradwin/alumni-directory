@@ -1,6 +1,6 @@
-#!/usr/local/bin/perl -w
+#!/usr/bin/perl -w
 
-# $Id: aid_mysql_load,v 1.1 2006/02/24 00:18:47 mradwin Exp mradwin $
+# $Id: aid_mysql_load,v 1.2 2006/03/21 16:57:21 mradwin Exp mradwin $
 #
 # Copyright (c) 2006  Michael J. Radwin.
 # All rights reserved.
