@@ -1,10 +1,10 @@
-#!/usr/local/bin/perl -w
+#!/usr/bin/perl -w
 
 #
 #     FILE: msg.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: Alumni Directory update redirector
-#      $Id: msg,v 7.3 2006/11/07 04:27:23 mradwin Exp mradwin $
+#      $Id: msg,v 7.4 2006/11/07 04:31:31 mradwin Exp mradwin $
 #
 # Copyright (c) 2006  Michael J. Radwin.
 # All rights reserved.

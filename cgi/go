@@ -1,10 +1,10 @@
-#!/usr/local/bin/perl -w
+#!/usr/bin/perl -w
 
 #
 #     FILE: go.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: Alumni Directory update redirector
-#      $Id: go,v 7.3 2007/04/11 18:08:25 mradwin Exp mradwin $
+#      $Id: go,v 7.4 2010/07/13 23:06:23 mradwin Exp mradwin $
 #
 # Copyright (c) 2006  Michael J. Radwin.
 # All rights reserved.

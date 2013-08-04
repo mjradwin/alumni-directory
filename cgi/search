@@ -1,10 +1,10 @@
-#!/usr/local/bin/perl -w
+#!/usr/bin/perl -w
 
 #
 #     FILE: search.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: Alumni Directory CGI search
-#      $Id: search,v 7.3 2006/03/21 16:58:48 mradwin Exp mradwin $
+#      $Id: search,v 7.4 2007/04/11 18:08:25 mradwin Exp mradwin $
 #
 # Copyright (c) 2006  Michael J. Radwin.
 # All rights reserved.
