@@ -2,7 +2,7 @@
 #     FILE: aid_util.pm
 #   AUTHOR: Michael J. Radwin
 #    DESCR: perl library routines for the Alumni Directory
-#      $Id: aid_util.pm,v 7.29 2010/07/13 23:20:23 mradwin Exp mradwin $
+#      $Id: aid_util.pm,v 7.30 2013/09/04 18:30:58 mradwin Exp mradwin $
 #
 # Copyright (c) 2007  Michael J. Radwin.
 # All rights reserved.
@@ -62,7 +62,7 @@ require 'school_config.pl';
 
 package aid_util;
 
-my($VERSION) = '$Revision: 7.29 $$';
+my($VERSION) = '$Revision: 7.30 $$';
 if ($VERSION =~ /(\d+)\.(\d+)/) {
     $VERSION = "$1.$2";
 }
@@ -791,7 +791,7 @@ sub common_html_ftr
 
     $time = time unless (defined $time && $time =~ /\d+/ && $time ne '0');
 
-    $ftr  = qq{<div class="footer">\n};
+    $ftr  = qq{<footer>\n};
 
     $ftr .= "<!-- hhmts start -->\nLast modified: ";
     $ftr .= scalar(localtime($time)) . "\n";
@@ -805,7 +805,7 @@ sub common_html_ftr
 	"etc/tos.html\">Terms of Service</a>" .
 	"\n";
     
-    $ftr .= "</div><!-- .footer -->\n";
+    $ftr .= "</footer>\n";
     $ftr .= "</div><!-- .container -->\n";
     $ftr .= "</body>\n</html>\n";
 
