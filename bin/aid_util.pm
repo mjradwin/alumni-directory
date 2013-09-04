@@ -2,7 +2,7 @@
 #     FILE: aid_util.pm
 #   AUTHOR: Michael J. Radwin
 #    DESCR: perl library routines for the Alumni Directory
-#      $Id: aid_util.pm,v 7.28 2010/07/13 23:07:58 mradwin Exp mradwin $
+#      $Id: aid_util.pm,v 7.29 2010/07/13 23:20:23 mradwin Exp mradwin $
 #
 # Copyright (c) 2007  Michael J. Radwin.
 # All rights reserved.
@@ -62,7 +62,7 @@ require 'school_config.pl';
 
 package aid_util;
 
-my($VERSION) = '$Revision: 7.28 $$';
+my($VERSION) = '$Revision: 7.29 $$';
 if ($VERSION =~ /(\d+)\.(\d+)/) {
     $VERSION = "$1.$2";
 }
@@ -602,14 +602,13 @@ sub verbose_entry
 
     $fullname = inorder_fullname(\%rec);
 
+    $retval .= "<a id=\"id-$rec{'id'}\"></a>";
     $retval .= "<dl>\n";
 
     if (! $suppress_name) {
     $retval .= "<dt><big>";
     $retval .= "<b>";
-    $retval .= "<a name=\"id-$rec{'id'}\">";
     $retval .=  $fullname;
-    $retval .= "</a>";
     $retval .= "</b>";
     $retval .= "</big>";
     $retval .= is_new_html(\%rec) unless $suppress_new; 
@@ -792,9 +791,9 @@ sub common_html_ftr
 
     $time = time unless (defined $time && $time =~ /\d+/ && $time ne '0');
 
-    $ftr  = "\n<hr noshade=\"noshade\" size=\"1\">\n";
+    $ftr  = qq{<div class="footer">\n};
 
-    $ftr .= "<small>\n<!-- hhmts start -->\nLast modified: ";
+    $ftr .= "<!-- hhmts start -->\nLast modified: ";
     $ftr .= scalar(localtime($time)) . "\n";
     $ftr .= "<!-- hhmts end -->\n<br>\n";
     $ftr .=
@@ -804,8 +803,10 @@ sub common_html_ftr
 	"etc/privacy.html\">Privacy Policy</a> - " .
 	"<a\nhref=\"" . $aid_util::config{'master_path'} .
 	"etc/tos.html\">Terms of Service</a>" .
-	"</small>\n";
+	"\n";
     
+    $ftr .= "</div><!-- .footer -->\n";
+    $ftr .= "</div><!-- .container -->\n";
     $ftr .= "</body>\n</html>\n";
 
     $ftr;
@@ -828,14 +829,16 @@ sub common_html_hdr
 	($title . " - " . $aid_util::config{'short_school'} . " Alumni");
 
     $hdr  = 
-	"<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\"\n" .
-	"\t\"http://www.w3.org/TR/html4/loose.dtd\">\n" .
-#		"<html xmlns=\"http://www.w3.org/TR/xhtml1\">\n" .
+	"<!DOCTYPE html>\n" .
 	"<html lang=\"en\">\n" .
 	"<head>\n<title>" . $titletag . "</title>\n";
 
+    $hdr .= qq{<meta name="viewport" content="width=device-width, initial-scale=1.0">\n};
+
     # do stylesheet before the rest of the meta tags on the theory that
     # early evaluation is good
+    $hdr .= qq{<link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap.min.css">\n};
+
     $hdr .= "<link rel=\"stylesheet\" type=\"text/css\" href=\"http://";
     $hdr .= $aid_util::config{'master_srv'} . $aid_util::config{'master_path'};
     $hdr .= "default.css\">\n";
@@ -855,7 +858,6 @@ sub common_html_hdr
     $hdr .= "\n<base target=\"_top\"></head>\n";
     
     $hdr .= "<body>\n";
-    $hdr .= "<!--htdig_noindex-->\n";
 
     $srv_nowww =  $aid_util::config{'master_srv'};
     $srv_nowww =~ s/^www\.//i;
@@ -888,7 +890,7 @@ type="text" name="q" size="20">
 <input type="submit" value="Search"></td></tr></table></form>
 };
 
-    $hdr .= "<!--/htdig_noindex-->\n";
+    $hdr .= qq{<div class="container">\n};
 
     if ($page == 0)
     {
