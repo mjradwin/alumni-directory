@@ -2,7 +2,7 @@
 #     FILE: aid_util.pm
 #   AUTHOR: Michael J. Radwin
 #    DESCR: perl library routines for the Alumni Directory
-#      $Id: aid_util.pm,v 7.30 2013/09/04 18:30:58 mradwin Exp mradwin $
+#      $Id: aid_util.pm,v 7.31 2013/09/04 18:33:35 mradwin Exp mradwin $
 #
 # Copyright (c) 2007  Michael J. Radwin.
 # All rights reserved.
@@ -62,7 +62,7 @@ require 'school_config.pl';
 
 package aid_util;
 
-my($VERSION) = '$Revision: 7.30 $$';
+my($VERSION) = '$Revision: 7.31 $$';
 if ($VERSION =~ /(\d+)\.(\d+)/) {
     $VERSION = "$1.$2";
 }
@@ -152,8 +152,8 @@ $aid_util::blank_entry{'n'}  = '';
 
 my %image_tag =
     (
-     'new'	=>	'<b class="nu">*NEW*</b>',
-     'updated'	=>	'<b class="nu">*UPDATED*</b>',
+     'new'	=>	'<span class="label label-success">NEW</span>',
+     'updated'	=>	'<span class="label label-success">UPDATED</span>',
      'vcard'	=>	'View vCard',
      'info'	=>	'<b class="i">[i]</b>',
      'blank'	=> 	'<b>&nbsp;&nbsp;&nbsp;</b>',
@@ -595,46 +595,40 @@ sub verbose_entry
 {
     my($rec_arg,$display_year,$suppress_new,$suppress_links,$suppress_name,
        $show_email) = @_;
-    my($fullname);
-    my($retval) = '';
 
     my %rec = html_entify_rec($rec_arg);
 
-    $fullname = inorder_fullname(\%rec);
+    my $fullname = inorder_fullname(\%rec);
 
-    $retval .= "<a id=\"id-$rec{'id'}\"></a>";
-    $retval .= "<dl>\n";
+    my $retval = qq{<div id="id-$rec{'id'}">\n};
 
     if (! $suppress_name) {
-    $retval .= "<dt><big>";
-    $retval .= "<b>";
-    $retval .=  $fullname;
-    $retval .= "</b>";
-    $retval .= "</big>";
-    $retval .= is_new_html(\%rec) unless $suppress_new; 
-#    $retval .= "</dt>";
-    $retval .= "\n";
+	$retval .= "<h3>$fullname";
+	$retval .= is_new_html(\%rec) unless $suppress_new; 
+	$retval .= "</h3>\n";
     }
+
+    $retval .= qq{<ul class="list-unstyled">\n};
 
     if ($rec{'yr'} =~ /^\d+$/) {
 	if ($display_year) {
-	    $retval .= "<dt>Year: <b><a\n" .
+	    $retval .= "<li>Year: <strong><a\n" .
 		"href=\"" . about_path(\%rec,1) . "\">" . 
-		    $rec{'yr'} . "</a></b>";
-#	$retval .= "</dt>";
+		    $rec{'yr'} . "</a></strong>";
+	$retval .= "</li>";
 	$retval .= "\n";
 
 	}
     } else {
-	$retval .= "<dt>Affiliation: <b><a\n" .
+	$retval .= "<li>Affiliation: <strong><a\n" .
 	    "href=\"" . about_path(\%rec,1) . "\">" . 
-		$rec{'yr'} . "</a></b>";
-#	$retval .= "</dt>";
+		$rec{'yr'} . "</a></strong>";
+	$retval .= "</li>";
 	$retval .= "\n";
 
     }
 
-    $retval .= "<dt>E-mail: <tt><b>";
+    $retval .= "<li>E-mail: <tt><strong>";
     $retval .= ("<a\ntitle=\"Send a message to $fullname\"\nhref=\"" .
 		about_path(\%rec, 0) . "#msg" .
 		"\">")
@@ -646,24 +640,24 @@ sub verbose_entry
     }
     $retval .= "</a>" if $rec{'v'};
     $retval .= "\n<em>(e-mail bouncing)</em>" unless $rec{'v'};
-    $retval .= "</b></tt>";
-#    $retval .= "</dt>";
+    $retval .= "</strong></tt>";
+    $retval .= "</li>";
     $retval .= "\n";
 
-    $retval .= "<dt>Web Page: <tt><b><a\n" . 
-	"href=\"$rec{'w'}\">$rec{'w'}</a></b></tt>\n"
+    $retval .= "<li>Web Page: <tt><strong><a\n" . 
+	"href=\"$rec{'w'}\">$rec{'w'}</a></strong></tt>\n"
 	    if $rec{'w'} ne '';
-    $retval .= "<dt>Location: <b>$rec{'l'}</b>\n"
+    $retval .= "<li>Location: <strong>$rec{'l'}</strong>\n"
 	if $rec{'l'} ne '';
-    $retval .= "<dt>Updated: ";
+    $retval .= "<li>Updated: ";
     my $date = caldate($rec{'u'}); 
-    $retval .= "<b>$date</b>";
-#    $retval .= "</dt>";
+    $retval .= "<strong>$date</strong>";
+    $retval .= "</li>";
     $retval .= "\n";
 
     if (! $suppress_links)
     {
-	$retval .= "<dt>Tools: <small>" .
+	$retval .= "<li>Tools: <small>" .
 	    "<a\nhref=\"" . $aid_util::config{'about_cgi'} .
 	    "/$rec{'id'}\">modify profile</a>" . 
 	    " | <a\nhref=\"" . $aid_util::config{'delete_cgi'} .
@@ -673,11 +667,12 @@ sub verbose_entry
     }
 
     if ($rec{'n'} ne '') {
-	$retval .= "<dt>What's New?\n";
+	$retval .= "<li><strong>What's New?</strong>\n";
 	$rec{'n'} =~ s/[ ]*\n/<br>\n/g;
-	$retval .= "<dd>$rec{'n'}</dd>\n";
+	$retval .= "<p>$rec{'n'}</p>\n";
     }
-    $retval .= "</dl>\n\n";
+    $retval .= "</ul>\n";
+    $retval .= "</div><!-- #id-$rec{'id'} -->\n\n";
 
     $retval;
 }
@@ -791,7 +786,7 @@ sub common_html_ftr
 
     $time = time unless (defined $time && $time =~ /\d+/ && $time ne '0');
 
-    $ftr  = qq{<footer>\n};
+    $ftr  = qq{<footer>\n<hr>\n};
 
     $ftr .= "<!-- hhmts start -->\nLast modified: ";
     $ftr .= scalar(localtime($time)) . "\n";
@@ -807,6 +802,11 @@ sub common_html_ftr
     
     $ftr .= "</footer>\n";
     $ftr .= "</div><!-- .container -->\n";
+    $ftr .= <<EOHTML;
+<script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+<script src="//netdna.bootstrapcdn.com/bootstrap/3.0.0/js/bootstrap.min.js"></script>
+EOHTML
+;
     $ftr .= "</body>\n</html>\n";
 
     $ftr;
@@ -839,12 +839,7 @@ sub common_html_hdr
     # early evaluation is good
     $hdr .= qq{<link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap.min.css">\n};
 
-    $hdr .= "<link rel=\"stylesheet\" type=\"text/css\" href=\"http://";
-    $hdr .= $aid_util::config{'master_srv'} . $aid_util::config{'master_path'};
-    $hdr .= "default.css\">\n";
-
-    $hdr .= $aid_util::pics_label .
-	"\n" . $aid_util::author_meta . "\n" . $aid_util::navigation_meta .
+    $hdr .= $aid_util::author_meta . "\n" . $aid_util::navigation_meta .
 	"\n";
 
     if (! $norobots)
@@ -862,33 +857,42 @@ sub common_html_hdr
     $srv_nowww =  $aid_util::config{'master_srv'};
     $srv_nowww =~ s/^www\.//i;
 
-    $hdr .=
-	"<form method=\"get\" action=\"$aid_util::config{'search_cgi'}\">
-<table width=\"100%\" class=\"navbar\">
-<tr><td><small>\n<b><a href=\"/\">$srv_nowww</a></b> <tt>-&gt;</tt>\n";
-    $hdr .= "<a href=\"$aid_util::config{'master_path'}\">" unless $page == 0;
-    $hdr .= $aid_util::config{'short_school'} . ' Alumni';
-    if ($page == 0)
-    {
-	$hdr .= "\n";
-    }
-    else
-    {
-	$hdr .= "</a>" unless $page == 0;
-	if (defined $aid_util::parent_page_name{$page})
-	{
-	    $hdr .= " <tt>-&gt;</tt>\n" .
-		'<a href="' . $aid_util::parent_page_path{$page} . '">' .
-		    $aid_util::parent_page_name{$page} . '</a>';
-	}
+    my $master_class = ($page == 0) ? qq{ class="active"} : "";
 
-	$hdr .= " <tt>-&gt;</tt>\n$title\n";
+    my $breadcrumbs = "";
+    if (defined $aid_util::parent_page_name{$page}) {
+	$breadcrumbs .=
+	    '      <li><a href="' . $aid_util::parent_page_path{$page} . '">' .
+	    $aid_util::parent_page_name{$page} . "</a></li>\n";
     }
+    $breadcrumbs .= qq{      <li class="active"><a href="#">$title</a></li>\n} unless $page == 0;
 
-    $hdr .= qq{</small></td><td align="right"><input
-type="text" name="q" size="20">
-<input type="submit" value="Search"></td></tr></table></form>
-};
+    $hdr .= <<EOHTML;
+<nav class="navbar navbar-default" role="navigation">
+  <div class="navbar-header">
+    <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-ex1-collapse">
+      <span class="sr-only">Toggle navigation</span>
+      <span class="icon-bar"></span>
+      <span class="icon-bar"></span>
+      <span class="icon-bar"></span>
+    </button>
+    <a class="navbar-brand" href="/">$srv_nowww</a>
+  </div>
+  <div class="collapse navbar-collapse">
+    <ul class="nav navbar-nav">
+      <li${master_class}><a href="$aid_util::config{'master_path'}">$aid_util::config{'short_school'} Alumni</a></li>
+$breadcrumbs
+    </ul>
+    <form class="navbar-form navbar-right" role="search" method="get" action="$aid_util::config{'search_cgi'}">
+      <div class="form-group">
+        <input type="text" name="q" class="form-control" placeholder="Search">
+      </div>
+      <button type="submit" class="btn btn-primary">Search</button>
+    </form>
+  </div><!-- .navbar-collapse -->
+</nav>
+EOHTML
+;
 
     $hdr .= qq{<div class="container">\n};
 
@@ -899,10 +903,8 @@ type="text" name="q" size="20">
     }
     else
     {
-	$hdr .= "<p class=\"overline\"><b>$aid_util::config{'short_school'}\n";
-	$hdr .= "Alumni Directory:</b></p>\n";
-	$hdr .= "<h1>$title";
-	$hdr .= "\n- <small>$subtitle</small>"
+	$hdr .= "<h1 class=\"page-header\">$title";
+	$hdr .= "\n<small>$subtitle</small>"
 	    if defined $subtitle && $subtitle ne '';
 	$hdr .= "</h1>";
     }
@@ -915,38 +917,26 @@ type="text" name="q" size="20">
 sub class_jump_bar
 {
     my($href_begin,$href_end,$years,$do_paragraph,$hilite) = @_;
-    my($retval) = $do_paragraph ? '<p>' : '';
-    my($i);
+    my $retval = "";
 
     if (defined @{$years} && defined $years->[0])
     {
-	$retval .= "[ <a name=\"top\"";
-	if (defined $hilite && $years->[0] eq $hilite)
-	{
-	    $retval .= ">";
-	}
-	else
-	{
-	    $retval .= " href=\"${href_begin}$years->[0]${href_end}\">";
-	}
-	$retval .= ($years->[0] eq 'other') ? "Faculty/Staff" :
-	    sprintf("%02d", $years->[0] % 100);
-	$retval .= "</a>";
+	$retval .= qq{<a name="top"></a>};
+	$retval .= qq{<ul class="pagination">\n};
 
-	foreach $i (1 .. (scalar(@{$years}) - 1))
+	foreach my $i (0 .. (scalar(@{$years}) - 1))
 	{
-	    $retval .= " |\n";
-	    $retval .= "<a href=\"${href_begin}" . $years->[$i] . "${href_end}\">"
-		unless defined $hilite && $years->[$i] eq $hilite;
-	    $retval .= ($years->[$i] eq 'other') ? "Faculty/Staff" :
+	    my $label = ($years->[$i] eq 'other') ? "Faculty/Staff" :
 		sprintf("%02d", $years->[$i] % 100);
-	    $retval .= "</a>"
-		unless defined $hilite && $years->[$i] eq $hilite;
+	    $retval .= qq{<li};
+	    $retval .= qq{ class="active"} if defined $hilite && $years->[$i] eq $hilite;
+	    $retval .= qq{><a href="} . $href_begin . $years->[$i] . $href_end . qq{">};
+	    $retval .= $label;
+	    $retval .= "</a>\n";
 	}
 
-	$retval .= ' ]';
-	$retval .= '</p>' if $do_paragraph;
-	$retval .= "\n\n";
+	$retval .= qq{</ul>\n};
+	$retval .= "\n";
     }
 
     $retval;
