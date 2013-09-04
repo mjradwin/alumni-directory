@@ -2,7 +2,7 @@
 #     FILE: aid_util.pm
 #   AUTHOR: Michael J. Radwin
 #    DESCR: perl library routines for the Alumni Directory
-#      $Id: aid_util.pm,v 7.31 2013/09/04 18:33:35 mradwin Exp mradwin $
+#      $Id: aid_util.pm,v 7.32 2013/09/04 22:16:09 mradwin Exp mradwin $
 #
 # Copyright (c) 2007  Michael J. Radwin.
 # All rights reserved.
@@ -62,7 +62,7 @@ require 'school_config.pl';
 
 package aid_util;
 
-my($VERSION) = '$Revision: 7.31 $$';
+my($VERSION) = '$Revision: 7.32 $$';
 if ($VERSION =~ /(\d+)\.(\d+)/) {
     $VERSION = "$1.$2";
 }
@@ -868,7 +868,8 @@ sub common_html_hdr
     $breadcrumbs .= qq{      <li class="active"><a href="#">$title</a></li>\n} unless $page == 0;
 
     $hdr .= <<EOHTML;
-<nav class="navbar navbar-default" role="navigation">
+<div class="navbar navbar-default navbar-static-top" role="navigation">
+ <div class="container">
   <div class="navbar-header">
     <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-ex1-collapse">
       <span class="sr-only">Toggle navigation</span>
@@ -890,7 +891,8 @@ $breadcrumbs
       <button type="submit" class="btn btn-primary">Search</button>
     </form>
   </div><!-- .navbar-collapse -->
-</nav>
+ </div>
+</div><!-- .navbar -->
 EOHTML
 ;
 
