@@ -2,7 +2,7 @@
 #     FILE: aid_util.pm
 #   AUTHOR: Michael J. Radwin
 #    DESCR: perl library routines for the Alumni Directory
-#      $Id: aid_util.pm,v 7.33 2013/09/04 22:28:18 mradwin Exp mradwin $
+#      $Id: aid_util.pm,v 7.34 2013/09/04 22:32:27 mradwin Exp mradwin $
 #
 # Copyright (c) 2007  Michael J. Radwin.
 # All rights reserved.
@@ -62,7 +62,7 @@ require 'school_config.pl';
 
 package aid_util;
 
-my($VERSION) = '$Revision: 7.33 $$';
+my($VERSION) = '$Revision: 7.34 $$';
 if ($VERSION =~ /(\d+)\.(\d+)/) {
     $VERSION = "$1.$2";
 }
@@ -1131,40 +1131,36 @@ sub write_reunion_hash
 {
     my($FH,$entries) = @_;
     my($key);
-    my($first) = 1;
 
     foreach $key (sort keys %{$entries})
     {
-	if ($first)
-	{
-	    $first = 0;
-	    print $FH "<dl>\n<dt><b>";
-	}
-	else
-	{
-	    print $FH "<dt><br><b>";
+	my $clean_key;
+	if ($key =~ /^\d+$/) {
+	    $clean_key = $key;
+	} else {
+	    $clean_key = lc($key);
+	    $clean_key =~ s/[^\w]/_/g;
+	    $clean_key =~ s/_+/_/g;
+	    $clean_key =~ s/^_//;
+	    $clean_key =~ s/_$//;
 	}
 
-	print $FH config('school');
+	print $FH qq{<div id="r$clean_key">\n};
+
+	print $FH "<h4>", config('school');
 
 	if ($key =~ /^\d+$/)
 	{
-	    print $FH " <a name=\"r$key\"\nhref=\"", 
+	    print $FH " <a href=\"", 
 	    config('master_path'),
 	    "class/$key.html\">Class of $key</a>";
 	}
 	else
 	{
-	    my($clean_key) = lc($key);
-	    $clean_key =~ s/[^\w]/_/g;
-	    $clean_key =~ s/_+/_/g;
-	    $clean_key =~ s/^_//;
-	    $clean_key =~ s/_$//;
-
-	    print $FH " - <a name=\"$clean_key\">$key</a>";
+	    print $FH " - $key";
 	}
 
-	print $FH "</b></dt>\n<dd>Date: ";
+	print $FH qq{ Reunion</h4>\n<ul class="list-unstyled">\n<li>Date: };
 
 	my($date,$html) = split(/\0/, $entries->{$key}, 2);
 	my($year,$mon,$mday,$t) = (0,0,0,0);
@@ -1201,14 +1197,13 @@ sub write_reunion_hash
 		print $FH " ago)</em>";
 	    }
 	}
+	print $FH "</li>\n";
 
 	$html =~ s/\@/&#64;/g;	# protect email addresses
 
-	print $FH "</dd>\n",
-	$html, "\n<br><br>\n\n";
+	print $FH $html, "\n</ul>\n<br><br>\n</div><!-- #r$clean_key -->\n\n";
     }
 
-    print $FH "</dl>\n\n" unless $first;
     1;
 }
 
