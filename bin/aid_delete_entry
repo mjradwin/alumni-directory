@@ -1,6 +1,6 @@
 #!/usr/bin/perl -w
 
-# $Id: aid_delete_entry,v 7.5 2010/07/13 22:30:14 mradwin Exp mradwin $
+# $Id: aid_delete_entry,v 7.6 2013/08/04 15:37:19 mradwin Exp $
 #
 # Copyright (c) 2006  Michael J. Radwin.
 # All rights reserved.

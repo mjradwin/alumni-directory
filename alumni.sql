@@ -1,4 +1,4 @@
--- $Id: alumni.sql,v 1.6 2006/02/22 06:47:08 mradwin Exp mradwin $
+-- $Id: alumni.sql,v 1.7 2006/02/24 00:19:41 mradwin Exp $
 
 DROP TABLE IF EXISTS aid_alumnus;
 DROP TABLE IF EXISTS aid_entry;

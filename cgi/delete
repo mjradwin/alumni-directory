@@ -16,7 +16,7 @@ use aid_submit;
 use DBI ();
 
 # configuration
-my $rcsid = '$Id: delete,v 1.7 2010/07/19 17:28:54 mradwin Exp mradwin $'; #'fnt
+my $rcsid = '$Id: delete,v 1.8 2013/08/04 15:52:27 mradwin Exp $'; #'fnt
 
 my $q = new CGI;
 my $id = $q->param("id");

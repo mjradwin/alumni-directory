@@ -4,7 +4,7 @@
 #     FILE: search.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: Alumni Directory CGI search
-#      $Id: search,v 7.4 2007/04/11 18:08:25 mradwin Exp mradwin $
+#      $Id: search,v 7.5 2013/08/04 15:52:27 mradwin Exp $
 #
 # Copyright (c) 2006  Michael J. Radwin.
 # All rights reserved.

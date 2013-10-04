@@ -2,7 +2,7 @@
 #     FILE: Makefile
 #   AUTHOR: Michael J. Radwin
 #    DESCR: Makefile for building the Alumni Directory
-#      $Id: Makefile,v 7.2 2006/03/21 17:15:59 mradwin Exp mradwin $
+#      $Id: Makefile,v 7.3 2007/01/15 18:36:27 mradwin Exp $
 #
 # Copyright (c) 2007  Michael J. Radwin.
 # All rights reserved.

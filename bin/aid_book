@@ -2,7 +2,7 @@
 
 #
 # generates address books in several formats
-# $Id: aid_book,v 7.7 2007/04/11 16:46:44 mradwin Exp mradwin $
+# $Id: aid_book,v 7.8 2013/08/04 15:37:19 mradwin Exp $
 #
 # Copyright (c) 2006  Michael J. Radwin.
 # All rights reserved.

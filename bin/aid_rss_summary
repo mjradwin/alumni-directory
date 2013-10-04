@@ -4,7 +4,7 @@
 #     FILE: aid_rss_summary.pl
 #   AUTHOR: Michael J. Radwin
 #    DESCR: creates an RDF Site Summary for the Directory
-#      $Id: aid_rss_summary,v 7.6 2010/08/02 16:36:00 mradwin Exp mradwin $
+#      $Id: aid_rss_summary,v 7.7 2013/08/04 15:37:19 mradwin Exp $
 #
 # Copyright (c) 2006  Michael J. Radwin.
 # All rights reserved.

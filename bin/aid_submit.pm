@@ -2,7 +2,7 @@
 #     FILE: aid_submit.pm
 #   AUTHOR: Michael J. Radwin
 #    DESCR: submission form for Alumni Directory
-#      $Id: aid_submit.pm,v 7.8 2007/02/20 17:24:36 mradwin Exp mradwin $
+#      $Id: aid_submit.pm,v 7.9 2010/07/13 23:07:58 mradwin Exp $
 #
 # Copyright (c) 2003  Michael J. Radwin.
 # All rights reserved.
