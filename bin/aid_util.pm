@@ -57,6 +57,7 @@ use Net::SMTP::SSL ();
 use Time::Local;
 use POSIX qw(strftime);
 use Date::Calc ();
+use Digest::MD5 qw(md5_hex);
 
 require 'school_config.pl';
 

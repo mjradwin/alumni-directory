@@ -51,7 +51,6 @@ use strict;
 use Time::Local;
 use POSIX qw(strftime);
 use Getopt::Std;
-use Digest::MD5  qw(md5_hex);
 use aid_util;
 use DBI ();
 
