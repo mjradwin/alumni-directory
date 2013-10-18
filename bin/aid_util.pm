@@ -1479,7 +1479,7 @@ sub email_form_html {
 <div class="form-group">
   <label for="inputMessage1" class="col-md-2 control-label">Message</label>
   <div class="col-md-6">
-   <textarea class="form-control" id="inputMessage1" name="message" rows="10"></textarea>
+   <textarea class="form-control" id="inputMessage1" name="message" rows="10">$message</textarea>
   </div>
 </div>
 
@@ -1493,7 +1493,7 @@ sub email_form_html {
 <noscript>
    <iframe src="http://www.google.com/recaptcha/api/noscript?k=$public_key"
        height="300" width="500" frameborder="0"></iframe><br>
-   <textarea name="recaptcha_challenge_field" rows="3" cols="40">$message</textarea>
+   <textarea name="recaptcha_challenge_field" rows="3" cols="40"></textarea>
    <input type="hidden" name="recaptcha_response_field"
        value="manual_challenge">
 </noscript>
