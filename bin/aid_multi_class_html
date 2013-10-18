@@ -324,38 +324,18 @@ src="http://static.addtoany.com/menu/feed.js"></script>
 
 	    if ($recp->{"v"})
 	    {
-		my $action = aid_util::config("message_cgi");
-		my $hash = md5_hex($recp->{"e"});
-		my $e = email_name($recp);
-		$e .= " &lt;" . aid_util::protect_email($recp->{"e"}) . "&gt;";
-		my $subject = aid_util::config("short_school") . " Alumni";
 		my $name_affil = aid_util::html_entify_str($name . $affil);
-
 		print FMTOUT2 <<_EOHTML_;
 <p>&nbsp;</p>
 <hr>
 <a name="msg"></a>
 <h2>Send a message to $name_affil</h2>
-<p>
-<form method="post" action="$action/post">
-<input type="hidden" name="id" value="$id">
-<input type="hidden" name="hash" value="$hash">
-<table border="0" cellspacing="1" cellpadding="2" >
-<tr><td align="right"><b>From:</b></td>
-<td><input type="text" name="from" size="60" 
-maxlength="128" value=""></td></tr>
-<tr><td align="right"><b>To:</b></td>
-<td>$e</td></tr>
-<tr><td align="right"><b>Subject:</b></td>
-<td><input type="text" name="subject" size="60" 
-maxlength="80" value="$subject"></td></tr>
-</table>
-<textarea name="message" rows="20" cols="70">
-</textarea>
-<br><input type="submit" name="send" value="Send" class="btn btn-primary">
-</form>
 _EOHTML_
 ;
+
+		my $subject = aid_util::config("short_school") . " Alumni";
+		my $form_html = aid_util::email_form_html($recp, "", $subject, "");
+		print FMTOUT2 $form_html;
 	    }
 
 	    print FMTOUT2 aid_util::common_html_ftr(-2,$recp->{"u"});

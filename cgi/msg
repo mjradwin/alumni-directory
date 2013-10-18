@@ -78,14 +78,14 @@ if (defined($in{'to'}) && $in{'to'} =~ /^\d+$/)
     bail() unless @recs;
 
     my $recp = $recs[0];
-    my $hash = md5_hex($recp->{'e'});
-    my $name = email_name($recp);
-    my $e = "$name &lt;" . aid_util::protect_email($recp->{'e'}) . "&gt;";
 
     print "Content-Type: text/html\015\012\015\012";
     print aid_util::common_html_hdr(9, 'Send Message', 1);
 
-    form($e,$id,$hash,'',aid_util::config('short_school') . ' Alumni','');
+    print aid_util::email_form_html($recp,
+				    "",
+				    aid_util::config('short_school') . " Alumni",
+				    "");
 
     print aid_util::common_html_ftr(9);
     exit(0);
@@ -108,17 +108,17 @@ elsif (defined($in{'id'}) && $in{'id'} =~ /^\d+$/ && $in{'hash'} &&
     bail() unless ($hash eq $in{'hash'});
 
     my $from = $in{'from'};
-    check_blank($recp,"e-mail address",$from,$id,$hash);
+    check_blank($recp,"e-mail address",$from);
 
     my $subject = $in{'subject'};
-    check_blank($recp,"subject",$subject,$id,$hash);
+    check_blank($recp,"subject",$subject);
 
     $subject =~ s/[\015\012]/ /g;
     $subject = substr($subject, 0, 80);
 
     my $message = $in{'message'};
     $message =~ s/\r\n/\n/g;
-    check_blank($recp,"message body",$message,$id,$hash);
+    check_blank($recp,"message body",$message);
 
     chomp($from);
     if ($from =~ /^[^<]*<([^>]+)>/) {
@@ -139,9 +139,7 @@ elsif (defined($in{'id'}) && $in{'id'} =~ /^\d+$/ && $in{'hash'} &&
 <br>It must be in the form of <code>user\@example.com</code>.
 _EOHTML_
 
-	my $name = email_name($recp);
-	my $e = "$name &lt;" . aid_util::protect_email($recp->{'e'}) . "&gt;";
-	form($e,$id,$hash,$from,$subject,$message);
+	print aid_util::email_form_html($recp, $from, $subject, $message);
 
 	print aid_util::common_html_ftr(9);
 	exit(0);
@@ -178,9 +176,7 @@ error, please contact <a
 href="mailto:$admin">$admin</a></p>
 _EOHTML_
 
-	my $name = email_name($recp);
-	my $e = "$name &lt;" . aid_util::protect_email($recp->{'e'}) . "&gt;";
-	form($e,$id,$hash,$from,$subject,$message);
+	print aid_util::email_form_html($recp, $from, $subject, $message);
 
 	print aid_util::common_html_ftr(9);
 	exit(0);
@@ -204,7 +200,7 @@ _EOHTML_
 
 	my $name = email_name($recp);
 	my $e = "$name &lt;" . aid_util::protect_email($recp->{'e'}) . "&gt;";
-	form($e,$id,$hash,$from,$subject,$message);
+	print aid_util::email_form_html($recp, $from, $subject, $message);
 
 	print aid_util::common_html_ftr(9);
 	exit(0);
@@ -313,13 +309,7 @@ sub email_name
 
 sub check_blank
 {
-    my($recp,$title,$val,$id,$hash) = @_;
-
-    my $name = email_name($recp);
-    my $e = "$name &lt;" . aid_util::protect_email($recp->{'e'}) . "&gt;";
-    my $from = $in{'from'};
-    my $subject = $in{'subject'};
-    my $message = $in{'message'};
+    my($recp,$title,$val) = @_;
 
     unless (defined $val && $val !~ /^\s*$/) {
 	print "Content-Type: text/html\015\012\015\012";
@@ -330,7 +320,7 @@ sub check_blank
 include your $title in the text area below.</font>
 _EOHTML_
 
-	form($e,$id,$hash,$from,$subject,$message);
+	print aid_util::email_form_html($recp, $in{'from'}, $in{'subject'}, $in{'message'});
 
 	print aid_util::common_html_ftr(9);
 	exit(0);
@@ -339,39 +329,9 @@ _EOHTML_
 
 sub form
 {
-    my($e,$id,$hash,$from,$subject,$message) = @_;
-    my $action = aid_util::config('message_cgi');
-    my $t = POSIX::strftime("%a, %d %b %Y %H:%M:%S", localtime(time()));
+    my($recp,$from,$subject,$message) = @_;
 
-    $from = aid_util::html_entify_str($from);
-    $subject = aid_util::html_entify_str($subject);
-
-    # don't use aid_util::html_entify_str() on msg so we can preserve \n
-    $message =~ s/&/&amp;/g;
-    $message =~ s/</&lt;/g;
-    $message =~ s/>/&gt;/g;
-
-    print <<_EOHTML_;
-<form method="post" action="$action/post">
-<input type="hidden" name="id" value="$id">
-<input type="hidden" name="hash" value="$hash">
-<table border="0" cellspacing="1" cellpadding="2" >
-<tr><td align="right"><b>To:</b></td>
-<td>$e</td></tr>
-<tr><td align="right"><b>From:</b></td>
-<td><input type="text" name="from" size="60" 
-maxlength="128" value="$from"></td></tr>
-<tr><td align="right"><b>Date:</b></td>
-<td>$t</td></tr>
-<tr><td align="right"><b>Subject:</b></td>
-<td><input type="text" name="subject" size="60" 
-maxlength="80" value="$subject"></td></tr>
-</table>
-<textarea name="message" rows="20"
-cols="70">$message</textarea>
-<br><input type="submit" name="send" value="Send">
-</form>
-_EOHTML_
+    print aid_util::email_form_html($recp, $from, $subject, $message);
 }
 
 sub bail

@@ -1434,4 +1434,81 @@ sub delete_entry
     }
 }
 
+sub email_form_html {
+    my($recp,$from,$subject,$message) = @_;
+
+    my $action = aid_util::config("message_cgi");
+    my $id = $recp->{"id"};
+    my $hash = md5_hex($recp->{"e"});
+    my $e = email_name($recp);
+    $e .= " &lt;" . aid_util::protect_email($recp->{"e"}) . "&gt;";
+
+    $from = aid_util::html_entify_str($from);
+    $subject = aid_util::html_entify_str($subject);
+
+    # don't use aid_util::html_entify_str() on msg so we can preserve \n
+    $message =~ s/&/&amp;/g;
+    $message =~ s/</&lt;/g;
+    $message =~ s/>/&gt;/g;
+
+    my $public_key = "6LfdAukSAAAAAKAGklVWgVmkcKccO3nu7IyJ4m2T";
+    my $str =<<_EOHTML_;
+<form method="post" action="$action/post" class="form-horizontal" role="form">
+<input type="hidden" name="id" value="$id">
+<input type="hidden" name="hash" value="$hash">
+<div class="form-group">
+  <label for="inputEmail1" class="col-md-2 control-label">From</label>
+  <div class="col-md-6">
+    <input type="email" class="form-control" id="inputEmail1" name="from" placeholder="Email" value="$from">
+  </div>
+</div>
+
+<div class="form-group">
+  <label class="col-md-2 control-label">To</label>
+  <div class="col-md-6"><p class="form-control-static">$e</p></div>
+</div>
+
+<div class="form-group">
+  <label for="inputSubject1" class="col-md-2 control-label">Subject</label>
+  <div class="col-md-6">
+    <input type="text" class="form-control" id="inputSubject1" name="subject" value="$subject">
+  </div>
+</div>
+
+<div class="form-group">
+  <label for="inputMessage1" class="col-md-2 control-label">Message</label>
+  <div class="col-md-6">
+   <textarea class="form-control" id="inputMessage1" name="message" rows="10"></textarea>
+  </div>
+</div>
+
+<div class="form-group">
+  <label class="col-md-2 control-label">No spam!</label>
+  <div class="col-md-6">
+   <div class="form-control-static">
+<script type="text/javascript"
+   src="http://www.google.com/recaptcha/api/challenge?k=$public_key">
+</script>
+<noscript>
+   <iframe src="http://www.google.com/recaptcha/api/noscript?k=$public_key"
+       height="300" width="500" frameborder="0"></iframe><br>
+   <textarea name="recaptcha_challenge_field" rows="3" cols="40">$message</textarea>
+   <input type="hidden" name="recaptcha_response_field"
+       value="manual_challenge">
+</noscript>
+   </div><!-- .form-control-static -->
+  </div><!-- .col-md-6 -->
+</div><!-- .form-group -->
+
+<div class="form-group">
+  <div class="col-md-offset-2 col-md-6">
+    <input type="submit" name="send" value="Send" class="btn btn-primary">
+  </div>
+</div>
+</form>
+_EOHTML_
+;
+    $str;
+}
+
 1;
