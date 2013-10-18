@@ -57,7 +57,7 @@ use Net::SMTP::SSL ();
 use Time::Local;
 use POSIX qw(strftime);
 use Date::Calc ();
-use Digest::MD5 qw(md5_hex);
+use Digest::MD5 ();
 
 require 'school_config.pl';
 
@@ -1440,7 +1440,7 @@ sub email_form_html {
 
     my $action = aid_util::config("message_cgi");
     my $id = $recp->{"id"};
-    my $hash = md5_hex($recp->{"e"});
+    my $hash = Digest::MD5::md5_hex($recp->{"e"});
     my $e = email_name($recp);
     $e .= " &lt;" . aid_util::protect_email($recp->{"e"}) . "&gt;";
 
