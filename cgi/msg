@@ -56,6 +56,7 @@ use CGI qw(-no_xhtml);
 use CGI::Carp qw(fatalsToBrowser);
 use aid_util;
 use DBI ();
+use Captcha::reCAPTCHA;
 
 my %in;
 my($q) = new CGI;
@@ -134,9 +135,11 @@ elsif (defined($in{'id'}) && $in{'id'} =~ /^\d+$/ && $in{'hash'} &&
 	my $h = aid_util::html_entify_str($from);
 	
 	print <<_EOHTML_;
-<p><font color=\"red\">Your e-mail address
-<b>$h</b> appears to be invalid.</font>
+<div class="alert alert-danger">
+<strong>Sorry</strong>, your e-mail address
+<strong>$h</strong> appears to be invalid.
 <br>It must be in the form of <code>user\@example.com</code>.
+</div>
 _EOHTML_
 
 	print aid_util::email_form_html($recp, $from, $subject, $message);
@@ -159,7 +162,7 @@ _EOHTML_
 	$count = 999;
     }
 
-    my $maxcount = 5;
+    my $maxcount = 20;
     if (defined $count && $count >= $maxcount) {
 	print "Content-Type: text/html\015\012\015\012";
 	print aid_util::common_html_hdr(9, 'Too many messages today', 1);
@@ -168,12 +171,14 @@ _EOHTML_
 	my $admin = aid_util::config('admin_email');
 
 	print <<_EOHTML_;
-<p><font color=\"red\">Sorry, you have sent too many messages today.</font>
+<div class="alert alert-danger">
+<p>Sorry, you have sent too many messages today.
 <br>In order to prevent abuse, you may only email up to
 $maxcount messages a day via this form. If you are really a member of the
 $school alumni community and think you are getting this message in
 error, please contact <a
 href="mailto:$admin">$admin</a></p>
+</div>
 _EOHTML_
 
 	print aid_util::email_form_html($recp, $from, $subject, $message);
@@ -182,24 +187,31 @@ _EOHTML_
 	exit(0);
     }
 
-    if (check_spam($recp->{'e'}, $from, $subject, $message)) {
+    my $challenge = $in{'recaptcha_challenge_field'};
+    my $response = $in{'recaptcha_response_field'};
+
+    my $captcha = Captcha::reCAPTCHA->new;
+    my $private_key = aid_util::config('captcha_private_key');
+    my $result = $captcha->check_answer(
+	$private_key,
+	$ENV{'REMOTE_ADDR'},
+	$challenge, $response
+    );
+    if (! $result->{is_valid} ) {
 	print "Content-Type: text/html\015\012\015\012";
-	print aid_util::common_html_hdr(9, 'Your message looks like SPAM', 1);
+	print aid_util::common_html_hdr(9, 'Invalid reCAPTCHA response', 1);
 
         my $school = aid_util::config('short_school');
 	my $admin = aid_util::config('admin_email');
 
 	print <<_EOHTML_;
-<p><font color=\"red\">Sorry, this message appears to be unsolicited
-commercial email (a.k.a. <a
-href=\"http://spam.abuse.net/overview/\">Spam</a>).</font>
-<br>If you are really a member of the $school alumni community and
-think you are getting this message in error, please contact <a
-href="mailto:$admin">$admin</a></p>
+<div class="alert alert-danger">
+<p><strong>Sorry,</strong> the anti-robot reCAPTCHA text at the bottom
+of the form did not work.</p>
+<p>Your message was not sent. Please try again.</p>
+</div>
 _EOHTML_
 
-	my $name = email_name($recp);
-	my $e = "$name &lt;" . aid_util::protect_email($recp->{'e'}) . "&gt;";
 	print aid_util::email_form_html($recp, $from, $subject, $message);
 
 	print aid_util::common_html_ftr(9);
@@ -246,7 +258,7 @@ _EOHTML_
     if ($status == 0) {
         aid_util::cgi_die('ERROR: Unable to send e-mail',
 		 "We're sorry, we were unable to send e-mail to\n" .
-		 "<b>" . aid_util::protect_email($recp->{'e'}) . "</b>.\n" .
+		 "<strong>" . aid_util::protect_email($recp->{'e'}) . "</strong>.\n" .
 		 "<p>This may be a problem with our\n" .
 		 "server or perhaps with the target e-mail address.\n" .
 		 "Please try again in a few minutes.<p>If you continue\n" .
@@ -258,7 +270,10 @@ _EOHTML_
     print "Content-Type: text/html\015\012\015\012";
     print aid_util::common_html_hdr(9, 'Message Sent', 1);
     print <<_EOHTML_;
+<div class="alert alert-success">
+<p><strong>Success!</strong></p>
 <p>Your message has been sent.</p>
+</div>
 _EOHTML_
     print aid_util::common_html_ftr(9);
     exit(0);
@@ -267,31 +282,6 @@ else
 {
     bail();
 }
-
-sub check_spam
-{
-    my($to,$from,$subject,$message) = @_;
-
-    eval 'use Mail::SpamAssassin;';
-
-    my $spam_headers = "From: $from\nSubject: $subject\nTo: $to\n" .
-	"Date: " . POSIX::strftime("%a, %d %b %Y %H:%M:%S +0000",
-				   gmtime(time())) . "\n\n";
-
-    my $spam_test = Mail::SpamAssassin->new({
-	'local_tests_only' => 1,
-	'rules_filename' => '/home/mradwin/local/share/spamassassin',
-    });
-
-    # avoid waring "Failed to create default user preference file
-    #               /var/www/.spamassassin/user_prefs"
-    $spam_test->compile_now(0);
-
-    my $spam_status = $spam_test->check_message_text($spam_headers . $message);
-
-    return $spam_status->is_spam();
-}
-
 
 sub email_name
 {
@@ -316,8 +306,10 @@ sub check_blank
 	print aid_util::common_html_hdr(9, "Missing $title", 1);
 
 	print <<_EOHTML_;
-<p><font color=\"red\">Missing $title (can\'t be blank).  Please
-include your $title in the text area below.</font>
+<div class="alert alert-danger">
+<p>Missing <strong>$title</strong> (can\'t be blank).</p>
+<p>Please include your $title in the text area below.</p>
+</div>
 _EOHTML_
 
 	print aid_util::email_form_html($recp, $in{'from'}, $in{'subject'}, $in{'message'});
@@ -327,13 +319,6 @@ _EOHTML_
     }
 }
 
-sub form
-{
-    my($recp,$from,$subject,$message) = @_;
-
-    print aid_util::email_form_html($recp, $from, $subject, $message);
-}
-
 sub bail
 {
     my($err) = @_;
@@ -341,7 +326,7 @@ sub bail
     print "Status: 400 Bad Request\015\012";
     aid_util::cgi_die('Bad Request',
 		 "Sorry, looks like the form submission was broken.\n" .
-		 ($err ? "<br><b>$err</b>" : ""));
+		 ($err ? "<br><strong>$err</strong>" : ""));
     close(STDOUT);
     exit(0);
 }
