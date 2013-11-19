@@ -805,7 +805,7 @@ sub common_html_ftr
     $ftr .= "</div><!-- .container -->\n";
     $ftr .= <<EOHTML;
 <script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
-<script src="//netdna.bootstrapcdn.com/bootstrap/3.0.0/js/bootstrap.min.js"></script>
+<script src="//netdna.bootstrapcdn.com/bootstrap/3.0.2/js/bootstrap.min.js"></script>
 EOHTML
 ;
     $ftr .= "</body>\n</html>\n";
@@ -838,7 +838,7 @@ sub common_html_hdr
 
     # do stylesheet before the rest of the meta tags on the theory that
     # early evaluation is good
-    $hdr .= qq{<link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap.min.css">\n};
+    $hdr .= qq{<link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.0.2/css/bootstrap.min.css">\n};
 
     $hdr .= $aid_util::author_meta . "\n" . $aid_util::navigation_meta .
 	"\n";
