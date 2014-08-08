@@ -139,7 +139,8 @@ AND verify_published IS NULL
 	}
 	else
 	{
-	    warn "key $verified{$id} was verified, but $id is missing from aid_alumnus table";
+	    warn "key $verified{$id} was verified, but $id is missing from aid_alumnus table"
+		unless $opts{"q"};
 #	    last;
 	}
     }
