@@ -70,7 +70,7 @@ if ($VERSION =~ /(\d+)\.(\d+)/) {
 
 my $HOSTNAME;
 
-die "NO CONFIG DEFINED!!" unless defined %aid_util::config;
+die "NO CONFIG DEFINED!!" unless %aid_util::config;
 
 %aid_util::parent_page_name =
 (
@@ -89,11 +89,11 @@ die "NO CONFIG DEFINED!!" unless defined %aid_util::config;
 );
 
 $aid_util::pics_label =
-"<meta http-equiv=\"PICS-Label\" content='(PICS-1.1 " . 
-"\"http://www.rsac.org/ratingsv01.html\" l gen true " . 
+"<meta http-equiv=\"PICS-Label\" content='(PICS-1.1 " .
+"\"http://www.rsac.org/ratingsv01.html\" l gen true " .
 "on \"1998.03.10T11:49-0800\" r (n 0 s 0 v 0 l 0))'>"; #"#
 
-%aid_util::aid_aliases = ();   # global alias hash repository 
+%aid_util::aid_aliases = ();   # global alias hash repository
 
 %aid_util::field_descr =
     (
@@ -143,13 +143,13 @@ foreach my $key (@aid_util::edit_field_names)
     $aid_util::blank_entry{$key} = '';
 }
 
-$aid_util::blank_entry{'id'} = -1;     
-$aid_util::blank_entry{'v'}  = 1;      
-$aid_util::blank_entry{'r'}  = 1;      
-$aid_util::blank_entry{'b'}  = 0;      
-$aid_util::blank_entry{'lm'} = 0;      
-$aid_util::blank_entry{'eu'} = 0;      
-$aid_util::blank_entry{'n'}  = '';     
+$aid_util::blank_entry{'id'} = -1;
+$aid_util::blank_entry{'v'}  = 1;
+$aid_util::blank_entry{'r'}  = 1;
+$aid_util::blank_entry{'b'}  = 0;
+$aid_util::blank_entry{'lm'} = 0;
+$aid_util::blank_entry{'eu'} = 0;
+$aid_util::blank_entry{'n'}  = '';
 
 my %image_tag =
     (
@@ -291,7 +291,7 @@ sub affiliate
     if ($rec->{'yr'} =~ /^\d+$/)
     {
 	$affil .= "<a href=\"" .
-	    about_path($rec,1) . "\">" 
+	    about_path($rec,1) . "\">"
 	    if $do_html_p;
 	$year = sprintf("%02d", $rec->{'yr'} % 100);
 
@@ -305,7 +305,7 @@ sub affiliate
     else
     {
 	$affil .= "<a href=\"" .
-	    about_path($rec,1) . "\">" 
+	    about_path($rec,1) . "\">"
 	    if $do_html_p;
 	$tmp    = '[' . $aid_util::config{'short_school'} . ' ' . $rec->{'yr'} . ']';
 	$affil .= $tmp;
@@ -334,15 +334,15 @@ sub ampersand_join
     my($rec) = @_;
     my($key,$val,$retval);
 
-    $retval = 'id=' . url_escape($rec->{'id'}); 
+    $retval = 'id=' . url_escape($rec->{'id'});
 
     foreach my $f (@aid_util::edit_field_names)
     {
 	next if $f eq 'id';
-	$retval .= '&' . $f   . '=' . url_escape($rec->{$f}); 
+	$retval .= '&' . $f   . '=' . url_escape($rec->{$f});
     }
-    
-    $retval . '&n=' . url_escape($rec->{'n'}); 
+
+    $retval . '&n=' . url_escape($rec->{'n'});
 }
 
 sub generate_alias
@@ -356,11 +356,11 @@ sub generate_alias
     } else {
 	my($mangledLast,$mangledFirst);
 
-	$mangledFirst = mangle($rec->{'gn'}); 
+	$mangledFirst = mangle($rec->{'gn'});
 	if ($rec->{'mn'} ne '') {
-	    $mangledLast = mangle($rec->{'mn'});   
+	    $mangledLast = mangle($rec->{'mn'});
 	} else {
-	    $mangledLast = mangle($rec->{'sn'});   
+	    $mangledLast = mangle($rec->{'sn'});
 	}
 
 	$alias = lc(substr($mangledFirst, 0, 1) . $mangledLast);
@@ -381,8 +381,8 @@ sub vcard_path
 {
     my($rec) = @_;
 
-    $aid_util::config{'vcard_cgi'} . '/' . $rec->{'id'} . '/' . 
-	mangle($rec->{'gn'}) . mangle($rec->{'sn'}) . 
+    $aid_util::config{'vcard_cgi'} . '/' . $rec->{'id'} . '/' .
+	mangle($rec->{'gn'}) . mangle($rec->{'sn'}) .
 	    mangle($rec->{'mn'}) . '.vcf';
 }
 
@@ -605,7 +605,7 @@ sub verbose_entry
 
     if (! $suppress_name) {
 	$retval .= "<h3>$fullname";
-	$retval .= is_new_html(\%rec) unless $suppress_new; 
+	$retval .= is_new_html(\%rec) unless $suppress_new;
 	$retval .= "</h3>\n";
     }
 
@@ -614,7 +614,7 @@ sub verbose_entry
     if ($rec{'yr'} =~ /^\d+$/) {
 	if ($display_year) {
 	    $retval .= "<li>Year: <strong><a\n" .
-		"href=\"" . about_path(\%rec,1) . "\">" . 
+		"href=\"" . about_path(\%rec,1) . "\">" .
 		    $rec{'yr'} . "</a></strong>";
 	$retval .= "</li>";
 	$retval .= "\n";
@@ -622,7 +622,7 @@ sub verbose_entry
 	}
     } else {
 	$retval .= "<li>Affiliation: <strong><a\n" .
-	    "href=\"" . about_path(\%rec,1) . "\">" . 
+	    "href=\"" . about_path(\%rec,1) . "\">" .
 		$rec{'yr'} . "</a></strong>";
 	$retval .= "</li>";
 	$retval .= "\n";
@@ -645,13 +645,13 @@ sub verbose_entry
     $retval .= "</li>";
     $retval .= "\n";
 
-    $retval .= "<li>Web Page: <tt><strong><a\n" . 
+    $retval .= "<li>Web Page: <tt><strong><a\n" .
 	"href=\"$rec{'w'}\">$rec{'w'}</a></strong></tt>\n"
 	    if $rec{'w'} ne '';
     $retval .= "<li>Location: <strong>$rec{'l'}</strong>\n"
 	if $rec{'l'} ne '';
     $retval .= "<li>Updated: ";
-    my $date = caldate($rec{'u'}); 
+    my $date = caldate($rec{'u'});
     $retval .= "<strong>$date</strong>";
     $retval .= "</li>";
     $retval .= "\n";
@@ -660,9 +660,9 @@ sub verbose_entry
     {
 	$retval .= "<li>Tools: <small>" .
 	    "<a\nhref=\"" . $aid_util::config{'about_cgi'} .
-	    "/$rec{'id'}\">modify profile</a>" . 
+	    "/$rec{'id'}\">modify profile</a>" .
 	    " | <a\nhref=\"" . $aid_util::config{'delete_cgi'} .
-	    "?id=$rec{'id'}\">delete profile</a>" . 
+	    "?id=$rec{'id'}\">delete profile</a>" .
 	    "</small>";
 	$retval .= "\n";
     }
@@ -701,7 +701,7 @@ sub vcard_text
     $retval .= "ORG:" . $aid_util::config{'short_school'} . ";";
     if ($rec->{'yr'} =~ /^\d+$/) {
 	$retval .= "Class of $rec->{'yr'}\015\012";
-    } else {	
+    } else {
 	$retval .= "$rec->{'yr'}\015\012";
     }
     $retval .= "EMAIL;PREF;INTERNET:$rec->{'e'}\015\012";
@@ -711,7 +711,7 @@ sub vcard_text
 	$retval .= "ADR:;;;$rec->{'l'}\015\012" if $rec->{'l'} ne '';
     }
     $retval .= "URL:$rec->{'w'}\015\012" if $rec->{'w'} ne '';
-    $retval .= "REV:" . vdate($rec->{'u'}) . "\015\012"; 
+    $retval .= "REV:" . vdate($rec->{'u'}) . "\015\012";
     $retval .= "VERSION:2.1\015\012";
 
 #    if ($rec->{'n'} !~ /^\s*$/)
@@ -752,10 +752,10 @@ sub about_text
     }
 
     if ($rec->{'n'} ne '') {
-	$retval .= "What's New?\n-----------\n" . $rec->{'n'} . 
+	$retval .= "What's New?\n-----------\n" . $rec->{'n'} .
 	    "\nLast Updated: " . caldate($rec->{'u'}) . "\n";
     } else {
-	$retval .= "Last Updated: " . caldate($rec->{'u'}) . "\n"; 
+	$retval .= "Last Updated: " . caldate($rec->{'u'}) . "\n";
     }
 
     $retval .= "\nPreferences\n-----------\n";
@@ -771,9 +771,9 @@ sub common_intro_para
     my($info) = "The <tt>" . $image_tag{'info'} .
 	"</tt>\nicon lets you get more detailed information about an alumnus.";
 
-    "<p><small>Any alumni marked with\n" . $image_tag{'new'} . 
+    "<p><small>Any alumni marked with\n" . $image_tag{'new'} .
     "\nhave been added to the Directory last month.\n" .
-    "Alumni marked with\n" . $image_tag{'updated'} . 
+    "Alumni marked with\n" . $image_tag{'updated'} .
     "\nhave updated their information within the past month.\n" .
     ($page ? $info : '') .
     "</small></p>\n";
@@ -793,14 +793,14 @@ sub common_html_ftr
     $ftr .= scalar(localtime($time)) . "\n";
     $ftr .= "<!-- hhmts end -->\n<br>\n";
     $ftr .=
-	"Copyright &copy; $year " . $aid_util::config{'admin_name'} . 
+	"Copyright &copy; $year " . $aid_util::config{'admin_name'} .
 	".  All rights reserved.\n" .
 	"<a\nhref=\"" . $aid_util::config{'master_path'} .
 	"etc/privacy.html\">Privacy Policy</a> - " .
 	"<a\nhref=\"" . $aid_util::config{'master_path'} .
 	"etc/tos.html\">Terms of Service</a>" .
 	"\n";
-    
+
     $ftr .= "</footer>\n";
     $ftr .= "</div><!-- .container -->\n";
     $ftr .= <<EOHTML;
@@ -819,7 +819,7 @@ sub common_html_hdr
     my($page,$title,$norobots,$time,$subtitle,$extra_meta,$nohtmlize) = @_;
     my($hdr,$titletag,$srv_nowww,$descr);
     my($timestamp) =
-	caldate((defined $time && $time ne '') ? $time : time); 
+	caldate((defined $time && $time ne '') ? $time : time);
 
     $title = html_entify_str($title) unless $nohtmlize;
     $subtitle = html_entify_str($subtitle)
@@ -829,7 +829,7 @@ sub common_html_hdr
 	($aid_util::config{'school'} . " Alumni Directory") :
 	($title . " - " . $aid_util::config{'short_school'} . " Alumni");
 
-    $hdr  = 
+    $hdr  =
 	"<!DOCTYPE html>\n" .
 	"<html lang=\"en\">\n" .
 	"<head>\n<title>" . $titletag . "</title>\n";
@@ -852,7 +852,7 @@ sub common_html_hdr
 
     $hdr .= $extra_meta if defined $extra_meta;
     $hdr .= "\n<base target=\"_top\"></head>\n";
-    
+
     $hdr .= "<body>\n";
 
     $srv_nowww =  $aid_util::config{'master_srv'};
@@ -1004,7 +1004,7 @@ sub book_write_entry
     elsif ($option eq 'l') {
         print $BOOKfh "dn: cn=$gn $long_last,mail=$rec->{'e'}\015\012";
 	print $BOOKfh "modifytimestamp: ";
-	my $vdate = vdate($rec->{'u'}); 
+	my $vdate = vdate($rec->{'u'});
 	$vdate =~ s/T//;
 	print $BOOKfh "$vdate\015\012";
         print $BOOKfh "cn: $gn $long_last\015\012";
@@ -1032,10 +1032,10 @@ sub book_write_entry
         print $BOOKfh "xmozillanickname: $rec->{'a'}\015\012";
         print $BOOKfh "\015\012";
     }
-    
+
     # lots of data for a vCard
     elsif ($option eq 'v') {
-	print $BOOKfh vcard_text($rec), "\015\012"; 
+	print $BOOKfh vcard_text($rec), "\015\012";
     }
 
     elsif ($option eq 'o') {
@@ -1152,7 +1152,7 @@ sub write_reunion_hash
 
 	if ($key =~ /^\d+$/)
 	{
-	    print $FH " <a href=\"", 
+	    print $FH " <a href=\"",
 	    config('master_path'),
 	    "class/$key.html\">Class of $key</a>";
 	}
@@ -1245,7 +1245,7 @@ SELECT DISTINCT e.entry_gradclass
 FROM aid_alumnus a, aid_entry e
 WHERE a.alumnus_entry_id = e.entry_id
 AND e.entry_gradclass IS NOT NULL
-ORDER BY e.entry_gradclass ASC 
+ORDER BY e.entry_gradclass ASC
 };
 
     my $sth = $dbh->prepare($sql);
@@ -1336,7 +1336,7 @@ EOSQL
     \%result;
 }
 
-sub print_rss_head 
+sub print_rss_head
 {
     my($fh,$time,$title,$link,$desc) = @_;
 
