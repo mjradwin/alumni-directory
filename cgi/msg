@@ -56,7 +56,8 @@ use CGI qw(-no_xhtml);
 use CGI::Carp qw(fatalsToBrowser);
 use aid_util;
 use DBI ();
-use Captcha::noCAPTCHA;
+use LWP::UserAgent;
+use JSON::PP qw();
 
 my %in;
 my($q) = new CGI;
@@ -193,12 +194,24 @@ _EOHTML_
 	exit(0);
     }
 
-    my $public_key = "6LfdAukSAAAAAKAGklVWgVmkcKccO3nu7IyJ4m2T";
     my $private_key = aid_util::config('captcha_private_key');
-    my $cap = Captcha::noCAPTCHA->new({site_key => $public_key,
-        secret_key => $private_key});
+    my $ua = LWP::UserAgent->new;
+    $ua->timeout(10);
+    my $url = 'https://www.google.com/recaptcha/api/siteverify';
     my $captcha_response = $in{'g-recaptcha-response'};
-    my $is_valid = $cap->verify($captcha_response, $ENV{'REMOTE_ADDR'});
+    my %form = (
+        'secret' => $private_key,
+        'response' => $captcha_response,
+        'remoteip' => $ENV{'REMOTE_ADDR'},
+        );
+    my $response = $ua->post($url, \%form);
+    my $is_valid = 0;
+    if ($response->is_success) {
+        my $json = eval {JSON::PP::decode_json($response->content)};
+        if ($json) {
+            $is_valid = $json->{success};
+        }
+    }
     if (! $is_valid) {
 	print "Content-Type: text/html\015\012\015\012";
         print aid_util::common_html_hdr(9, 'Invalid reCAPTCHA response', 1,
