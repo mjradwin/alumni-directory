@@ -1487,16 +1487,7 @@ sub email_form_html {
   <label class="col-md-2 control-label">No spam!</label>
   <div class="col-md-6">
    <div class="form-control-static">
-<script type="text/javascript"
-   src="http://www.google.com/recaptcha/api/challenge?k=$public_key">
-</script>
-<noscript>
-   <iframe src="http://www.google.com/recaptcha/api/noscript?k=$public_key"
-       height="300" width="500" frameborder="0"></iframe><br>
-   <textarea name="recaptcha_challenge_field" rows="3" cols="40"></textarea>
-   <input type="hidden" name="recaptcha_response_field"
-       value="manual_challenge">
-</noscript>
+    <div class="g-recaptcha" data-sitekey="$public_key"></div>
    </div><!-- .form-control-static -->
   </div><!-- .col-md-6 -->
 </div><!-- .form-group -->

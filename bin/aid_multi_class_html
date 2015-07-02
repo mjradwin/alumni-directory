@@ -317,8 +317,10 @@ src="http://static.addtoany.com/menu/feed.js"></script>
 	    $rec_copy{"mi"} = "";
 	    my $name = aid_util::inorder_fullname(\%rec_copy);
 
+	    my $xtra_head = "<script src='https://www.google.com/recaptcha/api.js'></script>\n";
 	    print FMTOUT2 aid_util::common_html_hdr(-2, $name . $affil,
-						    1, $recp->{"u"});
+						    1, $recp->{"u"},
+						    undef, $xtra_head);
 	    print FMTOUT2 aid_util::verbose_entry($recp,1,0,0,1);
 
 	    if ($recp->{"v"})

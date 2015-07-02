@@ -67,6 +67,8 @@ foreach my $key ($q->param())
     $in{$key} = $val;
 }
 
+my $xtra_head = "<script src='https://www.google.com/recaptcha/api.js'></script>\n";
+
 if (defined($in{'to'}) && $in{'to'} =~ /^\d+$/)
 {
     my $id = $in{'to'};
@@ -81,7 +83,9 @@ if (defined($in{'to'}) && $in{'to'} =~ /^\d+$/)
     my $recp = $recs[0];
 
     print "Content-Type: text/html\015\012\015\012";
-    print aid_util::common_html_hdr(9, 'Send Message', 1);
+
+    print aid_util::common_html_hdr(9, 'Send Message', 1,
+        undef, undef, $xtra_head);
 
     print aid_util::email_form_html($recp,
 				    "",
@@ -130,7 +134,8 @@ elsif (defined($in{'id'}) && $in{'id'} =~ /^\d+$/ && $in{'hash'} &&
 	$from = Email::Valid->address($from);
     } else {
 	print "Content-Type: text/html\015\012\015\012";
-	print aid_util::common_html_hdr(9, 'Invalid Email Address', 1);
+        print aid_util::common_html_hdr(9, 'Invalid Email Address', 1,
+            undef, undef, $xtra_head);
 
 	my $h = aid_util::html_entify_str($from);
 	
@@ -165,7 +170,8 @@ _EOHTML_
     my $maxcount = 20;
     if (defined $count && $count >= $maxcount) {
 	print "Content-Type: text/html\015\012\015\012";
-	print aid_util::common_html_hdr(9, 'Too many messages today', 1);
+	print aid_util::common_html_hdr(9, 'Too many messages today', 1,
+            undef, undef, $xtra_head);
 
         my $school = aid_util::config('short_school');
 	my $admin = aid_util::config('admin_email');
@@ -199,7 +205,8 @@ _EOHTML_
     );
     if (! $result->{is_valid} ) {
 	print "Content-Type: text/html\015\012\015\012";
-	print aid_util::common_html_hdr(9, 'Invalid reCAPTCHA response', 1);
+        print aid_util::common_html_hdr(9, 'Invalid reCAPTCHA response', 1,
+            undef, undef, $xtra_head);
 
         my $school = aid_util::config('short_school');
 	my $admin = aid_util::config('admin_email');
@@ -268,7 +275,8 @@ _EOHTML_
     }
 
     print "Content-Type: text/html\015\012\015\012";
-    print aid_util::common_html_hdr(9, 'Message Sent', 1);
+    print aid_util::common_html_hdr(9, 'Message Sent', 1,
+        undef, undef, $xtra_head);
     print <<_EOHTML_;
 <div class="alert alert-success">
 <p><strong>Success!</strong></p>
@@ -303,7 +311,8 @@ sub check_blank
 
     unless (defined $val && $val !~ /^\s*$/) {
 	print "Content-Type: text/html\015\012\015\012";
-	print aid_util::common_html_hdr(9, "Missing $title", 1);
+        print aid_util::common_html_hdr(9, "Missing $title", 1,
+            undef, undef, $xtra_head);
 
 	print <<_EOHTML_;
 <div class="alert alert-danger">
