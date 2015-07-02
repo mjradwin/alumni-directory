@@ -56,7 +56,7 @@ use CGI qw(-no_xhtml);
 use CGI::Carp qw(fatalsToBrowser);
 use aid_util;
 use DBI ();
-use Captcha::reCAPTCHA;
+use Captcha::noCAPTCHA;
 
 my %in;
 my($q) = new CGI;
@@ -193,17 +193,13 @@ _EOHTML_
 	exit(0);
     }
 
-    my $challenge = $in{'recaptcha_challenge_field'};
-    my $response = $in{'recaptcha_response_field'};
-
-    my $captcha = Captcha::reCAPTCHA->new;
+    my $public_key = "6LfdAukSAAAAAKAGklVWgVmkcKccO3nu7IyJ4m2T";
     my $private_key = aid_util::config('captcha_private_key');
-    my $result = $captcha->check_answer(
-	$private_key,
-	$ENV{'REMOTE_ADDR'},
-	$challenge, $response
-    );
-    if (! $result->{is_valid} ) {
+    my $cap = Captcha::noCAPTCHA->new({site_key => $public_key,
+        secret_key => $private_key});
+    my $captcha_response = $in{'g-recaptcha-response'};
+    my $is_valid = $cap->verify($captcha_response, $ENV{'REMOTE_ADDR'});
+    if (! $is_valid) {
 	print "Content-Type: text/html\015\012\015\012";
         print aid_util::common_html_hdr(9, 'Invalid reCAPTCHA response', 1,
             undef, undef, $xtra_head);
