@@ -391,7 +391,7 @@ sub queue_submission {
     print aid_util::common_html_hdr(20,"Final Step: verify e-mail address",1);
 
     print "
-<p>Our e-mail robot (<tt>", aid_util::config("smtp_user"), "</tt>)
+<p>Our e-mail robot
 just sent a verification message to
 <b>$cgi{'e'}</b>.
 It may take 2 or 3 minutes for it to arrive.</p>
